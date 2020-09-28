@@ -1,10 +1,10 @@
 FROM reg.hydevops.com/base_images/node:14.4-alpine3.12
 
-ARG APP_PATH
-
 WORKDIR  /app
 
-COPY $APP_PATH ./
+COPY ./dist ./
+COPY ./node_modules ./node_modules
+
 
 RUN true \
     && npm config set registry  http://nexus.hydevops.com/repository/npm-hy-frontend-group/ \
@@ -12,4 +12,4 @@ RUN true \
 
 EXPOSE 3000
 
-CMD pm2 start ./main.js
+CMD ["pm2-runtime","./main.js"]
