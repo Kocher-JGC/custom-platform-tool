@@ -2,6 +2,14 @@ FROM reg.hydevops.com/base_images/node:14.4-alpine3.12
 
 ARG APP_PATH
 
-COPY $APP_PATH /usr/share/nginx/html
+WORKDIR  /app
 
-EXPOSE 80
+COPY $APP_PATH ./
+
+RUN true \
+    && npm config set registry  http://nexus.hydevops.com \
+    && npm install -g pm2 
+
+EXPOSE 3000
+
+CMD pm2 start ./main.js
