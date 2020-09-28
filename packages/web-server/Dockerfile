@@ -7,7 +7,7 @@ WORKDIR  /app
 COPY $APP_PATH ./
 
 RUN true \
-    && npm config set registry  http://nexus.hydevops.com \
+    && npm config set registry  http://nexus.hydevops.com/repository/npm-hy-frontend-group/ \
     && npm install -g pm2 
 
 EXPOSE 3000
