@@ -70,6 +70,12 @@ export const ProviderAppMenuData: MenuDataType[] = [
         id: '1415rwqtqr',
         icon: '',
         path: '/menu-manager'
+      },
+      {
+        title: '权限项管理',
+        id: '1416rwqtqr',
+        icon: '',
+        path: '/lessee-authority'
       }
     ]
   },

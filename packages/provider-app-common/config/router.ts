@@ -9,6 +9,7 @@ import TableInfo from "@provider-app/table-info/app";
 import TableEditor from "@provider-app/table-editor/app";
 import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
+import LesseeAuthority from "@provider-app/lessee-authority/app";
 /// //////// 数据设计结束
 import { resolvePagePath } from "multiple-page-routing/utils";
 
@@ -60,6 +61,10 @@ const RouterConfig: RouterConfigType = {
   '/table-info': {
     title: '编辑表',
     component: TableInfo
+  },
+  '/lessee-authority': {
+    title: '权限项',
+    component: LesseeAuthority
   },
   '/table-editor': {
     title: '编辑表',
