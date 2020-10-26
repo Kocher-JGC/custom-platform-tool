@@ -124,9 +124,9 @@ const IUBDSLRuntimeContainer = ({ dslParseRes }) => {
           }}
         />
       </FromWrapFactory>
-      <pre>
+      {/* <pre>
         {JSON.stringify(getPageState(), null, 2)}
-      </pre>
+      </pre> */}
     </DefaultCtx.Provider>
   );
 };
