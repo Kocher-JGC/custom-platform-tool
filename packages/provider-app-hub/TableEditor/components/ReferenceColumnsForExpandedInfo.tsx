@@ -33,7 +33,7 @@ const FieldName: React.FC<IFieldName> = (props: IFieldName) => {
     const valueListUsed = list
       .filter((item, loopIndex) => loopIndex !== index)
       .map((item) => item[FOREIGNKEYS_KEY.FIELDCODE]);
-    return options.filter((item) => !valueListUsed.includes(item.key));
+    return options.filter((item) => !valueListUsed.includes(item.value));
   };
   const handleChange = (value, option) => {
     formRef.current?.setFieldsValue({ [FOREIGNKEYS_KEY.FIELDID]: option.key });

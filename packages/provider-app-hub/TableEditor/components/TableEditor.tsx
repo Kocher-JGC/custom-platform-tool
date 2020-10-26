@@ -379,8 +379,7 @@ class TableEditor extends React.Component {
     return record.id;
   }
 
-  filterFieldListForOptions = () => {
-    const { activeAreaInExpandedInfo, fieldList } = this.state;
+  filterFieldListForOptions = (fieldList, activeAreaInExpandedInfo) => {
     const dataTypeMap = {
       referenceList: DATATYPE.QUOTE,
       foreignKeyList: DATATYPE.FK
@@ -639,20 +638,6 @@ class TableEditor extends React.Component {
       visibleModalChooseDict, dictIdsShowInModal, visibleModalCreateReference, visibleModalCreateForeignKey,
       fieldList, referenceList, foreignKeyList
     } = this.state;
-    const fieldColumns = getFieldColumns({
-      formRef: this.expandInfoFormRef,
-      editDictioary: this.createDict
-    });
-    const referenceColumns = getReferenceColumns({
-      formRef: this.expandInfoFormRef,
-      fieldOptions: this.filterFieldListForOptions(),
-      list: referenceList
-    });
-    const foreignKeyColumns = getForeignKeyColumns({
-      formRef: this.expandInfoFormRef,
-      fieldOptions: this.filterFieldListForOptions(),
-      list: foreignKeyList
-    });
     return (
       <>
         <BasicInfoEditor
@@ -753,7 +738,10 @@ class TableEditor extends React.Component {
               doubleClickRow={this.doubleClickRow}
               blurRow={this.blurRow}
               clickRow = {() => { this.saveRow(); }}
-              columns={fieldColumns}
+              columns={getFieldColumns({
+                formRef: this.expandInfoFormRef,
+                editDictioary: this.createDict
+              })}
               dataSource={fieldList.filter((item) => {
                 return showSysFields || ![SPECIES.SYS, SPECIES.SYS_TMPL].includes(item.species);
               })}
@@ -789,7 +777,11 @@ class TableEditor extends React.Component {
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
-                columns={referenceColumns}
+                columns={getReferenceColumns({
+                  formRef: this.expandInfoFormRef,
+                  fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
+                  list: referenceList
+                })}
                 dataSource={referenceList}
               />) : null }
           </TabPane>
@@ -823,7 +815,11 @@ class TableEditor extends React.Component {
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
-                columns={foreignKeyColumns}
+                columns={getForeignKeyColumns({
+                  formRef: this.expandInfoFormRef,
+                  fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
+                  list: foreignKeyList
+                })}
                 dataSource={foreignKeyList}
               />) : null }
           </TabPane>
