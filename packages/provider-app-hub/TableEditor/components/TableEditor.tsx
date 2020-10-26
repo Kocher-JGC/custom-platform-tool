@@ -76,11 +76,11 @@ class TableEditor extends React.Component {
     fieldList: () => {
       const {
         NAME, CODE, FIELDTYPE, DATATYPE: DataType, FIELDSIZE, DECIMALSIZE,
-        REQUIRED, UNIQUE, DICTIONARYFOREIGN, PINYINCONVENT, REGULAR, SPECIES: species
+        REQUIRED, UNIQUE, DICTIONARYFOREIGN, DICTIONARYFOREIGNCN, PINYINCONVENT, REGULAR, SPECIES: species
       } = COLUMNS_KEY;
       const record = this.expandInfoFormRef.current?.getFieldsValue([
         NAME, CODE, FIELDTYPE, DataType, FIELDSIZE, DECIMALSIZE, REQUIRED,
-        UNIQUE, DICTIONARYFOREIGN, PINYINCONVENT, REGULAR, species
+        UNIQUE, DICTIONARYFOREIGN, DICTIONARYFOREIGNCN, PINYINCONVENT, REGULAR, species
       ]);
       return record;
     },
@@ -120,8 +120,8 @@ class TableEditor extends React.Component {
   constructFieldListFromRequest = (fieldList) => {
     return fieldList?.map((item) => {
       const {
-        tableName: dictionaryForeignCn,
-        fieldCode: dictionaryForeign
+        refTableName: dictionaryForeignCn,
+        refTableCode: dictionaryForeign
       } = item.dictionaryForeign || {};
       return {
         ...item, ...item.fieldProperty, dictionaryForeign, dictionaryForeignCn

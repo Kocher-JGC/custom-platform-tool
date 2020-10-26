@@ -56,6 +56,8 @@ class ChooseDict extends React.Component<IProps> {
     menu: []
   }
 
+  type = 'radio'
+
   /**
  * 用于实时的数据比对
  * @param arr
@@ -134,15 +136,19 @@ class ChooseDict extends React.Component<IProps> {
 
   handleRowClick = (selectedRowKeyTmpl: string) => {
     const { selectedRowKeys } = this.state;
-    if (!selectedRowKeys.includes(selectedRowKeyTmpl)) {
-      this.setState({
-        selectedRowKeys: [selectedRowKeyTmpl, ...selectedRowKeys]
-      });
-    } else {
-      this.setState({
-        selectedRowKeys: lodash.without(selectedRowKeys, selectedRowKeyTmpl)
-      });
+    if (this.type === 'checkbox') {
+      if (!selectedRowKeys.includes(selectedRowKeyTmpl)) {
+        this.setState({
+          selectedRowKeys: [selectedRowKeyTmpl, ...selectedRowKeys]
+        });
+      } else {
+        this.setState({
+          selectedRowKeys: lodash.without(selectedRowKeys, selectedRowKeyTmpl)
+        });
+      }
+      return;
     }
+    this.setState({ selectedRowKeys: [selectedRowKeyTmpl] });
   }
 
   handleSearch = (value) => {
@@ -184,7 +190,7 @@ class ChooseDict extends React.Component<IProps> {
         rowSelection={{
           selectedRowKeys,
           onChange: (this.handleRowSelect),
-          type: 'radio',
+          type: this.type,
         }}
       />
       <ModalFooter
