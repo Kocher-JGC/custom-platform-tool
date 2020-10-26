@@ -191,7 +191,20 @@ const getReferenceColumns = ({
       title: '字段编码',
       key: FOREIGNKEYS_KEY.FIELDCODE,
       dataIndex: FOREIGNKEYS_KEY.FIELDCODE,
-      width: 120
+      width: 120,
+      render: (text, record) => (
+        <Form.Item
+          shouldUpdate
+          noStyle
+        >
+          {({ getFieldValue }) => {
+            const { editable } = record;
+            return editable
+              ? getFieldValue(FOREIGNKEYS_KEY.FIELDCODE)
+              : text;
+          }}
+        </Form.Item>
+      )
     },
     {
       title: '关联表',
