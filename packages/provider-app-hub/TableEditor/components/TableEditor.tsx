@@ -279,9 +279,11 @@ class TableEditor extends React.Component {
   handleSave = async () => {
     try {
       await this.basicInfoFormRef.current?.validateFields();
-      await this.expandInfoFormRef.current?.validateFields();
-      const param = this.constructInfoForSave();
-      editTableInfo(param);
+      this.saveRow().then((canISave) => {
+        if (!canISave) return;
+        const param = this.constructInfoForSave();
+        editTableInfo(param);
+      });
     } catch (e) {
       return false;
     }
