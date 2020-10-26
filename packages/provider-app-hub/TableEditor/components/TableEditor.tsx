@@ -163,6 +163,17 @@ class TableEditor extends React.Component {
     this.basicInfoFormRef?.current?.setFieldsValue({ ...newState.basicInfo });
   }
 
+  constructBasicInfoForSave = () => {
+    const {
+      tableName: name,
+      relatedModuleId: moduleId,
+      maxLevel, relationType
+    } = this.basicInfoFormRef.current?.getFieldsValue();
+    return {
+      name, moduleId, maxLevel, relationType
+    };
+  }
+
   constructFieldListForSave = (fieldList) => {
     return fieldList?.map((item) => {
       const {
@@ -226,12 +237,9 @@ class TableEditor extends React.Component {
     const {
       basicInfo: {
         tableId: id,
-        tableName: name,
         tableCode: code,
         tableType: type,
-        relatedModuleId: moduleId,
         mainTableCode,
-        maxLevel,
         species
       },
       fieldList,
@@ -240,12 +248,15 @@ class TableEditor extends React.Component {
       /** 外键字段列表 */
       foreignKeyList
     } = this.state;
+    const {
+      name, moduleId, maxLevel, relationType
+    } = this.constructBasicInfoForSave();
     const relatedTableInfo: {
       auxTable?: { mainTableCode:string},
       treeTable?: { maxLevel:number}
     } = {};
     if (type === TABLE_TYPE.AUX_TABLE) {
-      relatedTableInfo.auxTable = { mainTableCode };
+      relatedTableInfo.auxTable = { mainTableCode, relationType };
     }
     if (type === TABLE_TYPE.TREE) {
       relatedTableInfo.treeTable = { maxLevel };

@@ -12,6 +12,7 @@ import { getMenuListService } from '../apiAgents';
 /** 归属模块 */
 interface IModuleTreeItem {
   initialValue: string
+  handleChange: (value: string)=>void
 }
 class ModuleTreeItem extends React.Component<IModuleTreeItem> {
   state = {
@@ -63,6 +64,10 @@ class ModuleTreeItem extends React.Component<IModuleTreeItem> {
     this.getMenusData(searchValue);
   }
 
+  handleChange = (value) => {
+    this.props.handleChange(value);
+  }
+
   render() {
     const { initialValue } = this.props;
     const { moduleList } = this.state;
@@ -77,6 +82,7 @@ class ModuleTreeItem extends React.Component<IModuleTreeItem> {
       onSearch={this.handleSearch}
       virtual={true}
       onDropdownVisibleChange={this.handleDropdown}
+      onChange = {this.handleChange}
     />;
   }
 }
@@ -135,10 +141,21 @@ class BasicInfoEditor extends React.Component<BasicInfoEditorProps> {
           basicInfo.relatedModuleId ? (
             <Form.Item
               className = {this.getClassName()}
-              name="moduleId"
+              name="relatedModuleId"
               label="归属模块"
+              rules={[
+                { required: true, message: '数据表名称不能为空' }
+              ]}
             >
-              <ModuleTreeItem initialValue={basicInfo.relatedModuleId}/>
+              <ModuleTreeItem
+                initialValue={basicInfo.relatedModuleId}
+                handleChange={(value) => {
+                  this.props.formRef.current?.setFieldsValue({
+                    relatedModuleId: value
+                  });
+                  this.props.formRef.current?.validateFields();
+                }}
+              />
             </Form.Item>
           ) : null
         }
@@ -156,6 +173,9 @@ class BasicInfoEditor extends React.Component<BasicInfoEditorProps> {
                 className = {this.getClassName()}
                 name="relationType"
                 label="关联关系"
+                rules={[
+                  { required: true, message: '数据表名称不能为空' }
+                ]}
               >
                 <Select
                   options={RELATION_OPTIONS}
