@@ -2,16 +2,25 @@ import PageManager from "@provider-app/page-manager/app";
 import MenuManager from "@provider-app/menu-manager/app";
 import PageDesignerApp from "@provider-app/page-designer/main";
 /// //////// 数据设计
-import {
-  TableStruct, DictManage, EditStruct
-} from "@provider-app/data-designer/src/pages";
 import TableInfo from "@provider-app/table-info/app";
 import TableEditor from "@provider-app/table-editor/app";
 import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
 import LesseeAuthority from "@provider-app/lessee-authority/app";
+import PopupWindowSelector from "@provider-app/popup-window-selector/app";
 /// //////// 数据设计结束
 import { resolvePagePath } from "multiple-page-routing/utils";
+
+// const PageManager = React.lazy(() => import("@provider-app/page-manager/app"));
+// const MenuManager = React.lazy(() => import("@provider-app/menu-manager/app"));
+// const PageDesignerApp = React.lazy(() => import("@provider-app/page-designer/main"));
+// /// //////// 数据设计
+// const TableInfo = React.lazy(() => import("@provider-app/table-info/app"));
+// const TableEditor = React.lazy(() => import("@provider-app/table-editor/app"));
+// const DictionaryManager = React.lazy(() => import("@provider-app/dictionary-manager/app"));
+// const TableStructure = React.lazy(() => import("@provider-app/table-structure/app"));
+
+// const PopupWindowSelector = React.lazy(() => import("@provider-app/popup-window-selector/app"));
 
 // interface RouterType {
 //   [routeName: string]: HY.SubApp | HY.SubAppHOC
@@ -62,9 +71,15 @@ const RouterConfig: RouterConfigType = {
     title: '编辑表',
     component: TableInfo
   },
+<<<<<<< HEAD
   '/lessee-authority': {
     title: '权限项',
     component: LesseeAuthority
+=======
+  '/popup-window-selector': {
+    title: '弹窗选择',
+    component: PopupWindowSelector
+>>>>>>> 491b0e38c65f3879c94803d1666a00fd24e64faf
   },
   '/table-editor': {
     title: '编辑表',

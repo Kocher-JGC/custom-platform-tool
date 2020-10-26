@@ -3,6 +3,7 @@ import Editor, { PropertiesEditorProps } from '@engine/visual-editor/components/
 import { PropItemRenderer } from './PDPropItemRenderer';
 
 interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer'> {
+  interDatasources: PD.Datasources
   customConfig?: any
 }
 
@@ -10,14 +11,26 @@ interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer
  * Page design prop editor
  */
 const PDPropertiesEditor = ({
+  ChangeMetadata,
+  interDatasources,
+  pageMetadata,
   ...otherProps
 }: PropsEditorProps) => {
   return (
     <div>
       <Editor
         {...otherProps}
+        pageMetadata={pageMetadata}
+        ChangeMetadata={ChangeMetadata}
         propItemRenderer={(props) => {
-          return <PropItemRenderer {...props} />;
+          return (
+            <PropItemRenderer
+              {...props}
+              pageMetadata={pageMetadata}
+              ChangeMetadata={ChangeMetadata}
+              interDatasources={interDatasources}
+            />
+          );
         }}
       />
     </div>

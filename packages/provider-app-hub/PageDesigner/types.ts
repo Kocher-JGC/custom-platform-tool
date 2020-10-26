@@ -5,7 +5,14 @@
 export interface ColumnItem {
   id: string
   name: string
-  dataType: string
+  /** 数据类型 */
+  colDataType: string
+  /** 字段 size */
+  fieldSize: string
+  /** 字段类型 */
+  fieldType: string
+  /** 字段的名字 */
+  fieldCode: string
 }
 
 export interface DatasourceItem {
@@ -15,8 +22,15 @@ export interface DatasourceItem {
   moduleId: string
   /** 名字 */
   name: string
+  /** 类型 */
+  type: string
   /** columns */
   columns: ColumnItem[]
+}
+
+export interface PDPropItemRendererBusinessPayload {
+  /** 内部的已绑定的数据源 */
+  interDatasources: PD.Datasources
 }
 
 export type DatasourceGroup = DatasourceItem[]
@@ -28,6 +42,8 @@ declare global {
     type Column = ColumnItem
     type Datasource = DatasourceItem
     type Datasources = DatasourceGroup
+    /** 属性项的业务承载 */
+    type PropItemRendererBusinessPayload = PDPropItemRendererBusinessPayload
   }
   /** 页面设计器的类型定义 */
 }

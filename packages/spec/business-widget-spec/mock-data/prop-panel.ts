@@ -1,16 +1,18 @@
-import { PanelItemsGroup } from "@engine/visual-editor/components/GroupPanel";
+import { GroupPanelData } from "@engine/visual-editor/components/GroupPanel";
 import { ApiMock } from "./api-mock";
 
-export const propPanelData: PanelItemsGroup[] = [
+export const propItemGroupingData: GroupPanelData[] = [
   {
     title: '属性',
-    type: 'general',
     itemsGroups: [
       {
         title: '基本属性',
         items: [
+          'prop_widget_coding',
           'prop_title_value',
+          'prop_field',
           'prop_real_value',
+          'prop_action_config',
         ]
       },
       {
@@ -18,17 +20,10 @@ export const propPanelData: PanelItemsGroup[] = [
         items: [
         ]
       },
-      // {
-      //   title: '布局控件',
-      //   items: [
-      //   // 'widget-id-2'
-      //   ]
-      // },
     ]
   },
   {
     title: '样式',
-    type: 'style',
     itemsGroups: [
       {
         title: '样式属性',
@@ -40,7 +35,6 @@ export const propPanelData: PanelItemsGroup[] = [
   },
   {
     title: '数据',
-    type: 'data',
     itemsGroups: [
       {
         title: '控件校验',
@@ -51,7 +45,6 @@ export const propPanelData: PanelItemsGroup[] = [
   },
   {
     title: '页面属性',
-    type: 'pageProps',
     itemsGroups: [
       {
         title: '基础控件',
@@ -62,4 +55,4 @@ export const propPanelData: PanelItemsGroup[] = [
   },
 ];
 
-export const getPropPanelData = ApiMock(propPanelData);
+export const getPropItemGroupingData = ApiMock(propItemGroupingData);

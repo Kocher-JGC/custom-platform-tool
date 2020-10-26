@@ -2,7 +2,7 @@ import produce from 'immer';
 import { mergeDeep } from '@infra/utils/tools';
 import {
   INIT_APP, InitAppAction,
-  ADD_ENTITY, AddEntityAction, UPDATE_APP, UpdateAppAction
+  ADD_ENTITY, AddEntityAction, UPDATE_APP, UpdateAppAction, ChangeMetadataAction, CHANGE_METADATA
 } from "../actions";
 import { PageMetadata } from "../../data-structure";
 
@@ -11,7 +11,9 @@ const DefaultPageMeta: PageMetadata = {
   dataSource: {},
   pageInterface: {},
   linkpage: {},
-  name: ''
+  schema: {},
+  actions: {},
+  variable: {},
 };
 
 /**
@@ -19,7 +21,7 @@ const DefaultPageMeta: PageMetadata = {
  */
 export function pageMetadataReducer(
   state: PageMetadata = DefaultPageMeta,
-  action: InitAppAction | AddEntityAction
+  action: InitAppAction | AddEntityAction | ChangeMetadataAction
 ) {
   switch (action.type) {
     case INIT_APP:
@@ -29,8 +31,24 @@ export function pageMetadataReducer(
       return produce(pageContent, (draft) => (draft ? draft.meta : state));
     case ADD_ENTITY:
       return produce(state, (draft) => {
-        // eslint-disable-next-line no-param-reassign
         draft.lastCompID += 1;
+        return draft;
+      });
+    case CHANGE_METADATA:
+      return produce(state, (draft) => {
+        const { data, metaAttr, dataRefID } = action;
+        if (!draft[metaAttr]) {
+          console.error('尝试修改了不存在的 meta，请检查代码');
+          draft[metaAttr] = {};
+        }
+        if (dataRefID) {
+          draft[metaAttr][dataRefID] = data;
+        } else {
+          const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
+          Object.assign(draft[metaAttr], {
+            [newDataRefID]: data
+          });
+        }
         return draft;
       });
     default:
@@ -43,12 +61,12 @@ export interface AppContext {
   ready: boolean
   /** 存放所有组件的数据 */
   /** 组件类数据 */
-  compClassCollection?: any
+  widgetMetaDataCollection?: any
   /** 属性项数据 */
   propItemData?: any
   /** 组件类面板数据 */
-  compClassForPanelData?: any
-  propPanelData?: any
+  widgetPanelData?: any
+  propItemGroupingData?: any
   /** 页面可编辑属性数据 */
   pagePropsData?: any
   /** 页面元数据 */
@@ -66,8 +84,8 @@ export function appContextReducer(
   switch (action.type) {
     case INIT_APP:
       const {
-        compClassCollection, compClassForPanelData,
-        propPanelData,
+        widgetMetaDataCollection, widgetPanelData,
+        propItemGroupingData,
         pagePropsData, propItemData,
         payload,
         name, id
@@ -75,9 +93,9 @@ export function appContextReducer(
       return {
         ready: true,
         payload,
-        compClassCollection,
-        compClassForPanelData,
-        propPanelData,
+        widgetMetaDataCollection,
+        widgetPanelData,
+        propItemGroupingData,
         pagePropsData,
         propItemData
       };

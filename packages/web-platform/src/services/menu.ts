@@ -1,12 +1,23 @@
-import request from '@/utils/request';
-
+import { originGenUrl } from "@/utils/gen-url";
+import { getPageQuery } from '@/utils/utils';
 /**
  * 获取用户菜单
  * @param params
  */
 export async function queryMenuList(params: API.IMeunParams) {
-  return request<API.IMenunType>('/api/menu/list', {
+  const { app, lessee } = getPageQuery();
+  return $A_R(originGenUrl(lessee, app, "queryPerson"), {
     method: 'POST',
-    data: params,
+    data: {
+      steps: [
+        {
+          function: {
+            code: "ALL_ACTIVE_MENU",
+            params: {
+            }
+          }
+        }
+      ]
+    },
   });
 }

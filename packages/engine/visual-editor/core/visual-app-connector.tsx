@@ -8,7 +8,9 @@ import createStore from './store';
 import { AllDispatcherActions } from './actions';
 import { VisualEditorState } from './reducers/reducer';
 
-/** TODO: 完善 state */
+/**
+ * TODO: 完善 state
+ */
 export const mapVisualStateToProps = (state: VisualEditorState) => {
   return produce(state, (draft) => {
     /** 设置 activeEntity */
@@ -65,13 +67,13 @@ const Connector = (
   if (!appKey) {
     throw Error('appKey 是必须且唯一的，请检查调用');
   }
-  let C = ConnectedAppStore[appKey];
-  if (!C) {
+  let ConnectorChild = ConnectedAppStore[appKey];
+  if (!ConnectorChild) {
     const appStore = createStore(appKey);
     // console.log(object);
     const connector = connect(mapVisualStateToProps, mapVisualDispatchToProps(appKey));
     const Comp = connector(ConnectApp);
-    C = (props) => {
+    ConnectorChild = (props) => {
       return (
         <DndProvider backend={HTML5Backend}>
           <ReduxProvider store={appStore}>
@@ -80,9 +82,9 @@ const Connector = (
         </DndProvider>
       );
     };
-    ConnectedAppStore[appKey] = C;
+    ConnectedAppStore[appKey] = ConnectorChild;
   }
-  return C;
+  return ConnectorChild;
 };
 
 export default Connector;

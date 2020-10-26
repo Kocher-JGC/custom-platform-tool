@@ -27,12 +27,12 @@ export interface ILoginModel {
     setLoginMessage: Reducer<ILoginModelState>;
   };
 }
-const inintState: ILoginModelState = {
+const initState: ILoginModelState = {
   message: "",
 };
 const Model: ILoginModel = {
   namespace: 'login',
-  state: inintState,
+  state: initState,
   effects: {
     /**
      * 用户登录
@@ -40,21 +40,20 @@ const Model: ILoginModel = {
      * 失败: 设置错误信息
      */
     * login({ payload }, { call, put, select }) {
-      const response: API.ILoginType = yield call(accountLogin, payload);
-      // const response = { code: 0, message: "" };
-      if (response.code === 0) {
+      try {
+        const response: API.ILoginType = yield call(accountLogin, payload);
         yield put({
           type: 'setLoginInfo',
           payload: response,
         });
-      } else {
+        return response;
+      } catch (e) {
         yield put({
           type: 'setLoginMessage',
-          payload: response.message,
+          payload: e.message,
         });
+        return e;
       }
-
-      return response;
     },
     /**
      * 用户退出
@@ -80,8 +79,8 @@ const Model: ILoginModel = {
   },
 
   reducers: {
-    setLoginInfo(state: ILoginModelState = inintState, { payload }): ILoginModelState {
-      const { access_token, refresh_token } = payload;
+    setLoginInfo(state: ILoginModelState = initState, { payload }): ILoginModelState {
+      const { access_token, refresh_token } = payload?.data || {};
       store.set("token", access_token);
       store.set("refreshToken", refresh_token);
       return {
@@ -89,7 +88,7 @@ const Model: ILoginModel = {
         ...payload,
       };
     },
-    setLoginMessage(state: ILoginModelState = inintState, { payload }): ILoginModelState {
+    setLoginMessage(state: ILoginModelState = initState, { payload }): ILoginModelState {
       state.message = payload;
       return state;
     },

@@ -1,11 +1,11 @@
 import {
   getWidgetDefinitionData, getWidgetPanelData,
   getPagePropItems, getPropItemData,
-  getPropPanelData,
+  getPropItemGroupingData,
 } from "@spec/business-widget/mock-data";
 import { getPageDetailService } from "@provider-app/services";
 // import { getDataSourcePanelConfig } from "../components/DataSource";
-import { extraDatasources } from "./datasource";
+import { takeDatasources } from "./datasource";
 
 /**
  * 获取页面详细数据
@@ -14,51 +14,35 @@ import { extraDatasources } from "./datasource";
 export const getPageContentWithDatasource = async (pageID) => {
   const pageDataRes = await getPageDetailService(pageID);
   const { dataSources, pageContent } = pageDataRes;
-  const datasources = await extraDatasources(dataSources);
+  const interDatasources = await takeDatasources(dataSources);
   return {
     pageDataRes,
     pageContent,
-    datasources
+    interDatasources
   };
 };
-// const initData = {
-//   compClassForPanelData: setCompPanelData(compClassForPanelData, datasources, onUpdatedDatasource),
-//   propPanelData,
-//   compClassCollection,
-//   propItemData,
-//   pagePropsData,
-//   /** 回填数据的入口 */
-//   pageContent,
-//   options: {
-//     pageDataRes,
-//     // 填入 datasources
-//     datasources,
-//   }
-// : setCompPanelData(compClassForPanelData, datasources, onUpdatedDatasource)
 /**
  * 获取前端动态资源
- *
- * // TODO: 需要从远端获取组件类的实际组件
  */
 export const getFEDynamicData = async () => {
   const [
-    compClassCollection,
-    compClassForPanelData,
+    widgetMetaDataCollection,
+    widgetPanelData,
     pagePropsData,
     propItemData,
-    propPanelData,
+    propItemGroupingData,
   ] = await Promise.all([
     getWidgetDefinitionData(),
     getWidgetPanelData(),
     getPagePropItems(),
     getPropItemData(),
-    getPropPanelData(),
+    getPropItemGroupingData(),
   ]);
 
   const FEDynamicData = {
-    compClassForPanelData,
-    propPanelData,
-    compClassCollection,
+    widgetPanelData,
+    propItemGroupingData,
+    widgetMetaDataCollection,
     propItemData,
     pagePropsData,
   };

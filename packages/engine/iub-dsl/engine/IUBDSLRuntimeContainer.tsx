@@ -1,70 +1,103 @@
 /* eslint-disable no-param-reassign */
 import React, {
-  useEffect, useMemo
+  useEffect, useMemo, useCallback, useContext, useRef, useState
 } from 'react';
 import { LayoutRenderer } from '@engine/layout-renderer';
-import { RenderComp } from './component-manage/component-store/render-component';
+
+import { pageManage } from '@consumer-app/web-platform/src/page-manage';
+
+import { widgetRenderer, genCompRenderFC } from './component-manage/component-store/render-component';
 import { getWidget } from './component-manage/UI-factory/all-UI';
 import { FromWrapFactory } from './component-manage/UI-factory';
 import { createIUBStore } from './state-manage';
+import { renderStructInfoListRenderer } from './component-manage/component-store/render-widget-struct';
 
-const getFullInitStruct = (baseStruct) => {
-  return Object.keys(baseStruct).reduce((result, key) => {
-    if (typeof baseStruct[key] === 'string') {
-      result[key] = baseStruct[key];
-    } else if (Array.isArray(baseStruct[key])) {
-      result[key] = [];
-    } else {
-      result[key] = getFullInitStruct(baseStruct[key]);
-    }
-    return result;
-  }, {});
-};
-
-// useState<S>(initialState: ): [S, Dispatch<SetStateAction<S>>];
-export const DefaultCtx = React.createContext({});
+import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 
 const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) => {
   const {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
     renderComponentKeys,
-    schemasParseRes,
+    schemasParseRes, pageID: pageId
   } = dslParseRes;
-  console.log(schemasParseRes);
 
-  // const [state, setstate] = useState('嘻嘻哈哈');
-  const ctx = {
-  };
-  // const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [],);
+  /** 获取单例的页面管理 */
+  const pageManageInstance = pageManage();
 
-  // const { getPageState, updatePageState } = useIUBStore();
+  const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
+  const IUBStoreEntity = useIUBStore();
+  const {
+    getPageState, updatePageState, IUBPageStore
+  } = IUBStoreEntity;
 
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     updatePageState({
-  //       a: 'b',
-  //     });
-  //     setTimeout(() => {
-  //       updatePageState({
-  //         c: 'bdd',
-  //       });
-  //     }, 2000);
-  //   }, 2000);
-  //   return () => {
-  //     clearTimeout(timer);
-  //   };
-  // }, []);
+  const [runTimeLine, setRunTimeLine] = useState([]);
 
-  // const { content = [], type: pageType } = layoutContent;
+  const runTimeCtxToBusiness = useRef<any>(() => ({ pageMark: '' }));
+  /** 页面管理添加页面上下文 */
+  useEffect(() => {
+    const { pageMark, removeFn } = pageManageInstance.addPageCtx({
+      pageId,
+      pageType: 'IUBPage',
+      context: runTimeCtxToBusiness
+    });
+    runTimeCtxToBusiness.current.pageMark = pageMark;
+    /** 跨页面调用例子 */
+    // if (pageMark === "pageID_$_1") {
+    //   setInterval(() => {
+    //     const ctxx = pageManageInstance.getIUBPageCtx('pageID_$_0')[0];
+    //     console.log(ctxx.runtimeScheduler({}));
+    //   }, 1000);
+    // }
 
-  const actualRenderComponentList = useMemo(() => {
-    const renderCompFactory = RenderComp(getWidget);
-    return renderComponentKeys.map((id) => ({
-      id,
-      Comp: renderCompFactory(getCompParseInfo(id))
-    }));
-  }, [getWidget, dslParseRes]);
+    return () => {
+      removeFn();
+    };
+  }, []);
+
+  // useTempCode(IUBStoreEntity);
+
+  const genCompRenderFCToUse = useMemo(() => {
+    return genCompRenderFC(getWidget);
+  }, [getWidget]);
+
+  // TODO: 未加入布局结构, 仅是一层使用
+  const actualRenderComponentList = renderComponentKeys.map((id) => {
+    const { renderCompInfo, renderStructInfo } = getCompParseInfo(id);
+    // 单独的组件渲染
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const compRendererFCList = useMemo(() => {
+      return Object.keys(renderCompInfo).reduce((res, mark) => {
+        res[mark] = genCompRenderFCToUse(renderCompInfo[mark]);
+        return res;
+      }, {});
+    }, [renderCompInfo]);
+    // 单独的结构渲染
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useMemo(() => {
+      const Widget = widgetRenderer(
+        renderStructInfoListRenderer(
+          renderStructInfo, compRendererFCList
+        )
+      );
+      return {
+        id,
+        Widget
+      };
+    }, [
+      compRendererFCList, renderStructInfo
+    ]);
+  });
+
+  const ctx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
+    pageManageInstance,
+    IUBStoreEntity,
+    runTimeLine,
+    setRunTimeLine,
+    runTimeCtxToBusiness,
+  }), [IUBStoreEntity]);
+
+  const extralProps = useMemo(() => ({ extral: '扩展props' }), []);
 
   return (
     <DefaultCtx.Provider value={ctx}>
@@ -72,10 +105,9 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
         <LayoutRenderer
           layoutNode={actualRenderComponentList}
           componentRenderer={({ layoutNodeItem }) => {
-            const { id: compId, Comp } = layoutNodeItem;
+            const { id: compId, Widget } = layoutNodeItem;
 
-            /** 可以额外添加属性, 例如权限控制的属性传入 */
-            return <Comp key={compId} extral={'扩展props'} />;
+            return <Widget key={compId} {...extralProps}/>;
           }}
           RootRender={(child) => {
             return (<div>
@@ -84,10 +116,13 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
           }}
         />
       </FromWrapFactory>
+      <pre>
+        {JSON.stringify(getPageState(), null, 2)}
+      </pre>
     </DefaultCtx.Provider>
   );
 }, (prev, next) => {
-  console.log(prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID);
+  // console.log(prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID);
 
   return prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID;
 });
