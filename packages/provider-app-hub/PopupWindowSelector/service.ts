@@ -32,9 +32,9 @@ export async function editPopupWindowService(params, id) {
 }
 
 /** 删除表前确认能否删除 */
-export async function allowDeletePopupWindowService(id) {
+export async function checkAssociatedPopupWindowService(id) {
   return await $R_P.get({
-    url: `/page/v1/allowedDeleted/${id}`,
+    url: `/page/v1/popupwindows/associated/${id}`,
     params: {},
   });
 }

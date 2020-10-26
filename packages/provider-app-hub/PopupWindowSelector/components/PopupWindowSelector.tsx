@@ -9,7 +9,7 @@ import { FormInstance } from 'antd/lib/form';
 import { ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
 import { onNavigate } from 'multiple-page-routing';
 import {
-  queryPopupWindowListService, allowDeletePopupWindowService, deletePopupWindowService, queryPopupWindowService
+  queryPopupWindowListService, checkAssociatedPopupWindowService, deletePopupWindowService, queryPopupWindowService
 } from '../service';
 import {
   COLUMNS, OPERATIONALMENU, SELECT_ALL, MORE_MENU, PAGE_SIZE_OPTIONS, IPopupWindow, IModalData, SHOW_TYPE_OPTIONS, SELECT_TYPE_OPTIONS, IEditPopupWindowProps,
@@ -259,8 +259,8 @@ const PopupWindowSelector: React.FC<IProps> = (props: IProps, ref) => {
         setvisibleCreateEditModal(true);
       });
     } else if (operate === "delete") {
-      // checkBeforeDelete(id);
-      deleteTableSingleLine(id);
+      checkAssociatedBeforeDelete(id);
+      // deleteTableSingleLine(id);
     } else if (operate === "preview") {
       if (!id) {
         return;
@@ -276,18 +276,20 @@ const PopupWindowSelector: React.FC<IProps> = (props: IProps, ref) => {
       });
     }
   };
-  const checkBeforeDelete = async (id: string) => {
-    const res = await allowDeletePopupWindowService(id);
+  const checkAssociatedBeforeDelete = async (id: string) => {
+    const res = await checkAssociatedPopupWindowService(id);
     if (res.code === "00000") {
       if (res.result) {
-        confirm({
-          title: res.result,
-          icon: <ExclamationCircleOutlined />,
-          okText: '确定',
-          cancelText: '取消',
-          onOk: () => { deleteTableSingleLine(id); }
-        });
+        openNotification("error", "该弹窗选择已被页面使用，不能删除。");
       } else {
+        // confirm({
+        //   title: '是否确定删除？',
+        //   icon: <ExclamationCircleOutlined />,
+        //   okText: '确定',
+        //   cancelText: '取消',
+        //   onOk: () => { deleteTableSingleLine(id); }
+        // });
+        // deleteTableSingleLine(id);
         deleteTableSingleLine(id);
       }
     } else {
