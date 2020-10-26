@@ -570,8 +570,6 @@ class TableEditor extends React.Component {
 
   /** 字段列表：删除字段的相关提示内容 */
   deleteFieldConfirm = (title, selectedKey: string) => {
-    const { editingKeyInExpandedInfo, fieldList: fieldListInState } = this.state;
-    const { fieldList } = this.refs;
     deleteConfirm({
       title,
       onOk: () => {
@@ -611,8 +609,14 @@ class TableEditor extends React.Component {
   }
 
   deleteReference = (selectedRowKeys) => {
-    openNotification(NOTIFICATION_TYPE.WARNING, MESSAGES.DELETE_REFERENCE);
-    this.deleteRow(selectedRowKeys[0]);
+    const currentId = selectedRowKeys[0];
+    const { activeAreaInExpandedInfo } = this.state;
+    const { [activeAreaInExpandedInfo]: listInState } = this.state;
+    const { createdCustomed } = listInState.filter((item) => item.id === currentId)[0] || {};
+    if (!createdCustomed) {
+      openNotification(NOTIFICATION_TYPE.WARNING, MESSAGES.DELETE_REFERENCE);
+    }
+    this.deleteRow(currentId);
   }
 
   blurRowInReferenceList = () => {
@@ -776,7 +780,7 @@ class TableEditor extends React.Component {
                         className="mr-2"
                         type={BUTTON_TYPE.PRIMARY}
                         size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== '' || selectedRowKeys.length === 0}
+                        disabled={selectedRowKeys.length === 0}
                         onClick={() => { this.deleteReference(selectedRowKeys); }}
                       >删除</Button>
                     </>
@@ -810,7 +814,7 @@ class TableEditor extends React.Component {
                         className="mr-2"
                         type={BUTTON_TYPE.PRIMARY}
                         size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== '' || selectedRowKeys.length === 0}
+                        disabled={selectedRowKeys.length === 0}
                         onClick={() => { this.deleteReference(selectedRowKeys); }}
                       >删除</Button>
                     </>
