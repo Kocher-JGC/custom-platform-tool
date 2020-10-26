@@ -71,15 +71,13 @@ const RouterConfig: RouterConfigType = {
     title: '编辑表',
     component: TableInfo
   },
-<<<<<<< HEAD
   '/lessee-authority': {
     title: '权限项',
     component: LesseeAuthority
-=======
+  },
   '/popup-window-selector': {
     title: '弹窗选择',
     component: PopupWindowSelector
->>>>>>> 491b0e38c65f3879c94803d1666a00fd24e64faf
   },
   '/table-editor': {
     title: '编辑表',
