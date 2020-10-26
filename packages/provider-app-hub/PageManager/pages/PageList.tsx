@@ -133,8 +133,8 @@ const PageList: React.FC<IProps> = (props: IProps) => {
       data: Array.isArray(data) ? data.reduce((a, b) => {
         a.push({
           ...b,
-          belongMenus: b.belongMenus.map((item) => item.menuName),
-          dataSources: b.dataSources.map((item) => item.datasourceName),
+          belongMenus: b && Array.isArray(b.belongMenus) ? b.belongMenus.map((item) => item.menuName) : [],
+          dataSources: b && Array.isArray(b.dataSources) ? b.dataSources.map((item) => item.datasourceName) : [],
         });
         return a;
       }, []) : [],
@@ -203,6 +203,9 @@ const PageList: React.FC<IProps> = (props: IProps) => {
           hideOnSinglePage: true,
           pageSizeOptions: PAGE_CONFIG.SIZE_OPTIONS,
           pageSize: PAGE_CONFIG.SIZE
+        }}
+        onRequestError={(error) => {
+          console.log("页面管理表格出错: ", error);
         }}
       />
     </>
