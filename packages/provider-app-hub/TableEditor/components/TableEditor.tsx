@@ -76,11 +76,11 @@ class TableEditor extends React.Component {
     fieldList: () => {
       const {
         NAME, CODE, FIELDTYPE, DATATYPE: DataType, FIELDSIZE, DECIMALSIZE,
-        REQUIRED, UNIQUE, DICTIONARYFOREIGN, PINYINCONVENT, REGULAR, SPECIES: species
+        REQUIRED, UNIQUE, DICTIONARYFOREIGN, DICTIONARYFOREIGNCN, PINYINCONVENT, REGULAR, SPECIES: species
       } = COLUMNS_KEY;
       const record = this.expandInfoFormRef.current?.getFieldsValue([
         NAME, CODE, FIELDTYPE, DataType, FIELDSIZE, DECIMALSIZE, REQUIRED,
-        UNIQUE, DICTIONARYFOREIGN, PINYINCONVENT, REGULAR, species
+        UNIQUE, DICTIONARYFOREIGN, DICTIONARYFOREIGNCN, PINYINCONVENT, REGULAR, species
       ]);
       return record;
     },
@@ -120,8 +120,8 @@ class TableEditor extends React.Component {
   constructFieldListFromRequest = (fieldList) => {
     return fieldList?.map((item) => {
       const {
-        tableName: dictionaryForeignCn,
-        fieldCode: dictionaryForeign
+        refTableName: dictionaryForeignCn,
+        refTableCode: dictionaryForeign
       } = item.dictionaryForeign || {};
       return {
         ...item, ...item.fieldProperty, dictionaryForeign, dictionaryForeignCn
@@ -161,6 +161,17 @@ class TableEditor extends React.Component {
     };
     this.setState(newState);
     this.basicInfoFormRef?.current?.setFieldsValue({ ...newState.basicInfo });
+  }
+
+  constructBasicInfoForSave = () => {
+    const {
+      tableName: name,
+      relatedModuleId: moduleId,
+      maxLevel, relationType
+    } = this.basicInfoFormRef.current?.getFieldsValue();
+    return {
+      name, moduleId, maxLevel, relationType
+    };
   }
 
   constructFieldListForSave = (fieldList) => {
@@ -226,12 +237,9 @@ class TableEditor extends React.Component {
     const {
       basicInfo: {
         tableId: id,
-        tableName: name,
         tableCode: code,
         tableType: type,
-        relatedModuleId: moduleId,
         mainTableCode,
-        maxLevel,
         species
       },
       fieldList,
@@ -240,12 +248,15 @@ class TableEditor extends React.Component {
       /** 外键字段列表 */
       foreignKeyList
     } = this.state;
+    const {
+      name, moduleId, maxLevel, relationType
+    } = this.constructBasicInfoForSave();
     const relatedTableInfo: {
       auxTable?: { mainTableCode:string},
       treeTable?: { maxLevel:number}
     } = {};
     if (type === TABLE_TYPE.AUX_TABLE) {
-      relatedTableInfo.auxTable = { mainTableCode };
+      relatedTableInfo.auxTable = { mainTableCode, relationType };
     }
     if (type === TABLE_TYPE.TREE) {
       relatedTableInfo.treeTable = { maxLevel };
@@ -268,9 +279,11 @@ class TableEditor extends React.Component {
   handleSave = async () => {
     try {
       await this.basicInfoFormRef.current?.validateFields();
-      await this.expandInfoFormRef.current?.validateFields();
-      const param = this.constructInfoForSave();
-      editTableInfo(param);
+      this.saveRow().then((canISave) => {
+        if (!canISave) return;
+        const param = this.constructInfoForSave();
+        editTableInfo(param);
+      });
     } catch (e) {
       return false;
     }
@@ -368,8 +381,7 @@ class TableEditor extends React.Component {
     return record.id;
   }
 
-  filterFieldListForOptions = () => {
-    const { activeAreaInExpandedInfo, fieldList } = this.state;
+  filterFieldListForOptions = (fieldList, activeAreaInExpandedInfo) => {
     const dataTypeMap = {
       referenceList: DATATYPE.QUOTE,
       foreignKeyList: DATATYPE.FK
@@ -559,8 +571,6 @@ class TableEditor extends React.Component {
 
   /** 字段列表：删除字段的相关提示内容 */
   deleteFieldConfirm = (title, selectedKey: string) => {
-    const { editingKeyInExpandedInfo, fieldList: fieldListInState } = this.state;
-    const { fieldList } = this.refs;
     deleteConfirm({
       title,
       onOk: () => {
@@ -600,8 +610,14 @@ class TableEditor extends React.Component {
   }
 
   deleteReference = (selectedRowKeys) => {
-    openNotification(NOTIFICATION_TYPE.WARNING, MESSAGES.DELETE_REFERENCE);
-    this.deleteRow(selectedRowKeys[0]);
+    const currentId = selectedRowKeys[0];
+    const { activeAreaInExpandedInfo } = this.state;
+    const { [activeAreaInExpandedInfo]: listInState } = this.state;
+    const { createdCustomed } = listInState.filter((item) => item.id === currentId)[0] || {};
+    if (!createdCustomed) {
+      openNotification(NOTIFICATION_TYPE.WARNING, MESSAGES.DELETE_REFERENCE);
+    }
+    this.deleteRow(currentId);
   }
 
   blurRowInReferenceList = () => {
@@ -624,20 +640,6 @@ class TableEditor extends React.Component {
       visibleModalChooseDict, dictIdsShowInModal, visibleModalCreateReference, visibleModalCreateForeignKey,
       fieldList, referenceList, foreignKeyList
     } = this.state;
-    const fieldColumns = getFieldColumns({
-      formRef: this.expandInfoFormRef,
-      editDictioary: this.createDict
-    });
-    const referenceColumns = getReferenceColumns({
-      formRef: this.expandInfoFormRef,
-      fieldOptions: this.filterFieldListForOptions(),
-      list: referenceList
-    });
-    const foreignKeyColumns = getForeignKeyColumns({
-      formRef: this.expandInfoFormRef,
-      fieldOptions: this.filterFieldListForOptions(),
-      list: foreignKeyList
-    });
     return (
       <>
         <BasicInfoEditor
@@ -738,7 +740,10 @@ class TableEditor extends React.Component {
               doubleClickRow={this.doubleClickRow}
               blurRow={this.blurRow}
               clickRow = {() => { this.saveRow(); }}
-              columns={fieldColumns}
+              columns={getFieldColumns({
+                formRef: this.expandInfoFormRef,
+                editDictioary: this.createDict
+              })}
               dataSource={fieldList.filter((item) => {
                 return showSysFields || ![SPECIES.SYS, SPECIES.SYS_TMPL].includes(item.species);
               })}
@@ -765,7 +770,7 @@ class TableEditor extends React.Component {
                         className="mr-2"
                         type={BUTTON_TYPE.PRIMARY}
                         size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== '' || selectedRowKeys.length === 0}
+                        disabled={selectedRowKeys.length === 0}
                         onClick={() => { this.deleteReference(selectedRowKeys); }}
                       >删除</Button>
                     </>
@@ -774,7 +779,11 @@ class TableEditor extends React.Component {
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
-                columns={referenceColumns}
+                columns={getReferenceColumns({
+                  formRef: this.expandInfoFormRef,
+                  fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
+                  list: referenceList
+                })}
                 dataSource={referenceList}
               />) : null }
           </TabPane>
@@ -799,7 +808,7 @@ class TableEditor extends React.Component {
                         className="mr-2"
                         type={BUTTON_TYPE.PRIMARY}
                         size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== '' || selectedRowKeys.length === 0}
+                        disabled={selectedRowKeys.length === 0}
                         onClick={() => { this.deleteReference(selectedRowKeys); }}
                       >删除</Button>
                     </>
@@ -808,7 +817,11 @@ class TableEditor extends React.Component {
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
-                columns={foreignKeyColumns}
+                columns={getForeignKeyColumns({
+                  formRef: this.expandInfoFormRef,
+                  fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
+                  list: foreignKeyList
+                })}
                 dataSource={foreignKeyList}
               />) : null }
           </TabPane>

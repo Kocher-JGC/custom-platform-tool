@@ -24,13 +24,17 @@ export type reactIconType = 'react-icons/all' |
 'react-icons/bi'
 
 const allIconsCollection = {};
-
+export const importIcon = async () => {
+  const iconRi = await import('react-icons/ri');
+  const iconBi = await import('react-icons/bi');
+  return { ...iconRi, ...iconBi };
+};
 export const useIcon = (reactIconType: reactIconType) => {
   const iconsCache = allIconsCollection[reactIconType];
   const [ready, setReady] = useState(!!iconsCache);
   useEffect(() => {
     if (ready) return;
-    import('react-icons/all')
+    importIcon()
       .then((allIconsRes) => {
         allIconsCollection[reactIconType] = allIconsRes;
         setReady(true);

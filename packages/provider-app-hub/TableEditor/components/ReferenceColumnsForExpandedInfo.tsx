@@ -33,7 +33,7 @@ const FieldName: React.FC<IFieldName> = (props: IFieldName) => {
     const valueListUsed = list
       .filter((item, loopIndex) => loopIndex !== index)
       .map((item) => item[FOREIGNKEYS_KEY.FIELDCODE]);
-    return options.filter((item) => !valueListUsed.includes(item.key));
+    return options.filter((item) => !valueListUsed.includes(item.value));
   };
   const handleChange = (value, option) => {
     formRef.current?.setFieldsValue({ [FOREIGNKEYS_KEY.FIELDID]: option.key });
@@ -191,7 +191,20 @@ const getReferenceColumns = ({
       title: '字段编码',
       key: FOREIGNKEYS_KEY.FIELDCODE,
       dataIndex: FOREIGNKEYS_KEY.FIELDCODE,
-      width: 120
+      width: 120,
+      render: (text, record) => (
+        <Form.Item
+          shouldUpdate
+          noStyle
+        >
+          {({ getFieldValue }) => {
+            const { editable } = record;
+            return editable
+              ? getFieldValue(FOREIGNKEYS_KEY.FIELDCODE)
+              : text;
+          }}
+        </Form.Item>
+      )
     },
     {
       title: '关联表',
