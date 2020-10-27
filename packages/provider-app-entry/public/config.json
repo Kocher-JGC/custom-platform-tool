@@ -1,4 +1,5 @@
 {
   "apiUrl": "http://192.168.14.140:6090",
+  "nodeWebServerUrl": "http://localhost:3000",
   "perviewAppUrl": "http://localhost:8000"
 }
