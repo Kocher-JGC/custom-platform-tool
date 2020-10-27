@@ -16,7 +16,7 @@ import { MESSAGE } from '../constants';
 export async function getDictionaryListServices(params) {
   const res = await getDictionaryListServicesApi(params);
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETDICTIONARYLIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETDICTIONARYLIST_FAILED);
     return { data: [], total: 0 };
   }
   return res?.result;
@@ -33,7 +33,7 @@ export async function getListOfDictionaryServices({ id }) {
 export async function getListOfDictionaryChildServices(param) {
   const res = await getListOfDictionaryChildServicesApi(param);
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARYCHILD_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARYCHILD_FAILED);
     return [];
   }
   return res?.result;
@@ -44,7 +44,7 @@ export const delChildOfDictionaryServices = (param) => {
       onOk: async () => {
         const res = await delChildOfDictionaryServicesApi(param);
         if (res?.code !== API_CODE.SUCCESS) {
-          openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '删除字典子项失败，请联系技术人员');
+          // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '删除字典子项失败，请联系技术人员');
           resolve(false);
           return;
         }
@@ -63,7 +63,7 @@ export const delDictionaryServices = (dictionaryId) => {
       onOk: async () => {
         const res = await delDictionaryServicesApi(dictionaryId);
         if (res?.code !== API_CODE.SUCCESS) {
-          openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DELETEDICTIONARY_FAILED);
+          // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DELETEDICTIONARY_FAILED);
           resolve(false);
           return;
         }
@@ -81,7 +81,7 @@ export async function addDictionary(data) {
   const res = await addDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADDDICTIONARY_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADDDICTIONARY_FAILED);
     return false;
   }
   return true;
@@ -90,7 +90,7 @@ export async function editDictionary(data) {
   const res = await editDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '字典修改失败');
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '字典修改失败');
     return false;
   }
   return true;
@@ -99,7 +99,7 @@ export async function editChildOfDictionary(data) {
   const res = await editChildOfDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDITCHILDOFDICTIONARY_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDITCHILDOFDICTIONARY_FAILED);
     return false;
   }
   return true;
@@ -108,7 +108,7 @@ export async function moveChildOfDictionary(data) {
   const res = await moveChildOfDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.MOVECHILD_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.MOVECHILD_FAILED);
     return false;
   }
   return true;

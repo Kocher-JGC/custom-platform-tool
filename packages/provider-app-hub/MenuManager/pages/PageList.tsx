@@ -326,7 +326,7 @@ const getListColumns = ({
               status: Number(checked)
             }).then((res) => {
               if (res?.code !== API_CODE.SUCCESS) {
-                openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.SET_STATUS_FAILD);
+                // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.SET_STATUS_FAILD);
               }
             });
           }}
@@ -383,7 +383,7 @@ const getListColumns = ({
                   }
                   delMenuServices(id).then((res) => {
                     if (res?.code !== API_CODE.SUCCESS) {
-                      openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DEL_MENU_FAILED);
+                      // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DEL_MENU_FAILED);
                       return;
                     }
                     openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.DEL_MENU_SUCCESS);
@@ -492,7 +492,7 @@ class MenuList extends React.Component {
       const { searchArea } = this.state;
       getMenuListServices(searchArea).then((res) => {
         if (res?.code !== API_CODE.SUCCESS) {
-          openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.GET_MENU_LIST_FAILED);
+          // openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.GET_MENU_LIST_FAILED);
           return;
         }
         /** 进行数据转换 */
@@ -672,7 +672,7 @@ class MenuList extends React.Component {
       return new Promise((resolve, reject) => {
         editMenuServices(record).then((res) => {
           if (res?.code !== API_CODE.SUCCESS) {
-            openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDIT_MENU_FAILED);
+            // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDIT_MENU_FAILED);
             resolve({ id: '' });
             return;
           }
@@ -685,7 +685,7 @@ class MenuList extends React.Component {
       return new Promise((resolve, reject) => {
         addMenuServices(record).then((res) => {
           if (res?.code !== API_CODE.SUCCESS) {
-            openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADD_MENU_FAILED);
+            // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADD_MENU_FAILED);
             resolve({ id: '' });
             return;
           }
