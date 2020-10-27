@@ -14,9 +14,10 @@ interface IIconAppointed {
 const IconAppointed: React.FC<IIconAppointed> = (props: IIconAppointed) => {
   const { iconType } = props;
   const [ready, icons] = useIcon('react-icons/all');
+  if (!ready) return null;
   const Icon = icons[iconType];
   return (
-    ready ? (<Icon/>) : null
+    <Icon/>
   );
 };
 const filterIconByArea = {

@@ -92,8 +92,8 @@ export const openPageForm = (): FormOptions => [
     title: '页面类型',
     values: {
       create: '新增',
-      update: '更新',
-      readonly: '只读',
+      update: '更新(未完成)',
+      readonly: '只读(未完成)',
     }
   },
   {

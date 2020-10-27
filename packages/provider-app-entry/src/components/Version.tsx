@@ -5,9 +5,13 @@ import { VersionDisplayer } from 'version-helper';
 export const Version = () => {
   const [versionInfo, setVersionInfo] = React.useState();
   React.useEffect(() => {
-    import('../version.json').then((versionInfoJSON) => {
-      setVersionInfo(versionInfoJSON);
-    });
+    // try {
+    //   import('../version.json').then((versionInfoJSON) => {
+    //     setVersionInfo(versionInfoJSON);
+    //   }).catch((err) => {});
+    // } catch(e) {
+    //   console.log('e :>> ', e);
+    // }
   }, []);
   return versionInfo ? (
     <VersionDisplayer versionInfo={versionInfo} $T={(v) => v} />
