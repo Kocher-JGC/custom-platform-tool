@@ -30,7 +30,6 @@ export const CreatePage = ({
   const [menusData] = useMenuList();
 
   const onFinish = (values) => {
-    console.log(111, values);
     createPageServices({
       ...values,
       belongMenus: values.belongMenus.map((menuId: string) => ({ menuId }))
@@ -58,7 +57,7 @@ export const CreatePage = ({
       }}
 
     >
-      <Form.Item name="name" label="页面名称" rules={[{ required: true }]}>
+      <Form.Item name="name" label="页面名称" rules={[{ required: true, message: "页面名称必填" }]}>
         <Input placeholder="请输入页面名称" />
       </Form.Item>
       <Form.Item name="belongMenus" label="归属模块">
@@ -67,10 +66,11 @@ export const CreatePage = ({
           dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
           treeData={menusData}
           placeholder="请选择模块"
+          treeCheckStrictly
           treeCheckable
         />
       </Form.Item>
-      <Form.Item name="type" label="页面类型" rules={[{ required: true }]}>
+      <Form.Item name="type" label="页面类型" rules={[{ required: true, message: "页面类型必填" }]}>
         <Radio.Group>
           {
             PAGE_TYPE_ENUM.map(({ text, value }) => <Radio key={value} value={value}>{text}</Radio>)
