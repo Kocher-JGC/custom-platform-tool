@@ -638,6 +638,32 @@ class TableEditor extends React.Component {
     return (this.state[area] || []).map((item) => item[FOREIGNKEYS_KEY.FIELDID]);
   }
 
+  /**
+   * 根据字段列表获取map{[id]: code}
+   * 用于场景，配置人员用当前新建的字段配置引用字段时，更改字段名称（编码），在引用/外键列表中，字段名称（编码）会相应更新
+   */
+  getFieldMap = () => {
+    const { fieldList } = this.state;
+    const map = {};
+    fieldList.forEach((item) => {
+      const { [COLUMNS_KEY.CODE]: code, [COLUMNS_KEY.ID]: id } = item;
+      map[id] = code;
+    });
+    return map;
+  }
+
+  /**
+   * 更新引用/外键列表中的字段编码
+   * 用于场景，配置人员用当前新建的字段配置引用字段时，更改字段名称（编码），在引用/外键列表中，字段名称（编码）会相应更新
+   */
+  getReferenceListForFieldCode = (area) => {
+    const fieldMap = this.getFieldMap();
+    return (area || []).map((item) => {
+      const { [REFERENCES_KEY.FIELDID]: fieldId, ...extra } = item;
+      return { ...extra, [REFERENCES_KEY.FIELDID]: fieldId, [REFERENCES_KEY.FIELDCODE]: fieldMap[fieldId] };
+    });
+  }
+
   render() {
     const {
       basicInfo, relatedPages, editingKeyInExpandedInfo, showSysFields, activeAreaInExpandedInfo,
@@ -791,7 +817,7 @@ class TableEditor extends React.Component {
                   fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
                   list: referenceList
                 })}
-                dataSource={referenceList}
+                dataSource={this.getReferenceListForFieldCode(referenceList)}
               />) : null }
           </TabPane>
           <TabPane tab="外键设置" key="foreignKeyList">
@@ -829,7 +855,7 @@ class TableEditor extends React.Component {
                   fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
                   list: foreignKeyList
                 })}
-                dataSource={foreignKeyList}
+                dataSource={this.getReferenceListForFieldCode(foreignKeyList)}
               />) : null }
           </TabPane>
         </Tabs>
