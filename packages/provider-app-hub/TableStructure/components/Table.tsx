@@ -76,11 +76,11 @@ const Table: React.FC<IProps> = (props: IProps, ref) => {
       moduleId
     };
     const res = await queryTableListService(tableParmas);
-    const { data, total } = res.result;
+    const { data, total } = res.result || {};
     return Promise.resolve({
       data: data || [],
       success: true,
-      total: total || 0
+      total: Number(total) || 0
     });
   };
   const handleTableOperational = async (item) => {
@@ -126,7 +126,6 @@ const Table: React.FC<IProps> = (props: IProps, ref) => {
     });
   };
   const deleteTableSingleLine = async (id: string) => {
-    debugger;
     const res = await deleteTableService(id);
     if (res.code === "00000") {
       openNotification("success", "删除成功");
@@ -214,10 +213,13 @@ const Table: React.FC<IProps> = (props: IProps, ref) => {
         rowKey="id"
         scroll={{ x: '500px' }}
         toolBarRender={renderToolBarRender}
-        pagination={{
-          // hideOnSinglePage: true,
-          pageSizeOptions: PAGE_SIZE_OPTIONS
+        onRequestError={(error) => {
+          console.log("表结构管理表格出错: ", error);
         }}
+        // pagination={{
+        //   // hideOnSinglePage: true,
+        //   pageSizeOptions: PAGE_SIZE_OPTIONS
+        // }}
       />
       <CreateModal
         title="新建数据表"
