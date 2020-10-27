@@ -1,11 +1,13 @@
 import React from 'react';
 import { FormInstance } from 'antd/lib/form';
 import { getUrlParams } from "@mini-code/request/url-resolve";
-import { Button, Tag, Tabs } from 'antd';
+import {
+  Button, Tag, Tabs, message as AntdMessage
+} from 'antd';
 import { Link } from "multiple-page-routing";
 import findIndex from 'lodash/findIndex';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
-import { getTableInfo, allowedDeleted, editTableInfo } from '../apiAgents';
+import { getTableInfo, allowDeleted, editTableInfo } from '../apiAgents';
 import {
   TABLE_TYPE, NOTIFICATION_TYPE, MESSAGES, BUTTON_TYPE, BUTTON_SIZE, COLUMNS_KEY, FIELDSIZEREGULAR, DATATYPE, REFERENCES_KEY, FOREIGNKEYS_KEY, SPECIES
 } from '../constants';
@@ -597,15 +599,14 @@ class TableEditor extends React.Component {
       return;
     }
     /** 非用户自己创建的数据，需要走后台接口判断是否可删除 */
-    allowedDeleted({
+    allowDeleted({
       tableId: this.state.basicInfo.tableId,
       columnId: selectedRowKey
-    }).then((messageList) => {
-      if (messageList.length === 0) {
-        this.deleteFieldConfirm(title, selectedRowKey);
-      } else {
-        this.deleteFieldConfirm(messageList.split('，'), selectedRowKey);
+    }).then(({ allowedDeleted, msg }) => {
+      if (!allowedDeleted) {
+        return AntdMessage.warn(msg);
       }
+      this.deleteFieldConfirm(msg, selectedRowKey);
     });
   }
 
