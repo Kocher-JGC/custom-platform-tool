@@ -517,12 +517,13 @@ class MenuList extends React.Component {
     const searchArea = this.searchFormRef.current?.getFieldsValue([MENU_KEY.NAME, MENU_KEY.TYPE]);
     this.setState({
       /** 缓存数据 */
-      searchArea,
+      searchArea
     }, () => {
-      this.getMenuList();
-      this.setState({
-        /** 搜索数据后，展开所有数据 */
-        expandedRowKeys: this.state.allExpandedKeysInMenu
+      this.getMenuList().then(() => {
+        this.setState({
+          /** 搜索数据后，展开所有数据 */
+          expandedRowKeys: this.state.allExpandedKeysInMenu
+        });
       });
     });
   }
