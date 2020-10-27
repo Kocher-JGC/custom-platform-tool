@@ -854,8 +854,13 @@ class MenuList extends React.Component {
       editingKey: this.state.editingKey,
       expandedRowKeys,
       onDel: (record) => {
+        const { [MENU_KEY.ID]: id, [MENU_KEY.PID]: pid } = record;
+        const parentRecordOld = this.getRecordByRowKey(pid);
         this.getMenuList().then(() => {
-          const { [MENU_KEY.ID]: id } = record;
+          const parentRecordNew = this.getRecordByRowKey(pid);
+          if (parentRecordOld.children?.length === 1 && !(parentRecordNew.children?.length > 0)) {
+            this.hanldeUnExpand(parentRecordNew);
+          }
           if (id !== editingKey && editingKey) {
             this.setListWithRecordUpdatedByRowKey(editingKey, { editable: true });
             return;
