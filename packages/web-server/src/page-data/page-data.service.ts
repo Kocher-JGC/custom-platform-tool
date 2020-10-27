@@ -522,8 +522,8 @@ export class PageDataService {
     return null;
   }
 
-  async getTableMetadata(dataSources) {
-    return await this.getTableInfoFromRemote(dataSources[0].datasourceId);
+  async getTableMetadata(dataSources, processCtx) {
+    return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
     //   const schemaPk = this.tableInfoToSchema(columns, tableInfo);
   }
 
@@ -608,12 +608,12 @@ export class PageDataService {
     return IUBDSLData;
   }
 
-  async getTableInfoFromRemote(tableId) {
+  async getTableInfoFromRemote(tableId, { token }) {
     const reqUrl = `${genUrl()}/data/v1/tables/${tableId}`;
     const resData = await axios
       .get(reqUrl, {
         headers: {
-          Authorization: mockToken
+          Authorization: token
         }
       });
     const data = resData?.data?.result;
@@ -683,6 +683,9 @@ export class PageDataService {
     // const token = this.previewAppService.getToken(lessee);
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
     console.log('reqUrl', reqUrl);
+    const processCtx = {
+      token
+    };
     try {
       const resData = await axios
         .get(reqUrl, {
@@ -695,7 +698,7 @@ export class PageDataService {
       console.log('resDataMsg', resData?.data?.msg);
       if (data) {
         const { dataSources } = data;
-        tableMetaData = await this.getTableMetadata(dataSources);
+        tableMetaData = await this.getTableMetadata(dataSources, processCtx);
       }
       if(!data) {
         throw Error(resData?.data?.msg);
