@@ -105,6 +105,10 @@ class TableEditor extends React.Component {
   }
 
   componentWillMount() {
+    this.initTableInfo();
+  }
+
+  initTableInfo = () => {
     const id = this.getTableId();
     getTableInfo(id).then((res) => {
       this.constructInfoFromRequest(res);
@@ -282,7 +286,10 @@ class TableEditor extends React.Component {
       this.saveRow().then((canISave) => {
         if (!canISave) return;
         const param = this.constructInfoForSave();
-        editTableInfo(param);
+        editTableInfo(param).then((canISave) => {
+          if (!canISave) return;
+          this.initTableInfo();
+        });
       });
     } catch (e) {
       return false;
