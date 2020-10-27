@@ -489,7 +489,7 @@ class MenuList extends React.Component {
   /** 获取列表数据 */
   getMenuList = () => {
     return new Promise((resolve, reject) => {
-      const { searchArea } = this.state;
+      const { searchArea, expandedRowKeys } = this.state;
       getMenuListServices(searchArea).then((res) => {
         if (res?.code !== API_CODE.SUCCESS) {
           // openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.GET_MENU_LIST_FAILED);
@@ -500,7 +500,8 @@ class MenuList extends React.Component {
         this.setState({
           menuList,
           menuMap,
-          allExpandedKeysInMenu
+          allExpandedKeysInMenu,
+          expandedRowKeys: expandedRowKeys.filter((item) => allExpandedKeysInMenu.includes(item))
         }, () => {
           resolve();
         });
