@@ -822,6 +822,29 @@ class MenuList extends React.Component {
     this.saveRow();
   }
 
+  /**
+   * 收缩
+   * 收缩时应该把子项也收缩起来
+   */
+  hanldeUnExpand = (record) => {
+    const childList = this.getKeyOfChild(record.children);
+    const list = [record.id, ...childList];
+    this.setState({
+      expandedRowKeys: this.state.expandedRowKeys.filter((item) => !list.includes(item))
+    });
+  }
+
+  /** 获取所有子项id */
+  getKeyOfChild = (children: IMenu[]) => {
+    const list: string[] = [];
+    children?.forEach((item) => {
+      const { [MENU_KEY.ID]: id, [MENU_KEY.CHILDREN]: chlidren } = item;
+      list.push(id);
+      list.push.apply(list, this.getKeyOfChild(chlidren));
+    });
+    return list;
+  }
+
   render() {
     const {
       editingKey, menuList, expandedRowKeys, visibleModalSelectPage, visibleModalSelectIcon
@@ -902,7 +925,7 @@ class MenuList extends React.Component {
             expandedRowKeys,
             onExpand: (expanded, record) => {
               if (!expanded) {
-                this.setState({ expandedRowKeys: without(expandedRowKeys, record.id) });
+                this.hanldeUnExpand(record);
                 return;
               }
               this.setState({ expandedRowKeys: [...expandedRowKeys, record.id] });
