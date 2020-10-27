@@ -5,6 +5,7 @@ import { PageDataModule } from './page-data/page-data.module';
 import { ResHelperModule } from './res-helper/res-helper.module';
 import { PreviewAppModule } from './preview-app/preview-app.module';
 import { ReleaseAppModule } from './release-app/release-app.module';
+import { ConfigService } from './config/config.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { ReleaseAppModule } from './release-app/release-app.module';
     ResHelperModule, PreviewAppModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ConfigService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

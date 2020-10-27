@@ -7,8 +7,8 @@ app_alias=node_web_server
 # 发布的分支
 release_tag=release-main-flow
 
-app_config_path=/root/custome-platform-frend-end/node-web-app-config.json
-app_target_env_config_path=/usr/share/nginx/html/config.json
+app_config_path=$deploy_dir/node-web-app-config.json
+app_target_env_config_path=/var/node-web-server/config.js
 
 app_port=3000
 app_source_port=3000

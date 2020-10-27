@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
+import config from '../../config';
 
 const mockToken = 'Bearer 1295915065878388737';
 
@@ -14,7 +14,7 @@ const prevParam = {
 const genUrl = (params: any = {}) => {
   prevParam.lessee = params.lessee || prevParam.lessee;
   prevParam.app = params.app || prevParam.app;
-  return `http://192.168.14.140:6090/paas/${prevParam.lessee}/${prevParam.app}`;
+  return `${config.platformApiUrl}/${prevParam.lessee}/${prevParam.app}`;
 };
 
 const flatLayoutNode = (layoutNode, parentID?) => {
@@ -608,8 +608,6 @@ export class PageDataService {
     return IUBDSLData;
   }
 
-  
-
   async getTableInfoFromRemote(tableId) {
     const reqUrl = `${genUrl()}/data/v1/tables/${tableId}`;
     const resData = await axios
@@ -682,6 +680,7 @@ export class PageDataService {
   }): Promise<any> {
     const token = this.previewAppService.getToken(lessee);
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
+    console.log('reqUrl', reqUrl);
     try {
       const resData = await axios
         .get(reqUrl, {
@@ -698,6 +697,7 @@ export class PageDataService {
 
       return this.pageData2IUBDSL(data, { tableMetaData });
     } catch(e) {
+      console.log('error', e);
       return e;
     }
   }
