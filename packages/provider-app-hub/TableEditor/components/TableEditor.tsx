@@ -3,7 +3,7 @@ import { FormInstance } from 'antd/lib/form';
 import { getUrlParams } from "@mini-code/request/url-resolve";
 import { Button, Tag, Tabs } from 'antd';
 import { Link } from "multiple-page-routing";
-import lodash from 'lodash';
+import findIndex from 'lodash/findIndex';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
 import { getTableInfo, allowedDeleted, editTableInfo } from '../apiAgents';
 import {
@@ -303,7 +303,7 @@ class TableEditor extends React.Component {
 
   getIndexByRowKey = (rowKey) => {
     const { activeAreaInExpandedInfo } = this.state;
-    const index = lodash.findIndex(this.state[activeAreaInExpandedInfo], { id: rowKey });
+    const index = findIndex(this.state[activeAreaInExpandedInfo], { id: rowKey });
     return index;
   }
 
