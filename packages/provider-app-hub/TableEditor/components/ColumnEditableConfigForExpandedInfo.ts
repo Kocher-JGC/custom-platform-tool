@@ -3,7 +3,7 @@ import {
 } from '../constants';
 
 const isRecordBis = (species) => {
-  return [SPECIES.BIS].includes(species);
+  return [SPECIES.BIS, SPECIES.BIS_TMPL].includes(species);
 };
 /** 列是否可编辑映射 */
 const fieldEditableConfig = {
@@ -40,14 +40,14 @@ const fieldEditableConfig = {
     const amIBigFile = [DATATYPE.IMG, DATATYPE.VIDEO, DATATYPE.AUDIO, DATATYPE.FILE].includes(dataType);
     const amIBasicData = [DATATYPE.PK, DATATYPE.QUOTE, DATATYPE.FK, DATATYPE.NORMAL].includes(dataType);
     /** 非自动生成的业务字段允许修改长度
-     * 字段类型为字符串，且数据类型为 图片，视频，音频，文件时，不允许改动
-     * 字段类型为日期，且数据类型为 主键，引用，附件，空时，不允许改动 */
+     * 字段类型为字符串，且数据类型为 图片，视频，音频，文件时，不允许编辑
+     * 字段类型为日期，且数据类型为 主键，引用，附件，空时，不允许编辑 */
     const flag = amIBis && !((amIString && amIBigFile) || (amIDate && amIBasicData));
     return flag;
   },
   /** 小数点 */
   [COLUMNS_KEY.DECIMALSIZE]: (form) => {
-    const amIBis = [SPECIES.BIS, SPECIES.BIS_TMPL].includes(form.getFieldValue(COLUMNS_KEY.SPECIES));
+    const amIBis = isRecordBis(form.getFieldValue(COLUMNS_KEY.SPECIES));
     const amIInt = [FIELDTYPE.INT].includes(form.getFieldValue(COLUMNS_KEY.FIELDTYPE));
     /** 系统生成的字段不允许改动
     * 字段类型为整型时才允许改动 */
@@ -56,13 +56,13 @@ const fieldEditableConfig = {
   },
   /** 必填 */
   [COLUMNS_KEY.REQUIRED]: (form) => {
-    const amIBis = [SPECIES.BIS, SPECIES.BIS_TMPL].includes(form.getFieldValue(COLUMNS_KEY.SPECIES));
+    const amIBis = isRecordBis(form.getFieldValue(COLUMNS_KEY.SPECIES));
     /** 系统生成的字段不允许改动 */
     return amIBis;
   },
   /** 唯一 */
   [COLUMNS_KEY.UNIQUE]: (form) => {
-    const amIBis = [SPECIES.BIS, SPECIES.BIS_TMPL].includes(form.getFieldValue(COLUMNS_KEY.SPECIES));
+    const amIBis = isRecordBis(form.getFieldValue(COLUMNS_KEY.SPECIES));
     const normalOrFk = [DATATYPE.NORMAL, DATATYPE.PK].includes(form.getFieldValue(COLUMNS_KEY.DATATYPE));
     /** 系统生成的字段不允许改动
      * 数据类型为主键或空时，才允许改动 */
@@ -70,7 +70,7 @@ const fieldEditableConfig = {
   },
   /** 字典 */
   [COLUMNS_KEY.DICTIONARYFOREIGN]: (form) => {
-    const amIBis = [SPECIES.BIS, SPECIES.BIS_TMPL].includes(form.getFieldValue(COLUMNS_KEY.SPECIES));
+    const amIBis = isRecordBis(form.getFieldValue(COLUMNS_KEY.SPECIES));
     const amIDict = [DATATYPE.DICT].includes(form.getFieldValue(COLUMNS_KEY.DATATYPE));
     /** 系统生成的字段不允许改动
      * 数据类型为字典时，才允许改动 */
@@ -91,18 +91,16 @@ const fieldEditableConfig = {
 
 /** 字段的实时可编辑配置 */
 const referenceEditableConfig = {
-  [FOREIGNKEYS_KEY.FIELDNAME]: (form) => {
-    /** 非用户自定义生成的字段允许修改字段名称 */
-    const amIBis = isRecordBis(form.getFieldValue(FOREIGNKEYS_KEY.SPECIES));
-    return amIBis;
+  [FOREIGNKEYS_KEY.FIELDNAME]: (form, record) => {
+    /** 用户当前生成的字段允许修改字段名称 */
+    return record.createdCustomed;
   },
   [FOREIGNKEYS_KEY.FIELDCODE]: () => {
     return false;
   },
-  [FOREIGNKEYS_KEY.REFTABLECODE]: (form) => {
-    /** 非用户自定义生成的字段允许修改表名 */
-    const amIBis = isRecordBis(form.getFieldValue(FOREIGNKEYS_KEY.SPECIES));
-    return amIBis;
+  [FOREIGNKEYS_KEY.REFTABLECODE]: (form, record) => {
+    /** 用户当前生成的字段允许修改表名 */
+    return record.createdCustomed;
   },
   [FOREIGNKEYS_KEY.REFFIELDCODE]: (form) => {
     return true;
