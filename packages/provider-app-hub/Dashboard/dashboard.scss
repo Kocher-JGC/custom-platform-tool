@@ -1,0 +1,15 @@
+.dashboard {
+  .app-tile {
+    position: relative;
+    .more-options {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.1px;
+      .action-btn {
+        padding: 10px 20px;
+        display: inline-block;
+      }
+    }
+  }
+}
