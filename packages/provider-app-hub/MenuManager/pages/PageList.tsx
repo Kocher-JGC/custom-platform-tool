@@ -856,7 +856,7 @@ class MenuList extends React.Component {
       onDel: (record) => {
         this.getMenuList().then(() => {
           const { [MENU_KEY.ID]: id } = record;
-          if (id !== editingKey) {
+          if (id !== editingKey && editingKey) {
             this.setListWithRecordUpdatedByRowKey(editingKey, { editable: true });
             return;
           }
