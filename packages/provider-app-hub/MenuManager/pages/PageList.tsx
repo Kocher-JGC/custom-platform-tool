@@ -11,7 +11,7 @@ import {
 import { FormInstance } from 'antd/lib/form';
 import Table from '@provider-app/table-editor/components/ExpandedInfoEditor';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
-import lodash from 'lodash';
+import without from 'lodash/without';
 import SelectPage from './SelectPage';
 import {
   delMenuServices, getMenuListServices, editMenuServices, setMenuStatusServices, addMenuServices
@@ -183,9 +183,10 @@ const Icon: React.FC<IIcon> = (props: IIcon) => {
             className={getClassName(record.editable)}
             onClick={(e) => { handleClick(e, key); }}
           >
-            <IconAppointed
-              iconType = {key}
-            />
+            { key ? (
+              <IconAppointed
+                iconType = {key}
+              />) : null}
           </div>
         );
       }}
@@ -325,7 +326,7 @@ const getListColumns = ({
               status: Number(checked)
             }).then((res) => {
               if (res?.code !== API_CODE.SUCCESS) {
-                openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.SET_STATUS_FAILD);
+                // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.SET_STATUS_FAILD);
               }
             });
           }}
@@ -382,7 +383,7 @@ const getListColumns = ({
                   }
                   delMenuServices(id).then((res) => {
                     if (res?.code !== API_CODE.SUCCESS) {
-                      openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DEL_MENU_FAILED);
+                      // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DEL_MENU_FAILED);
                       return;
                     }
                     openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.DEL_MENU_SUCCESS);
@@ -491,7 +492,7 @@ class MenuList extends React.Component {
       const { searchArea } = this.state;
       getMenuListServices(searchArea).then((res) => {
         if (res?.code !== API_CODE.SUCCESS) {
-          openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.GET_MENU_LIST_FAILED);
+          // openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.GET_MENU_LIST_FAILED);
           return;
         }
         /** 进行数据转换 */
@@ -517,10 +518,12 @@ class MenuList extends React.Component {
     this.setState({
       /** 缓存数据 */
       searchArea,
-      /** 搜索数据后，不展开任何数据 */
-      expandedRowKeys: []
     }, () => {
       this.getMenuList();
+      this.setState({
+        /** 搜索数据后，展开所有数据 */
+        expandedRowKeys: this.state.allExpandedKeysInMenu
+      });
     });
   }
 
@@ -671,7 +674,7 @@ class MenuList extends React.Component {
       return new Promise((resolve, reject) => {
         editMenuServices(record).then((res) => {
           if (res?.code !== API_CODE.SUCCESS) {
-            openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDIT_MENU_FAILED);
+            // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDIT_MENU_FAILED);
             resolve({ id: '' });
             return;
           }
@@ -684,7 +687,7 @@ class MenuList extends React.Component {
       return new Promise((resolve, reject) => {
         addMenuServices(record).then((res) => {
           if (res?.code !== API_CODE.SUCCESS) {
-            openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADD_MENU_FAILED);
+            // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADD_MENU_FAILED);
             resolve({ id: '' });
             return;
           }
@@ -898,7 +901,7 @@ class MenuList extends React.Component {
             expandedRowKeys,
             onExpand: (expanded, record) => {
               if (!expanded) {
-                this.setState({ expandedRowKeys: lodash.without(expandedRowKeys, record.id) });
+                this.setState({ expandedRowKeys: without(expandedRowKeys, record.id) });
                 return;
               }
               this.setState({ expandedRowKeys: [...expandedRowKeys, record.id] });

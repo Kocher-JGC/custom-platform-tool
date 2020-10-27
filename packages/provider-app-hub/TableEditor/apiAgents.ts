@@ -13,7 +13,7 @@ export async function getTableInfo(id:string) {
   const res = await getTableInfoApi(id);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
     return {};
   }
   return res?.result;
@@ -23,7 +23,7 @@ export async function getMenuListService(params) {
   const res = await getMenuListServiceApi(params);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETMENULIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETMENULIST_FAILED);
     return [];
   }
   return res?.result;
@@ -33,7 +33,7 @@ export async function getDictionaryList(params) {
   const res = await getDictionaryListApi(params);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETDICTIONARYLIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETDICTIONARYLIST_FAILED);
     return { data: [], total: 0 };
   }
   return res?.result;
@@ -43,7 +43,7 @@ export async function getTableList() {
   const res = await getTableListApi();
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLELIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLELIST_FAILED);
     return [];
   }
   return res?.result?.data;
@@ -68,7 +68,7 @@ export async function editTableInfo(data) {
   const res = await editTableInfoApi(data);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.EDITTABLEINFO_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.EDITTABLEINFO_FAILED);
     return false;
   }
   openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGES.EDITTABLEINFO_SUCCESS);

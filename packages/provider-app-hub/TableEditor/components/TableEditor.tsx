@@ -3,7 +3,7 @@ import { FormInstance } from 'antd/lib/form';
 import { getUrlParams } from "@mini-code/request/url-resolve";
 import { Button, Tag, Tabs } from 'antd';
 import { Link } from "multiple-page-routing";
-import lodash from 'lodash';
+import findIndex from 'lodash/findIndex';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
 import { getTableInfo, allowedDeleted, editTableInfo } from '../apiAgents';
 import {
@@ -105,6 +105,10 @@ class TableEditor extends React.Component {
   }
 
   componentWillMount() {
+    this.initTableInfo();
+  }
+
+  initTableInfo = () => {
     const id = this.getTableId();
     getTableInfo(id).then((res) => {
       this.constructInfoFromRequest(res);
@@ -282,7 +286,10 @@ class TableEditor extends React.Component {
       this.saveRow().then((canISave) => {
         if (!canISave) return;
         const param = this.constructInfoForSave();
-        editTableInfo(param);
+        editTableInfo(param).then((canISave) => {
+          if (!canISave) return;
+          this.initTableInfo();
+        });
       });
     } catch (e) {
       return false;
@@ -303,7 +310,7 @@ class TableEditor extends React.Component {
 
   getIndexByRowKey = (rowKey) => {
     const { activeAreaInExpandedInfo } = this.state;
-    const index = lodash.findIndex(this.state[activeAreaInExpandedInfo], { id: rowKey });
+    const index = findIndex(this.state[activeAreaInExpandedInfo], { id: rowKey });
     return index;
   }
 
@@ -634,6 +641,36 @@ class TableEditor extends React.Component {
     });
   }
 
+  getReferenceFields = (area) => {
+    return (this.state[area] || []).map((item) => item[FOREIGNKEYS_KEY.FIELDID]);
+  }
+
+  /**
+   * 根据字段列表获取map{[id]: code}
+   * 用于场景，配置人员用当前新建的字段配置引用字段时，更改字段名称（编码），在引用/外键列表中，字段名称（编码）会相应更新
+   */
+  getFieldMap = () => {
+    const { fieldList } = this.state;
+    const map = {};
+    fieldList.forEach((item) => {
+      const { [COLUMNS_KEY.CODE]: code, [COLUMNS_KEY.ID]: id } = item;
+      map[id] = code;
+    });
+    return map;
+  }
+
+  /**
+   * 更新引用/外键列表中的字段编码
+   * 用于场景，配置人员用当前新建的字段配置引用字段时，更改字段名称（编码），在引用/外键列表中，字段名称（编码）会相应更新
+   */
+  getReferenceListForFieldCode = (area) => {
+    const fieldMap = this.getFieldMap();
+    return (area || []).map((item) => {
+      const { [REFERENCES_KEY.FIELDID]: fieldId, ...extra } = item;
+      return { ...extra, [REFERENCES_KEY.FIELDID]: fieldId, [REFERENCES_KEY.FIELDCODE]: fieldMap[fieldId] };
+    });
+  }
+
   render() {
     const {
       basicInfo, relatedPages, editingKeyInExpandedInfo, showSysFields, activeAreaInExpandedInfo,
@@ -742,7 +779,10 @@ class TableEditor extends React.Component {
               clickRow = {() => { this.saveRow(); }}
               columns={getFieldColumns({
                 formRef: this.expandInfoFormRef,
-                editDictioary: this.createDict
+                editDictioary: this.createDict,
+                extra: {
+                  referenceFields: [...this.getReferenceFields('referenceList'), ...this.getReferenceFields('foreignKeyList')],
+                }
               })}
               dataSource={fieldList.filter((item) => {
                 return showSysFields || ![SPECIES.SYS, SPECIES.SYS_TMPL].includes(item.species);
@@ -782,9 +822,10 @@ class TableEditor extends React.Component {
                 columns={getReferenceColumns({
                   formRef: this.expandInfoFormRef,
                   fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
-                  list: referenceList
+                  list: referenceList,
+                  tableId: basicInfo.tableId
                 })}
-                dataSource={referenceList}
+                dataSource={this.getReferenceListForFieldCode(referenceList)}
               />) : null }
           </TabPane>
           <TabPane tab="外键设置" key="foreignKeyList">
@@ -820,9 +861,10 @@ class TableEditor extends React.Component {
                 columns={getForeignKeyColumns({
                   formRef: this.expandInfoFormRef,
                   fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
-                  list: foreignKeyList
+                  list: foreignKeyList,
+                  tableId: basicInfo.tableId
                 })}
-                dataSource={foreignKeyList}
+                dataSource={this.getReferenceListForFieldCode(foreignKeyList)}
               />) : null }
           </TabPane>
         </Tabs>

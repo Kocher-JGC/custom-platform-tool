@@ -23,7 +23,7 @@ const getColumns = ({
           <Form.Item
             name={DICTIONARY_CHILD_KEY.CODE}
             rules={[
-              { pattern: /^[\u4e00-\u9fa5a-zA-Z()][\u4e00-\u9fa5_a-zA-Z0-9()]{0,31}$/, message: '32位字符内的中文、英文大小写、数字、下划线、英文小括号(_)，不能以数字或下划线_开头' },
+              { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9()]{1,32}$/, message: '32位字符内的中文、英文大小写、数字、下划线、英文小括号(_)' },
               { required: true, message: '编码必填' },
             ]}
           >
@@ -44,7 +44,7 @@ const getColumns = ({
           <Form.Item
             name="name"
             rules={[
-              { pattern: /^[\u4e00-\u9fa5a-zA-Z()][\u4e00-\u9fa5_a-zA-Z0-9()]{0,31}$/, message: '32位字符内的中文、英文大小写、数字、下划线、英文小括号(_)，不能以数字或下划线_开头' },
+              { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9()]{1,32}$/, message: '32位字符内的中文、英文大小写、数字、下划线、英文小括号(_)' },
               { required: true, message: '名称必填' },
             ]}
           >
@@ -365,7 +365,7 @@ class CreateDictionary extends React.Component {
               name={DICTIONARY_KEY.NAME}
               rules={[
                 { required: true, message: '字典名称必填' },
-                { pattern: /^[\u4e00-\u9fa5a-zA-Z()][\u4e00-\u9fa5_a-zA-Z0-9()]{0,31}$/, message: '限制32位字符，输入字段包括中文、英文大小写、数字、下划线、英文小括号(_)，不能以数字或下划线_开头' }
+                { pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9()]{1,32}$/, message: '限制32位字符内的中文、英文大小写、数字、下划线、英文小括号(_)' }
               ]}
             >
               <Input />

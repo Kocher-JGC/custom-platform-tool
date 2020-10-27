@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Input, Table, message, Button
 } from 'antd';
-import lodash from 'lodash';
+import without from 'lodash/without';
 import { getDictionaryList } from "../apiAgents";
 import { NOTIFICATION_TYPE } from '../constants';
 
@@ -143,7 +143,7 @@ class ChooseDict extends React.Component<IProps> {
         });
       } else {
         this.setState({
-          selectedRowKeys: lodash.without(selectedRowKeys, selectedRowKeyTmpl)
+          selectedRowKeys: without(selectedRowKeys, selectedRowKeyTmpl)
         });
       }
       return;

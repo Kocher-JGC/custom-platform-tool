@@ -97,7 +97,6 @@ const SelectIcon: React.FC<ISelectPage> = (props: ISelectPage) => {
                           setIconSelected(type);
                         }}
                       >
-                        {type}
                         <IconItem/>
                       </div>
                     );
