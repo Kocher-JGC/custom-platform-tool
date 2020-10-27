@@ -202,6 +202,9 @@ const PageList: React.FC<IProps> = (props: IProps) => {
         onRequestError={(error) => {
           console.log("页面管理表格出错: ", error);
         }}
+        onRequestError={(error) => {
+          console.log("页面管理表格出错: ", error);
+        }}
       />
     </>
   );
