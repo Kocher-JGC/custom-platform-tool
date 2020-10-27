@@ -28,7 +28,7 @@ const IUBDSLRenderer = ({ dsl }) => {
   }
 
   if (dslParseRes) {
-    ActualRender = <IUBDSLRuntimeContainer dslParseRes={dslParseRes} />;
+    ActualRender = <IUBDSLRuntimeContainer key={pageID} dslParseRes={dslParseRes} />;
   }
 
   return ActualRender;

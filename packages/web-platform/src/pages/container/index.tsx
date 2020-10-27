@@ -1,52 +1,70 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect, useState, useMemo, useRef
+} from 'react';
 import { history } from 'umi';
 import { Skeleton, Result } from 'antd';
 import { queryPageData } from "@/services/page";
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
 import './index.less';
+import { useAsyncMemo } from '@iub-dsl/engine/utils';
 
 interface IContainerProps {
 
 }
 
+const ResultRender = (
+  <Result
+    status="500"
+    title="500"
+    subTitle="页面解析出错"
+    extra={null}
+  />
+);
+
+const SkeletonRender = (
+  <Skeleton active />
+);
+
+const getPageData = ({
+  pageId, mode, lessee, app
+}) => async () => {
+  if (pageId) {
+    // TODO 模式，租户，app 参数来源
+    return queryPageData({
+      id: pageId,
+      mode,
+      lessee,
+      app
+    });
+  }
+  return Promise.resolve({});
+};
+
 const Container: React.FC<IContainerProps> = (props) => {
   const [data, setData] = useState({});
   const { query } = history.location;
-  const {
-    pageId, mode, lessee, app
-  } = query;
-  useEffect(() => {
-    getPageData();
-  }, [query]);
-  const getPageData = async () => {
-    if (pageId) {
-      // TODO 模式，租户，app 参数来源
-      const res = await queryPageData({
-        id: pageId,
-        mode,
-        lessee,
-        app
-      });
-      setData(res);
-    }
-  };
 
-  if (!pageId) {
-    return (
-      <Result
-        status="500"
-        title="500"
-        subTitle="页面解析出错"
-        extra={null}
-      />
-    );
-  }
-  if (data?.pageID) {
-    return (
-      <IUBDSLRenderer dsl={data}/>
-    );
-  }
-  return <Skeleton active />;
+  const isLoading = useRef(true);
+
+  const Renderer = useMemo(() => {
+    if (isLoading.current) {
+      return SkeletonRender;
+    }
+    if (query.pageId) {
+      return <IUBDSLRenderer dsl={data}/>;
+    }
+    return ResultRender;
+  }, [query.pageId, data]);
+
+  useEffect(() => {
+    isLoading.current = true;
+    getPageData(query)().then((d) => {
+      isLoading.current = false;
+      setData(d);
+    });
+  }, [query.pageId]);
+
+  return Renderer;
 };
 
 export default Container;
