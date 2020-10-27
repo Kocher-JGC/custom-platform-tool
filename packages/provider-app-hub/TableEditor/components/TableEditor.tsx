@@ -815,7 +815,8 @@ class TableEditor extends React.Component {
                 columns={getReferenceColumns({
                   formRef: this.expandInfoFormRef,
                   fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
-                  list: referenceList
+                  list: referenceList,
+                  tableId: basicInfo.tableId
                 })}
                 dataSource={this.getReferenceListForFieldCode(referenceList)}
               />) : null }
@@ -853,7 +854,8 @@ class TableEditor extends React.Component {
                 columns={getForeignKeyColumns({
                   formRef: this.expandInfoFormRef,
                   fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
-                  list: foreignKeyList
+                  list: foreignKeyList,
+                  tableId: basicInfo.tableId
                 })}
                 dataSource={this.getReferenceListForFieldCode(foreignKeyList)}
               />) : null }
