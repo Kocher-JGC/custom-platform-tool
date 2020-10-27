@@ -634,6 +634,10 @@ class TableEditor extends React.Component {
     });
   }
 
+  getReferenceFields = (area) => {
+    return (this.state[area] || []).map((item) => item[FOREIGNKEYS_KEY.FIELDID]);
+  }
+
   render() {
     const {
       basicInfo, relatedPages, editingKeyInExpandedInfo, showSysFields, activeAreaInExpandedInfo,
@@ -742,7 +746,10 @@ class TableEditor extends React.Component {
               clickRow = {() => { this.saveRow(); }}
               columns={getFieldColumns({
                 formRef: this.expandInfoFormRef,
-                editDictioary: this.createDict
+                editDictioary: this.createDict,
+                extra: {
+                  referenceFields: [...this.getReferenceFields('referenceList'), ...this.getReferenceFields('foreignKeyList')],
+                }
               })}
               dataSource={fieldList.filter((item) => {
                 return showSysFields || ![SPECIES.SYS, SPECIES.SYS_TMPL].includes(item.species);

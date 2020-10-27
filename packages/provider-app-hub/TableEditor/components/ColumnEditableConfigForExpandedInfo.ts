@@ -18,17 +18,19 @@ const fieldEditableConfig = {
     return amICreatedCustomed;
   },
   /** 字段类型 */
-  [COLUMNS_KEY.FIELDTYPE]: (form) => {
+  [COLUMNS_KEY.FIELDTYPE]: (form, record, { referenceFields }) => {
     const amIBis = isRecordBis(form.getFieldValue(COLUMNS_KEY.SPECIES));
     const amIReference = [DATATYPE.QUOTE, DATATYPE.FK].includes(form.getFieldValue(COLUMNS_KEY.DATATYPE));
+    const isInReference = referenceFields.includes(record[COLUMNS_KEY.ID]);
     /** 非用户自定义生成的字段允许修改字段类型 */
-    return amIBis && !amIReference;
+    return amIBis && !(amIReference && isInReference);
   },
   /** 数据类型 */
-  [COLUMNS_KEY.DATATYPE]: (form) => {
+  [COLUMNS_KEY.DATATYPE]: (form, record, { referenceFields }) => {
     /** 系统生成的字段不允许改动 */
     const amICreatedCustomed = isRecordBis(form.getFieldValue(COLUMNS_KEY.SPECIES));
-    return amICreatedCustomed;
+    const isInReference = referenceFields.includes(record[COLUMNS_KEY.ID]);
+    return amICreatedCustomed && !isInReference;
   },
   /** 长度 */
   [COLUMNS_KEY.FIELDSIZE]: (form) => {
