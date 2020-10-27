@@ -89,27 +89,17 @@ const urlManager = new UrlManager();
 
 $R.urlManager = urlManager;
 
+const resetHttpReqHelper = () => {
+  $R_P.urlManager.reset();
+};
+
 /**
  * 前端应该与服务端的接口分离
  * 通过此方法实现对接远端需要的 request 数据
  */
-const beforeReq = (options) => {
-  const {
-    isCompress, method, data, ...params
-  } = options;
-  return {
-    // header: Object.assign(
-    //   {},
-    //   getCommonHeader(data),
-    //   {
-    //     // Compress: isCompress ? 1 : 0,
-    //     Method: method
-    //   },
-    //   { ...params }
-    // ),
-    // path: method,
-    data
-  };
+const beforeReq = (beforeData) => {
+  console.log('beforeData', beforeData);
+  return beforeData;
 };
 
 /**
@@ -129,18 +119,13 @@ const afterRes = (resData, other) => {
   return resData;
 };
 
-const resetHttpReqHelper = () => {
-  $R_P.urlManager.reset();
-};
-
 /** 使用 $R 的中间件 */
-// $R.use([null, afterRes]);
+// $R.use([beforeReq, afterRes]);
 
 /**
  * 设置 $R 对象的 res
  */
 function handleRes(resData, other) {
-  console.log(resData);
   const { code, msg } = resData;
   switch (code) {
     case '00000':
