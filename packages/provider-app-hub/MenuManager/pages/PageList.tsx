@@ -11,7 +11,7 @@ import {
 import { FormInstance } from 'antd/lib/form';
 import Table from '@provider-app/table-editor/components/ExpandedInfoEditor';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
-import lodash from 'lodash';
+import without from 'lodash/without';
 import SelectPage from './SelectPage';
 import {
   delMenuServices, getMenuListServices, editMenuServices, setMenuStatusServices, addMenuServices
@@ -898,7 +898,7 @@ class MenuList extends React.Component {
             expandedRowKeys,
             onExpand: (expanded, record) => {
               if (!expanded) {
-                this.setState({ expandedRowKeys: lodash.without(expandedRowKeys, record.id) });
+                this.setState({ expandedRowKeys: without(expandedRowKeys, record.id) });
                 return;
               }
               this.setState({ expandedRowKeys: [...expandedRowKeys, record.id] });

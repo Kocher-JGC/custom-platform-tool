@@ -6,7 +6,8 @@ import zhCN from 'antd/es/locale/zh_CN'; // 引入中文包
 import { ColumnsType } from "antd/lib/table";
 import dayjs from "dayjs";
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-import lodash from 'lodash';
+import without from 'lodash/without';
+import findIndex from 'lodash/findIndex';
 import { FormInstance } from 'antd/lib/form';
 import CreateModal from "./CreateModal";
 import {
@@ -198,7 +199,7 @@ class ChildListOfDictionary extends React.Component {
           if (!canIEditChildList) return;
           this.props.handleCloseModal();
           this.setState({
-            expandedRowKeys: lodash.without(this.state.expandedRowKeys, id)
+            expandedRowKeys: without(this.state.expandedRowKeys, id)
           });
           this.updateRecordByRowKey(record[DICTIONARY_CHILD_KEY.ID], { children: [] });
         });
@@ -239,7 +240,7 @@ class ChildListOfDictionary extends React.Component {
     map[idPrev] = list[nextIndex];
     this.setState({
       list: this.state.list.slice(),
-      expandedRowKeys: lodash.without(expandedRowKeys, idPrev, idNext)
+      expandedRowKeys: without(expandedRowKeys, idPrev, idNext)
     });
   }
 
@@ -271,7 +272,7 @@ class ChildListOfDictionary extends React.Component {
     const { expandedRowKeys } = this.state;
     if (!expanded) {
       const keysOfChildList = record.children?.map((item) => item.id) || [];
-      this.setState({ expandedRowKeys: lodash.without.apply(lodash, [expandedRowKeys, id, ...keysOfChildList]) });
+      this.setState({ expandedRowKeys: without.apply(lodash, [expandedRowKeys, id, ...keysOfChildList]) });
       // this.handleExpandChildList(false, record.children || []);
       return;
     }
@@ -282,7 +283,7 @@ class ChildListOfDictionary extends React.Component {
     const keysOfChildList = records.map((item) => item.id);
     const { expandedRowKeys } = this.state;
     if (!expanded) {
-      this.setState({ expandedRowKeys: lodash.without.apply(lodash, [expandedRowKeys, ...keysOfChildList]) });
+      this.setState({ expandedRowKeys: without.apply(lodash, [expandedRowKeys, ...keysOfChildList]) });
       return;
     }
     this.setState({ expandedRowKeys: [...expandedRowKeys, ...keysOfChildList] });
@@ -534,7 +535,7 @@ class DictionaryList extends React.Component {
           if (!canIEdit) return;
           this.setState({
             modalVisible: false,
-            expandedRowKeys: lodash.without(this.state.expandedRowKeys, id)
+            expandedRowKeys: without(this.state.expandedRowKeys, id)
           });
           this.getDictionaryList();
         });
@@ -547,7 +548,7 @@ class DictionaryList extends React.Component {
   }
 
   getIndexByRowKey = (id) => {
-    return lodash.findIndex(this.state.list, { [DICTIONARY_KEY.ID]: id });
+    return findIndex(this.state.list, { [DICTIONARY_KEY.ID]: id });
   }
 
   updateRecordByRowKey = (id, recordNeedUpdate) => {
@@ -608,7 +609,7 @@ class DictionaryList extends React.Component {
     const { [DICTIONARY_KEY.ID]: id } = record;
     const { expandedRowKeys } = this.state;
     if (!expanded) {
-      this.setState({ expandedRowKeys: lodash.without(expandedRowKeys, id) });
+      this.setState({ expandedRowKeys: without(expandedRowKeys, id) });
       return;
     }
     this.setState({ expandedRowKeys: [...expandedRowKeys, id] });
