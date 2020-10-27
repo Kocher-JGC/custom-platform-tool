@@ -1,3 +1,4 @@
+import store from 'store';
 import HOSTENV from '../utils/env';
 
 /**
@@ -23,6 +24,7 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
   return {
     ...prevParam,
     id: params.id,
+    t: store.get("providerAppToken")
   };
 };
 
@@ -30,7 +32,7 @@ export const queryPageData = async (params: API.IPageDataParams) => {
   const pageUrl = HOSTENV.get();
   const res = await $A_R(`${pageUrl['NODE-WEB']}/node-web/page-data`, {
     method: 'GET',
-    params: mergeParam(params),
+    params: mergeParam(params)
   });
   return filterRes(res);
 };
