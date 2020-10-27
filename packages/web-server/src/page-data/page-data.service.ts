@@ -3,7 +3,7 @@ import axios from 'axios';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
 import config from '../../config';
 
-const mockToken = 'Bearer 1295915065878388737';
+const { mockToken } = config;
 
 const prevParam = {
   mode: 'prod',
@@ -679,6 +679,7 @@ export class PageDataService {
     id
   }): Promise<any> {
     const token = this.previewAppService.getToken(lessee);
+    console.log('token', token);
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
     console.log('reqUrl', reqUrl);
     try {

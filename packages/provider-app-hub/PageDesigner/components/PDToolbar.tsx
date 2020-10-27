@@ -51,9 +51,10 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
         className="mr10"
         onClick={(e) => {
           // $R_P.get('/manage/v1/application/preview/')
-          previewAppService('1319181529431285760');
+          previewAppService(appLocation.app);
+
           ShowModal({
-            title: `PC 预览 ${previewUrl}`,
+            title: `PC 预览`,
             modalType: 'side',
             position: 'bottom',
             maxHeightable: false,
@@ -72,7 +73,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
           });
         }}
       >
-          PC 预览
+        PC 预览
       </Button>
       <Button
         hola
