@@ -679,6 +679,7 @@ export class PageDataService {
     token = mockToken,
     id
   }): Promise<any> {
+    console.log('token', token);
     // const token = this.previewAppService.getToken(lessee);
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
     console.log('reqUrl', reqUrl);
@@ -697,7 +698,7 @@ export class PageDataService {
         tableMetaData = await this.getTableMetadata(dataSources);
       }
       if(!data) {
-        throw Error('没有页面数据');
+        throw Error(resData?.data?.msg);
       }
 
       return this.pageData2IUBDSL(data, { tableMetaData });
