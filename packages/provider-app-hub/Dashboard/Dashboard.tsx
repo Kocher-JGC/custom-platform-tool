@@ -4,6 +4,9 @@ import {
 } from "@ant-design/icons";
 import { Link } from "multiple-page-routing";
 import { GetApplication } from "@provider-app/services";
+import { ShowModal } from "@infra/ui";
+import { useIcon } from "@infra/utils/useIcon";
+import { CreateApp } from "./CreateApp";
 
 const defaultToRoute = '/page-manager';
 
@@ -40,8 +43,9 @@ const AppTile = ({
       >
         <div className="app-icon text-6xl" style={{ height: 90, width: 100 }}>
           {icon}
+          {/* {Icon()} */}
         </div>
-        <div className="app-title py-2">
+        <div className="app-title py-2" style={{ height: 40 }}>
           {title}
         </div>
       </Link>
@@ -87,7 +91,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
             return (
               <AppTile
                 key={id}
-                icon={iconGroupTemp[idx]}
+                icon={iconGroupTemp[idx % iconGroupTemp.length]}
                 title={appShortNameEn}
                 onClick={(e) => {
                   onSelectApp && onSelectApp({
@@ -106,6 +110,23 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
         <AppTile
           // to="/page-manager"
           icon={<PlusOutlined />}
+          onClick={(e) => {
+            ShowModal({
+              title: '添加应用',
+              children: ({ close }) => {
+                return (
+                  <CreateApp
+                    onSuccess={(e) => {
+                      close();
+                      GetApplication().then((appResData) => {
+                        setAppData(appResData.result);
+                      });
+                    }}
+                  />
+                );
+              }
+            });
+          }}
           title="添加应用"
         />
       </div>

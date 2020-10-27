@@ -134,7 +134,7 @@ const resetHttpReqHelper = () => {
 };
 
 /** 使用 $R 的中间件 */
-$R.use([null, afterRes]);
+// $R.use([null, afterRes]);
 
 /**
  * 设置 $R 对象的 res

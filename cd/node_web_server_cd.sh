@@ -10,7 +10,7 @@ release_tag=release-main-flow
 app_config_path=$deploy_dir/node-web-app-config.js
 app_target_env_config_path=/var/node-web-server/config.js
 
-app_port=3000
+app_port=5100
 app_source_port=3000
 
 . ./cd.sh
