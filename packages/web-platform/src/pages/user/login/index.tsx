@@ -47,7 +47,7 @@ const Login: React.FC<ILoginProps> = (props) => {
       payload: { ...values, clientType: CLIENT_TYPE.WEB },
     });
     const { access_token, refresh_token } = res?.data || {};
-    console.log('access_token', access_token);
+    // console.log('access_token', access_token);
     if (access_token) {
       dispatch({
         type: 'user/setCurrentUser',
