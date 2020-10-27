@@ -703,7 +703,7 @@ export class PageDataService {
 
       return this.pageData2IUBDSL(data, { tableMetaData });
     } catch(e) {
-      // console.log('error', e);
+      console.error('error', e);
       throw Error(e);
       // return e;
     }
