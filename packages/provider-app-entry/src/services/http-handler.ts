@@ -123,9 +123,9 @@ const beforeReq = (options) => {
  *   err: null || 'description' // 对接 response 的错误描述
  * }
  */
-const afterRes = (resData) => {
-  if (typeof resData !== "object") resData = {};
-  resData.data = resData.data || resData.Data || {};
+const afterRes = (resData, other) => {
+  console.log('resData', resData);
+  console.log('other', other);
   return resData;
 };
 
@@ -134,12 +134,13 @@ const resetHttpReqHelper = () => {
 };
 
 /** 使用 $R 的中间件 */
-// $R.use([beforeReq, afterRes]);
+$R.use([null, afterRes]);
 
 /**
  * 设置 $R 对象的 res
  */
-function handleRes(resData) {
+function handleRes(resData, other) {
+  console.log(resData);
   const { code, msg } = resData;
   switch (code) {
     case '00000':
@@ -161,7 +162,8 @@ function handleRes(resData) {
       // });
       break;
     default:
-      // AntdMessage.error(msg);
+      // TODO: 完善请求
+      AntdMessage.error(msg);
   }
 }
 
@@ -172,7 +174,7 @@ const handleErr = (e) => {
 /**
  * 监听 $R res 处理函数
  */
-$R.on("onRes", handleRes);
+$R.on('onRes', handleRes);
 
 /** 处理网络异常 */
 $R.on("onErr", handleErr);

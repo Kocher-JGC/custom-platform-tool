@@ -657,7 +657,7 @@ export class PageDataService {
           },
           tableInfo
         };
-      } else  if (isAll) {
+      } else if (isAll) {
         res[info.id] = {
           column: {
             ...pickObjFromKeyArr(info, columnKey),
@@ -676,30 +676,36 @@ export class PageDataService {
   async getPageDataFromRemote({
     lessee,
     app,
+    token = mockToken,
     id
   }): Promise<any> {
-    const token = this.previewAppService.getToken(lessee);
     console.log('token', token);
+    // const token = this.previewAppService.getToken(lessee);
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
     console.log('reqUrl', reqUrl);
     try {
       const resData = await axios
         .get(reqUrl, {
           headers: {
-            Authorization: mockToken
+            Authorization: token
           }
         });
       const data = resData?.data?.result; 
       let tableMetaData = null;
+      console.log('resDataMsg', resData?.data?.msg);
       if (data) {
         const { dataSources } = data;
         tableMetaData = await this.getTableMetadata(dataSources);
       }
+      if(!data) {
+        throw Error(resData?.data?.msg);
+      }
 
       return this.pageData2IUBDSL(data, { tableMetaData });
     } catch(e) {
-      console.log('error', e);
-      return e;
+      // console.log('error', e);
+      throw Error(e);
+      // return e;
     }
   }
 }

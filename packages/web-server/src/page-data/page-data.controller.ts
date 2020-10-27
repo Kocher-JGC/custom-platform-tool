@@ -1,5 +1,4 @@
 import { Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { RolesGuard } from 'src/auth-guard/roles.guard';
 import { ResHelperService } from 'src/res-helper/res-helper.service';
 import { Roles } from 'src/roles/roles.decorator';
 import { PageDataService } from './page-data.service';
@@ -14,8 +13,8 @@ export class PageDataController {
   }
 
   validGetPageParam(queryString) {
-    const { id, mode, lessee, app } = queryString;
-    const necessaryParams = { id, mode, lessee, app };
+    const { id, mode, lessee, app, t } = queryString;
+    const necessaryParams = { id, lessee, app, t };
     for (const key in necessaryParams) {
       if (Object.prototype.hasOwnProperty.call(necessaryParams, key)) {
         const item = necessaryParams[key];
@@ -62,14 +61,21 @@ export class PageDataController {
   async getPage(@Query() queryString) {
     // console.log(queryString)
     const { isPass, msg } = this.validGetPageParam(queryString);
-    if(!isPass) return msg; 
-    const { id, mode, lessee, app } = queryString;
+    if(!isPass) return msg;
+    const { id, mode, lessee, app, t } = queryString;
     // if (mode === 'preview') {
     // }
-    const pageData = await this.pageDataService.getPageDataFromRemote({ lessee, app, id });
+    try {
+      const pageData = await this.pageDataService.getPageDataFromRemote({ lessee, app, id, token: t });
+      const resData = this.resHelperService.wrapResStruct({ data: pageData });
+      return resData;
+    } catch(e) {
+      return {
+        err: JSON.stringify(e.message),
+        code: '10000'
+      };
+    }
     // console.log(pageData);
-    const resData = this.resHelperService.wrapResStruct({ data: pageData });
-    return resData;
   }
 }
 // if(!request.headers) return { code: '500', msg: '未授权' };
