@@ -30,7 +30,7 @@ export const useIcon = (reactIconType: reactIconType) => {
   const [ready, setReady] = useState(!!iconsCache);
   useEffect(() => {
     if (ready) return;
-    import(reactIconType)
+    import('react-icons/all')
       .then((allIconsRes) => {
         allIconsCollection[reactIconType] = allIconsRes;
         setReady(true);
