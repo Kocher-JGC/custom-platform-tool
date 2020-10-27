@@ -183,9 +183,10 @@ const Icon: React.FC<IIcon> = (props: IIcon) => {
             className={getClassName(record.editable)}
             onClick={(e) => { handleClick(e, key); }}
           >
-            <IconAppointed
-              iconType = {key}
-            />
+            { key ? (
+              <IconAppointed
+                iconType = {key}
+              />) : null}
           </div>
         );
       }}
