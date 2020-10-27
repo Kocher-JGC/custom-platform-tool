@@ -66,6 +66,7 @@ export const CreatePage = ({
           dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
           treeData={menusData}
           placeholder="请选择模块"
+          treeCheckStrictly
           treeCheckable
         />
       </Form.Item>
