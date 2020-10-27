@@ -1,4 +1,5 @@
-import { APBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+import { notification } from 'antd';
 import { AxiosResponse } from 'axios';
 
 enum APBDSLResponeCode {
@@ -76,13 +77,21 @@ interface APBDSLRespone<T = any> {
 export const APBDSLrequest = <R = any>(reqParam) => {
   // const reqUrl = genUrl('UserInfo');
   // console.dir(reqParam, { depth: 3 });
-  return $A_R(APBDSLtestUrl, {
+  return $A_R(getAPBDSLtestUrl(), {
     method: 'POST',
     data: reqParam
   }).then(({ data }: AxiosResponse<APBDSLRespone<R | boolean>>) => {
     if (data.code === APBDSLResponeCode.SA0000) {
+      notification.success({
+        message: 'APBDSL请求成功!',
+      });
       return Promise.resolve(data.result);
     }
+    notification.error({
+      message: 'APBDSL请求失败!',
+      description: APBDSLResponseMsg[data.code] || `失败了!${JSON.stringify(data)}`
+    });
+
     return Promise.resolve(false);
   });
 };
