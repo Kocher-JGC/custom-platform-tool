@@ -96,6 +96,7 @@ const getChildOfDictionaryColumns = ({
               className="link-btn"
               onClick={(e) => {
                 delChildOfDictionaryServices({ dictionaryId, pid: id }).then((canIDelete) => {
+                  if (!canIDelete) return;
                   /** 删除成功后需要刷新子项列表 */
                   handleDeleteChild(record);
                 });
