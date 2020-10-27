@@ -200,8 +200,8 @@ const CreateReference: React.FC<ICreateReference> = (props: ICreateReference) =>
         form={form}
         label = "关联字段"
         code={REFERENCES_KEY.REFFIELDCODE}
-        filterConfig={{
-          [COLUMNS_KEY.FIELDTYPE]: [FIELDTYPE.TEXT]
+        filterFunc={({ item }) => {
+          return item[COLUMNS_KEY.FIELDTYPE] !== FIELDTYPE.TEXT;
         }}
       />
       <RefField
