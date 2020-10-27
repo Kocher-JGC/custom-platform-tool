@@ -518,10 +518,12 @@ class MenuList extends React.Component {
     this.setState({
       /** 缓存数据 */
       searchArea,
-      /** 搜索数据后，不展开任何数据 */
-      expandedRowKeys: []
     }, () => {
       this.getMenuList();
+      this.setState({
+        /** 搜索数据后，展开所有数据 */
+        expandedRowKeys: this.state.allExpandedKeysInMenu
+      });
     });
   }
 
