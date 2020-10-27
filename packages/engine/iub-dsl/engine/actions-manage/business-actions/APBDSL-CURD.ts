@@ -7,16 +7,16 @@ import { getGenAPBDSLFunctionTransform, SelectParamOfAPBDSL } from "./APBDSL";
 import { RuntimeSchedulerFnName } from "../../runtime";
 import { arrayAsyncHandle } from "../../utils";
 
-const tempField = {
-  create_user_id: 996, // '随便填个数字'
-  last_update_user_id: 996, // '随便填个数字'
-  sequence: Math.floor(Math.random() * 10000000), // '随便填个数字'
-  last_update_time: '1996-06-09', // '随便填个年月日'
-  create_time: '1996-06-09', // '随便填个年月日'
-  data_version: '1', // '随便填个字符串'
-  last_update_user_name: '996', // 非必填'
-  create_user_name: '996', // 非必填'
-};
+// const tempField = {
+//   create_user_id: 996, // '随便填个数字'
+//   last_update_user_id: 996, // '随便填个数字'
+//   sequence: Math.floor(Math.random() * 10000000), // '随便填个数字'
+//   last_update_time: '1996-06-09', // '随便填个年月日'
+//   create_time: '1996-06-09', // '随便填个年月日'
+//   data_version: '1', // '随便填个字符串'
+//   last_update_user_name: '996', // 非必填'
+//   create_user_name: '996', // 非必填'
+// };
 
 const normalCURDActionParseScheduler = (action: NormalCURD) => {
   const { type: CURDType, table } = action;
@@ -48,8 +48,8 @@ const genTableInsertFn = (actionConf: TableInsert) => {
       type: 'getTable',
       params: [table]
     });
-    const tempSet = Array.isArray(set) ? set.map((_) => ({ ..._, ...tempField })) : [{ ...set, ...tempField }];
-    const APBDSLItem = getSetOfAPBDSL({ set: tempSet, table: actualTable });
+    // const tempSet = Array.isArray(set) ? set.map((_) => ({ ..._, ...tempField })) : [{ ...set, ...tempField }];
+    const APBDSLItem = getSetOfAPBDSL({ set, table: actualTable });
     return APBDSLItem;
   };
 };

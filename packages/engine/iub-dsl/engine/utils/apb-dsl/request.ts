@@ -1,4 +1,4 @@
-import { APBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
 import { AxiosResponse } from 'axios';
 
 enum APBDSLResponeCode {
@@ -76,7 +76,7 @@ interface APBDSLRespone<T = any> {
 export const APBDSLrequest = <R = any>(reqParam) => {
   // const reqUrl = genUrl('UserInfo');
   // console.dir(reqParam, { depth: 3 });
-  return $A_R(APBDSLtestUrl, {
+  return $A_R(getAPBDSLtestUrl(), {
     method: 'POST',
     data: reqParam
   }).then(({ data }: AxiosResponse<APBDSLRespone<R | boolean>>) => {
