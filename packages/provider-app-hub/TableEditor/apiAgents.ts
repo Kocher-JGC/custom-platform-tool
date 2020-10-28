@@ -50,17 +50,27 @@ export async function getTableList() {
 }
 
 /* 判断是否可删除 */
-export async function allowedDeleted(params) {
+export async function allowDeleted(params) {
   const res = await allowedDeletedApi(params);
   const { code, result } = res || {};
   if (code !== API_CODE.SUCCESS) {
-    /** 如果接口没有提供提示信息 */
-    if (result?.length === 0) {
-      return [MESSAGES.DELETEFIELD_FAILED];
-    }
-    return result;
+    return {
+      allowedDeleted: false,
+      msg: MESSAGES.DELETEFIELD_FAILED
+    };
   }
-  return [];
+  const { allowedDeleted, errorMsg } = result;
+  let msg: string;
+  if (errorMsg.length > 0) {
+    msg = errorMsg.map((item) => item.msg || '').split('，');
+  } else {
+    msg = allowedDeleted ? MESSAGES.MAY_I_DELETE
+      : MESSAGES.DELETEFIELD_FAILED;
+  }
+  return {
+    allowedDeleted,
+    msg
+  };
 }
 
 /** 保存表数据 */

@@ -171,10 +171,6 @@ export const ModuleTreeItem: React.FC<IProps> = React.memo((props: IProps): Reac
     <Form.Item
       name="moduleId"
       label={label}
-      rules={[{
-        required: true,
-        message: "请填写归属模块"
-      }]}
     >
       <TreeSelect
         defaultValue = {defaultValue}

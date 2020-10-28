@@ -124,7 +124,7 @@ const CreateTable: React.FC<IProps> = (props: IProps) => {
                   label="最大层级数"
                   rules={[
                     { required: true, message: "请填写最大层级数" },
-                    { pattern: /^([2-9]|1[1-5])$/, message: "请输入2-15的整数" }
+                    { pattern: /^([2-9]|1[0-5])$/, message: "请输入2-15的整数" }
                   ]}
                   initialValue={15}
                 >

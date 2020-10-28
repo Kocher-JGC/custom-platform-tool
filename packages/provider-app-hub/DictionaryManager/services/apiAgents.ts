@@ -84,6 +84,7 @@ export async function addDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADDDICTIONARY_FAILED);
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.ADDDICTIONARY_SUCCESS);
   return true;
 }
 export async function editDictionary(data) {
@@ -93,6 +94,7 @@ export async function editDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '字典修改失败');
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.EDITDICTIONARY_SUCCESS);
   return true;
 }
 export async function editChildOfDictionary(data) {
@@ -102,6 +104,7 @@ export async function editChildOfDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDITCHILDOFDICTIONARY_FAILED);
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.EDITCHILDOFDICTIONARY_SUCCESS);
   return true;
 }
 export async function moveChildOfDictionary(data) {

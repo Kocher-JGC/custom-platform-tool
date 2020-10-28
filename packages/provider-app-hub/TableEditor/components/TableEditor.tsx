@@ -1,11 +1,13 @@
 import React from 'react';
 import { FormInstance } from 'antd/lib/form';
 import { getUrlParams } from "@mini-code/request/url-resolve";
-import { Button, Tag, Tabs } from 'antd';
+import {
+  Button, Tag, Tabs, message as AntdMessage
+} from 'antd';
 import { Link } from "multiple-page-routing";
 import findIndex from 'lodash/findIndex';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
-import { getTableInfo, allowedDeleted, editTableInfo } from '../apiAgents';
+import { getTableInfo, allowDeleted, editTableInfo } from '../apiAgents';
 import {
   TABLE_TYPE, NOTIFICATION_TYPE, MESSAGES, BUTTON_TYPE, BUTTON_SIZE, COLUMNS_KEY, FIELDSIZEREGULAR, DATATYPE, REFERENCES_KEY, FOREIGNKEYS_KEY, SPECIES
 } from '../constants';
@@ -308,17 +310,33 @@ class TableEditor extends React.Component {
     return this.getIndexByRowKey(editingKeyInExpandedInfo);
   }
 
-  getIndexByRowKey = (rowKey) => {
+  getIndexByRowKey = (rowKey, area) => {
     const { activeAreaInExpandedInfo } = this.state;
-    const index = findIndex(this.state[activeAreaInExpandedInfo], { id: rowKey });
+    const index = findIndex(this.state[area || activeAreaInExpandedInfo], { id: rowKey });
     return index;
   }
 
   /** 根据编辑行唯一标识和高亮区域感知编辑行索引 */
-  getRecordByRowKey=(rowKey) => {
+  getRecordByRowKey=(rowKey, area) => {
     const { activeAreaInExpandedInfo } = this.state;
-    const index = this.getIndexByRowKey(rowKey);
-    return this.state[activeAreaInExpandedInfo][index];
+    const index = this.getIndexByRowKey(rowKey, area);
+    return this.state[area || activeAreaInExpandedInfo][index];
+  }
+
+  setEffect = ({ oldRecord, newRecord }) => {
+    const { activeAreaInExpandedInfo } = this.state;
+    if (['fieldList'].includes(activeAreaInExpandedInfo)) return;
+    const {
+      [REFERENCES_KEY.FIELDID]: fieldId,
+      [REFERENCES_KEY.REFFIELDSIZE]: fieldSize,
+      [REFERENCES_KEY.REFFIELDTYPE]: fieldType,
+    } = newRecord;
+    const recordInFieldList = this.getRecordByRowKey(fieldId, 'fieldList');
+    recordInFieldList[COLUMNS_KEY.FIELDSIZE] = fieldSize;
+    recordInFieldList[COLUMNS_KEY.FIELDTYPE] = fieldType;
+    this.setState({
+      fieldList: this.state.fieldList.slice()
+    });
   }
 
   /** 行保存 */
@@ -329,6 +347,10 @@ class TableEditor extends React.Component {
       await this.expandInfoFormRef.current?.validateFields();
       const record = this.getRecordFromExpandForm[activeAreaInExpandedInfo]?.();
       const index = this.getIndexByEditingKey();
+      this.setEffect({
+        oldRecord: this.state[activeAreaInExpandedInfo][index],
+        newRecord: record
+      });
       this.setState((previousState) => {
         const newList = previousState[activeAreaInExpandedInfo].slice();
         newList[index] = { ...newList[index], ...record, editable: false };
@@ -597,15 +619,14 @@ class TableEditor extends React.Component {
       return;
     }
     /** 非用户自己创建的数据，需要走后台接口判断是否可删除 */
-    allowedDeleted({
+    allowDeleted({
       tableId: this.state.basicInfo.tableId,
       columnId: selectedRowKey
-    }).then((messageList) => {
-      if (messageList.length === 0) {
-        this.deleteFieldConfirm(title, selectedRowKey);
-      } else {
-        this.deleteFieldConfirm(messageList.split('，'), selectedRowKey);
+    }).then(({ allowedDeleted, msg }) => {
+      if (!allowedDeleted) {
+        return AntdMessage.warn(msg);
       }
+      this.deleteFieldConfirm(msg, selectedRowKey);
     });
   }
 

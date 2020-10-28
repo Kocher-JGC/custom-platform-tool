@@ -489,7 +489,7 @@ class MenuList extends React.Component {
   /** 获取列表数据 */
   getMenuList = () => {
     return new Promise((resolve, reject) => {
-      const { searchArea } = this.state;
+      const { searchArea, expandedRowKeys } = this.state;
       getMenuListServices(searchArea).then((res) => {
         if (res?.code !== API_CODE.SUCCESS) {
           // openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.GET_MENU_LIST_FAILED);
@@ -500,7 +500,8 @@ class MenuList extends React.Component {
         this.setState({
           menuList,
           menuMap,
-          allExpandedKeysInMenu
+          allExpandedKeysInMenu,
+          expandedRowKeys: expandedRowKeys.filter((item) => allExpandedKeysInMenu.includes(item))
         }, () => {
           resolve();
         });
@@ -517,12 +518,13 @@ class MenuList extends React.Component {
     const searchArea = this.searchFormRef.current?.getFieldsValue([MENU_KEY.NAME, MENU_KEY.TYPE]);
     this.setState({
       /** 缓存数据 */
-      searchArea,
+      searchArea
     }, () => {
-      this.getMenuList();
-      this.setState({
-        /** 搜索数据后，展开所有数据 */
-        expandedRowKeys: this.state.allExpandedKeysInMenu
+      this.getMenuList().then(() => {
+        this.setState({
+          /** 搜索数据后，展开所有数据 */
+          expandedRowKeys: this.state.allExpandedKeysInMenu
+        });
       });
     });
   }
@@ -821,6 +823,29 @@ class MenuList extends React.Component {
     this.saveRow();
   }
 
+  /**
+   * 收缩
+   * 收缩时应该把子项也收缩起来
+   */
+  hanldeUnExpand = (record) => {
+    const childList = this.getKeyOfChild(record.children);
+    const list = [record.id, ...childList];
+    this.setState({
+      expandedRowKeys: this.state.expandedRowKeys.filter((item) => !list.includes(item))
+    });
+  }
+
+  /** 获取所有子项id */
+  getKeyOfChild = (children: IMenu[]) => {
+    const list: string[] = [];
+    children?.forEach((item) => {
+      const { [MENU_KEY.ID]: id, [MENU_KEY.CHILDREN]: chlidren } = item;
+      list.push(id);
+      list.push.apply(list, this.getKeyOfChild(chlidren));
+    });
+    return list;
+  }
+
   render() {
     const {
       editingKey, menuList, expandedRowKeys, visibleModalSelectPage, visibleModalSelectIcon
@@ -830,9 +855,14 @@ class MenuList extends React.Component {
       editingKey: this.state.editingKey,
       expandedRowKeys,
       onDel: (record) => {
+        const { [MENU_KEY.ID]: id, [MENU_KEY.PID]: pid } = record;
+        const parentRecordOld = this.getRecordByRowKey(pid);
         this.getMenuList().then(() => {
-          const { [MENU_KEY.ID]: id } = record;
-          if (id !== editingKey) {
+          const parentRecordNew = this.getRecordByRowKey(pid);
+          if (parentRecordOld.children?.length === 1 && !(parentRecordNew.children?.length > 0)) {
+            this.hanldeUnExpand(parentRecordNew);
+          }
+          if (id !== editingKey && editingKey) {
             this.setListWithRecordUpdatedByRowKey(editingKey, { editable: true });
             return;
           }
@@ -901,7 +931,7 @@ class MenuList extends React.Component {
             expandedRowKeys,
             onExpand: (expanded, record) => {
               if (!expanded) {
-                this.setState({ expandedRowKeys: without(expandedRowKeys, record.id) });
+                this.hanldeUnExpand(record);
                 return;
               }
               this.setState({ expandedRowKeys: [...expandedRowKeys, record.id] });
