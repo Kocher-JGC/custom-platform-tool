@@ -171,6 +171,7 @@ export const ModuleTreeItem: React.FC<IProps> = React.memo((props: IProps): Reac
     <Form.Item
       name="moduleId"
       label={label}
+      initialValue={defaultValue}
     >
       <TreeSelect
         defaultValue = {defaultValue}

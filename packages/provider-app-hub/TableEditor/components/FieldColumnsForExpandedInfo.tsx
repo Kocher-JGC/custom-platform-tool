@@ -5,7 +5,7 @@ import {
   Form, Input, Select, InputNumber
 } from 'antd';
 import { KeyOutlined } from '@ant-design/icons';
-import { ITableColumnInState, ITableColumnShowKey, ISELECTSMENU } from '../interface';
+import { ITableColumnInState, ITableColumnShowKey } from '../interface';
 import { fieldEditableConfig } from './ColumnEditableConfigForExpandedInfo';
 import {
   SPECIESCN, DATATYPE, COLUMNS_KEY, FIELDTYPE, FIELDTYPEMENU, FIELDSIZEREGULAR, DATATYPEMENU, DATATYPEMENUFORTEXT, VALUEBOOLEANMENU
@@ -86,7 +86,7 @@ class Name extends React.Component<ICommonFieldProps> {
   }
 }
 
-const Code: React.FC<IDataType> = (props: IDataType) => {
+const Code: React.FC<ICommonFieldProps> = (props: ICommonFieldProps) => {
   const {
     text, record, formRef
   } = props;

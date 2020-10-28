@@ -25,7 +25,7 @@ export async function getDictionaryListServices(params) {
 export async function getListOfDictionaryServices({ id }) {
   const res = await getListOfDictionaryServicesApi({ id });
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARY_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARY_FAILED);
     return [];
   }
   return res?.result?.items;
@@ -84,7 +84,7 @@ export async function addDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADDDICTIONARY_FAILED);
     return false;
   }
-  openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.ADDDICTIONARY_SUCCESS);
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.ADDDICTIONARY_SUCCESS);
   return true;
 }
 export async function editDictionary(data) {
@@ -94,7 +94,7 @@ export async function editDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '字典修改失败');
     return false;
   }
-  openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.EDITDICTIONARY_SUCCESS);
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.EDITDICTIONARY_SUCCESS);
   return true;
 }
 export async function editChildOfDictionary(data) {
@@ -104,7 +104,7 @@ export async function editChildOfDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDITCHILDOFDICTIONARY_FAILED);
     return false;
   }
-  openNotification(NOTIFICATION_TYPE.ERROR, MESSAGE.EDITCHILDOFDICTIONARY_SUCCESS);
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.EDITCHILDOFDICTIONARY_SUCCESS);
   return true;
 }
 export async function moveChildOfDictionary(data) {
@@ -114,5 +114,6 @@ export async function moveChildOfDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.MOVECHILD_FAILED);
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.MOVECHILD_SUCCESS);
   return true;
 }

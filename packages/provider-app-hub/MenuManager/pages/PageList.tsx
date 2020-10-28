@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Button, Form, Select, Input, Switch
 } from "antd";
@@ -11,7 +11,6 @@ import {
 import { FormInstance } from 'antd/lib/form';
 import Table from '@provider-app/table-editor/components/ExpandedInfoEditor';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
-import without from 'lodash/without';
 import SelectPage from './SelectPage';
 import {
   delMenuServices, getMenuListServices, editMenuServices, setMenuStatusServices, addMenuServices
@@ -70,7 +69,7 @@ interface IPageChoose {
   record: IMenu,
   formRef: React.RefObject<FormInstance<any>>
   text: string
-  selectPage: string
+  selectPage: (param:string) => void
 }
 /**
  * 页面链接组件
@@ -180,7 +179,7 @@ const Icon: React.FC<IIcon> = (props: IIcon) => {
         const key = getIconKey(getFieldValue);
         return (
           <div
-            className={getClassName(record.editable)}
+            className={getClassName(record.editable || false)}
             onClick={(e) => { handleClick(e, key); }}
           >
             { key ? (
@@ -401,8 +400,6 @@ const getListColumns = ({
     },
   },
 ];
-
-type UseListData = () => [any[], () => void]
 
 interface IState {
   menuList: IMenu[],
@@ -859,7 +856,7 @@ class MenuList extends React.Component {
         const parentRecordOld = this.getRecordByRowKey(pid);
         this.getMenuList().then(() => {
           const parentRecordNew = this.getRecordByRowKey(pid);
-          if (parentRecordOld.children?.length === 1 && !(parentRecordNew.children?.length > 0)) {
+          if (parentRecordOld.children?.length === 1 && ((parentRecordNew.children?.length || 0) <= 0)) {
             this.hanldeUnExpand(parentRecordNew);
           }
           if (id !== editingKey && editingKey) {
@@ -1002,7 +999,7 @@ class MenuList extends React.Component {
 
             <SelectIcon
               currentIcon = {this.editMenuFormRef.current?.getFieldValue(MENU_KEY.ICON)}
-              type="selectIcon"
+              key="selectIcon"
               onOk={(icon) => {
                 this.setState({ visibleModalSelectIcon: false });
                 this.editMenuFormRef.current?.setFieldsValue({ [MENU_KEY.ICON]: icon });

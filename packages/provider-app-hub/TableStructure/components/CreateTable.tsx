@@ -44,7 +44,7 @@ const CreateTable: React.FC<IProps> = (props: IProps) => {
       });
       onOk && onOk();
     } else {
-      message.error(res.msg);
+      // message.error(res.msg);
     }
   };
   /**
