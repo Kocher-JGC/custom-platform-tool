@@ -323,9 +323,7 @@ class TableEditor extends React.Component {
     return this.state[area || activeAreaInExpandedInfo][index];
   }
 
-  setEffect = ({ oldRecord, newRecord }) => {
-    const { activeAreaInExpandedInfo } = this.state;
-    if (['fieldList'].includes(activeAreaInExpandedInfo)) return;
+  setReferenceEffect = (newRecord) => {
     const {
       [REFERENCES_KEY.FIELDID]: fieldId,
       [REFERENCES_KEY.REFFIELDSIZE]: fieldSize,
@@ -340,6 +338,43 @@ class TableEditor extends React.Component {
     });
   }
 
+  setFieldEffect = (oldRecord, newRecord) => {
+    const {
+      [COLUMNS_KEY.ID]: id,
+    } = oldRecord;
+    const {
+      [COLUMNS_KEY.DATATYPE]: dataType,
+      [COLUMNS_KEY.CODE]: code
+    } = newRecord;
+    const map = {
+      [DATATYPE.FK]: 'foreignKeyList',
+      [DATATYPE.QUOTE]: 'referenceList'
+    };
+    const area = map[dataType];
+    if (!area) return;
+    const {
+      [area]: list
+    } = this.state;
+    const record = list?.filter((item) => item[REFERENCES_KEY.FIELDID] === id)[0];
+    if (!record) return;
+    record[REFERENCES_KEY.FIELDCODE] = code;
+    this.setState({
+      [area]: list.slice()
+    });
+  }
+
+  setEffect = ({ oldRecord, newRecord }) => {
+    const { activeAreaInExpandedInfo } = this.state;
+    switch (activeAreaInExpandedInfo) {
+      case 'referenceList':
+        this.setReferenceEffect(newRecord); break;
+      case 'foreignKeyList':
+        this.setReferenceEffect(newRecord); break;
+      case 'fieldList':
+        this.setFieldEffect(oldRecord, newRecord); break;
+    }
+  }
+
   /** 行保存 */
   async saveRow() {
     const { editingKeyInExpandedInfo, activeAreaInExpandedInfo } = this.state;
@@ -348,6 +383,7 @@ class TableEditor extends React.Component {
       await this.expandInfoFormRef.current?.validateFields();
       const record = this.getRecordFromExpandForm[activeAreaInExpandedInfo]?.();
       const index = this.getIndexByEditingKey();
+      debugger;
       this.setEffect({
         oldRecord: this.state[activeAreaInExpandedInfo][index],
         newRecord: record
