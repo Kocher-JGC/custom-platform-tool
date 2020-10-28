@@ -6,30 +6,26 @@ import { queryPageData } from '@consumer-app/web-platform/src/services/page';
 import { ActionDoFn } from '../../types';
 
 export const openModelFromTable = (conf: OpenModalFromTableClick, baseActionInfo): ActionDoFn => {
-  const {
-    actionOptions: {
-      pageUrl
-    },
-  } = conf;
-  return async ({ action, asyncDispatchOfIUBEngine }) => {
-    console.log(action);
-
-    Modal.confirm({
-
-    });
+  // const {
+  //   actionOptions: {
+  //   },
+  // } = conf;
+  const pageUrl = '1321030671367544832';
+  return async ({ action, pageMark, asyncDispatchOfIUBEngine }) => {
     const IUBRendererHooks = {
       mounted() {
+        console.log(pageMark);
+
+        console.log(action);
       }
     };
     if (pageUrl) {
       try {
         const pageData = await queryPageData({ id: pageUrl });
-        const m = Modal.confirm({
+        const mInstance = Modal.confirm({
           icon: false,
           content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
         });
-
-        console.log(m);
       } catch (e) {
         console.error(e);
       }
