@@ -3,13 +3,19 @@ import {
   Form, Input, Table
 } from 'antd';
 import { ModalFooter } from '@provider-app/table-editor/components/ChooseDict';
-// import { SketchPicker } from 'react-color';
 import { FormInstance } from 'antd/lib/form';
 import CreateModal from './CreateModal';
 import { DEF_VALUE, DICTIONARY_CHILD_KEY, DICTIONARY_KEY } from '../constants';
 
 const SketchPicker = React.lazy(() => import('react-color/lib/Sketch'));
 
+/**
+ * 字典项列表的展示列配置
+ * @param param0.handleAdd 告知上级当前行索引
+ * @param param0.handleClickColor 告知上级当前行颜色作用属性，颜色值，当前行唯一标识
+ * @param param0.list 字典项列表 用于判断能否显示删除按钮
+ * @param param0.handleDelete 告知上级待删除行索引
+ */
 const getColumns = ({
   handleAdd, handleClickColor, list, handleDelete
 }) => {
@@ -67,7 +73,6 @@ const getColumns = ({
             style={{ backgroundColor: text }}
             onClick={(e) => {
               e.stopPropagation();
-              console.log(record[DICTIONARY_CHILD_KEY.ID]);
               handleClickColor({
                 color: text || DEF_VALUE.RENDERFONTCOLOR,
                 type: DICTIONARY_CHILD_KEY.RENDERFONTCOLOR,
@@ -123,26 +128,48 @@ const getColumns = ({
       )
     }];
 };
-interface IOperateParam {
-  name?:string
-  description?:string
-  editingKey?: string
-  nameVisible: boolean
-  descVisible: boolean
-  list: {
-    name: string
-    code: string
-    renderBgColor: string
-    renderFontColor: string
-    editable?: boolean
-  }[]
-}
-interface IProps {
-  onOk: (data:IOperateParam) => void;
-  onCancel: () => void;
-  config: IOperateParam
+
+interface IItemList {
+  /** 字典项名称 */
+  name: string
+  /** 字典项编码 */
+  code: string
+  /** 字典项背景颜色 */
+  renderBgColor: string
+  /** 字典项字体颜色 */
+  renderFontColor: string
+  /** 字典项是否可编辑 */
+  editable?: boolean
 }
 
+export interface IRes {
+/** 字典名称 */
+  name?:string
+  /** 字典描述 */
+  description?:string
+  /** 字典项列表 */
+  list: IItemList[]
+}
+export interface IConfig extends IRes{
+  /** 是否显示字典名称输入框 */
+  nameVisible: boolean
+  /** 是否显示字典描述输入框 */
+  descVisible: boolean
+
+  /** 编辑行唯一标识，当新增字典时，需要让第一行可编辑 */
+  editingKey?: string
+
+}
+interface IProps {
+  onOk: (data:IRes) => void;
+  onCancel: () => void;
+  config: IConfig
+}
+
+// interface IState {
+//   editingKey: string
+//   list: IItemList[]
+// }
 class CreateDictionary extends React.Component<IProps> {
   state = {
     editingKey: '',

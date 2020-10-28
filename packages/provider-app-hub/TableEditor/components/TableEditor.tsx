@@ -323,9 +323,7 @@ class TableEditor extends React.Component {
     return this.state[area || activeAreaInExpandedInfo][index];
   }
 
-  setEffect = ({ oldRecord, newRecord }) => {
-    const { activeAreaInExpandedInfo } = this.state;
-    if (['fieldList'].includes(activeAreaInExpandedInfo)) return;
+  setReferenceEffect = (newRecord) => {
     const {
       [REFERENCES_KEY.FIELDID]: fieldId,
       [REFERENCES_KEY.REFFIELDSIZE]: fieldSize,
@@ -340,6 +338,43 @@ class TableEditor extends React.Component {
     });
   }
 
+  setFieldEffect = (oldRecord, newRecord) => {
+    const {
+      [COLUMNS_KEY.ID]: id,
+    } = oldRecord;
+    const {
+      [COLUMNS_KEY.DATATYPE]: dataType,
+      [COLUMNS_KEY.CODE]: code
+    } = newRecord;
+    const map = {
+      [DATATYPE.FK]: 'foreignKeyList',
+      [DATATYPE.QUOTE]: 'referenceList'
+    };
+    const area = map[dataType];
+    if (!area) return;
+    const {
+      [area]: list
+    } = this.state;
+    const record = list?.filter((item) => item[REFERENCES_KEY.FIELDID] === id)[0];
+    if (!record) return;
+    record[REFERENCES_KEY.FIELDCODE] = code;
+    this.setState({
+      [area]: list.slice()
+    });
+  }
+
+  setEffect = ({ oldRecord, newRecord }) => {
+    const { activeAreaInExpandedInfo } = this.state;
+    switch (activeAreaInExpandedInfo) {
+      case 'referenceList':
+        this.setReferenceEffect(newRecord); break;
+      case 'foreignKeyList':
+        this.setReferenceEffect(newRecord); break;
+      case 'fieldList':
+        this.setFieldEffect(oldRecord, newRecord); break;
+    }
+  }
+
   /** 行保存 */
   async saveRow() {
     const { editingKeyInExpandedInfo, activeAreaInExpandedInfo } = this.state;
@@ -348,6 +383,7 @@ class TableEditor extends React.Component {
       await this.expandInfoFormRef.current?.validateFields();
       const record = this.getRecordFromExpandForm[activeAreaInExpandedInfo]?.();
       const index = this.getIndexByEditingKey();
+      debugger;
       this.setEffect({
         oldRecord: this.state[activeAreaInExpandedInfo][index],
         newRecord: record
@@ -432,17 +468,17 @@ class TableEditor extends React.Component {
     const id = `${new Date().valueOf()}`;
     return {
       [COLUMNS_KEY.ID]: id,
-      [COLUMNS_KEY.NAME]: recordDefaultValue?.[COLUMNS_KEY.NAME] || '',
-      [COLUMNS_KEY.CODE]: recordDefaultValue?.[COLUMNS_KEY.CODE] || '',
-      [COLUMNS_KEY.FIELDTYPE]: recordDefaultValue?.[COLUMNS_KEY.FIELDTYPE] || 'STRING',
-      [COLUMNS_KEY.DATATYPE]: recordDefaultValue?.[COLUMNS_KEY.DATATYPE] || 'NORMAL',
-      [COLUMNS_KEY.FIELDSIZE]: recordDefaultValue?.[COLUMNS_KEY.FIELDSIZE] || FIELDSIZEREGULAR.STRING.DEFAULT,
-      [COLUMNS_KEY.REQUIRED]: recordDefaultValue?.[COLUMNS_KEY.REQUIRED] || false,
-      [COLUMNS_KEY.UNIQUE]: recordDefaultValue?.[COLUMNS_KEY.UNIQUE] || false,
-      [COLUMNS_KEY.DICTIONARYFOREIGN]: recordDefaultValue?.[COLUMNS_KEY.DICTIONARYFOREIGN] || '',
-      [COLUMNS_KEY.DICTIONARYFOREIGNCN]: recordDefaultValue?.[COLUMNS_KEY.DICTIONARYFOREIGNCN] || '',
-      [COLUMNS_KEY.PINYINCONVENT]: recordDefaultValue?.[COLUMNS_KEY.PINYINCONVENT] || false,
-      [COLUMNS_KEY.REGULAR]: recordDefaultValue?.[COLUMNS_KEY.REGULAR] || '',
+      [COLUMNS_KEY.NAME]: recordDefaultValue[COLUMNS_KEY.NAME] || '',
+      [COLUMNS_KEY.CODE]: recordDefaultValue[COLUMNS_KEY.CODE] || '',
+      [COLUMNS_KEY.FIELDTYPE]: recordDefaultValue[COLUMNS_KEY.FIELDTYPE] || 'STRING',
+      [COLUMNS_KEY.DATATYPE]: recordDefaultValue[COLUMNS_KEY.DATATYPE] || 'NORMAL',
+      [COLUMNS_KEY.FIELDSIZE]: COLUMNS_KEY.FIELDSIZE in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.FIELDSIZE] : FIELDSIZEREGULAR.STRING.DEFAULT,
+      [COLUMNS_KEY.REQUIRED]: COLUMNS_KEY.REQUIRED in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.REQUIRED] : false,
+      [COLUMNS_KEY.UNIQUE]: COLUMNS_KEY.UNIQUE in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.UNIQUE] : false,
+      [COLUMNS_KEY.DICTIONARYFOREIGN]: recordDefaultValue[COLUMNS_KEY.DICTIONARYFOREIGN] || '',
+      [COLUMNS_KEY.DICTIONARYFOREIGNCN]: recordDefaultValue[COLUMNS_KEY.DICTIONARYFOREIGNCN] || '',
+      [COLUMNS_KEY.PINYINCONVENT]: COLUMNS_KEY.PINYINCONVENT in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.PINYINCONVENT] : false,
+      [COLUMNS_KEY.REGULAR]: recordDefaultValue[COLUMNS_KEY.REGULAR] || '',
       [COLUMNS_KEY.SPECIES]: 'BIS',
       [COLUMNS_KEY.EDITABLE]: true,
       [COLUMNS_KEY.CREATEDCUSTOMED]: true
@@ -505,6 +541,7 @@ class TableEditor extends React.Component {
       visibleModalCreateReference: false,
       referenceList: [
         {
+          [REFERENCES_KEY.ID]: `${new Date().valueOf()}`,
           [REFERENCES_KEY.FIELDID]: id,
           [REFERENCES_KEY.FIELDCODE]: fieldDefaultValue[REFERENCES_KEY.REFFIELDCODE],
           [REFERENCES_KEY.REFTABLECODE]: fieldDefaultValue[REFERENCES_KEY.REFTABLECODE],
