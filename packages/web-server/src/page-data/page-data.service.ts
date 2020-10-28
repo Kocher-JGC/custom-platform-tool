@@ -11,6 +11,9 @@ const prevParam = {
   app: 'iot'
 };
 
+// const baseUrl = 'http://192.168.14.140:6090'
+const baseUrl = 'http://192.168.14.181:6090';
+
 const genUrl = (params: any = {}) => {
   prevParam.lessee = params.lessee || prevParam.lessee;
   prevParam.app = params.app || prevParam.app;
@@ -346,11 +349,12 @@ export class PageDataService {
   }
 
   transformWidgerData(widgetData, extralData) {
-    const result = {};
+    const result = [];
     const widgetIds = Object.keys(widgetData);
 
     /** 傻做法 */
     let hasTable = false;
+    let tableIdx = -1;
     const tableD = [];
 
     widgetIds.forEach((id) => {
@@ -358,18 +362,27 @@ export class PageDataService {
       const { compType } = onceWidgetData;
       switch (compType) {
         case 'FormInput':
-          result[id] = this.genFormInput(onceWidgetData);
+          result.push(
+            this.genFormInput(onceWidgetData)
+          );
           break;
         case 'FormButton':
-          result[id] = this.genFromButton(onceWidgetData);
+          result.push(
+            this.genFromButton(onceWidgetData),
+          );
           break;
         case 'NormalTable':
           hasTable = true;
-          result[id] = this.genTable(onceWidgetData);
-          tableD.push(result[id]);
+          tableIdx = result.push(
+            this.genTable(onceWidgetData)
+          );
+          tableIdx--;
+          tableD.push(result[tableIdx]);
           break;
         default:
-          result[id] = onceWidgetData;
+          result.push(
+            onceWidgetData
+          );
           break;
       }
     });
@@ -380,7 +393,16 @@ export class PageDataService {
       this.addSearchBuntton(extralSchema);
     }
     
-    return result;
+    return result.reduce((res, val, i) => {
+      res[val.id] = val;
+      if (tableIdx - 1 === i) {
+        res = {
+          ...res,
+          ...this.tempWeight.reduce((r, v) => ({ ...r, [v.id]: v }), {}),
+        };
+      }
+      return res;
+    }, {});
   }
 
   addSearchWieght(extralSchema) {
@@ -462,6 +484,8 @@ export class PageDataService {
   }
 
   genTableExtralData(tableData, data) {
+    console.log(tableData, data);
+    
     const { columns, id } = data;
     tableData.columns = Object.keys(columns).filter(key => !columns[key].isPk).map(key => ({
       dataIndex: columns[key].fieldCode,
@@ -562,11 +586,7 @@ export class PageDataService {
       // const actualMetadata = dataSources.map((onceTableInfo) => this.genMetadataFromOnceTable(actualSchema, onceTableInfo));
       
       /** 转换组件集合 */
-      const widgetC = this.transformWidgerData(componentsCollection, extralData);
-      const actualComponentsCollection = Object.assign({}, 
-        this.tempWeight.reduce((res, val) => ({ ...res, [val.id]: val }), {}),
-        widgetC
-      );
+      const actualComponentsCollection = this.transformWidgerData(componentsCollection, extralData);
       
       /** 转换schemas */
       const actualSchema = Object.assign({}, 
