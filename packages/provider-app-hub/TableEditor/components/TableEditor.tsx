@@ -332,6 +332,7 @@ class TableEditor extends React.Component {
       [REFERENCES_KEY.REFFIELDTYPE]: fieldType,
     } = newRecord;
     const recordInFieldList = this.getRecordByRowKey(fieldId, 'fieldList');
+    if (!recordInFieldList.createdCustomed) return;
     recordInFieldList[COLUMNS_KEY.FIELDSIZE] = fieldSize;
     recordInFieldList[COLUMNS_KEY.FIELDTYPE] = fieldType;
     this.setState({
