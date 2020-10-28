@@ -35,11 +35,23 @@ export const setPlatformApiUrl = (platformApiUrl: string) => {
 /**
  * 根据业务扩展的 http 请求工具的类型
  */
-export interface RExtend extends RequestClass {
+export interface RExtend extends RequestClass<ResStruct, RequestOptions> {
   urlManager: typeof urlManager
 }
 
-const $R = new RequestClass<ResStruct>({
+export interface RequestOptions {
+  /** 业务提示 */
+  businessTip: {
+    /** 提示的类型 */
+    type?: 'error' | 'success' | 'info'
+    /** 弹出的提示的类型，是顶部提示或者是右上角提示 */
+    tipType?: 'toast' | 'notify'
+    /** 当业务编码等于 xx 的时候显示，如果为空，则认为不是成功的业务码都弹出 */
+    whenCodeEq?: string
+  }
+}
+
+const $R = new RequestClass({
   // baseUrl: `${baseReqUrl}`
 }) as RExtend;
 
@@ -97,58 +109,62 @@ const resetHttpReqHelper = () => {
  * 前端应该与服务端的接口分离
  * 通过此方法实现对接远端需要的 request 数据
  */
-const beforeReq = (beforeData) => {
-  console.log('beforeData', beforeData);
-  return beforeData;
-};
+// const beforeReq = (beforeData) => {
+//   console.log('beforeData', beforeData);
+//   return beforeData;
+// };
 
 /**
  * 前端应该与服务端的接口分离
  * 通过此方法实现对接 response 数据
- * 前端统一接口
- * resData = {
- *   data: {} || [], // 对接远端接口的数据
- *   paging: {},     // 分页信息
- *   resCode: '',    // response 的业务代码，0 或者没有代指业务错误
- *   err: null || 'description' // 对接 response 的错误描述
- * }
  */
-const afterRes = (resData, other) => {
-  console.log('resData', resData);
-  console.log('other', other);
-  return resData;
-};
+// const afterRes = (resData, other) => {
+//   console.log('resData', resData);
+//   console.log('other', other);
+//   return resData;
+// };
 
 /** 使用 $R 的中间件 */
-// $R.use([beforeReq, afterRes]);
+// $R.useAfter([afterRes]);
 
 /**
- * 设置 $R 对象的 res
+ * 统一处理 http 业务码的函数
  */
-function handleRes(resData, other) {
-  const { code, msg } = resData;
-  switch (code) {
-    case '00000':
-      // console.log('成功');
-      break;
-    case 'A0300':
-      // console.log(resData);
-      // 处理没找到应用的业务逻辑
-      AntdMessage.error(msg);
-      onNavigate({
-        type: 'ROOT'
-      });
-      authStore.setState({ isLogin: false });
-      resetHttpReqHelper();
-      // onNavigate({
-      //   type: 'PUSH',
-      //   path: '/login',
-      //   useDefaultParams: false
-      // });
-      break;
-    default:
-      // TODO: 完善请求
-      AntdMessage.error(msg);
+function handleRes({ res, resDetail }) {
+  // return console.log('resData', resData);
+  const { code, msg } = res;
+  const { businessTip } = resDetail.__originReq;
+  if (!businessTip) {
+    /** 如果没有配置，默认所有错误都弹出 */
+    switch (code) {
+      case '00000':
+        // console.log('成功');
+        break;
+      case 'A0300':
+        // console.log(resData);
+        // 处理没找到应用的业务逻辑
+        AntdMessage.error(msg);
+        onNavigate({
+          type: 'ROOT'
+        });
+        authStore.setState({ isLogin: false });
+        resetHttpReqHelper();
+        // onNavigate({
+        //   type: 'PUSH',
+        //   path: '/login',
+        //   useDefaultParams: false
+        // });
+        break;
+      default:
+        // TODO: 完善请求
+        AntdMessage.error(msg);
+    }
+  } else {
+    const { whenCodeEq, type = 'info' } = businessTip as RequestOptions['businessTip'];
+    if (code === whenCodeEq) {
+      const antdMsgFunc = AntdMessage[type] || AntdMessage.info;
+      antdMsgFunc(msg);
+    }
   }
 }
 

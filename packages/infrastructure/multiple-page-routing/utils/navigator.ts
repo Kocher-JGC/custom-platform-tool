@@ -7,13 +7,17 @@ export interface NavParams {
   [key: string]: any;
 }
 
-export interface NavigateConfig {
+export interface RootNavigateConfig {
+  type: 'ROOT'
+}
+
+export interface NormalNavigateConfig {
   /** 从哪里来，由程序写入 */
   from?: Location
   /** 路由参数 */
   params?: NavParams
   /** 路由类型 */
-  type: 'PUSH' | 'GO_BACK' | 'LINK' | 'POP' | 'ROOT'
+  type: 'PUSH' | 'GO_BACK' | 'LINK' | 'POP'
   /** 需要跳转的路由，废弃的，需要换成 path */
   route?: string
   /** pathname */
@@ -25,6 +29,8 @@ export interface NavigateConfig {
   /** 设置 location 的 state */
   state?: {}
 }
+
+export type NavigateConfig = RootNavigateConfig | NormalNavigateConfig
 
 export const history = createBrowserHistory<any>();
 
