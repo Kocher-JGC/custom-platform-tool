@@ -133,8 +133,8 @@ const PageList: React.FC<IProps> = (props: IProps) => {
       data: Array.isArray(data) ? data.reduce((a, b) => {
         a.push({
           ...b,
-          belongMenus: b && Array.isArray(b.belongMenus) ? b.belongMenus.map((item) => item.menuName) : [],
-          dataSources: b && Array.isArray(b.dataSources) ? b.dataSources.map((item) => item.datasourceName) : [],
+          belongMenus: (b && Array.isArray(b.belongMenus) ? b.belongMenus.map((item) => item.menuName) : []).join(','),
+          dataSources: (b && Array.isArray(b.dataSources) ? b.dataSources.map((item) => item.datasourceName) : []).join(','),
         });
         return a;
       }, []) : [],

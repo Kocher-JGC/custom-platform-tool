@@ -41,14 +41,14 @@ export const TABLE_COLUMNS: ProColumns<ITableItem>[] = [
     title: '归属模块',
     dataIndex: 'belongMenus',
     ellipsis: true,
-    width: 150,
+    width: 180,
     hideInSearch: true
   },
   {
     title: '数据表',
     dataIndex: 'dataSources',
     ellipsis: true,
-    width: 150,
+    width: 180,
     hideInSearch: true
   },
   {
