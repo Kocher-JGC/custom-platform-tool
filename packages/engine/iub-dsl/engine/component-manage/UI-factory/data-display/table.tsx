@@ -56,32 +56,32 @@ const TableFactory = ({
   const context = useContext(DefaultCtx);
 
   const actualCoumns = useMemo(() => {
-    console.log(columns);
-    columns.push({
-      render: (text: string, record, index: number) => {
-        console.log(text, record, index);
-        return (<>
-          <Button
-            onClick={() => {
-              const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
-              const action = antTableRowClick()(text, record, index);
-              // context.runTimeCtxToBusiness.current.action = action;
-              // asyncDispatchOfIUBEngine({
-              //   type: 'flowsRun',
-              //   params: [['updFlow_1'], context.runTimeCtxToBusiness.current],
-              //   //  schedulerAction
-              //   action: {
-              //     type: 'effectReceiver'
-              //   }
-              // });
-              // text, record, index
-              // asyncDispatchOfIUBEngine()
-            }}
-          >修改</Button>&nbsp;&nbsp;
-          <Button>详情</Button>
-        </>);
-      }
-    });
+    // console.log(columns);
+    // columns.push({
+    //   render: (text: string, record, index: number) => {
+    //     console.log(text, record, index);
+    //     return (<>
+    //       <Button
+    //         onClick={() => {
+    //           const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
+    //           const action = antTableRowClick()(text, record, index);
+    //           // context.runTimeCtxToBusiness.current.action = action;
+    //           // asyncDispatchOfIUBEngine({
+    //           //   type: 'flowsRun',
+    //           //   params: [['updFlow_1'], context.runTimeCtxToBusiness.current],
+    //           //   //  schedulerAction
+    //           //   action: {
+    //           //     type: 'effectReceiver'
+    //           //   }
+    //           // });
+    //           // text, record, index
+    //           // asyncDispatchOfIUBEngine()
+    //         }}
+    //       >修改</Button>&nbsp;&nbsp;
+    //       <Button>详情</Button>
+    //     </>);
+    //   }
+    // });
     return columns;
   }, [columns]);
   /**

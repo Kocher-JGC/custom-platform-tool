@@ -29,7 +29,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
   const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
   const IUBStoreEntity = useIUBStore();
   const {
-    getPageState, updatePageState, IUBPageStore
+    getPageState
   } = IUBStoreEntity;
 
   const [runTimeLine, setRunTimeLine] = useState([]);
