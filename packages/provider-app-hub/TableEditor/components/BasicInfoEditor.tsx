@@ -76,7 +76,7 @@ class ModuleTreeItem extends React.Component<IModuleTreeItem> {
       style={{ width: '100%' }}
       allowClear
       defaultValue = { initialValue }
-      treeIcon={true}
+      treeIcon={false}
       filterTreeNode={false}
       treeData={moduleList}
       onSearch={this.handleSearch}
@@ -144,7 +144,7 @@ class BasicInfoEditor extends React.Component<BasicInfoEditorProps> {
               name="relatedModuleId"
               label="归属模块"
               rules={[
-                { required: true, message: '数据表名称不能为空' }
+                { required: true, message: '归属模块不能为空' }
               ]}
             >
               <ModuleTreeItem
