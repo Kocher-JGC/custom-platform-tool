@@ -86,6 +86,8 @@ const genBaseRenderStruct = (
     dynamicProps: {}
   };
 
+  // console.log(genRenderStructContext);
+
   genCompPropsMapList(usePropsKeys, {
     genPropsMap: (key: string, ctx) => {
       const conf = originConf[key]; // getConfFn

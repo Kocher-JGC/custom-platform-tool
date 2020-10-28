@@ -8,7 +8,7 @@ import { APBDSLCondControlResHandle, getAPBDSLCondOperatorHandle } from '../acti
 import { transMarkValFromArr, validTransMarkValFromArr } from './utils/transform-mark-value';
 import {
   DispatchCtxOfIUBEngine, Dispatch,
-  IUBEngineRuntimeCtx, AsyncIUBEngineRuntimeCtx,
+  IUBEngineRuntimeCtx, AsyncIUBEngineRuntimeCtx, RunTimeCtxToBusiness,
 } from './types';
 
 const useUU = (setListConf: any[] = []) => {
@@ -21,7 +21,7 @@ const useUU = (setListConf: any[] = []) => {
   });
   return prop;
 };
-const APBDSLrequest = async (reqParam) => {
+const APBDSLrequest = async (ctx: RunTimeCtxToBusiness, reqParam) => {
   const APBDSLRes = await originReq(reqParam);
   const action = {
     action: {
@@ -72,7 +72,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
   } = dslParseRes;
   console.log('//___genRuntimeCtxFn___\\\\');
   const {
-    // pageManageInstance,
+    pageManageInstance,
     IUBStoreEntity, // IUB页面仓库实例
     runTimeCtxToBusiness, // useRef
     effectRelationship, // 副作用关系的实例
@@ -129,6 +129,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
       flowsRun
     },
     sys: {
+      // TODO: 需要做一层代理封装
+      ...pageManageInstance,
       APBDSLrequest
     },
   };
@@ -150,21 +152,26 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
     }
 
     /** 生成副作用信息 */
-    const shouldUseEffect = effectAnalysis(ctx);
+    const shouldUseEffect = effectAnalysis(runTimeCtxToBusiness.current, ctx);
     // 临时代码
     // shouldUseEffect();
 
     if (method === DispatchMethodNameOfCondition.ConditionHandleOfAPBDSL) {
       const expsValueHandle = (expsValue) => {
-        expsValue = transMarkValFromArr(expsValue, asyncRuntimeContext);
+        expsValue = transMarkValFromArr(runTimeCtxToBusiness.current, expsValue);
         return validTransMarkValFromArr(expsValue);
       };
-      return await conditionEngine(params[0], {
-        expsValueHandle,
-        condControlResHandle: APBDSLCondControlResHandle,
-        getOperatorHandle: getAPBDSLCondOperatorHandle.bind(null, {}), // 外部绑定默认上下文
-      });
+      return await conditionEngine(
+        runTimeCtxToBusiness.current,
+        params[0], {
+          expsValueHandle,
+          condControlResHandle: APBDSLCondControlResHandle,
+          getOperatorHandle: getAPBDSLCondOperatorHandle
+        }
+      );
     }
+
+    params.unshift(runTimeCtxToBusiness.current);
 
     const runRes = await dispatchMethod(...params);
 
@@ -189,6 +196,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
       return false;
     }
 
+    params.unshift(runTimeCtxToBusiness.current);
+
     return dispatchMethod(...params);
   };
 
@@ -207,14 +216,14 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
 
     const list: any[] = [];
     if (value) {
-      const newState = getPageState(value);
+      const newState = getPageState(runTimeCtxToBusiness.current, value);
       list.push({
         deps: [newState],
         handle: () => ({ value: newState })
       });
     }
     if (dataSource) {
-      const newDataSource = getPageState(dataSource);
+      const newDataSource = getPageState(runTimeCtxToBusiness.current, dataSource);
       list.push({
         deps: [newDataSource],
         handle: () => ({

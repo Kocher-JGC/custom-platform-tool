@@ -34,6 +34,7 @@ const genCompRenderFC = (
       return (
         <Comp
           key={mark}
+          // compMark={mark}
           {...staticProps}
           {...actualDynamicPros}
           {...actualExtralProps}

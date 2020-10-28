@@ -13,6 +13,15 @@ import { initPageCtxManage, PageCtxInfo, AddPageCtx } from "./page-context";
  * 2. 函数方法的单例 + 混入
  */
 
+type StateType = 'tableRowData' | 'selectData' | 'tableData' | 'schemasData'
+
+// interface CrossPageSendDataSpec {
+//   pageState: {
+//     [K in StateType]: any;
+//   };
+//   metadataData: {},
+// }
+
 export interface PageManageInstance {
   addPageCtx: AddPageCtx;
   removePageCtx: (pageIdOrMark: string) => PageCtxInfo<any>[]
@@ -32,8 +41,21 @@ export const pageManage = () => {
     return pageCtx.map((c) => c.context?.current).filter((v) => v);
   };
 
+  /** 页面广播: TODO: 自身的观察者 */
+  const pageBroadcast = async ({
+    pageIdOrMark, //
+    isMatch, // 是否模糊匹配
+    isShelf, // 是否只自身广播
+    receiveHandle, // 接收处理函数
+  }) => {
+    const pageCtx = gPC(pageIdOrMark);
+    if (pageCtx[0]) {
+      await receiveHandle(pageCtx[0]);
+    }
+  };
+
   const instance = {
-    addPageCtx, removePageCtx, getIUBPageCtx
+    addPageCtx, removePageCtx, getIUBPageCtx, pageBroadcast
   };
 
   return (pageManageInstance = instance);

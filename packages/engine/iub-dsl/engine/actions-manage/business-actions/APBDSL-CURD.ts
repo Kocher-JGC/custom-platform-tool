@@ -11,7 +11,8 @@ import {
   DispatchModuleName,
   DispatchMethodNameOfDatasourceMeta,
   DispatchMethodNameOfSys,
-  DispatchMethodNameOfCondition
+  DispatchMethodNameOfCondition,
+  RunTimeCtxToBusiness
 } from "../../runtime/types";
 
 const getActualTable = (dispatchOfIUBEngine: (ctx: DispatchCtxOfIUBEngine) => string, table) => {
@@ -147,7 +148,7 @@ export const APBDSLCURDAction = (conf: APBDSLCURD, baseActionInfo): ActionDoFn =
     steps.push(fn);
   });
 
-  return async (runtimeCtx) => {
+  return async (runtimeCtx: RunTimeCtxToBusiness) => {
     const action = {
       actionType: 'APBDSLCURDAction',
       businesscode,

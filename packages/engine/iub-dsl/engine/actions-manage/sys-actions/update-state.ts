@@ -24,7 +24,7 @@ export const updateStateAction = (conf: UpdateState, baseActionInfo): ActionDoFn
         dispatch: {
           module: DispatchModuleName.IUBStore,
           method: DispatchMethodNameOfIUBStore.targetUpdateState,
-          params: [changeTarget, action.payload]
+          params: [changeTarget, action.payload],
         },
         actionInfo: action,
       });

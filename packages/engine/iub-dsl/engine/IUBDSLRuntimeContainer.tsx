@@ -61,7 +61,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
       removeFn();
       hooks?.unmounted?.();
       const allPageCtx = pageManageInstance.getIUBPageCtx('');
-      effectRelationship.effectDispatch(allPageCtx);
+      effectRelationship.effectDispatch(runTimeCtxToBusiness.current, allPageCtx);
     };
   }, []);
 

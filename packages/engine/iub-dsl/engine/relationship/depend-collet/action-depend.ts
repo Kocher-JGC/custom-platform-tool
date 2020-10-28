@@ -4,7 +4,7 @@ import {
   ActionDependCollection, ActionDepend, DependInfo
 } from "../types";
 import { pickActionId } from "../../actions-manage/actions-parser";
-import { DispatchModuleName, DispatchMethodNameOfDatasourceMeta } from "../../runtime/types";
+import { DispatchModuleName, DispatchMethodNameOfDatasourceMeta, RunTimeCtxToBusiness } from "../../runtime/types";
 
 /**
  * 收集表名, 数据元数据描述的, 收集的信息是详细的描述
@@ -89,7 +89,7 @@ export const actionsCollectConstor = () => {
     }
   };
 
-  const findEquMetadata = (metadata: string, { dispatchOfIUBEngine }) => {
+  const findEquMetadata = ({ dispatchOfIUBEngine }: RunTimeCtxToBusiness, metadata: string) => {
     const filterADC = actionDependCollection.filter(({ metadataToUse, flowUsed }) => {
       const matchMetadata = metadataToUse?.map(({ refValue }) => {
         const value = dispatchOfIUBEngine({

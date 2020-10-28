@@ -1,7 +1,8 @@
 import { ApbFunction } from "@iub-dsl/definition";
 import { APBDSLActionEffect, EffectType } from "../types";
 import {
-  DispatchModuleName, DispatchMethodNameOfRelationship, DispatchMethodNameOfFlowManage, DispatchCtxOfIUBEngine
+  DispatchModuleName, DispatchMethodNameOfRelationship, DispatchMethodNameOfFlowManage, DispatchCtxOfIUBEngine,
+  RunTimeCtxToBusiness
 } from "../../runtime/types";
 
 /**
@@ -37,7 +38,7 @@ const effectAnalysisOfAPBDSLCURD = (APBDSLCURDParam): APBDSLActionEffect[] => {
 export const effectRelationship = () => {
   const effectCollection: any[] = [];
 
-  const effectAnalysis = (dispatchCtx: DispatchCtxOfIUBEngine) => {
+  const effectAnalysis = (ctx: RunTimeCtxToBusiness, dispatchCtx: DispatchCtxOfIUBEngine) => {
     const {
       actionInfo,
       dispatch: { params }
@@ -55,7 +56,7 @@ export const effectRelationship = () => {
     switch (actionType) {
       case 'APBDSLCURDAction':
         shouldUseEffect = () => {
-          effectCollection.push(...effectAnalysisOfAPBDSLCURD({ actionId, ...params[0] }));
+          effectCollection.push(...effectAnalysisOfAPBDSLCURD({ actionId, ...params[1] }));
         };
         break;
       default:
@@ -64,18 +65,20 @@ export const effectRelationship = () => {
 
     return shouldUseEffect;
   };
-  const effectDispatch = (allPageCtx) => {
+  const effectDispatch = (c: RunTimeCtxToBusiness, allPageCtx: RunTimeCtxToBusiness[]) => {
     allPageCtx.forEach((ctx) => {
       const { pageMark, dispatchOfIUBEngine, asyncDispatchOfIUBEngine } = ctx;
       console.log(pageMark);
       asyncDispatchOfIUBEngine({
         actionInfo: {
-          type: 'effectCollection'
+          actionType: 'effectCollection',
+          actionName: `${pageMark}__${effectReceiver}`,
+          actionId: `${pageMark}__${effectReceiver}`
         },
         dispatch: {
           module: DispatchModuleName.relationship,
           method: DispatchMethodNameOfRelationship.effectReceiver,
-          params: [effectCollection, ctx],
+          params: [effectCollection],
         },
       }).then((res) => {
         // console.log(res);
@@ -83,7 +86,7 @@ export const effectRelationship = () => {
     });
   };
 
-  const effectReceiver = (effectCollect: any[], ctx) => {
+  const effectReceiver = (ctx: RunTimeCtxToBusiness, effectCollect: any[]) => {
     const { pageMark, dispatchOfIUBEngine, asyncDispatchOfIUBEngine } = ctx;
     effectCollect.forEach(({ effectType, effectInfo }) => {
       if (effectType === 'tableSelect') {
@@ -93,10 +96,12 @@ export const effectRelationship = () => {
             dispatch: {
               module: DispatchModuleName.relationship,
               method: DispatchMethodNameOfRelationship.findEquMetadata,
-              params: [table, ctx],
+              params: [table],
             },
             actionInfo: {
-              type: 'effectReceiver'
+              actionType: 'effectReceiver',
+              actionId: `${pageMark}__${effectType}`,
+              actionName: `${pageMark}__${effectType}`
             }
           });
           const flowUsedsFlat = flowUseds?.flat().flat() || [];
@@ -104,10 +109,12 @@ export const effectRelationship = () => {
             dispatch: {
               module: DispatchModuleName.flowManage,
               method: DispatchMethodNameOfFlowManage.flowsRun,
-              params: [flowUsedsFlat, ctx],
+              params: [flowUsedsFlat],
             },
             actionInfo: {
-              type: 'effectReceiver'
+              actionType: 'effectReceiver',
+              actionName: `${pageMark}__effectReceiver`,
+              actionId: `${pageMark}__effectReceiver`
             }
           });
         }

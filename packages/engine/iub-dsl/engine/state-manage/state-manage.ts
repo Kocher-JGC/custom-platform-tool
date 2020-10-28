@@ -7,6 +7,7 @@ import { CommonObjStruct } from '@iub-dsl/definition';
 import { SchemasAnalysisRes } from './analysis/i-analysis';
 import { useCacheState } from '../utils';
 import { isPageState, pickPageStateKeyWord } from './const';
+import { RunTimeCtxToBusiness } from '../runtime/types';
 
 type GetParam = string | {
   [str: string]: GetParam;
@@ -33,6 +34,10 @@ const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
   }, {});
 };
 
+type GetStruct = string | {
+  [str: string]: any
+} | any[]
+
 /** TODO: 跨页面问题 */
 export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   const { levelRelation, pathMapInfo, baseStruct } = analysisData;
@@ -43,7 +48,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     const [IUBPageStore, setIUBPageStore] = useCacheState(fullStruct);
 
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
-    const getPageState = (strOrStruct?) => {
+    const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
       if (typeof strOrStruct === 'string') {
         if (isPageState(strOrStruct)) {
           return LGet(IUBPageStore, pickPageStateKeyWord(strOrStruct), '');
@@ -53,12 +58,12 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         return strOrStruct;
       }
       if (Array.isArray(strOrStruct)) {
-        return strOrStruct.map((newStruct) => getPageState(newStruct));
+        return strOrStruct.map((newStruct) => getPageState(ctx, newStruct));
       }
       if (typeof strOrStruct === 'object') {
         const structKeys = Object.keys(strOrStruct);
         return structKeys.reduce((result, key) => {
-          result[key] = getPageState(strOrStruct[key]);
+          result[key] = getPageState(ctx, strOrStruct[key]);
           return result;
         }, {});
       }
@@ -67,22 +72,21 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     const getWatchDeps = getPageState;
 
     const handleFn = useMemo(() => {
-      const targetUpdateState = (target, value) => {
+      const targetUpdateState = (ctx: RunTimeCtxToBusiness, target, value) => {
         target = pickPageStateKeyWord(target);
         setIUBPageStore({
           [target]: value
         });
       };
 
-      const updatePageState = (newState: CommonObjStruct) => {
+      const updatePageState = (ctx: RunTimeCtxToBusiness, newState: CommonObjStruct) => {
         setIUBPageStore(newState);
       };
-
       return {
         updatePageState,
-        isPageState,
+        isPageState: (ctx: RunTimeCtxToBusiness, param: string) => isPageState(param),
+        pickPageStateKeyWord: (ctx: RunTimeCtxToBusiness, param: string) => pickPageStateKeyWord(param),
         targetUpdateState,
-        pickPageStateKeyWord,
       };
     }, []);
 

@@ -46,41 +46,43 @@ const normalTablePropsMap = basePropsMapCstr<any>(normalTablePropsMapList);
 export const normalTableCompName = AllUI.NormalTable;
 
 const TableFactory = ({
-  id, columns, children, ...ohterProps
+  id, columns, children, compMark, ...ohterProps
 }) => {
   /** 下面三步确保props全部正确可用 */
   const allPropsKey = Object.keys(ohterProps);
   const canUsePropsKey = pickBaseInputPropsKey(allPropsKey);
   const actualProps = normalTablePropsMap(ohterProps, canUsePropsKey);
-  console.log(actualProps);
+  // console.log(actualProps);
   const context = useContext(DefaultCtx);
 
   const actualCoumns = useMemo(() => {
-    // console.log(columns);
-    // columns.push({
-    //   render: (text: string, record, index: number) => {
-    //     return (<>
-    //       <Button
-    //         onClick={() => {
-    //           const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
-    //           const action = antTableRowClick()(text, record, index);
-    //           context.runTimeCtxToBusiness.current.action = action;
-    //           asyncDispatchOfIUBEngine({
-    //             dispatch: {
-    //               module: 'flowManage',
-    //               method: 'flowsRun',
-    //               params: [['updFlow_1'], context.runTimeCtxToBusiness.current],
-    //             },
-    //             actionInfo: {
-    //               actionType: 'effectReceiver'
-    //             }
-    //           });
-    //         }}
-    //       >修改</Button>&nbsp;&nbsp;
-    //       <Button>详情</Button>
-    //     </>);
-    //   }
-    // });
+    // @(schemas).1321031025329053696
+    console.log(columns);
+    columns.push({
+      render: (text: string, record, index: number) => {
+        return (<>
+          <Button
+            onClick={() => {
+              const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
+              const action = antTableRowClick()(text, record, index);
+              context.runTimeCtxToBusiness.current.action = action;
+              asyncDispatchOfIUBEngine({
+                dispatch: {
+                  module: 'flowManage',
+                  method: 'flowsRun',
+                  isInjectCtx: true,
+                  params: [['updFlow_1']],
+                },
+                actionInfo: {
+                  actionType: 'effectReceiver'
+                }
+              });
+            }}
+          >修改</Button>&nbsp;&nbsp;
+          <Button>详情</Button>
+        </>);
+      }
+    });
     return columns;
   }, [columns]);
   /**

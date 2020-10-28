@@ -2,7 +2,7 @@ import { DispatchModuleName } from ".";
 
 export interface DispatchModuleSys {
   module: DispatchModuleName.sys;
-  method: DispatchMethodNameOfSys
+  method: DispatchMethodNameOfSys | string
 }
 
 export type TDispatchMethodNameOfSys =

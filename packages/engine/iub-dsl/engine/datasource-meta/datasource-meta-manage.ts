@@ -1,11 +1,12 @@
 import { DatasourceItem } from '@provider-app/page-designer/types';
 import { MetaDateParseRes, TableInfo, parseMetaData } from "./datasource-meta-parser";
 import { isPageDatasoruceMeta, pickDatasoruceMetaKeyWord } from ".";
+import { RunTimeCtxToBusiness } from '../runtime/types';
 
 export const createMetadataStore = (parseRes: MetaDateParseRes) => {
   const { tableList, allColumnsList, allColumnsIdMarks } = parseRes;
 
-  const getTable = (tableMark: string) => {
+  const getTable = (ctx: RunTimeCtxToBusiness, tableMark: string) => {
     if (isPageDatasoruceMeta(tableMark)) {
       tableMark = pickDatasoruceMetaKeyWord(tableMark);
     } else {
@@ -18,7 +19,7 @@ export const createMetadataStore = (parseRes: MetaDateParseRes) => {
   };
 
   /** 获取某个filedMark的fieldCode */
-  const getFiledCode = (filedMark: string) => {
+  const getFiledCode = (ctx: RunTimeCtxToBusiness, filedMark: string) => {
     if (isPageDatasoruceMeta(filedMark)) {
       filedMark = pickDatasoruceMetaKeyWord(filedMark);
     } else {
@@ -34,13 +35,13 @@ export const createMetadataStore = (parseRes: MetaDateParseRes) => {
   };
 
   /** 获取某个表的fieldsCode */
-  const getFiledsCodeFromTable = (tableId: string) => {
+  const getFiledsCodeFromTable = (ctx: RunTimeCtxToBusiness, tableId: string) => {
     let temp: TableInfo;
     if (
       isPageDatasoruceMeta(tableId)
       && (temp = tableList[pickDatasoruceMetaKeyWord(tableId)])
     ) {
-      const filedsCode = temp.columns.map(getFiledCode);
+      const filedsCode = temp.columns.map((id) => getFiledCode(ctx, id));
       return filedsCode;
     }
     console.error('非法表ID!');

@@ -4,6 +4,7 @@ import { OpenModalFromTableClick } from '@iub-dsl/definition';
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
 import { queryPageData } from '@consumer-app/web-platform/src/services/page';
 import { ActionDoFn } from '../../types';
+import { DispatchModuleName } from '../../../runtime/types';
 
 export const openModelFromTable = (conf: OpenModalFromTableClick, baseActionInfo): ActionDoFn => {
   // const {
@@ -14,6 +15,19 @@ export const openModelFromTable = (conf: OpenModalFromTableClick, baseActionInfo
   return async ({ action, pageMark, asyncDispatchOfIUBEngine }) => {
     const IUBRendererHooks = {
       mounted() {
+        asyncDispatchOfIUBEngine({
+          dispatch: {
+            module: DispatchModuleName.sys,
+            method: 'pageBroadcast',
+            params: [{
+              pageIdOrMark: pageUrl, //
+              /** 获取其他页面上下文的信息,  缺少一个其他页面的接受者 */
+              receiveHandle: (ctx) => {
+                console.log(ctx);
+              }
+            }],
+          }
+        });
         console.log(pageMark);
 
         console.log(action);
@@ -26,35 +40,12 @@ export const openModelFromTable = (conf: OpenModalFromTableClick, baseActionInfo
           icon: false,
           content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
         });
+        console.log(mInstance);
       } catch (e) {
         console.error(e);
       }
     } else {
       console.error('无pageUrl');
     }
-
-    // if (pageUrl) {
-    //   try {
-    //     const pageData = await queryPageData({ id: pageUrl });
-    //     Modal.confirm({
-    //       icon: false,
-    //       content: <IUBDSLRenderer dsl={pageData} />
-    //     });
-    //   } catch (e) {
-    //     console.error(e);
-    //   }
-    // } else {
-    //   console.error('无pageUrl');
-    // }
-    // const { userForm } = await import('@iub-dsl/demo/base-reference/user/userfrom');
-    // console.log(userForm);
-    // Modal.confirm({
-    //   icon: false,
-    //   content: <IUBDSLRenderer dsl={userForm} />
-    // });
-    // Modal[ModalType.confirm]({
-    //   title: '测试弹窗',
-    //   content: <div>你猜猜</div>
-    // });
   };
 };

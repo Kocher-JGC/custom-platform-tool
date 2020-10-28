@@ -58,7 +58,8 @@ export interface IUBEngineRuntimeCtx {
 
 export interface AsyncIUBEngineRuntimeCtx extends IUBEngineRuntimeCtx {
   [DispatchModuleName.sys]: {
-    [K in TDispatchMethodNameOfSys]: (...args: any[]) => unknown
+    // [K in TDispatchMethodNameOfSys]: (...args: any[]) => unknown
+    [str: string]: (...args: any[]) => unknown;
   };
   [DispatchModuleName.flowManage]: {
     [K in TDispatchMethodNameOfFlowManage]: (...args: any[]) => unknown

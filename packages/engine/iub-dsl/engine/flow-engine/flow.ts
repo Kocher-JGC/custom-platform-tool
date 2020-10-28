@@ -70,7 +70,7 @@ export const flowParser = (flows: FlowCollection, { parseContext, parseRes }): F
   });
   tempArr.length = 0;
 
-  const flowsRun = (runFlowIds: string[], ctx) => {
+  const flowsRun = (ctx, runFlowIds: string[]) => {
     runFlowIds.forEach((id) => {
       if (flowIds.includes(id)) {
         const { flowItemRun } = getFlowItemInfo(id);
