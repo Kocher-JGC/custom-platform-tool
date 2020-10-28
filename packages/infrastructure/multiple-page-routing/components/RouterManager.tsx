@@ -91,7 +91,7 @@ class MultipleRouterManager<
   /** 响应浏览器 push 的回调 */
   onPush!: () => void
 
-  handleHistoryChange!: (activeRoute: string) => void
+  handleHistoryChange!: (activeRoute: string, action: 'POP' | 'PUSH') => void
 
   appLocation: Location<L> & DefaultLocationState = history.location
 
@@ -118,14 +118,6 @@ class MultipleRouterManager<
   redirect = () => {
 
   }
-
-  changeRoute = (path: string, params) => {
-    onNavigate({
-      type: "PUSH",
-      path,
-      params,
-    });
-  };
 
   /**
    * 设置 location 对象，挂载属性
@@ -164,11 +156,13 @@ class MultipleRouterManager<
     const nextRouterState = state.nextRoutersFromState;
     this.selectTab(activePath, nextRouterState);
 
-    // hook 函数
-    Call(this.handleHistoryChange, activePath);
-    // });
+    /** 调用可能被 override 的回调 */
+    Call(this.handleHistoryChange, activePath, action);
   };
 
+  /**
+   * 关闭所有 tab
+   */
   closeAll = () => {
     replaceHistory("/");
     this.setState((prevState) => ({
@@ -177,6 +171,10 @@ class MultipleRouterManager<
     }));
   };
 
+  /**
+   * 关闭单个 tab
+   * @param idx
+   */
   closeTab = (idx: number) => {
     const { routers, routerSnapshot, activeRouteIdx } = this.state;
 
@@ -221,6 +219,12 @@ class MultipleRouterManager<
     return nextState;
   };
 
+  /**
+   * 选择一个 tab
+   * @param activeRoute
+   * @param nextRouterState
+   * @param mergeState
+   */
   selectTab = (
     activeRoute: string,
     nextRouterState?: RouterState,
@@ -266,6 +270,9 @@ class MultipleRouterManager<
     });
   };
 
+  /**
+   * 启动路由
+   */
   initRoute = () => {
     // let initRoute = resolvePagePath(location.hash)[0];
     const { defaultPath } = this;

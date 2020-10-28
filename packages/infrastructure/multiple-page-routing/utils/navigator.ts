@@ -7,11 +7,7 @@ export interface NavParams {
   [key: string]: any;
 }
 
-export interface RootNavigateConfig {
-  type: 'ROOT'
-}
-
-export interface NormalNavigateConfig {
+export interface NavigateConfig {
   /** 从哪里来，由程序写入 */
   from?: Location
   /** 路由参数 */
@@ -27,10 +23,8 @@ export interface NormalNavigateConfig {
   /** 是否使用默认的 params，会在 url 中加入 */
   useDefaultParams?: boolean
   /** 设置 location 的 state */
-  state?: {}
+  state?: unknown
 }
-
-export type NavigateConfig = RootNavigateConfig | NormalNavigateConfig
 
 export const history = createBrowserHistory<any>();
 
@@ -124,9 +118,6 @@ export const onNavigate: OnNavigate = (config) => {
   switch (type) {
     case "PUSH":
       pushToHistory(`#/${wrapPushUrl(nextConfig)}`, stateForLocation);
-      break;
-    case "ROOT":
-      pushToHistory('/');
       break;
     case "LINK":
       break;
