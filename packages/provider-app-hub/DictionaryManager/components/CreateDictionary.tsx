@@ -3,7 +3,7 @@ import {
   Form, Input, Table
 } from 'antd';
 import { ModalFooter } from '@provider-app/table-editor/components/ChooseDict';
-// import { SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color';
 import { FormInstance } from 'antd/lib/form';
 import CreateModal from './CreateModal';
 import { DEF_VALUE, DICTIONARY_CHILD_KEY, DICTIONARY_KEY } from '../constants';
