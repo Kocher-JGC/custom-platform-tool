@@ -541,6 +541,7 @@ class TableEditor extends React.Component {
       visibleModalCreateReference: false,
       referenceList: [
         {
+          [REFERENCES_KEY.ID]: `${new Date().valueOf()}`,
           [REFERENCES_KEY.FIELDID]: id,
           [REFERENCES_KEY.FIELDCODE]: fieldDefaultValue[REFERENCES_KEY.REFFIELDCODE],
           [REFERENCES_KEY.REFTABLECODE]: fieldDefaultValue[REFERENCES_KEY.REFTABLECODE],
