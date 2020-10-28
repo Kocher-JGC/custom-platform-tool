@@ -2,7 +2,6 @@ import PageManager from "@provider-app/page-manager/app";
 import MenuManager from "@provider-app/menu-manager/app";
 import PageDesignerApp from "@provider-app/page-designer/main";
 /// //////// 数据设计
-import TableInfo from "@provider-app/table-info/app";
 import TableEditor from "@provider-app/table-editor/app";
 import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
@@ -67,10 +66,6 @@ const RouterConfig: RouterConfigType = {
   '/dictionary-manager': {
     component: DictionaryManager,
     title: '字典管理'
-  },
-  '/table-info': {
-    title: '编辑表',
-    component: TableInfo
   },
   '/popup-window-selector': {
     title: '弹窗选择',

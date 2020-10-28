@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form';
-import { FIELDTYPE } from '@provider-app/table-info/components/columnsManager/constant';
 import { ISELECTSMENU, ITableColumnFromApi } from '../interface';
 import { getTableList, getTableInfo } from '../apiAgents';
 import { translateTableListToSelectMenus, translateFieldListToSelectMenus } from '../service';
 import {
-  REFERENCES_KEY, COLUMNS_KEY, FOREIGNKEYS_KEY, STRATEGY_OPTIONS
+  REFERENCES_KEY, COLUMNS_KEY, FOREIGNKEYS_KEY, STRATEGY_OPTIONS, FIELDTYPE
 } from '../constants';
 import { ModalFooter } from './ChooseDict';
 
