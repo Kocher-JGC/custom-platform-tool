@@ -968,45 +968,48 @@ class MenuList extends React.Component {
           dataSource={menuList}
         />
         { visibleModalSelectPage
-          ? (<CreateModal
-            width="750px"
-            title="选择菜单页面"
-            modalVisible={visibleModalSelectPage}
-            onCancel={() => this.setState({ visibleModalSelectPage: false })}
-          >
-
-            <SelectPage
-              currentPage = {{
-                pageLink: this.editMenuFormRef.current?.getFieldValue(MENU_KEY.PAGELINK),
-                pageName: this.editMenuFormRef.current?.getFieldValue(MENU_KEY.PAGENAME)
-              }}
-              type="selectPage"
-              onOk={({ pageName, pageLink }) => {
-                this.setState({ visibleModalSelectPage: false });
-                this.editMenuFormRef.current?.setFieldsValue({ pageName, pageLink });
-              }}
+          ? (
+            <CreateModal
+              width="750px"
+              title="选择菜单页面"
+              modalVisible={visibleModalSelectPage}
               onCancel={() => this.setState({ visibleModalSelectPage: false })}
-            />
-          </CreateModal>)
+            >
+
+              <SelectPage
+                currentPage = {{
+                  pageLink: this.editMenuFormRef.current?.getFieldValue(MENU_KEY.PAGELINK),
+                  pageName: this.editMenuFormRef.current?.getFieldValue(MENU_KEY.PAGENAME)
+                }}
+                type="selectPage"
+                onOk={({ pageName, pageLink }) => {
+                  this.setState({ visibleModalSelectPage: false });
+                this.editMenuFormRef.current?.setFieldsValue({ pageName, pageLink });
+                }}
+                onCancel={() => this.setState({ visibleModalSelectPage: false })}
+              />
+            </CreateModal>
+          )
           : null }
         { visibleModalSelectIcon
-          ? (<CreateModal
-            width="750px"
-            title="选择图标"
-            modalVisible={visibleModalSelectIcon}
-            onCancel={() => this.setState({ visibleModalSelectIcon: false })}
-          >
-
-            <SelectIcon
-              currentIcon = {this.editMenuFormRef.current?.getFieldValue(MENU_KEY.ICON)}
-              key="selectIcon"
-              onOk={(icon) => {
-                this.setState({ visibleModalSelectIcon: false });
-                this.editMenuFormRef.current?.setFieldsValue({ [MENU_KEY.ICON]: icon });
-              }}
+          ? (
+            <CreateModal
+              width="750px"
+              title="选择图标"
+              modalVisible={visibleModalSelectIcon}
               onCancel={() => this.setState({ visibleModalSelectIcon: false })}
-            />
-          </CreateModal>)
+            >
+              <SelectIcon
+                currentIcon = {this.editMenuFormRef.current?.getFieldValue(MENU_KEY.ICON)}
+                type="selectIcon"
+                onOk={(icon) => {
+                  this.setState({ visibleModalSelectIcon: false });
+                this.editMenuFormRef.current?.setFieldsValue({ [MENU_KEY.ICON]: icon });
+                }}
+                onCancel={() => this.setState({ visibleModalSelectIcon: false })}
+              />
+            </CreateModal>
+          )
           : null }
       </>
     );
