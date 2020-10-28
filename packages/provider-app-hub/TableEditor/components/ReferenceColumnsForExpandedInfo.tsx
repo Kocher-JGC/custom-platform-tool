@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { referenceEditableConfig } from './ColumnEditableConfigForExpandedInfo';
-import { IForeignKeyFromApi, ISELECTSMENU, ITableColumnFromApi } from '../interface';
+import { IForeignKeyFromApi, ISELECTSMENU } from '../interface';
 import { RefTableCode as RefTableCodeTmpl, RefField as RefFieldTmpl, StrategyRenderer as StrategyRendererTmpl } from './CreateReference';
 import {
   FIELDTYPE, FOREIGNKEYS_KEY, STRATEGY_OPTIONS, COLUMNS_KEY
@@ -107,13 +107,13 @@ interface IRefField {
   formRef: React.RefObject<FormInstance<any>>
   code: string
   label: string,
-  filterFunc: ({ item: ITableColumnFromApi, tableId: string }) => boolean;
+  filterFunc?: ({ item: ITableColumnFromApi, tableId: string }) => boolean;
 }
 const RefField: React.FC<IRefField> = (props: IRefField) => {
   const {
     formRef, text, record, code, label, filterFunc
   } = props;
-  const value = formRef.current?.getFieldValue(code);
+  // const value = formRef.current?.getFieldValue(code);
 
   // return React.useMemo(() => {
   return (<Form.Item

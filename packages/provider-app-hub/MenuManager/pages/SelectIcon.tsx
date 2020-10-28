@@ -37,10 +37,9 @@ const filterIconByArea = {
 };
 /** 获取用于展示的 icon 列表 */
 const getIconList = (listAreaKey) => {
-  const IconItems = [];
   const listArea = filterIconByArea[listAreaKey]();
-  Object.keys(listArea).map((key) => {
-    IconItems.push({ type: key, icon: listArea[key] });
+  const IconItems = Object.keys(listArea).map((key) => {
+    return { type: key, icon: listArea[key] };
   });
   return IconItems;
 };

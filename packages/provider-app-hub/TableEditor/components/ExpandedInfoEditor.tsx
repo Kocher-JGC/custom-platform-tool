@@ -64,7 +64,7 @@ class ExpandedInfoEditor extends React.Component {
                 selectedRowKeys,
                 hideSelectAll: true,
                 fixed: true
-              } : null}
+              } : undefined}
               onRow={(record, index) => {
                 return {
                   onBlur: (event) => { blurRow(record, index); },

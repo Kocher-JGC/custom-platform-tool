@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react';
+import React from 'react';
 import {
   Form, Input, Table
 } from 'antd';
@@ -122,10 +122,12 @@ const getColumns = ({
     }];
 };
 interface IOperateParam {
-  dictName?:string
-  dictDescription?:string
-  editingKeyFirst?: string
-  childList: {
+  name?:string
+  description?:string
+  editingKey?: string
+  nameVisible: boolean
+  descVisible: boolean
+  list: {
     name: string
     code: string
     renderBgColor: string
@@ -136,13 +138,10 @@ interface IOperateParam {
 interface IProps {
   onOk: (data:IOperateParam) => void;
   onCancel: () => void;
-  config: {
-    showDictionaryConfig,
-    operateParam: IOperateParam
-  }
+  config: IOperateParam
 }
 
-class CreateDictionary extends React.Component {
+class CreateDictionary extends React.Component<IProps> {
   state = {
     editingKey: '',
     list: [],
@@ -150,7 +149,7 @@ class CreateDictionary extends React.Component {
     modalVisibleColorPicker: false,
     colorPicker: {
       color: DEF_VALUE.RENDERBGCOLOR,
-      successCallback: () => {}
+      successCallback: (param: {hex: string}) => {}
     },
     keyOfColorPicker: ''
   }

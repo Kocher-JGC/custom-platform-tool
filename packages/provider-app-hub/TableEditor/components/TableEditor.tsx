@@ -12,7 +12,7 @@ import {
   TABLE_TYPE, NOTIFICATION_TYPE, MESSAGES, BUTTON_TYPE, BUTTON_SIZE, COLUMNS_KEY, FIELDSIZEREGULAR, DATATYPE, REFERENCES_KEY, FOREIGNKEYS_KEY, SPECIES
 } from '../constants';
 import {
-  ITableInfoFromApi, ITableInfoInState, ISpecies, ITableColumnInState
+  ITableInfoFromApi, ITableInfoInState, ISpecies
 } from '../interface';
 import BasicInfoEditor from './BasicInfoEditor';
 import ExpandedInfoEditor from './ExpandedInfoEditor';
@@ -285,8 +285,8 @@ class TableEditor extends React.Component {
   handleSave = async () => {
     try {
       await this.basicInfoFormRef.current?.validateFields();
-      this.saveRow().then((canISave) => {
-        if (!canISave) return;
+      this.saveRow().then((canISaveExpandedInfo) => {
+        if (!canISaveExpandedInfo) return;
         const param = this.constructInfoForSave();
         editTableInfo(param).then((canISave) => {
           if (!canISave) return;
@@ -310,14 +310,14 @@ class TableEditor extends React.Component {
     return this.getIndexByRowKey(editingKeyInExpandedInfo);
   }
 
-  getIndexByRowKey = (rowKey, area) => {
+  getIndexByRowKey = (rowKey, area?:string) => {
     const { activeAreaInExpandedInfo } = this.state;
     const index = findIndex(this.state[area || activeAreaInExpandedInfo], { id: rowKey });
     return index;
   }
 
   /** 根据编辑行唯一标识和高亮区域感知编辑行索引 */
-  getRecordByRowKey=(rowKey, area) => {
+  getRecordByRowKey=(rowKey, area?:string) => {
     const { activeAreaInExpandedInfo } = this.state;
     const index = this.getIndexByRowKey(rowKey, area);
     return this.state[area || activeAreaInExpandedInfo][index];
@@ -451,7 +451,7 @@ class TableEditor extends React.Component {
   /** 字段列表：新建字段 */
   createField = (recordDefaultValue) => {
     const record = this.getNewFieldRecord(recordDefaultValue);
-    this.createRow(record);
+    return this.createRow(record);
   }
 
   /** 字段列表：新建字典字段 */
@@ -626,7 +626,7 @@ class TableEditor extends React.Component {
       if (!allowedDeleted) {
         return AntdMessage.warn(msg);
       }
-      this.deleteFieldConfirm(msg, selectedRowKey);
+      return this.deleteFieldConfirm(msg, selectedRowKey);
     });
   }
 
@@ -690,6 +690,28 @@ class TableEditor extends React.Component {
       const { [REFERENCES_KEY.FIELDID]: fieldId, ...extra } = item;
       return { ...extra, [REFERENCES_KEY.FIELDID]: fieldId, [REFERENCES_KEY.FIELDCODE]: fieldMap[fieldId] };
     });
+  }
+
+  getReferenceActionAreaRenderer = (selectedRowKeys) => {
+    const { editingKeyInExpandedInfo } = this.state;
+    return (
+      <>
+        <Button
+          className="mr-2"
+          type={BUTTON_TYPE.PRIMARY}
+          size={BUTTON_SIZE.SMALL}
+          disabled={editingKeyInExpandedInfo !== ''}
+          onClick={() => { this.createReference(); }}
+        >新增</Button>
+        <Button
+          className="mr-2"
+          type={BUTTON_TYPE.PRIMARY}
+          size={BUTTON_SIZE.SMALL}
+          disabled={selectedRowKeys.length === 0}
+          onClick={() => { this.deleteReference(selectedRowKeys); }}
+        >删除</Button>
+      </>
+    );
   }
 
   render() {
@@ -817,26 +839,7 @@ class TableEditor extends React.Component {
                 ref="referenceList"
                 formRef={this.expandInfoFormRef}
                 title="引用字段管理"
-                actionAreaRenderer={(selectedRowKeys) => {
-                  return (
-                    <>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== ''}
-                        onClick={() => { this.createReference(); }}
-                      >新增</Button>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={selectedRowKeys.length === 0}
-                        onClick={() => { this.deleteReference(selectedRowKeys); }}
-                      >删除</Button>
-                    </>
-                  );
-                }}
+                actionAreaRenderer={this.getReferenceActionAreaRenderer}
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
@@ -856,26 +859,7 @@ class TableEditor extends React.Component {
                 ref="foreignKeyList"
                 formRef={this.expandInfoFormRef}
                 title="外键字段管理"
-                actionAreaRenderer={(selectedRowKeys) => {
-                  return (
-                    <>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== ''}
-                        onClick={() => { this.createReference(); }}
-                      >新增</Button>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={selectedRowKeys.length === 0}
-                        onClick={() => { this.deleteReference(selectedRowKeys); }}
-                      >删除</Button>
-                    </>
-                  );
-                }}
+                actionAreaRenderer={this.getReferenceActionAreaRenderer}
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
