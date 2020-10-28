@@ -8,6 +8,8 @@ import { FormInstance } from 'antd/lib/form';
 import CreateModal from './CreateModal';
 import { DEF_VALUE, DICTIONARY_CHILD_KEY, DICTIONARY_KEY } from '../constants';
 
+const SketchPicker = React.lazy(() => import('react-color/lib/Sketch'));
+
 const getColumns = ({
   handleAdd, handleClickColor, list, handleDelete
 }) => {
@@ -401,13 +403,15 @@ class CreateDictionary extends React.Component<IProps> {
           title="更改颜色"
           onCancel={() => this.setState({ modalVisibleColorPicker: false })}
         >
-          <SketchPicker
-            className="color-picker"
-            modalVisible={modalVisibleColorPicker}
-            color={colorPicker.color} onChangeComplete ={({ hex }) => {
-              typeof colorPicker.successCallback === 'function' && colorPicker.successCallback({ hex });
-            }}
-          />
+          <React.Suspense fallback={(<div>loading</div>)}>
+            <SketchPicker
+              className="color-picker"
+              modalVisible={modalVisibleColorPicker}
+              color={colorPicker.color} onChangeComplete ={({ hex }) => {
+                typeof colorPicker.successCallback === 'function' && colorPicker.successCallback({ hex });
+              }}
+            />
+          </React.Suspense>
         </CreateModal>
         <ModalFooter
           onOk={handleOk}
