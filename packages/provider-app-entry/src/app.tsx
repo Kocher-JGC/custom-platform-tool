@@ -112,7 +112,9 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
   }
 
   handleHistoryChange = (activeRoute) => {
+    const { appName: currAppName } = this.appLocation;
     // console.log('object :>> ', activeRoute);
+    document.title = currAppName || '自定义工具 3.0';
     // setReqUrlByApp(this.appLocation.state?.app);
     // console.log(this.state.activeRoute);
   }
