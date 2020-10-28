@@ -98,7 +98,7 @@ const MenuTree: React.FC<IMeunsTree> = (props: IMeunsTree) => {
         </div>
         <Tree
           expandedKeys = {expandedKeys}
-          height={283}
+          height={263}
           treeData={menusData}
           onSelect={handleSelect}
           onExpand = {(expandedKeysTmpl) => {

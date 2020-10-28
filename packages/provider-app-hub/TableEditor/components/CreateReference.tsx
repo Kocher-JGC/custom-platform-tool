@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select } from 'antd';
 import { FormInstance } from 'antd/lib/form';
-import { DATATYPE, FIELDTYPE } from '@provider-app/table-info/components/columnsManager/constant';
 import { ISELECTSMENU, ITableColumnFromApi } from '../interface';
 import { getTableList, getTableInfo } from '../apiAgents';
 import { translateTableListToSelectMenus, translateFieldListToSelectMenus } from '../service';
 import {
-  REFERENCES_KEY, COLUMNS_KEY, FOREIGNKEYS_KEY, STRATEGY_OPTIONS
+  REFERENCES_KEY, COLUMNS_KEY, FOREIGNKEYS_KEY, STRATEGY_OPTIONS, FIELDTYPE
 } from '../constants';
 import { ModalFooter } from './ChooseDict';
 
@@ -57,7 +56,7 @@ export const RefTableCode: React.FC<IRefTableCode> = (props: IRefTableCode) => {
 };
 interface IRefField extends IRefTableCode{
   code: string
-  filterFunc: ({ item: ITableColumnFromApi, tableId: string }) => boolean;
+  filterFunc?: ({ item: ITableColumnFromApi, tableId: string }) => boolean;
 }
 export const RefField: React.FC<IRefField> = (props: IRefField) => {
   const {
@@ -66,7 +65,7 @@ export const RefField: React.FC<IRefField> = (props: IRefField) => {
   const [options, setOptions] = useState<ISELECTSMENU[]>([]);
   const [fieldOptions, setFieldOptions] = useState<ITableColumnFromApi[]>([]);
   const getMenusData = async () => {
-    const tableId = form.getFieldValue(REFERENCES_KEY.REFTABLEID);
+    const tableId = form?.getFieldValue(REFERENCES_KEY.REFTABLEID);
     // const id = form.getFieldValue(REFERENCES_KEY.REFTABLEID);
     if (!tableId) {
       setOptions([]);

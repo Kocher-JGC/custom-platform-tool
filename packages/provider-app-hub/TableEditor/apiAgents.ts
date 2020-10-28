@@ -62,7 +62,7 @@ export async function allowDeleted(params) {
   const { allowedDeleted, errorMsg } = result;
   let msg: string;
   if (errorMsg.length > 0) {
-    msg = errorMsg.map((item) => item.msg || '').split('，');
+    msg = errorMsg.map((item) => item.msg || '').join('，');
   } else {
     msg = allowedDeleted ? MESSAGES.MAY_I_DELETE
       : MESSAGES.DELETEFIELD_FAILED;
