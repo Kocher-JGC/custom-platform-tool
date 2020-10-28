@@ -298,7 +298,7 @@ const Dict: React.FC<IDict> = (props: IDict) => {
     const {
       [COLUMNS_KEY.DICTIONARYFOREIGN]: code
     } = formRef.current?.getFieldsValue([COLUMNS_KEY.DICTIONARYFOREIGNCN, COLUMNS_KEY.DICTIONARYFOREIGN]);
-    editDictioary(code.split(','), true);
+    editDictioary(code?.split(','), true);
     e?.stopPropagation();
   };
   return React.useMemo(() => {
@@ -311,7 +311,7 @@ const Dict: React.FC<IDict> = (props: IDict) => {
         return editable ? (
           <Form.Item name={COLUMNS_KEY.DICTIONARYFOREIGNCN}>
             <Input
-              className="pointer"
+              className="cursor-pointer"
               onClick={handleClick} readOnly
               title={formRef.current?.getFieldValue(COLUMNS_KEY.DICTIONARYFOREIGNCN)}
             />
