@@ -22,3 +22,13 @@ export interface OpenModal extends BasicActionConf {
   actionOptions: IUBDSLModal;
   actionOutput: 'undefined';
 }
+
+export type OpenModalFromTableClickType = 'openModalFromTableClick'
+
+export interface OpenModalFromTableClick extends BasicActionConf {
+  actionType: OpenModalFromTableClickType;
+  actionOptions: {
+    pageUrl: string;
+  };
+  actionOutput: 'undefined';
+}

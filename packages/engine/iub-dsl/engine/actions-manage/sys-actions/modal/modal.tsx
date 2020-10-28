@@ -1,8 +1,9 @@
 import { Modal, Form, Input } from 'antd';
-import React from 'react';
+import React, { useRef } from 'react';
 import { OpenModal } from '@iub-dsl/definition';
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
 import { queryPageData } from '@consumer-app/web-platform/src/services/page';
+import { ActionDoFn } from '../../types';
 
 enum ModalType {
   info = 'info',
@@ -13,22 +14,27 @@ enum ModalType {
   confirm = 'confirm'
 }
 
-export const openModal = (conf: OpenModal) => {
+export const openModal = (conf: OpenModal, baseActionInfo): ActionDoFn => {
   const {
     actionOptions: {
       type,
       pageUrl
     },
-    actionName, actionOutput, actionId
   } = conf;
-  return async ({ action, asyncRuntimeScheduler }) => {
+  return async ({ action, asyncDispatchOfIUBEngine }) => {
+    const IUBRendererHooks = {
+      mounted() {
+      }
+    };
     if (pageUrl) {
       try {
         const pageData = await queryPageData({ id: pageUrl });
-        Modal.confirm({
+        const m = Modal.confirm({
           icon: false,
-          content: <IUBDSLRenderer dsl={pageData} />
+          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
         });
+
+        console.log(m);
       } catch (e) {
         console.error(e);
       }

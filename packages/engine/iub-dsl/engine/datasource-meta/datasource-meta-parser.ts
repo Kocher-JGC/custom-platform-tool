@@ -15,8 +15,8 @@ export interface TableInfo {
   type: string
   /** columns-mark */
   columns: string[]
+  code: string;
 }
-
 interface ParseMetaDataCtx {
   baseMark: string
 }

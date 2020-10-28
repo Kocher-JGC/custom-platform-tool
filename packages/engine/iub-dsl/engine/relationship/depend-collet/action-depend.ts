@@ -4,6 +4,7 @@ import {
   ActionDependCollection, ActionDepend, DependInfo
 } from "../types";
 import { pickActionId } from "../../actions-manage/actions-parser";
+import { DispatchModuleName, DispatchMethodNameOfDatasourceMeta } from "../../runtime/types";
 
 /**
  * 收集表名, 数据元数据描述的, 收集的信息是详细的描述
@@ -88,12 +89,15 @@ export const actionsCollectConstor = () => {
     }
   };
 
-  const findEquMetadata = (metadata: string, { runtimeScheduler }) => {
+  const findEquMetadata = (metadata: string, { dispatchOfIUBEngine }) => {
     const filterADC = actionDependCollection.filter(({ metadataToUse, flowUsed }) => {
       const matchMetadata = metadataToUse?.map(({ refValue }) => {
-        const value = runtimeScheduler({
-          type: 'getTable',
-          params: [refValue]
+        const value = dispatchOfIUBEngine({
+          dispatch: {
+            module: DispatchModuleName.datasourceMeta,
+            method: DispatchMethodNameOfDatasourceMeta.getTable,
+            params: [refValue]
+          }
         });
         if (value === metadata) {
           return metadata;

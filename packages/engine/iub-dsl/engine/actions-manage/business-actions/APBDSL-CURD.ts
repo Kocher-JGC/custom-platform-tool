@@ -4,19 +4,25 @@ import {
 } from "@iub-dsl/definition/actions";
 import { dataCollectionAction } from "../sys-actions";
 import { getGenAPBDSLFunctionTransform, SelectParamOfAPBDSL } from "./APBDSL";
-import { RuntimeSchedulerFnName } from "../../runtime";
 import { arrayAsyncHandle } from "../../utils";
+import { ActionDoFn } from "../types";
+import {
+  DispatchCtxOfIUBEngine,
+  DispatchModuleName,
+  DispatchMethodNameOfDatasourceMeta,
+  DispatchMethodNameOfSys,
+  DispatchMethodNameOfCondition
+} from "../../runtime/types";
 
-// const tempField = {
-//   create_user_id: 996, // '随便填个数字'
-//   last_update_user_id: 996, // '随便填个数字'
-//   sequence: Math.floor(Math.random() * 10000000), // '随便填个数字'
-//   last_update_time: '1996-06-09', // '随便填个年月日'
-//   create_time: '1996-06-09', // '随便填个年月日'
-//   data_version: '1', // '随便填个字符串'
-//   last_update_user_name: '996', // 非必填'
-//   create_user_name: '996', // 非必填'
-// };
+const getActualTable = (dispatchOfIUBEngine: (ctx: DispatchCtxOfIUBEngine) => string, table) => {
+  return dispatchOfIUBEngine({
+    dispatch: {
+      module: DispatchModuleName.datasourceMeta,
+      method: DispatchMethodNameOfDatasourceMeta.getTable,
+      params: [table]
+    }
+  });
+};
 
 const normalCURDActionParseScheduler = (action: NormalCURD) => {
   const { type: CURDType, table } = action;
@@ -35,59 +41,56 @@ const normalCURDActionParseScheduler = (action: NormalCURD) => {
   }
 };
 
-const genTableInsertFn = (actionConf: TableInsert) => {
+const genTableInsertFn = (actionConf: TableInsert): ActionDoFn => {
   const { fieldMapping, table } = actionConf;
   const getFiled = dataCollectionAction(fieldMapping);
-  return async ({ action, asyncRuntimeScheduler, runtimeScheduler }) => {
+  return async (ctx) => {
+    const { dispatchOfIUBEngine } = ctx;
     /** 获取插入参数 */
-    const set = await getFiled({ action, asyncRuntimeScheduler, runtimeScheduler });
+    const set = await getFiled(ctx);
     /** 获取set转换函数 */
     const getSetOfAPBDSL = getGenAPBDSLFunctionTransform(ApbFunction.SET);
     /** 转换 */
-    const actualTable = runtimeScheduler({
-      type: 'getTable',
-      params: [table]
-    });
+    const actualTable = getActualTable(dispatchOfIUBEngine, table);
     // const tempSet = Array.isArray(set) ? set.map((_) => ({ ..._, ...tempField })) : [{ ...set, ...tempField }];
     const APBDSLItem = getSetOfAPBDSL({ set, table: actualTable });
     return APBDSLItem;
   };
 };
 
-const genTableUpdatetFn = (actionConf: TableUpdate) => {
+const genTableUpdatetFn = (actionConf: TableUpdate): ActionDoFn => {
   const { fieldMapping, table } = actionConf;
   const getFiled = dataCollectionAction(fieldMapping);
-  return async ({ action, asyncRuntimeScheduler, runtimeScheduler }) => {
+  return async (ctx) => {
+    const { dispatchOfIUBEngine } = ctx;
     /** 获取插入参数 */
-    const set = await getFiled({ action, asyncRuntimeScheduler, runtimeScheduler });
+    const set = await getFiled(ctx);
     /** 获取upd转换函数 */
     const getUpdOfAPBDSL = getGenAPBDSLFunctionTransform(ApbFunction.UPD);
     /** 转换 */
-    const actualTable = runtimeScheduler({
-      type: 'getTable',
-      params: [table]
-    });
+    const actualTable = getActualTable(dispatchOfIUBEngine, table);
     const APBDSLItem = getUpdOfAPBDSL({ set, table: actualTable, condition: {} });
     return APBDSLItem;
   };
 };
 
-const genTableSelectFn = (actionConf: TableSelect) => {
+const genTableSelectFn = (actionConf: TableSelect): ActionDoFn => {
   const { table, condition } = actionConf;
-  return async ({ action, asyncRuntimeScheduler, runtimeScheduler }) => {
+  return async (ctx) => {
+    const { dispatchOfIUBEngine, asyncDispatchOfIUBEngine } = ctx;
     /** 获取set转换函数 */
     const getSelectOfAPBDSL = getGenAPBDSLFunctionTransform(ApbFunction.SELECT);
-    const actualTable = runtimeScheduler({
-      type: 'getTable',
-      params: [table]
-    });
+    const actualTable = getActualTable(dispatchOfIUBEngine, table);
     const selectParam: SelectParamOfAPBDSL = {
-      table: actualTable
+      table: actualTable,
     };
     if (condition) {
-      selectParam.condition = await asyncRuntimeScheduler({
-        type: 'ConditionHandleOfAPBDSL',
-        params: [condition],
+      selectParam.condition = await asyncDispatchOfIUBEngine({
+        dispatch: {
+          module: DispatchModuleName.condition,
+          method: DispatchMethodNameOfCondition.ConditionHandleOfAPBDSL,
+          params: [condition],
+        }
       });
     }
     /** 转换 */
@@ -96,15 +99,18 @@ const genTableSelectFn = (actionConf: TableSelect) => {
   };
 };
 
-const genTableDeleteFn = (actionConf: TableDelete) => {
+const genTableDeleteFn = (actionConf: TableDelete): ActionDoFn => {
   const { table } = actionConf;
-  return async ({ action, asyncRuntimeScheduler, runtimeScheduler }) => {
+  return async ({ action, asyncDispatchOfIUBEngine, dispatchOfIUBEngine }) => {
     /** 获取set转换函数 */
     const getDelOfAPBDSL = getGenAPBDSLFunctionTransform(ApbFunction.DEL);
     /** 转换 */
-    const actualTable = runtimeScheduler({
-      type: 'getTable',
-      params: [table]
+    const actualTable = dispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.datasourceMeta,
+        method: DispatchMethodNameOfDatasourceMeta.getTable,
+        params: [table]
+      }
     });
     const APBDSLItem = getDelOfAPBDSL({ table: actualTable, condition: {} });
     return APBDSLItem;
@@ -124,9 +130,9 @@ const APBDSLStepsFnRun = async (originFns, runtimeCtx) => {
  * APBDSL的CURD动作
  * @param conf APBDSL动作
  */
-export const APBDSLCURDAction = (conf: APBDSLCURD) => {
+export const APBDSLCURDAction = (conf: APBDSLCURD, baseActionInfo): ActionDoFn => {
   const {
-    actionName, actionId, actionOutput,
+    actionId,
     actionOptions: { actionList, actionStep, businesscode }
   } = conf;
   const APBActionIds = Object.keys(actionList);
@@ -143,17 +149,22 @@ export const APBDSLCURDAction = (conf: APBDSLCURD) => {
 
   return async (runtimeCtx) => {
     const action = {
-      type: 'APBDSLCURDAction',
+      actionType: 'APBDSLCURDAction',
       businesscode,
       actionId
     };
     /** 生成很多函数? */
     APBDSL.steps = await APBDSLStepsFnRun(steps, runtimeCtx);
-    return await runtimeCtx?.asyncRuntimeScheduler({
-      type: RuntimeSchedulerFnName.APBDSLrequest,
-      params: [APBDSL],
-      action,
-      actionName,
+    return await runtimeCtx?.asyncDispatchOfIUBEngine({
+      actionInfo: {
+        ...baseActionInfo,
+        ...action
+      },
+      dispatch: {
+        module: DispatchModuleName.sys,
+        method: DispatchMethodNameOfSys.APBDSLrequest,
+        params: [APBDSL],
+      }
     });
   };
 };

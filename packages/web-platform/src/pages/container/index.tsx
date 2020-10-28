@@ -6,7 +6,7 @@ import { Skeleton, Result } from 'antd';
 import { queryPageData } from "@/services/page";
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
 import './index.less';
-import { useAsyncMemo } from '@iub-dsl/engine/utils';
+import D from '@iub-dsl/demo/pd/1';
 
 interface IContainerProps {
 
@@ -42,9 +42,10 @@ const getPageData = ({
 
 const Container: React.FC<IContainerProps> = (props) => {
   const [data, setData] = useState({});
+  // const [data, setData] = useState(D);
   const { query } = history.location;
 
-  const isLoading = useRef(true);
+  const isLoading = useRef(false);
 
   const Renderer = useMemo(() => {
     if (isLoading.current) {

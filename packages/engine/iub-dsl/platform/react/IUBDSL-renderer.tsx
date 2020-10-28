@@ -1,4 +1,4 @@
-import React, { useImperativeHandle } from 'react';
+import React, { useEffect } from 'react';
 import { IUBDSLParser, IUBDSLRuntimeContainer } from '@iub-dsl/engine';
 
 const resolvedDsl: {
@@ -7,9 +7,18 @@ const resolvedDsl: {
 
 };
 
+const hooksEg = {
+  beforeParse: () => {},
+  afterParse: () => {},
+  beforeMount: () => {},
+  mounted: () => {},
+  unmounted: () => {},
+};
+
 /** IUB-DSL引擎对外暴露的组件 */
-const IUBDSLRenderer = ({ dsl }) => {
+const IUBDSLRenderer = ({ dsl, hooks = {} as any }) => {
   const { pageID } = dsl;
+
   if (typeof pageID !== 'string') {
     return <ErrorRenderer msg='IUB-DSL Data Error'/>;
   }
@@ -18,9 +27,11 @@ const IUBDSLRenderer = ({ dsl }) => {
   let ActualRender = <ErrorRenderer/>;
   try {
     if (!(dslParseRes = resolvedDsl[pageID])) {
+      hooks?.beforeParse?.();
       dslParseRes = IUBDSLParser({ dsl });
       /** 现在先不缓存解析结果 */
       // resolvedDsl[dsl.pageID] = dslParseRes;
+      hooks?.afterParse?.();
     }
   } catch (e) {
     console.error(e);
@@ -28,7 +39,7 @@ const IUBDSLRenderer = ({ dsl }) => {
   }
 
   if (dslParseRes) {
-    ActualRender = <IUBDSLRuntimeContainer key={pageID} dslParseRes={dslParseRes} />;
+    ActualRender = <IUBDSLRuntimeContainer key={pageID} hooks={hooks} dslParseRes={dslParseRes} />;
   }
 
   return ActualRender;

@@ -2,7 +2,8 @@ import { CommonCondition, ComplexType } from "..";
 import {
   UpdateState, UpdateStateActionType,
   DataCollection, DataCollectionActionType,
-  OpenModalActionType, OpenModal
+  OpenModalActionType, OpenModal,
+  OpenModalFromTableClickType, OpenModalFromTableClick
 } from "./sys-actions";
 import { APBDSLCURD, APBDSLCURDActionType } from './business-actions';
 
@@ -25,13 +26,14 @@ export interface BasicActionConf extends CommonCondition {
 type SysActionType =
   DataCollectionActionType |
   UpdateStateActionType |
-  OpenModalActionType;
+  OpenModalActionType |
+  OpenModalFromTableClickType;
 
 type BusinessActionType =
   APBDSLCURDActionType
 
 export type AllActionType = SysActionType | BusinessActionType
-export type ActionsDefinition = UpdateState | DataCollection | APBDSLCURD | OpenModal
+export type ActionsDefinition = UpdateState | DataCollection | APBDSLCURD | OpenModal | OpenModalFromTableClick
 export type ActionOutput = 'string' | 'boolean' | 'undefined' | 'number' | FlowOutputOfObj;
 
 export interface FlowOutputOfObj {

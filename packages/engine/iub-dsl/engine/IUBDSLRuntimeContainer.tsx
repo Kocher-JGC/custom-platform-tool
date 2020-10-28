@@ -15,7 +15,7 @@ import { renderStructInfoListRenderer } from './component-manage/component-store
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 import { effectRelationship as genEffectRelationship } from './relationship';
 
-const IUBDSLRuntimeContainer = ({ dslParseRes }) => {
+const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
   const {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
@@ -29,7 +29,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes }) => {
   const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
   const IUBStoreEntity = useIUBStore();
   const {
-    getPageState, updatePageState, IUBPageStore
+    getPageState
   } = IUBStoreEntity;
 
   const [runTimeLine, setRunTimeLine] = useState([]);
@@ -49,14 +49,17 @@ const IUBDSLRuntimeContainer = ({ dslParseRes }) => {
     // if (pageMark === "pageID_$_1") {
     //   setInterval(() => {
     //     const ctxx = pageManageInstance.getIUBPageCtx('pageID_$_0')[0];
-    //     console.log(ctxx.runtimeScheduler({}));
+    //     console.log(ctxx.dispatchOfIUBEngine({}));
     //   }, 1000);
     // }
 
     // effectRelationship.effectReceiver([]);
 
+    hooks?.mounted?.();
+
     return () => {
       removeFn();
+      hooks?.unmounted?.();
       const allPageCtx = pageManageInstance.getIUBPageCtx('');
       effectRelationship.effectDispatch(allPageCtx);
     };
@@ -106,6 +109,8 @@ const IUBDSLRuntimeContainer = ({ dslParseRes }) => {
   }), [IUBStoreEntity]);
 
   const extralProps = useMemo(() => ({ extral: '扩展props' }), []);
+
+  hooks?.beforeMount?.();
 
   return (
     <DefaultCtx.Provider value={ctx}>
