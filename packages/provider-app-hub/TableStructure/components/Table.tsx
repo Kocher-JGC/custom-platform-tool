@@ -63,7 +63,7 @@ const Table: React.FC<IProps> = (props: IProps, ref) => {
     if (key === "dictionary") {
       onNavigate({
         type: "PUSH",
-        path: '/DictManage',
+        path: '/dictionary-manager',
       });
     }
   };
