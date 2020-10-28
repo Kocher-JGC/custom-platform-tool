@@ -616,7 +616,7 @@ class DictionaryList extends React.Component {
   }
 
   handleDelete = ({ id }) => {
-    const index = this.getIndexByRowKey({ id });
+    const index = this.getIndexByRowKey(id);
     const list = this.state.list.slice();
     list.splice(index, 1);
     this.setState({ list });
