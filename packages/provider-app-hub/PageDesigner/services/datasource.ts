@@ -1,4 +1,5 @@
 import { getDataSourceDetail } from "@provider-app/services";
+import pick from "lodash/pick";
 
 /**
  * 提取由后端返回的，前端需要的 columns
@@ -21,13 +22,9 @@ export const takeColumnsData = (columns: any[]): PD.Column[] => {
  * 从后端返回的数据提取前端需要用到的数据
  */
 export const takeDatasourceField = (datasourceData): PD.Datasource => {
-  return {
-    name: datasourceData.name,
-    id: datasourceData.id,
-    type: datasourceData.type,
-    moduleId: datasourceData.moduleId,
+  return Object.assign({}, pick(datasourceData, ['name', 'id', 'type', 'moduleId', 'code']), {
     columns: takeColumnsData(datasourceData.columns)
-  };
+  });
 };
 
 /**
