@@ -79,6 +79,8 @@ export const flowParser = (flows: FlowCollection, { parseContext, parseRes }): F
         };
         // 触发标准的事件, 传入上下文, 需要create不然第一次动作将丢失
         flowItemRun(Object.create(contextToUse));
+      } else {
+        console.error('触发不存在的流程!');
       }
     });
   };

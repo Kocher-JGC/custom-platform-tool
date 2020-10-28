@@ -1,6 +1,7 @@
+import { TypeOfIUBDSL } from "@iub-dsl/definition";
+import { tableExtralAction, tableExtralFlow } from "../demo/base-reference/user/usertable/index";
 /** dont Overengineering */
 
-import { TypeOfIUBDSL } from "@iub-dsl/definition";
 import SchemasParser from "./state-manage/schemas";
 import widgetParser from "./component-manage/widget-parser";
 import { actionsCollectionParser } from "./actions-manage/actions-parser";
@@ -106,7 +107,7 @@ const IUBDSLParser = ({ dsl }) => {
   /** 页面模型解析 */
   const schemasParseRes = SchemasParser(schemas);
   /** 每个动作解析成函数「流程将其连起来」 */
-  const actionParseRes = actionsCollectionParser(actionsCollection, parseContext);
+  const actionParseRes = actionsCollectionParser(Object.assign(actionsCollection, tableExtralAction), parseContext);
 
   parseRes = {
     ...parseRes,
@@ -121,7 +122,7 @@ const IUBDSLParser = ({ dsl }) => {
     parseContext
   });
 
-  const flowParseRes = flowParser(flowCollection, { parseContext, parseRes });
+  const flowParseRes = flowParser(Object.assign(flowCollection, tableExtralFlow), { parseContext, parseRes });
   // const { getFlowItemInfo } = flowParseRes;
   // const { flowItemRun } = getFlowItemInfo('flow1');
   // console.log(flowItemRun({

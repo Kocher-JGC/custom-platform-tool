@@ -1,28 +1,12 @@
 import { ActionsDefinition, ActionCollection } from "@iub-dsl/definition/actions/action";
+import { openModelFromTable } from './sys-actions/modal/modal-show-from-table';
 
 import { updateStateAction, dataCollectionAction, openModal } from "./sys-actions";
 import { APBDSLCURDAction } from "./business-actions";
 
-interface ExtralActionParseRes {
-  // actionConf, // ! 尽量不要暴露, 因为actionConf会不安全
-  changeStateToUse: string[];
-  getStateToUse: string[];
-}
-
-interface OriginActionInfoParseRes {
-  actionHandle: any; // Func
-}
-type ActionInfoParseRes = OriginActionInfoParseRes & ExtralActionParseRes
-
-interface ActionInfoListParseRes {
-  [actionId: string]: ActionInfoParseRes
-}
-
-interface ActionParserRes {
-  actionIds: string[];
-  actionParseRes: ActionInfoListParseRes;
-  getActionParseRes: (actionID: string) => ActionInfoParseRes
-}
+import {
+  ExtralActionParseRes, ActionParserRes, ActionInfoParseRes
+} from "./types";
 
 const getExtralActionParserRes = (): ExtralActionParseRes => ({ changeStateToUse: [], getStateToUse: [] });
 const actionRegExp = /^@\(actions\)\./;
@@ -88,16 +72,21 @@ const commonActionConfParser = (
   return actionConfParseRes;
 };
 
+const genBaseActionInfo = (conf: ActionsDefinition) => ({ actionId: conf.actionId, actionName: conf.actionName, actionType: conf.actionType });
+
 const getActionFn = (actionConf: ActionsDefinition) => {
+  const baseActionInfo = genBaseActionInfo(actionConf);
   switch (actionConf.actionType) {
     case 'updateState':
-      return updateStateAction(actionConf);
+      return updateStateAction(actionConf, baseActionInfo);
     case 'dataCollection':
-      return dataCollectionAction(actionConf);
+      return dataCollectionAction(actionConf, baseActionInfo);
     case 'APBDSLCURD':
-      return APBDSLCURDAction(actionConf);
+      return APBDSLCURDAction(actionConf, baseActionInfo);
     case 'openModal':
-      return openModal(actionConf);
+      return openModal(actionConf, baseActionInfo);
+    case 'openModalFromTableClick':
+      return openModelFromTable(actionConf, baseActionInfo);
     default:
       if (typeof actionConf === 'function') {
         return actionConf;
