@@ -56,31 +56,31 @@ const TableFactory = ({
   const context = useContext(DefaultCtx);
 
   const actualCoumns = useMemo(() => {
-    console.log(columns);
-    columns.push({
-      render: (text: string, record, index: number) => {
-        return (<>
-          <Button
-            onClick={() => {
-              const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
-              const action = antTableRowClick()(text, record, index);
-              context.runTimeCtxToBusiness.current.action = action;
-              asyncDispatchOfIUBEngine({
-                dispatch: {
-                  module: 'flowManage',
-                  method: 'flowsRun',
-                  params: [['updFlow_1'], context.runTimeCtxToBusiness.current],
-                },
-                actionInfo: {
-                  actionType: 'effectReceiver'
-                }
-              });
-            }}
-          >修改</Button>&nbsp;&nbsp;
-          <Button>详情</Button>
-        </>);
-      }
-    });
+    // console.log(columns);
+    // columns.push({
+    //   render: (text: string, record, index: number) => {
+    //     return (<>
+    //       <Button
+    //         onClick={() => {
+    //           const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
+    //           const action = antTableRowClick()(text, record, index);
+    //           context.runTimeCtxToBusiness.current.action = action;
+    //           asyncDispatchOfIUBEngine({
+    //             dispatch: {
+    //               module: 'flowManage',
+    //               method: 'flowsRun',
+    //               params: [['updFlow_1'], context.runTimeCtxToBusiness.current],
+    //             },
+    //             actionInfo: {
+    //               actionType: 'effectReceiver'
+    //             }
+    //           });
+    //         }}
+    //       >修改</Button>&nbsp;&nbsp;
+    //       <Button>详情</Button>
+    //     </>);
+    //   }
+    // });
     return columns;
   }, [columns]);
   /**
