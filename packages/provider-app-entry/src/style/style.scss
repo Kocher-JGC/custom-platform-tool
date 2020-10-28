@@ -27,3 +27,9 @@
 #page-manager {
   height: 100%;
 }
+
+.logo-container {
+  &:hover {
+    color: $themeColor;
+  }
+}

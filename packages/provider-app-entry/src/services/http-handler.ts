@@ -6,7 +6,7 @@
 import { RequestClass, resolveUrl } from "@mini-code/request";
 import { message as AntdMessage } from 'antd';
 
-import { clearDefaultParams, onNavigate } from "multiple-page-routing";
+import { clearDefaultParams, onNavigate, redirectToRoot } from "multiple-page-routing";
 import { authStore } from "../auth/actions";
 
 /**
@@ -144,9 +144,7 @@ function handleRes({ res, resDetail }) {
         // console.log(resData);
         // 处理没找到应用的业务逻辑
         AntdMessage.error(msg);
-        onNavigate({
-          type: 'ROOT'
-        });
+        redirectToRoot();
         authStore.setState({ isLogin: false });
         resetHttpReqHelper();
         // onNavigate({

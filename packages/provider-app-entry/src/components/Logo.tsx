@@ -10,10 +10,10 @@ export const Logo = ({
   return (
     <div {...props}>
       <div
-        className="ps20 text-xl flex items-center"
+        className="px-4 text-xl flex items-center cursor-pointer logo-container"
       >
         {
-          isEntryApp ? <LeftOutlined /> : <GoogleOutlined />
+          isEntryApp ? <LeftOutlined className="text-2xl" /> : <GoogleOutlined />
         }
         <span className="ml-2">
           {appName}
