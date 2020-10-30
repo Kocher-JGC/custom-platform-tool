@@ -49,9 +49,9 @@ export const NameCodeItem: React.FC<IProps> = React.memo((props: IProps): ReactE
   return (
     <>
       <Form.Item
-        name="name" label="数据表名称"
+        name="name" label="权限项名称"
         rules={[
-          { required: true, message: '数据表名称不能为空' },
+          { required: true, message: '权限项名称不能为空' },
           { pattern: RE.CENUSB, message: '输入字段可以为中文、英文、数字、下划线、括号' },
           { max: 64, message: '最多只能输入64个字符' },
         ]}
@@ -62,8 +62,8 @@ export const NameCodeItem: React.FC<IProps> = React.memo((props: IProps): ReactE
         />
       </Form.Item>
       <Form.Item
-        name="code" label="数据表编码" rules={[
-          { required: true, message: '数据表编码不能为空' },
+        name="code" label="权限项编码" rules={[
+          { required: true, message: '权限项编码不能为空' },
           { pattern: RE.ENUS, message: "输入字段仅为英文小写、数字、下划线, 不能以数字和下划线开头" },
           { max: 44, message: '最多只能输入44个字符' },
         ]}

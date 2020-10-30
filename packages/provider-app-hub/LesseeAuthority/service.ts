@@ -6,6 +6,13 @@ export async function queryLesseeAuthorityListService(params) {
   });
 }
 
+export async function queryLesseeAuthorityService(id) {
+  return await $R_P.get({
+    url: `/auth/v1/authorities/${id}`,
+    params: {},
+  });
+}
+
 /** 新增表 */
 export async function createLesseeAuthorityService(params) {
   return await $R_P.post({

@@ -162,3 +162,8 @@ export const RE = {
 
   CEN: /^[\u4E00-\u9FA5A-Za-z0-9]+$/
 };
+
+export interface IModalData{
+  okText : string
+  modalTitle: string
+}

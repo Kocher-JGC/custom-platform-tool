@@ -1,7 +1,7 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle
 } from 'react';
-import { Tree, Input } from 'antd';
+import { TreeSelect, Input } from 'antd';
 import { queryMenusListService } from '../service';
 import './index.less';
 import { MENUS_TYPE, SELECT_ALL } from '../constant';
@@ -77,11 +77,17 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
     const tree = constructTree(res?.result || []);
     setMenusData(tree);
   };
-  const handleSelect = (selectedKeys, {
-    selected
-  }) => {
-    onSelect && onSelect(selected ? selectedKeys[0] : SELECT_ALL);
+  // const handleSelect = (selectedKeys, {
+  //   selected
+  // }) => {
+  //   onSelect && onSelect(selected ? selectedKeys[0] : SELECT_ALL);
+  // };
+
+  const handleSelect = (value) => {
+    console.log(value);
+    onSelect && onSelect(value ? value[0] : SELECT_ALL);
   };
+
   const handleSearch = (value) => {
     searchValue = value;
     getMenusListData();
@@ -92,9 +98,11 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
         style={{ marginBottom: 8 }}
         onSearch={handleSearch}
       />
-      <Tree
+      <TreeSelect
+        style={{ width: '100%' }}
+        treeCheckable
         treeData={menusData}
-        onSelect={handleSelect}
+        onChange={handleSelect}
       />
     </div>
   );

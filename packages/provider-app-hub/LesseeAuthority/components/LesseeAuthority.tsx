@@ -6,9 +6,10 @@ import {
 import { FormInstance } from 'antd/lib/form';
 import { ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
 import { onNavigate } from 'multiple-page-routing';
-import { queryLesseeAuthorityListService, allowDeleteLesseeAuthorityService, deleteLesseeAuthorityService } from '../service';
+import { queryLesseeAuthorityListService, allowDeleteLesseeAuthorityService, 
+  deleteLesseeAuthorityService, queryLesseeAuthorityService } from '../service';
 import {
-  COLUMNS, OPERATIONALMENU, SELECT_ALL, MORE_MENU, PAGE_SIZE_OPTIONS
+  COLUMNS, OPERATIONALMENU, SELECT_ALL, MORE_MENU, PAGE_SIZE_OPTIONS, IModalData
 } from '../constant';
 import Operational from './Operational';
 import { IStatus } from '../interface';
@@ -34,6 +35,13 @@ export interface ICopyData {
   code?: string;
 }
 
+export interface ILesseeAuthority {
+  id?: string;
+  name?: string;
+  code?: string;
+}
+
+
 const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   let moduleId = "";
   const actionRef = useRef<ActionType>();
@@ -41,6 +49,8 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   const [copyData = {}, setCopyData] = useState<ICopyData>();
   const [visibleCopyModal, setVisibleCopyModal] = useState<boolean>(false);
   const [visibleCrateLesseeAuthorityModal, setVisibleCrateLesseeAuthorityModal] = useState<boolean>(false);
+  const [editData = {}, setEditData] = useState<ILesseeAuthority>();
+  const [editModalData = {}, setEditModalData] = useState<IModalData>();
 
   const LesseeAuthorityOperational: ProColumns = {
     title: '操作',
@@ -87,13 +97,35 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
     const {
       operate, id, name, code
     } = item;
-    if (operate === "edit") {
-      onNavigate({
-        type: "PUSH",
-        path: `/LesseeAuthority-editor`,
-        pathExtend: id,
-        params: { id, title: `编辑表_${name}` }
-      });
+    if (operate === "edit") {      
+      if (!id) {
+        return;
+      }
+      queryLesseeAuthorityService(id).then((res) => {
+      /** 如果接口没有提供提示信息 */
+        if (!res?.msg) {
+          openNotification('error', 'data error');
+        }
+        setEditModalData({ modalTitle: '编辑弹窗', okText: '保存', });
+        const initEditData = getInitEditPopupWinndow();
+        const retEditData = res?.result;
+
+        if (!res?.result.tablePopupWindowDetail) {
+          retEditData.tablePopupWindowDetail = initEditData.tablePopupWindowDetail;
+        }
+        if (!res?.result.treePopupWindowDetail) {
+          retEditData.treePopupWindowDetail = initEditData.treePopupWindowDetail;
+        }
+        if (!res?.result.treeTablePopupWindowDetail) {
+          retEditData.treeTablePopupWindowDetail = initEditData.treeTablePopupWindowDetail;
+        }
+
+        console.log(retEditData);
+        // temp = Object.assign(temp, res?.result);
+        setEditData(retEditData);
+        // setEditData(res?.result);
+        setVisibleCrateLesseeAuthorityModal(true)
+
     } else if (operate === "delete") {
       checkBeforeDelete(id);
     } else if (operate === "copy") {
@@ -163,7 +195,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   </Menu>;
   const renderToolBarRender = () => [
     <Button key="3" type="primary" onClick={() => setVisibleCrateLesseeAuthorityModal(true)}>
-      新建表
+      新建权限项
     </Button>,
     <Dropdown overlay={renderMenu}>
       <Button type="primary">
@@ -193,7 +225,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
         }}
       />
       <CreateModal
-        title="新建数据表"
+        title="新建权限项"
         modalVisible={visibleCrateLesseeAuthorityModal}
         onCancel={() => setVisibleCrateLesseeAuthorityModal(false)}
       >

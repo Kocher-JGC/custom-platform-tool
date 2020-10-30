@@ -16,3 +16,15 @@ export interface ITableType {
   title: string;
   value: string;
 }
+
+export interface ISELECTSMENU {
+  label: string
+  key: string
+  value: string
+}
+
+export interface ILesseeAuthority {
+  id: string
+  name: string
+  code: string
+}

@@ -12,7 +12,7 @@ import { Location } from 'history';
 import { Dashboard } from "@provider-app/dashboard/main";
 import Router, { getRouteName } from '@provider-app/config/router';
 import { LoadingTip } from "@provider-ui/loading-tip";
-import { Version } from './components/Version';
+// import { Version } from './components/Version';
 
 import {
   // Hall,
@@ -224,7 +224,7 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
                 }
                 <UserStatusbar logout={logout} />
                 <div className="pr-2 text-gray-600">
-                  <Version />
+                  {/* <Version /> */}
                 </div>
               </header>
               <div id="provider_app_content">

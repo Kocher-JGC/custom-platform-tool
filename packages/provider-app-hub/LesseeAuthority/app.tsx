@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Col } from 'antd';
 import MeunsTree from './components/MenusTree';
-import Table from './components/Table';
+import Table from './components/LesseeAuthority';
 import "./index.less";
 
 interface IProps {
