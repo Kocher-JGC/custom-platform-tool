@@ -94,10 +94,9 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
       total: total || 0
     });
   };
-  const getInitEditPopupWinndow()
-  {
+  const getInitEditPopupWinndow = () => {
     return null;
-  }
+  };
   const handleLesseeAuthorityOperational = async (item) => {
     const {
       operate, id, name, code
@@ -246,11 +245,11 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
       </CreateModal>
       <CreateModal
         title="快速创建权限项"
-        modalVisible={visibleCustomLesseeAuthorityModal}
+        modalVisible={visibleFastLesseeAuthorityModal}
         onCancel={() => setVisibleFastLesseeAuthorityModal(false)}
       >
         <CreateLesseeAuthorityFast
-          onOk={handleCustomLesseeAuthorityOk}
+          onOk={handleFastLesseeAuthorityOk}
           onCancel={() => setVisibleFastLesseeAuthorityModal(false)}
           upDataMenus={handleUpdataMenus}
         />
