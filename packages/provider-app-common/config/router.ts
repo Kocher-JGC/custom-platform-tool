@@ -5,6 +5,7 @@ import PageDesignerApp from "@provider-app/page-designer/main";
 import TableEditor from "@provider-app/table-editor/app";
 import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
+import ShowAuthority from "@provider-app/show-authority/app";
 
 import PopupWindowSelector from "@provider-app/popup-window-selector/app";
 
@@ -75,6 +76,10 @@ const RouterConfig: RouterConfigType = {
     title: '编辑表',
     component: TableEditor
   },
+  '/show-authority': {
+    title: '权限树管理',
+    component: ShowAuthority
+  }
 };
 
 /**

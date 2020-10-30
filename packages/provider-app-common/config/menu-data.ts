@@ -76,6 +76,19 @@ export const ProviderAppMenuData: MenuDataType[] = [
         id: '1415rwqtqr',
         icon: '',
         path: '/menu-manager'
+      },
+      {
+        title: '权限管理',
+        id: '123qwe',
+        icon: '',
+        children: [
+          {
+            title: '权限树管理',
+            id: '123qweasd',
+            icon: '',
+            path: '/show-authority'
+          }
+        ]
       }
     ]
   },
