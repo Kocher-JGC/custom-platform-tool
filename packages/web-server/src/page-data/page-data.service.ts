@@ -21,13 +21,13 @@ const genUrl = (params: any = {}) => {
 };
 
 const flatLayoutNode = (layoutNode, parentID?) => {
-  console.log(parentID);
+  // console.log(parentID);
   const componentsCollection = {};
   const layoutContentBody = [];
   layoutNode.forEach((nodeItem) => {
     // const nodeItemI = produce(nodeItem, draft => draft);
     const { id, body } = nodeItem;
-    
+
     Object.assign(nodeItem, {
       type: 'componentRef',
       compType: nodeItem?.widgetRef,
@@ -36,7 +36,7 @@ const flatLayoutNode = (layoutNode, parentID?) => {
       ...nodeItem.propState
       // }
     });
-    
+
     // 删除内部字段
     nodeItem = omit(nodeItem, [
       '_state',
@@ -48,7 +48,7 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     // Reflect.deleteProperty(nodeItem, '_state');
     // Reflect.deleteProperty(nodeItem, 'propState');
     // Reflect.deleteProperty(nodeItem, 'widgetRef');
-    
+
     componentsCollection[id] = Object.assign({}, nodeItem,
       parentID && {
         parentID
@@ -56,7 +56,7 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     nodeItem.componentID = id;
     nodeItem.refID = id;
     layoutContentBody.push(nodeItem);
-    
+
     if(body) {
       flatLayoutNode(body, id);
     }
@@ -111,7 +111,7 @@ export class PageDataService {
   ) {}
 
   tempAction: any[] = [];
-  
+
   tempFlow: any[] = [];
 
   tempSchema: any[] = [];
@@ -147,7 +147,7 @@ export class PageDataService {
   }
 
   genMetadataFromOnceTable(schema: any, onceTableInfo) {
-    
+
     const columns = {};
     const schemaIds = Object.keys(schema);
     const { datasourceId, code } = onceTableInfo;
@@ -191,25 +191,28 @@ export class PageDataService {
 
   genMetadataFromTableInfo(onceTableInfo) {
     // tableInfo: { id: '1320554257547665408', name: '用户表单', code: 'yonghubiaodan' }
-    const { columns: oldColumns, tableInfo } = onceTableInfo;
-    const columns = oldColumns.map((info) => {
+    if (onceTableInfo && 'columns' in onceTableInfo && 'tableInfo' in onceTableInfo) {
+      const { columns: oldColumns, tableInfo } = onceTableInfo;
+      const columns = oldColumns.map((info) => {
+        return {
+          id: info.id,
+          name: info.name,
+          fieldCode: info.code,
+          fieldType: info.fieldType,
+          fieldSize: info.fieldSize,
+          dataType: info.dataType,
+          colDataType: info.dataType,
+          type: 'string',
+        };
+      }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
       return {
-        id: info.id,
-        name: info.name,
-        fieldCode: info.code,
-        fieldType: info.fieldType,
-        fieldSize: info.fieldSize,
-        dataType: info.dataType,
-        colDataType: info.dataType,
-        type: 'string',
+        ...tableInfo,
+        type: 'general',
+        moduleId: '', // 关联表Id
+        columns
       };
-    }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
-    return {
-      ...tableInfo,
-      type: 'general',
-      moduleId: '', // 关联表Id
-      columns
-    };;
+    }
+    return {};
   }
 
   transfromSchema(schema: any) {
@@ -272,10 +275,10 @@ export class PageDataService {
   }
 
   genAPBDSLAction(actionId: string, actionConf, pageSchema) {
-    const { 
-      action:{ 
+    const {
+      action:{
         actionName,  actionType, forEntrieTable, targetTable
-      }, 
+      },
       condition, event, preTrigger, triggerAction
     } = actionConf;
 
@@ -334,24 +337,25 @@ export class PageDataService {
 
   transfromAction(actions, { pageSchema }) {
     const res = {};
-    const actionIds = Object.keys(actions);
-    actionIds.forEach(id => {
-      const action = actions[id][0];
-      if (action) {
-        const { triggerAction, event, action: { pageID } } = action;
-        if (triggerAction === 'submit' && event === 'onClick') {
-          res[id] = this.genAPBDSLAction(id, action, pageSchema);
-          this.tempFlow.push(genDefalutFlow(id));
+    if(Array.isArray(actions) && pageSchema){
+      const actionIds = Object.keys(actions);
+      actionIds.forEach(id => {
+        const action = actions[id][0];
+        if (action) {
+          const { triggerAction, event, action: { pageID } } = action;
+          if (triggerAction === 'submit' && event === 'onClick') {
+            res[id] = this.genAPBDSLAction(id, action, pageSchema);
+            this.tempFlow.push(genDefalutFlow(id));
+          }
+          if (triggerAction === 'openPage' && pageID) {
+            res[id] = this.genOpenPageAction(id, action);
+            this.tempFlow.push(genDefalutFlow(id));
+          }
+        } else {
+          console.error('获取action失败');
         }
-        if (triggerAction === 'openPage' && pageID) {
-          res[id] = this.genOpenPageAction(id, action);
-          this.tempFlow.push(genDefalutFlow(id));
-        }
-      } else {
-        console.error('获取action失败');
-      }
-    });
-
+      });
+    }
     return res;
   }
 
@@ -399,7 +403,7 @@ export class PageDataService {
       this.addSearchWieght(extralSchema);
       this.addSearchBuntton(extralSchema);
     }
-    
+
     return result.reduce((res, val, i) => {
       res[val.id] = val;
       if (tableIdx - 1 === i) {
@@ -413,7 +417,7 @@ export class PageDataService {
   }
 
   addSearchWieght(extralSchema) {
-    const { columns, id } = extralSchema;
+    const { columns = [] } = extralSchema || {};
     const widget = {
       type: 'componentRef',
       compType: 'FormInput',
@@ -424,7 +428,7 @@ export class PageDataService {
     };
     Object.keys(columns).forEach(key => {
       const info = columns[key];
-      if (info.isPk) return; 
+      if (info.isPk) return;
       widget.id = info.schemaId;
       widget.field = info.schemaId;
       widget.title = info.name;
@@ -435,64 +439,66 @@ export class PageDataService {
   }
 
   addSearchBuntton(extralSchema) {
-    const { columns, id } = extralSchema;
-    const weightId = `button_${id}`;
-    this.tempWeight.push({
-      id: weightId,
-      compType: 'NormalButton',
-      title: '查询', label: '查询', text: '查询',
-      type: 'componentRef',
-      actions: {
-        ...genFormButtonDefaltAction(weightId)
-      }
-    });
-    const conditionList = {};
-    const conditionControl = [];
-    Object.keys(columns).forEach((key, i) => {
-      const info = columns[key];
-      if (info.isPk) return; 
-      conditionList[`${key}_${i}`] = {
-        operator: 'like',
-        exp1: `@(metadata).${id}.${info.schemaId}`,
-        exp2: `@(schemas).${info.schemaId}`,
-      };
-      conditionControl.push(`${key}_${i}`);
-    });
-    const updId = `${weightId}_U`;
-    this.tempAction.push(
-      {
-        actionId: weightId,
-        actionName: `${weightId}TableSelect`,
-        actionType: 'APBDSLCURD',
-        actionOptions: {
-          businesscode: '34562',
-          actionList: {
-            apbA1: {
-              type: 'TableSelect',
-              table: `@(metadata).${id}`,
-              condition: {
-                conditionControl: {
-                  and: conditionControl
+    const { columns, id } = extralSchema || {};
+    if(Array.isArray(columns) && id){
+      const weightId = `button_${id}`;
+      this.tempWeight.push({
+        id: weightId,
+        compType: 'NormalButton',
+        title: '查询', label: '查询', text: '查询',
+        type: 'componentRef',
+        actions: {
+          ...genFormButtonDefaltAction(weightId)
+        }
+      });
+      const conditionList = {};
+      const conditionControl = [];
+      Object.keys(columns).forEach((key, i) => {
+        const info = columns[key];
+        if (info.isPk) return;
+        conditionList[`${key}_${i}`] = {
+          operator: 'like',
+          exp1: `@(metadata).${id}.${info.schemaId}`,
+          exp2: `@(schemas).${info.schemaId}`,
+        };
+        conditionControl.push(`${key}_${i}`);
+      });
+      const updId = `${weightId}_U`;
+      this.tempAction.push(
+        {
+          actionId: weightId,
+          actionName: `${weightId}TableSelect`,
+          actionType: 'APBDSLCURD',
+          actionOptions: {
+            businesscode: '34562',
+            actionList: {
+              apbA1: {
+                type: 'TableSelect',
+                table: `@(metadata).${id}`,
+                condition: {
+                  conditionControl: {
+                    and: conditionControl
+                  },
+                  conditionList
                 },
-                conditionList
-              },
-            }
+              }
+            },
+            actionStep: ['apbA1']
           },
-          actionStep: ['apbA1']
+          actionOutput: 'string', // TODO
         },
-        actionOutput: 'string', // TODO
-      }, 
-      updateStateAction(updId, `@(schemas).${id}`)
-    );
-    this.tempFlow.push(
-      genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
-      genDefalutFlow(updId),
-    );
+        updateStateAction(updId, `@(schemas).${id}`)
+      );
+      this.tempFlow.push(
+        genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
+        genDefalutFlow(updId),
+      );
+    }
   }
 
   genTableExtralData(tableData, data) {
     console.log(tableData, data);
-    
+
     const { columns, id } = data;
     tableData.columns = Object.keys(columns).filter(key => !columns[key].isPk).map(key => ({
       dataIndex: columns[key].fieldCode,
@@ -512,7 +518,7 @@ export class PageDataService {
   }
 
   genExtralSchema(tableMetadata, isAll = false) {
-    if (tableMetadata) {
+    if (tableMetadata && tableMetadata.id && Array.isArray(tableMetadata.columns)) {
       const { columns, id } = tableMetadata;
       const coulumsIds = Object.keys(columns);
       const cc = coulumsIds?.map((coulumsId) => {
@@ -527,7 +533,7 @@ export class PageDataService {
             fieldCode: info.fieldCode,
             defaultVal: '$ID()'
           };
-        } 
+        }
         if (isAll) {
           return {
             name: info.name,
@@ -560,7 +566,7 @@ export class PageDataService {
 
   /**
    * 页面数据转 IUB-DSL 数据
-   * @param pageData 
+   * @param pageData
    */
   pageData2IUBDSL(pageData, extralData) {
     const { pageContent, dataSources } = pageData;
@@ -583,7 +589,7 @@ export class PageDataService {
     try {
       contentData = JSON.parse(pageContent);
       const { content: pageLayoutContent, meta: { schema, actions } } = contentData;
-      
+
       const { componentsCollection, layoutContentBody } = flatLayoutNode(pageLayoutContent);
 
       /** 生成元数据 */
@@ -591,19 +597,19 @@ export class PageDataService {
       extralData.tableMetaData = actualMetadata;
       // const actualMetadata = this.genMetadataFromOnceTable(actualSchema, dataSources[0]);
       // const actualMetadata = dataSources.map((onceTableInfo) => this.genMetadataFromOnceTable(actualSchema, onceTableInfo));
-      
+
       /** 转换组件集合 */
       const actualComponentsCollection = this.transformWidgerData(componentsCollection, extralData);
-      
+
       /** 转换schemas */
-      const actualSchema = Object.assign({}, 
+      const actualSchema = Object.assign({},
         this.tempSchema.reduce((res, val) => ({ ...res, [val.schemaId]: val }), {}),
         this.transfromSchema(schema),
       );
 
 
       /** 转换动作 */
-      const actualActions = Object.assign({}, 
+      const actualActions = Object.assign({},
         this.tempAction.reduce((res, val) => ({ ...res, [val.actionId]: val }), {}),
         this.transfromAction(actions, { pageSchema: actualSchema })
       );
@@ -644,7 +650,7 @@ export class PageDataService {
         }
       });
     const data = resData?.data?.result;
-    
+
     const tableInfo = {
       id: data.id,
       name: data.name,
@@ -660,7 +666,7 @@ export class PageDataService {
       last_update_user_name '非必填'
       create_user_name '非必填'
     */
-    const filterSysFiledKeys = ['create_user_id', 'last_update_time', 'last_update_user_id', 'sequence', 'create_time', 'data_version', 'last_update_user_name', 'create_user_name']; 
+    const filterSysFiledKeys = ['create_user_id', 'last_update_time', 'last_update_user_id', 'sequence', 'create_time', 'data_version', 'last_update_user_name', 'create_user_name'];
 
     return {
       tableInfo,
@@ -720,7 +726,7 @@ export class PageDataService {
             Authorization: token
           }
         });
-      const data = resData?.data?.result; 
+      const data = resData?.data?.result;
       let tableMetaData = null;
       console.log('resDataMsg', resData?.data?.msg);
       if (data) {
