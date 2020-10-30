@@ -3,10 +3,7 @@
  */
 
 import { isPageState } from "../../state-manage";
-
-interface TransformCtx {
-  getPageState: any
-}
+import { isPageDatasoruceMeta } from "../../datasource-meta";
 
 /**
  * 将含有特殊标示的值进行转换转换值
@@ -14,11 +11,12 @@ interface TransformCtx {
  * @param value 需要被转换的值
  * @param ctx 上下文
  */
-const transformMarkValue = (value: string, ctx: TransformCtx) => {
-  const { getPageState } = ctx;
+const transformMarkValue = (value: string, ctx: any) => {
+  const { IUBStore: { getPageState }, datasourceMeta: { getFiledCode } } = ctx;
   if (isPageState(value)) {
     return getPageState(value);
   }
+  if (isPageDatasoruceMeta(value)) { return getFiledCode(value); }
   return value;
 };
 
@@ -28,7 +26,7 @@ const transformMarkValue = (value: string, ctx: TransformCtx) => {
  * @param values 需要被转换的值数组
  * @param ctx 上下文
  */
-export const transMarkValFromArr = (values: string[], ctx: TransformCtx) => {
+export const transMarkValFromArr = (values: string[], ctx: any) => {
   return values.map((v) => transformMarkValue(v, ctx));
 };
 

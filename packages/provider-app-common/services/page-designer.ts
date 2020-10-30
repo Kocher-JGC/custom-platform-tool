@@ -1,28 +1,35 @@
-export interface PageInfo {
-  id: string
-  name: string
-  type: number
+interface UpdatePageParams {
+  /** 给后端的页面数据 */
+  pageInfoForBN
+  /** 前端维护的页面内容 */
+  pageContentForFE
+  extendData
 }
 
 /**
  * 更新页面
  */
-export async function updatePageService(pageInfo: PageInfo, pageContent, extendData?) {
-  if (!pageInfo) {
-    return console.error('请传入 pageInfo');
+export async function updatePageService({
+  pageInfoForBN,
+  pageContentForFE,
+  extendData
+}: UpdatePageParams) {
+  if (!pageInfoForBN) {
+    return console.error('请传入 pageInfoForBN');
   }
-  const { id, name, type = 2 } = pageInfo;
-  const updatePageData = Object.assign({}, extendData, {
-    name,
-    type,
-    /** TODO: 字段需要更改 */
-    pageContent: JSON.stringify(pageContent),
+  const updatePageData = Object.assign({}, pageInfoForBN, extendData, {
+    pageContent: JSON.stringify(pageContentForFE),
   });
-  // console.log('updatePageData', updatePageData);
-  console.log('pageContent', pageContent);
+  console.log('pageContentForFE', pageContentForFE);
   return await $R_P.put({
-    url: `/page/v1/pages/${id}`,
-    data: updatePageData
+    url: `/page/v1/pages/${pageInfoForBN.id}`,
+    data: updatePageData,
+    options: {
+      businessTip: {
+        whenCodeEq: '00000',
+        type: 'success'
+      }
+    }
   });
 }
 

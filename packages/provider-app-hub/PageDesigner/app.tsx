@@ -4,11 +4,12 @@ import produce from 'immer';
 import { VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
 import { updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
+import pick from "lodash/pick";
 import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
-import { wrapPageData } from "./utils";
+import { wrapPageData, takeUsedWidgetIDs } from "./utils";
 import {
   getFEDynamicData, getPageContentWithDatasource
 } from "./services";
@@ -56,13 +57,16 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { appContext, dispatcher, appLocation } = this.props;
     const { pageID, title } = appLocation;
     const { UpdateAppContext } = dispatcher;
-    const pageContent = this.getPageContent();
+    // const pageContent = this.getPageContent();
 
-    await updatePageService(
-      this.getPageInfo(),
-      pageContent,
-      this.wrapDataSourceDataForUpdate(addingDataFormRemote)
-    );
+    await this.updatePage({
+      datasources: addingDataFormRemote
+    });
+    // await updatePageService(
+    //   this.getPageInfo(),
+    //   pageContent,
+    //   this.wrapDataSourceDataForUpdate(addingDataFormRemote)
+    // );
     const {
       interDatasources
     } = await getPageContentWithDatasource(pageID);
@@ -96,14 +100,17 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    */
   getPageInfo = () => {
     const {
-      appLocation, appContext
+      flatLayoutItems
     } = this.props;
     const pageDataFormRemote = this.getCurrPageDataDetail();
-    const { pageID, title } = appLocation;
+    // const { pageID, title } = appLocation;
+    const submitData = pick(pageDataFormRemote, [
+      'id', 'type', 'moduleID', 'name', 'belongMenus'
+    ]);
+    const usedWidgets = takeUsedWidgetIDs(flatLayoutItems, pageDataFormRemote);
     return {
-      id: pageID,
-      name: title,
-      type: pageDataFormRemote.type,
+      ...submitData,
+      usedWidgets,
     };
   }
 
@@ -165,23 +172,30 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     InitApp(initData);
   }
 
-  /**
-   * 发布页面
-   */
-  onReleasePage = () => {
+  updatePage = (options = {}) => {
+    const {
+      datasources = this.getDatasources()
+    } = options;
     return new Promise((resolve, reject) => {
+      const interDatasources = datasources;
       const pageContent = this.getPageContent();
-      const interDatasources = this.getDatasources();
-      updatePageService(
-        this.getPageInfo(),
-        pageContent,
-        this.wrapDataSourceDataForUpdate(interDatasources)
-      ).then((res) => {
+      updatePageService({
+        pageInfoForBN: this.getPageInfo(),
+        pageContentForFE: pageContent,
+        extendData: this.wrapDataSourceDataForUpdate(interDatasources),
+      }).then((res) => {
         resolve(res);
       }).catch((e) => {
         reject(e);
       });
     });
+  }
+
+  /**
+   * 发布页面
+   */
+  onReleasePage = () => {
+    return this.updatePage();
   }
 
   render() {

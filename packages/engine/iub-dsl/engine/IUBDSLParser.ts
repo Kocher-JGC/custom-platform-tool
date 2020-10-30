@@ -1,6 +1,7 @@
+import { TypeOfIUBDSL } from "@iub-dsl/definition";
+import { tableExtralAction, tableExtralFlow } from "../demo/base-reference/user/usertable/index";
 /** dont Overengineering */
 
-import { TypeOfIUBDSL } from "@iub-dsl/definition";
 import SchemasParser from "./state-manage/schemas";
 import widgetParser from "./component-manage/widget-parser";
 import { actionsCollectionParser } from "./actions-manage/actions-parser";
@@ -8,6 +9,7 @@ import { flowParser } from './flow-engine';
 import { isPageState } from "./state-manage";
 import { eventPropsHandle } from "./event-manage";
 import { datasourceMetaHandle } from "./datasource-meta";
+import { actionsCollectConstor } from "./relationship/depend-collet/action-depend";
 
 const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContext) => {
   const { changeTarget } = actionConf;
@@ -52,7 +54,6 @@ const genIUBDSLParserCtx = (parseRes) => {
   };
 
   const actionConfParser = (actionConf, actionConfParseRes, parseContext) => {
-    // isPageState
     switch (actionConf.actionType) {
       case 'updateState':
         return extralUpdateStateConfParser(actionConf, actionConfParseRes, parseContext);
@@ -62,9 +63,17 @@ const genIUBDSLParserCtx = (parseRes) => {
         return actionConfParseRes;
     }
   };
+  const {
+    actionDependCollect,
+    flowToUseCollect,
+    findEquMetadata
+  } = actionsCollectConstor();
   return {
     propsParser,
     actionConfParser,
+    actionDependCollect,
+    flowToUseCollect,
+    findEquMetadata,
   };
 };
 
@@ -78,7 +87,6 @@ const IUBDSLParser = ({ dsl }) => {
   } = dsl as TypeOfIUBDSL;
 
   let parseRes: any = {
-    metadataCollection,
     sysRtCxtInterface,
     relationshipsCollection,
     layoutContent,
@@ -94,15 +102,16 @@ const IUBDSLParser = ({ dsl }) => {
   const renderComponentKeys = Object.keys(componentsCollection);
 
   /** 数据源元数据解析和实体 */
-  const datasourceMetaEntity = datasourceMetaHandle();
+  const datasourceMetaEntity = datasourceMetaHandle(metadataCollection as any);
 
   /** 页面模型解析 */
   const schemasParseRes = SchemasParser(schemas);
   /** 每个动作解析成函数「流程将其连起来」 */
-  const actionParseRes = actionsCollectionParser(actionsCollection, parseContext);
+  const actionParseRes = actionsCollectionParser(Object.assign(actionsCollection, tableExtralAction), parseContext);
 
   parseRes = {
     ...parseRes,
+    findEquMetadata: parseContext.findEquMetadata,
     schemasParseRes,
     datasourceMetaEntity,
     actionParseRes
@@ -113,7 +122,7 @@ const IUBDSLParser = ({ dsl }) => {
     parseContext
   });
 
-  const flowParseRes = flowParser(flowCollection, { parseContext, parseRes });
+  const flowParseRes = flowParser(Object.assign(flowCollection, tableExtralFlow), { parseContext, parseRes });
   // const { getFlowItemInfo } = flowParseRes;
   // const { flowItemRun } = getFlowItemInfo('flow1');
   // console.log(flowItemRun({

@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import config from '../config';
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || config.post;
 
 export function logger(req, res, next) {
   console.log(`Request...`);

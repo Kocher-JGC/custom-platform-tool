@@ -3,21 +3,21 @@ import { Label } from '@deer-ui/core/label';
 import { PropItemCompAccessSpec } from '@engine/visual-editor/data-structure';
 
 const WidgetCodeComp = ({ ctx }) => {
-  const { changeEntityState, editingWidgetState, widgetEntity } = ctx;
+  const { widgetEntity } = ctx;
   // console.log('ctx :>> ', ctx);
   const { id } = widgetEntity;
   /** 取自身定义的 whichAttr */
-  const _value = editingWidgetState[whichAttr];
-  useEffect(() => {
-    if (_value) return;
-    changeEntityState({
-      attr: whichAttr,
-      value: id
-    });
-  }, []);
+  // const _value = editingWidgetState[whichAttr];
+  // useEffect(() => {
+  //   if (_value) return;
+  //   changeEntityState({
+  //     attr: whichAttr,
+  //     value: id
+  //   });
+  // }, []);
   return (
     <div>
-      <Label>{_value}</Label>
+      <Label>{id}</Label>
     </div>
   );
 };

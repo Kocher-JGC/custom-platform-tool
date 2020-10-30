@@ -13,7 +13,6 @@
   }
 }
 
-#table-info,
 #menu-manager,
 #dictionary-manager {
   margin: 0 auto;
@@ -26,4 +25,10 @@
 
 #page-manager {
   height: 100%;
+}
+
+.logo-container {
+  &:hover {
+    color: $themeColor;
+  }
 }

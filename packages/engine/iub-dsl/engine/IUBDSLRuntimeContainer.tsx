@@ -13,8 +13,9 @@ import { createIUBStore } from './state-manage';
 import { renderStructInfoListRenderer } from './component-manage/component-store/render-widget-struct';
 
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
+import { effectRelationship as genEffectRelationship } from './relationship';
 
-const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) => {
+const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
   const {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
@@ -28,10 +29,12 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
   const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
   const IUBStoreEntity = useIUBStore();
   const {
-    getPageState, updatePageState, IUBPageStore
+    getPageState
   } = IUBStoreEntity;
 
   const [runTimeLine, setRunTimeLine] = useState([]);
+
+  const effectRelationship = useMemo(() => genEffectRelationship(), []);
 
   const runTimeCtxToBusiness = useRef<any>(() => ({ pageMark: '' }));
   /** 页面管理添加页面上下文 */
@@ -46,12 +49,19 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
     // if (pageMark === "pageID_$_1") {
     //   setInterval(() => {
     //     const ctxx = pageManageInstance.getIUBPageCtx('pageID_$_0')[0];
-    //     console.log(ctxx.runtimeScheduler({}));
+    //     console.log(ctxx.dispatchOfIUBEngine({}));
     //   }, 1000);
     // }
 
+    // effectRelationship.effectReceiver([]);
+
+    hooks?.mounted?.();
+
     return () => {
       removeFn();
+      hooks?.unmounted?.();
+      const allPageCtx = pageManageInstance.getIUBPageCtx('');
+      effectRelationship.effectDispatch(allPageCtx);
     };
   }, []);
 
@@ -95,9 +105,12 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
     runTimeLine,
     setRunTimeLine,
     runTimeCtxToBusiness,
+    effectRelationship,
   }), [IUBStoreEntity]);
 
   const extralProps = useMemo(() => ({ extral: '扩展props' }), []);
+
+  hooks?.beforeMount?.();
 
   return (
     <DefaultCtx.Provider value={ctx}>
@@ -116,15 +129,11 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
           }}
         />
       </FromWrapFactory>
-      <pre>
+      {/* <pre>
         {JSON.stringify(getPageState(), null, 2)}
-      </pre>
+      </pre> */}
     </DefaultCtx.Provider>
   );
-}, (prev, next) => {
-  // console.log(prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID);
-
-  return prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID;
-});
+};
 
 export default IUBDSLRuntimeContainer;

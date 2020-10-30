@@ -27,7 +27,7 @@ class SecurityLayout extends React.PureComponent<SecurityLayoutProps, SecurityLa
   componentDidMount() {
     const { dispatch } = this.props;
     const { query } = history.location;
-    const { appName } = query;
+    const { appName, t } = query;
     // @TODO 暂时这么写
     if (appName) {
       store.set("appName", appName);
@@ -37,6 +37,9 @@ class SecurityLayout extends React.PureComponent<SecurityLayoutProps, SecurityLa
           title: appName
         }
       });
+    }
+    if (t) {
+      store.set("providerAppToken", t);
     }
     this.setState({
       isReady: true,

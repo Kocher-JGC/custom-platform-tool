@@ -18,6 +18,8 @@ export interface ColumnItem {
 export interface DatasourceItem {
   /** 该条记录的 id */
   id: string
+  /** code */
+  code: string
   /** 该条记录关联的表的 id */
   moduleId: string
   /** 名字 */

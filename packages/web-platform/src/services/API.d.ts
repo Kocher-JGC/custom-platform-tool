@@ -73,6 +73,7 @@ declare namespace API {
     mode?: string;
     lessee?: string;
     app?: string;
+    t?: string;
   }
 
   export interface IPageDataType extends IResponseBaseType {

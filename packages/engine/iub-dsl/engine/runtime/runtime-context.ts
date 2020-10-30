@@ -1,20 +1,15 @@
 import { useEffect, useMemo } from 'react';
+import { DispatchMethodNameOfCondition } from './types/dispatch-module-condition';
 import { genEventWrapFnList, useEventProps } from '../event-manage';
 import { useCacheState } from '../utils';
 import { APBDSLrequest as originReq } from '../utils/apb-dsl';
 import { conditionEngine } from '../condition-engine/condition-engine';
 import { APBDSLCondControlResHandle, getAPBDSLCondOperatorHandle } from '../actions-manage/business-actions/APBDSL';
 import { transMarkValFromArr, validTransMarkValFromArr } from './utils/transform-mark-value';
-import { collectRelationshipFromScheduler } from '../relationship';
-
-export enum RuntimeSchedulerFnName {
-  targetUpdateState = 'targetUpdateState',
-  updatePageState = 'updatePageState',
-  getPageState = 'getPageState',
-  getWatchDeps = 'getWatchDeps',
-  APBDSLrequest = 'APBDSLrequest',
-  ConditionHandleOfAPBDSL = 'ConditionHandleOfAPBDSL'
-}
+import {
+  DispatchCtxOfIUBEngine, Dispatch,
+  IUBEngineRuntimeCtx, AsyncIUBEngineRuntimeCtx,
+} from './types';
 
 const useUU = (setListConf: any[] = []) => {
   const [prop, setProp] = useCacheState({});
@@ -37,6 +32,26 @@ const APBDSLrequest = async (reqParam) => {
   return action;
 };
 
+const getDispatchMethod = (
+  { module, method }: Dispatch,
+  runtimeContext: AsyncIUBEngineRuntimeCtx | IUBEngineRuntimeCtx
+) => {
+  /** 获取调度的模块 */
+  const moduleToUse = runtimeContext[module];
+  if (!moduleToUse) {
+    console.error('调度中心模块获取失败!!', module);
+    return false;
+  }
+
+  /** 获取调度的方法 */
+  const dispatchMethod = moduleToUse[method];
+  if (!dispatchMethod) {
+    console.error('调度中心方法失败!!', method);
+    return false;
+  }
+  return dispatchMethod;
+};
+
 /**
  * TODO: 分类
  * 1. 异步/同步
@@ -46,51 +61,102 @@ const APBDSLrequest = async (reqParam) => {
  */
 export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
   const {
-    layoutContent, componentParseRes, getCompParseInfo,
-    schemas, mappingEntity, getActionFn,
-    renderComponentKeys,
-    schemasParseRes,
+    // layoutContent, componentParseRes, getCompParseInfo,
+    // schemas, mappingEntity, getActionFn,
+    // renderComponentKeys,
+    // schemasParseRes,
+    findEquMetadata,
     getFlowItemInfo,
     datasourceMetaEntity,
+    flowsRun,
   } = dslParseRes;
   console.log('//___genRuntimeCtxFn___\\\\');
   const {
-    pageManageInstance,
+    // pageManageInstance,
     IUBStoreEntity, // IUB页面仓库实例
-    runTimeCtxToBusiness // useRef
+    runTimeCtxToBusiness, // useRef
+    effectRelationship, // 副作用关系的实例
   } = runtimeCtx;
   const {
     getPageState,
-    getWatchDeps,
-    updatePageState, targetUpdateState,
-    IUBPageStore, pickPageStateKeyWord
+    // getWatchDeps,
+    // updatePageState, targetUpdateState,
+    // IUBPageStore, pickPageStateKeyWord
   } = IUBStoreEntity;
 
+  const { effectAnalysis, effectReceiver } = effectRelationship;
+
   /** 事件运行调度中心的函数 */
-  const asyncRuntimeContext = {
-    targetUpdateState,
-    updatePageState,
-    getPageState,
-    getWatchDeps,
-    APBDSLrequest,
-    ...datasourceMetaEntity
+  /**
+   * 同步调度的上下文
+   *  */
+  const runtimeContext: IUBEngineRuntimeCtx = {
+    IUBStore: {
+      ...IUBStoreEntity
+    },
+    actionMenage: {
+      string: () => {},
+    },
+    datasourceMeta: {
+      ...datasourceMetaEntity,
+    },
+    relationship: {
+      findEquMetadata,
+      ...effectRelationship,
+    },
   };
+  /**
+   * 异步调度的上下文
+  */
+  const asyncRuntimeContext: AsyncIUBEngineRuntimeCtx = {
+    IUBStore: {
+      ...IUBStoreEntity
+    },
+    actionMenage: {
+      string: () => {},
+    },
+    datasourceMeta: {
+      ...datasourceMetaEntity,
+    },
+    relationship: {
+      findEquMetadata,
+      ...effectRelationship,
+    },
+    condition: {
+      ConditionHandleOfAPBDSL: conditionEngine
+    },
+    flowManage: {
+      flowsRun
+    },
+    sys: {
+      APBDSLrequest
+    },
+  };
+
   /** 异步运行时调度中心 */
-  const asyncRuntimeScheduler = async (ctx) => {
-    const {
-      action, type, params, actionName
-    } = ctx;
-    /** 收集信息 */
-    const collectInfo = collectRelationshipFromScheduler(ctx);
+  const asyncDispatchOfIUBEngine = async (ctx: DispatchCtxOfIUBEngine) => {
+    const { actionInfo, dispatch } = ctx;
+    const { module, method, params } = dispatch;
 
-    // if (Object.prototype.toString.call(action) === "[object Object]") {
-    //   setRunTimeLine([...runTimeLine, action]);
-    // }
+    // console.log(ctx);
+    // console.count('-----asyncDispatchOfIUBEngine----');
 
-    if (type === RuntimeSchedulerFnName.ConditionHandleOfAPBDSL) {
+    /** 获取实际运行的函数 */
+    const dispatchMethod = getDispatchMethod(dispatch, asyncRuntimeContext);
+    /** 断言 */
+    if (typeof dispatchMethod !== 'function') {
+      console.error('调度方法获取异常, 非方法!', dispatchMethod);
+      return false;
+    }
+
+    /** 生成副作用信息 */
+    const shouldUseEffect = effectAnalysis(ctx);
+    // 临时代码
+    // shouldUseEffect();
+
+    if (method === DispatchMethodNameOfCondition.ConditionHandleOfAPBDSL) {
       const expsValueHandle = (expsValue) => {
         expsValue = transMarkValFromArr(expsValue, asyncRuntimeContext);
-
         return validTransMarkValFromArr(expsValue);
       };
       return await conditionEngine(params[0], {
@@ -100,24 +166,30 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
       });
     }
 
-    const runRes = await asyncRuntimeContext[type](...params);
+    const runRes = await dispatchMethod(...params);
 
-    /** 修改运行时状态 */
-    collectInfo.isRunSuccess = true;
+    // /** 确定副作用信息可以被使用 */
+    shouldUseEffect();
 
     return runRes;
   };
 
-  const runtimeContext = {
-    ...datasourceMetaEntity
-  };
   /** 同步运行时调度中心 */
-  const runtimeScheduler = (ctx) => {
-    const {
-      action, type, params, actionName
-    } = ctx;
-    console.log(ctx);
-    return getPageState();
+  const dispatchOfIUBEngine = (ctx: DispatchCtxOfIUBEngine) => {
+    const { actionInfo, dispatch } = ctx;
+    const { module, method, params } = dispatch;
+
+    // console.log(ctx);
+    // console.count('-----dispatchOfIUBEngine----');
+
+    const dispatchMethod = getDispatchMethod(dispatch, runtimeContext);
+    /** 断言 */
+    if (typeof dispatchMethod !== 'function') {
+      console.error('调度方法获取异常, 非方法!', dispatchMethod);
+      return false;
+    }
+
+    return dispatchMethod(...params);
   };
 
   /**
@@ -164,8 +236,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
   /** 在事件运行中使用的上下文 */
   runTimeCtxToBusiness.current = {
     pageMark: runTimeCtxToBusiness.current.pageMark || '',
-    asyncRuntimeScheduler,
-    runtimeScheduler
+    asyncDispatchOfIUBEngine,
+    dispatchOfIUBEngine
   };
 
   /**
