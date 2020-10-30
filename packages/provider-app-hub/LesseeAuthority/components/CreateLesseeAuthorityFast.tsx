@@ -101,74 +101,7 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
   return (
     <>
       <Form {...layout} form={form} name="control-hooks" onFinish={handleFinish}>
-        <NameCodeItem form={form} />
-        <Form.Item
-          name="parentCode"
-          label="父级编码"
-          rules={[{
-            required: true,
-            message: "请选择父级编码"
-          }]}
-          initialValue={TABLE_TYPE.TABLE}
-        >
-          <Select
-            placeholder="请选择父级编码"
-            options={parentCodeOptions}
-          >
-            {/* {
-              TABLE_OPTIONS.map((item, index) => <Option
-                key={index} value={item.value}
-              >{item.title}</Option>)
-            } */}
-          </Select>
-        </Form.Item>
-        <Form.Item
-          name="showTypeWithoutAuthority"
-          label="showTypeWithoutAuthority"
-          rules={[{
-            required: true,
-            message: "请选择showTypeWithoutAuthority"
-          }]}
-        >
-          <Select
-            placeholder="请选择父级编码"
-            options={[{ key: 'FORBIDDEN', value: 'FORBIDDEN', label: 'FORBIDDEN' }, { key: 'HIDDEN', value: 'HIDDEN', label: 'HIDDEN' }]}
-          >
-          </Select>
-        </Form.Item>
 
-        {/* <Form.Item
-          noStyle
-          shouldUpdate={(prevValues, currentValues) => prevValues.type !== currentValues.type}
-        >
-          {({ getFieldValue }) => {
-            return getFieldValue('type') === TABLE_TYPE.TREE
-              ? (
-                <Form.Item
-                  name="maxLevel"
-                  label="最大层级数"
-                  rules={[{
-                    required: true,
-                    message: "请填写最大层级数"
-                  }]}
-                  initialValue={15}
-                >
-                  <InputNumber placeholder="须为正整数,最大层级不超过15级" min={2} max={15} />
-                </Form.Item>
-              ) : getFieldValue('type') === TABLE_TYPE.AUX_TABLE ? (
-                <PrimaryTreeItem />
-              ) : null;
-          }}
-        </Form.Item>
-        <ModuleTreeItem /> */}
-        {/* <Button
-          type="link"
-          className="create-link"
-          onClick={createModule}
-        >新建模块</Button>
-        <Form.Item name="description" label="备注" >
-          <TextArea rows={4} maxLength={100} />
-        </Form.Item> */}
         <FromFooterBtn
           onCancel={handleFormCancel}
         />
