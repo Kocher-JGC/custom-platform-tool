@@ -38,7 +38,7 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
   const [selectColInfo, setSelectCol] = useState<SelectedField>(defaultSelected);
   return (
     <div className="field-selector p-5">
-      <div className="flex flex-wrap justify-between">
+      <div className="flex flex-wrap card-container">
         {
           interDatasources && interDatasources.map((datasourceItem) => {
             const {
@@ -48,7 +48,7 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
             } = datasourceItem;
 
             return (
-              <div className="group p-2" key={id}>
+              <div className="group p-2 card-item" key={id}>
                 <div className="title font-bold text-md">{name}</div>
                 <div className="list p-2">
                   {
