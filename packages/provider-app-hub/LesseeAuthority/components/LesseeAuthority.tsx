@@ -5,17 +5,18 @@ import {
 } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
-import { onNavigate } from 'multiple-page-routing';
-import { queryLesseeAuthorityListService, allowDeleteLesseeAuthorityService, 
-  deleteLesseeAuthorityService, queryLesseeAuthorityService } from '../service';
+import {
+  queryLesseeAuthorityListService, allowDeleteLesseeAuthorityService,
+  deleteLesseeAuthorityService, queryLesseeAuthorityService
+} from '../service';
 import {
   COLUMNS, OPERATIONALMENU, SELECT_ALL, MORE_MENU, PAGE_SIZE_OPTIONS, IModalData
 } from '../constant';
 import Operational from './Operational';
 import { IStatus } from '../interface';
 import CreateModal from './CreateModal';
-import CreateLesseeAuthority from './CreateLesseeAuthority';
-import CopyLesseeAuthority from './CopyLesseeAuthority';
+import CreateLesseeAuthorityCustom from './CreateLesseeAuthorityCustom';
+import CreateLesseeAuthorityFast from './CreateLesseeAuthorityFast';
 
 const { confirm } = Modal;
 
@@ -41,14 +42,14 @@ export interface ILesseeAuthority {
   code?: string;
 }
 
-
 const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   let moduleId = "";
   const actionRef = useRef<ActionType>();
   const formRef = useRef<FormInstance>();
   const [copyData = {}, setCopyData] = useState<ICopyData>();
   const [visibleCopyModal, setVisibleCopyModal] = useState<boolean>(false);
-  const [visibleCrateLesseeAuthorityModal, setVisibleCrateLesseeAuthorityModal] = useState<boolean>(false);
+  const [visibleFastLesseeAuthorityModal, setVisibleFastLesseeAuthorityModal] = useState<boolean>(false);
+  const [visibleCustomLesseeAuthorityModal, setVisibleCustomLesseeAuthorityModal] = useState<boolean>(false);
   const [editData = {}, setEditData] = useState<ILesseeAuthority>();
   const [editModalData = {}, setEditModalData] = useState<IModalData>();
 
@@ -70,11 +71,11 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   }, [props.moduleId]);
   const handleMenuClick = ({ key }) => {
     console.dir(key);
-    if (key === "dictionary") {
-      onNavigate({
-        type: "PUSH",
-        path: '/DictManage',
-      });
+    if (key === "fast_create_lessee_authority") {
+      setVisibleFastLesseeAuthorityModal(true);
+    }
+    if (key === "custom_create_lessee_authority") {
+      setVisibleCustomLesseeAuthorityModal(true);
     }
   };
   const getData = async (params, sorter, filter) => {
@@ -93,11 +94,15 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
       total: total || 0
     });
   };
+  const getInitEditPopupWinndow()
+  {
+    return null;
+  }
   const handleLesseeAuthorityOperational = async (item) => {
     const {
       operate, id, name, code
     } = item;
-    if (operate === "edit") {      
+    if (operate === "edit") {
       if (!id) {
         return;
       }
@@ -124,8 +129,8 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
         // temp = Object.assign(temp, res?.result);
         setEditData(retEditData);
         // setEditData(res?.result);
-        setVisibleCrateLesseeAuthorityModal(true)
-
+        setVisibleCustomLesseeAuthorityModal(true);
+      });
     } else if (operate === "delete") {
       checkBeforeDelete(id);
     } else if (operate === "copy") {
@@ -175,14 +180,18 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   const fromReset = () => {
     formRef.current?.resetFields();
   };
-  const handleCratetLesseeAuthorityOk = () => {
-    setVisibleCrateLesseeAuthorityModal(false);
+  const handleFastLesseeAuthorityOk = () => {
+    setVisibleFastLesseeAuthorityModal(false);
     proLesseeAuthorityReload();
   };
-  const handleCopyLesseeAuthorityOk = () => {
-    setVisibleCopyModal(false);
+  const handleCustomLesseeAuthorityOk = () => {
+    setVisibleCustomLesseeAuthorityModal(false);
     proLesseeAuthorityReload();
   };
+  // const handleCopyLesseeAuthorityOk = () => {
+  //   setVisibleCopyModal(false);
+  //   proLesseeAuthorityReload();
+  // };
   const handleUpdataMenus = () => {
     props.updataMenus && props.updataMenus();
   };
@@ -194,12 +203,12 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
     }
   </Menu>;
   const renderToolBarRender = () => [
-    <Button key="3" type="primary" onClick={() => setVisibleCrateLesseeAuthorityModal(true)}>
+    <Button key="3" type="primary" onClick={() => setVisibleCustomLesseeAuthorityModal(true)}>
       新建权限项
     </Button>,
     <Dropdown overlay={renderMenu}>
       <Button type="primary">
-        更多按钮 <DownOutlined />
+      新建权限项 <DownOutlined />
       </Button>
     </Dropdown>
   ];
@@ -225,25 +234,25 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
         }}
       />
       <CreateModal
-        title="新建权限项"
-        modalVisible={visibleCrateLesseeAuthorityModal}
-        onCancel={() => setVisibleCrateLesseeAuthorityModal(false)}
+        title="自定义创建权限项"
+        modalVisible={visibleCustomLesseeAuthorityModal}
+        onCancel={() => setVisibleCustomLesseeAuthorityModal(false)}
       >
-        <CreateLesseeAuthority
-          onOk={handleCratetLesseeAuthorityOk}
-          onCancel={() => setVisibleCrateLesseeAuthorityModal(false)}
+        <CreateLesseeAuthorityCustom
+          onOk={handleCustomLesseeAuthorityOk}
+          onCancel={() => setVisibleCustomLesseeAuthorityModal(false)}
           upDataMenus={handleUpdataMenus}
         />
       </CreateModal>
       <CreateModal
-        title="复制数据表"
-        modalVisible={visibleCopyModal}
-        onCancel={() => setVisibleCopyModal(false)}
+        title="快速创建权限项"
+        modalVisible={visibleCustomLesseeAuthorityModal}
+        onCancel={() => setVisibleFastLesseeAuthorityModal(false)}
       >
-        <CopyLesseeAuthority
-          data={copyData}
-          onOk={handleCopyLesseeAuthorityOk}
-          onCancel={() => setVisibleCopyModal(false)}
+        <CreateLesseeAuthorityFast
+          onOk={handleCustomLesseeAuthorityOk}
+          onCancel={() => setVisibleFastLesseeAuthorityModal(false)}
+          upDataMenus={handleUpdataMenus}
         />
       </CreateModal>
     </>

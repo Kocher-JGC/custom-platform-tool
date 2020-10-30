@@ -41,7 +41,7 @@ export const translateParentCodeToSelectMenus = (record: ILesseeAuthority[]):ISE
     });
 };
 
-const CreateLesseeAuthority: React.FC<IProps> = (props: IProps) => {
+const CreateLesseeAuthorityCustom: React.FC<IProps> = (props: IProps) => {
   const { onCancel, onOk, upDataMenus } = props;
   const [form] = Form.useForm();
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
@@ -187,4 +187,4 @@ const CreateLesseeAuthority: React.FC<IProps> = (props: IProps) => {
   );
 };
 
-export default React.memo(CreateLesseeAuthority);
+export default React.memo(CreateLesseeAuthorityCustom);

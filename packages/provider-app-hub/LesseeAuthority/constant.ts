@@ -2,17 +2,11 @@ import { ProColumns } from '@hy/pro-table';
 import { IOperationalMenuItem, IValueEnum, ITableType } from './interface';
 
 export const MORE_MENU = [{
-  title: "表结构模板",
-  key: "template"
+  title: "快速创建权限项",
+  key: "fast_create_lessee_authority"
 }, {
-  title: "导入表结构",
-  key: "import"
-}, {
-  title: "导出表结构",
-  key: "export"
-}, {
-  title: "字典管理",
-  key: "dictionary"
+  title: "自定义创建权限项",
+  key: "custom_create_lessee_authority"
 }];
 export const SELECT_ALL = "all";
 export enum MENUS_TYPE {
