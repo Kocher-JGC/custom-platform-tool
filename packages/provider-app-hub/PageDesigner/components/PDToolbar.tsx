@@ -26,11 +26,13 @@ const ReleaseBtn = ({
 
 interface ToolbarCustomProps {
   onReleasePage?: () => Promise<unknown>
+  flatLayoutItems
   appLocation
 }
 
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   onReleasePage,
+  flatLayoutItems,
   appLocation
 }) => {
   const previewUrl = getPreviewUrl(appLocation);
@@ -45,6 +47,21 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
         >
           页面配置
         </EditButton> */}
+      <Button
+        className="mr10"
+        onClick={(e) => {
+          ShowModal({
+            title: '页面设置',
+            children: ({ close }) => {
+              return (
+                <div></div>
+              );
+            }
+          });
+        }}
+      >
+        页面设置
+      </Button>
       <Button
         hola
         color="default"
@@ -63,7 +80,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
               console.log(previewUrl);
               return (
                 <div style={{
-                  height: '90vh'
+                  height: '80vh'
                 }}
                 >
                   <iframe src={previewUrl} width="100%" height="100%" frameBorder="0" />
@@ -73,9 +90,9 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
           });
         }}
       >
-          PC 预览
+        预览
       </Button>
-      <Button
+      {/* <Button
         hola
         color="default"
         className="mr10"
@@ -98,7 +115,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
         }}
       >
           手机预览
-      </Button>
+      </Button> */}
       <ReleaseBtn onReleasePage={onReleasePage} />
       {/* <Button
           className="mr10"
