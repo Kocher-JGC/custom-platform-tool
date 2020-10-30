@@ -21,7 +21,7 @@ const genUrl = (params: any = {}) => {
 };
 
 const flatLayoutNode = (layoutNode, parentID?) => {
-  console.log(parentID);
+  // console.log(parentID);
   const componentsCollection = {};
   const layoutContentBody = [];
 
@@ -198,25 +198,28 @@ export class PageDataService {
 
   genMetadataFromTableInfo(onceTableInfo) {
     // tableInfo: { id: '1320554257547665408', name: '用户表单', code: 'yonghubiaodan' }
-    const { columns: oldColumns, tableInfo } = onceTableInfo;
-    const columns = oldColumns.map((info) => {
+    if (onceTableInfo && 'columns' in onceTableInfo && 'tableInfo' in onceTableInfo) {
+      const { columns: oldColumns, tableInfo } = onceTableInfo;
+      const columns = oldColumns.map((info) => {
+        return {
+          id: info.id,
+          name: info.name,
+          fieldCode: info.code,
+          fieldType: info.fieldType,
+          fieldSize: info.fieldSize,
+          dataType: info.dataType,
+          colDataType: info.dataType,
+          type: 'string',
+        };
+      }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
       return {
-        id: info.id,
-        name: info.name,
-        fieldCode: info.code,
-        fieldType: info.fieldType,
-        fieldSize: info.fieldSize,
-        dataType: info.dataType,
-        colDataType: info.dataType,
-        type: 'string',
+        ...tableInfo,
+        type: 'general',
+        moduleId: '', // 关联表Id
+        columns
       };
-    }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
-    return {
-      ...tableInfo,
-      type: 'general',
-      moduleId: '', // 关联表Id
-      columns
-    };;
+    }
+    return {};
   }
 
   transfromSchema(schema: any) {
@@ -263,7 +266,7 @@ export class PageDataService {
       actions: {
         // ...genFormButtonDefaltAction('middle_1234')
         ...genFormButtonDefaltAction(actionRef)
-        
+
       }
     };
   }
@@ -281,7 +284,7 @@ export class PageDataService {
     const schemaIds = Object.keys(schema);
     console.log(schema);
     let condition;
-    
+
     schemaIds.forEach(id => {
       if (schema[id].isPk) {
         condition = this.genCond(schema[id].fieldMapping, `@(schemas).${ schema[id].schemaId}`);
@@ -295,7 +298,7 @@ export class PageDataService {
   }
 
   genAPBCreataAction() {
-    
+
   }
 
   genAPBDSLAction(actionId: string, actionConf, pageSchema) {
@@ -303,7 +306,7 @@ export class PageDataService {
       action:{
         actionName,  actionType, forEntrieTable, targetTable
       },
-      // condition, event, preTrigger, triggerAction
+      condition, event, preTrigger, triggerAction
     } = actionConf;
 
     const { collectStruct, condition } = this.getDataCollectionFromSchema(pageSchema) || { collectStruct: [], condition: { conditionControl: {}, conditionList: {} } };
@@ -398,27 +401,26 @@ export class PageDataService {
   }
 
   transfromAction(actions, { pageSchema }) {
-    let res = {};
-    const actionIds = Object.keys(actions);
-    actionIds.forEach(id => {
-      const action = actions[id][0];
-      if (action) {
-        const { triggerAction, event, action: { pageID } } = action;
-        if (triggerAction === 'submit' && event === 'onClick') {
-          res = {
-            ...res,
-            ...this.genAPBDSLAction(id, action, pageSchema)
-          };
+    const res = {};
+    if(Array.isArray(actions) && pageSchema){
+      const actionIds = Object.keys(actions);
+      actionIds.forEach(id => {
+        const action = actions[id][0];
+        if (action) {
+          const { triggerAction, event, action: { pageID } } = action;
+          if (triggerAction === 'submit' && event === 'onClick') {
+            res[id] = this.genAPBDSLAction(id, action, pageSchema);
+            this.tempFlow.push(genDefalutFlow(id));
+          }
+          if (triggerAction === 'openPage' && pageID) {
+            res[id] = this.genOpenPageAction(id, action);
+            this.tempFlow.push(genDefalutFlow(id));
+          }
+        } else {
+          console.error('获取action失败');
         }
-        if (triggerAction === 'openPage' && pageID) {
-          res[id] = this.genOpenPageAction(id, action);
-          this.tempFlow.push(genDefalutFlow(id));
-        }
-      } else {
-        console.error('获取action失败');
-      }
-    });
-
+      });
+    }
     return res;
   }
 
@@ -462,7 +464,7 @@ export class PageDataService {
     });
     const extralSchema = this.genExtralSchema(extralData.tableMetaData, hasTable);
     console.log(hasTable, extralSchema);
-    
+
     if (hasTable && extralSchema) {
       this.genTableExtralData(tableD[0], extralSchema);
       this.addSearchWieght(extralSchema);
@@ -483,7 +485,7 @@ export class PageDataService {
   }
 
   addSearchWieght(extralSchema) {
-    const { columns, id } = extralSchema;
+    const { columns = [] } = extralSchema || {};
     const widget = {
       type: 'componentRef',
       compType: 'FormInput',
@@ -505,62 +507,66 @@ export class PageDataService {
   }
 
   addSearchBuntton(extralSchema) {
-    const { columns, id } = extralSchema;
-    const weightId = `button_${id}`;
-    this.tempWeight.push({
-      id: weightId,
-      compType: 'NormalButton',
-      title: '查询', label: '查询', text: '查询',
-      type: 'componentRef',
-      actions: {
-        ...genFormButtonDefaltAction(weightId)
-      }
-    });
-    const conditionList = {};
-    const conditionControl = [];
-    Object.keys(columns).forEach((key, i) => {
-      const info = columns[key];
-      if (info.isPk) return;
-      conditionList[`${key}_${i}`] = {
-        operator: 'like',
-        exp1: `@(metadata).${id}.${info.schemaId}`,
-        exp2: `@(schemas).${info.schemaId}`,
-      };
-      conditionControl.push(`${key}_${i}`);
-    });
-    const updId = `${weightId}_U`;
-    this.tempAction.push(
-      {
-        actionId: weightId,
-        actionName: `${weightId}TableSelect`,
-        actionType: 'APBDSLCURD',
-        actionOptions: {
-          businesscode: '34562',
-          actionList: {
-            apbA1: {
-              type: 'TableSelect',
-              table: `@(metadata).${id}`,
-              condition: {
-                conditionControl: {
-                  and: conditionControl
+    const { columns, id } = extralSchema || {};
+    if(Array.isArray(columns) && id){
+      const weightId = `button_${id}`;
+      this.tempWeight.push({
+        id: weightId,
+        compType: 'NormalButton',
+        title: '查询', label: '查询', text: '查询',
+        type: 'componentRef',
+        actions: {
+          ...genFormButtonDefaltAction(weightId)
+        }
+      });
+      const conditionList = {};
+      const conditionControl = [];
+      Object.keys(columns).forEach((key, i) => {
+        const info = columns[key];
+        if (info.isPk) return;
+        conditionList[`${key}_${i}`] = {
+          operator: 'like',
+          exp1: `@(metadata).${id}.${info.schemaId}`,
+          exp2: `@(schemas).${info.schemaId}`,
+        };
+        conditionControl.push(`${key}_${i}`);
+      });
+      const updId = `${weightId}_U`;
+      this.tempAction.push(
+        {
+          actionId: weightId,
+          actionName: `${weightId}TableSelect`,
+          actionType: 'APBDSLCURD',
+          actionOptions: {
+            businesscode: '34562',
+            actionList: {
+              apbA1: {
+                type: 'TableSelect',
+                table: `@(metadata).${id}`,
+                condition: {
+                  conditionControl: {
+                    and: conditionControl
+                  },
+                  conditionList
                 },
-                conditionList
-              },
-            }
+              }
+            },
+            actionStep: ['apbA1']
           },
-          actionStep: ['apbA1']
+          actionOutput: 'string', // TODO
         },
-        actionOutput: 'string', // TODO
-      },
-      updateStateAction(updId, `@(schemas).${id}`)
-    );
-    this.tempFlow.push(
-      genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
-      genDefalutFlow(updId),
-    );
+        updateStateAction(updId, `@(schemas).${id}`)
+      );
+      this.tempFlow.push(
+        genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
+        genDefalutFlow(updId),
+      );
+    }
   }
 
   genTableExtralData(tableData, data) {
+    console.log(tableData, data);
+
     const { columns, id } = data;
     tableData.columns = Object.keys(columns).filter(key => !columns[key].isPk).map(key => ({
       dataIndex: columns[key].fieldCode,
@@ -580,7 +586,7 @@ export class PageDataService {
   }
 
   genExtralSchema(tableMetadata, isAll = false) {
-    if (tableMetadata && Reflect.has(tableMetadata, 'id') && Reflect.has(tableMetadata, 'columns')) {
+    if (tableMetadata && tableMetadata.id && Array.isArray(tableMetadata.columns)) {
       const { columns, id } = tableMetadata;
       const coulumsIds = Object.keys(columns);
       const cc = coulumsIds?.map((coulumsId) => {
@@ -624,7 +630,7 @@ export class PageDataService {
   async getTableMetadata(dataSources, processCtx) {
     if (dataSources[0] && dataSources[0].datasourceId) {
       return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
-    } 
+    }
     return false;
     // return {
     //   tableInfo:  {
@@ -643,7 +649,7 @@ export class PageDataService {
    */
   pageData2IUBDSL(pageData, extralData) {
     console.log(pageData, extralData);
-    
+
     const { pageContent, dataSources } = pageData;
     const { tableMetaData } = extralData;
     let contentData;
@@ -811,6 +817,12 @@ export class PageDataService {
           }
         });
       const data = resData?.data?.result;
+      let tableMetaData = null;
+      console.log('resDataMsg', resData?.data?.msg);
+      if (data) {
+        const { dataSources } = data;
+        tableMetaData = await this.getTableMetadata(dataSources, processCtx);
+      }
       if(!data) {
         console.error('页面输出存在问题?', data);
         throw Error(resData?.data?.msg);
@@ -821,8 +833,8 @@ export class PageDataService {
           const { dataSources } = data;
           tableMetaData = await this.getTableMetadata(dataSources, processCtx);
         }
-  
-  
+
+
         return this.pageData2IUBDSL(data, { tableMetaData });
       }
     } catch(e) {
