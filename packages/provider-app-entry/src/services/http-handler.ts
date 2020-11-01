@@ -8,6 +8,7 @@ import { message as AntdMessage } from 'antd';
 
 import { clearDefaultParams, onNavigate, redirectToRoot } from "multiple-page-routing";
 import { authStore } from "../auth/actions";
+import { HttpBusinessCodeMap } from "./http-business-code-map";
 
 /**
  * 后端返回的数据结构
@@ -40,8 +41,10 @@ export interface RExtend extends RequestClass<ResStruct, RequestOptions> {
 }
 
 export interface RequestOptions {
+  /** 是否显示成功的信息 */
+  showSuccessTip?: boolean
   /** 业务提示 */
-  businessTip: {
+  businessTip?: {
     /** 提示的类型 */
     type?: 'error' | 'success' | 'info'
     /** 弹出的提示的类型，是顶部提示或者是右上角提示 */
@@ -133,11 +136,16 @@ const resetHttpReqHelper = () => {
 function handleRes({ res, resDetail }) {
   // return console.log('resData', resData);
   const { code, msg } = res;
-  const { businessTip } = resDetail.__originReq;
+  const { businessTip, showSuccessTip } = resDetail.__originReq;
+  if (showSuccessTip) {
+    if (code === HttpBusinessCodeMap.success) {
+      AntdMessage.success(msg);
+    }
+  }
   if (!businessTip) {
     /** 如果没有配置，默认所有错误都弹出 */
     switch (code) {
-      case '00000':
+      case HttpBusinessCodeMap.success:
         // console.log('成功');
         break;
       case 'A0300':
