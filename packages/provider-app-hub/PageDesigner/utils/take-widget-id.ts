@@ -1,5 +1,5 @@
 import { FlatLayoutItems } from "@engine/visual-editor/data-structure";
-import { WidgetType } from "@provider-app/config/widgetTypes";
+import { WidgetTypes } from "@provider-app/config/widgetTypes";
 
 /**
  * 后端需要的组件 ID 数据格式
@@ -8,6 +8,7 @@ export interface PageUsedWidget {
   widgetId: string
   name?: string
   pid?: string
+  /** 对应前端的 WidgetTypes */
   type?: number
 }
 
@@ -24,7 +25,7 @@ export const takeUsedWidgetIDs = (
     if (Object.prototype.hasOwnProperty.call(flatLayoutItems, widgetID)) {
       const widgetItem = flatLayoutItems[widgetID];
       // console.log('widgetItem', widgetItem);
-      const _widgetType = /button/gi.test(widgetItem.widgetDef.type) ? WidgetType.button : WidgetType.other;
+      const _widgetType = /button/gi.test(widgetItem.widgetRef.type) ? WidgetTypes.button : WidgetTypes.other;
       pageUsedWidget.push({
         // 32 位以内的 UI_ID
         widgetId: `__${id}__${widgetID}`,
@@ -36,7 +37,7 @@ export const takeUsedWidgetIDs = (
   return [
     {
       widgetId: id,
-      type: WidgetType.page,
+      type: WidgetTypes.page,
       name
     },
     ...pageUsedWidget
