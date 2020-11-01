@@ -31,7 +31,14 @@ export function pageMetadataReducer(
       return produce(pageContent, (draft) => (draft ? draft.meta : state));
     case ADD_ENTITY:
       return produce(state, (draft) => {
+        const { entity: { id, varAttr } } = action;
+        const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
         draft.lastCompID += 1;
+        draft.variable[id] = varAttrArr;
+        // varAttrArr.forEach((attr) => {
+        //   const varAttrID = `${id}.${attr}`;
+        //   draft.variable[varAttrID] = attr;
+        // });
         return draft;
       });
     case CHANGE_METADATA:

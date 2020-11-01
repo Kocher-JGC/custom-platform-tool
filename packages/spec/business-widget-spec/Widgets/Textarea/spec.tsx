@@ -6,9 +6,15 @@ export const Textarea: BusinessWidgetAccessSpec = () => ({
   name: 'Textarea',
 
   editableProps: {
-    title: 'string',
-    labelColor: 'string',
-    defValue: 'string',
+    title: {
+      type: 'string'
+    },
+    labelColor: {
+      type: 'string'
+    },
+    defValue: {
+      type: 'string'
+    },
   },
 
   render(widgetState) {

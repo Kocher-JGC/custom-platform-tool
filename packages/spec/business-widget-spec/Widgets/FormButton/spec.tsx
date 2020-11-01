@@ -6,7 +6,9 @@ export const FormButton: BusinessWidgetAccessSpec = () => ({
   name: 'FormButton',
 
   editableProps: {
-    title: 'string',
+    title: {
+      type: 'string'
+    },
   },
 
   render(widgetState) {

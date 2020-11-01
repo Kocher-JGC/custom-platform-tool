@@ -1,19 +1,14 @@
 import React from 'react';
 import { GeneralTableComp } from '.';
-import { TableEditor } from '../../CustomEditor/TableEditor';
 import { BusinessWidgetAccessSpec } from '../../interfaces';
 
 export const NormalTable: BusinessWidgetAccessSpec = () => ({
   name: 'NormalTable',
 
   editableProps: {
-    columns: 'array[{ key: string }]'
-  },
-
-  propEditor(ctx) {
-    return (
-      <TableEditor {...ctx} />
-    );
+    columns: {
+      type: 'array[{ key: string }]'
+    }
   },
 
   render(widgetState) {
