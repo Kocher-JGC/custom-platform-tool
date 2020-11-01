@@ -25,10 +25,7 @@ export async function updatePageService({
     url: `/page/v1/pages/${pageInfoForBN.id}`,
     data: updatePageData,
     options: {
-      businessTip: {
-        whenCodeEq: '00000',
-        type: 'success'
-      }
+      showSuccessTip: true
     }
   });
 }
