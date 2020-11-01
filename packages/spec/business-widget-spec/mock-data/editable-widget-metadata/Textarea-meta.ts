@@ -1,26 +1,11 @@
-import { WidgetMetadata } from "@engine/visual-editor/data-structure";
+import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
 
-export const TextareaMeta: WidgetMetadata = {
+export const TextareaMeta: EditableWidgetMeta = {
   id: 'widget-id-11',
   label: '多行文本框',
-  widgetDef: {
-    type: 'Textarea'
-  },
-  editableProps: {
-    title: {
-      type: 'string'
-    },
-    titleColor: {
-      type: 'string'
-    },
-    defValue: {
-      type: 'any'
-    },
-    field: {
-      type: 'struct'
-    },
-  },
-  bindPropItems: {
+  widgetRef: 'Textarea',
+  varAttr: ['title', 'labelColor', 'defValue'],
+  propItemsRely: {
     propItemRefs: [
       { propID: 'prop_style_title_color', editAttr: ['labelColor'] },
       {

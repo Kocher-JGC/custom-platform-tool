@@ -1,26 +1,11 @@
-import { WidgetMetadata } from "@engine/visual-editor/data-structure";
+import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
 
-export const FormInputMeta: WidgetMetadata = {
+export const FormInputMeta: EditableWidgetMeta = {
   id: 'widget-id-1',
   label: '文本框',
-  widgetDef: {
-    type: 'FormInput'
-  },
-  editableProps: {
-    title: {
-      type: 'string'
-    },
-    titleColor: {
-      type: 'string'
-    },
-    defValue: {
-      type: 'any'
-    },
-    field: {
-      type: 'struct'
-    },
-  },
-  bindPropItems: {
+  widgetRef: 'FormInput',
+  varAttr: ['widgetCode'],
+  propItemsRely: {
     propItemRefs: [
       { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
       { propID: 'prop_style_title_color', editAttr: ['labelColor'] },
