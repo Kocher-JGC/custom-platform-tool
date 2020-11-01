@@ -111,9 +111,15 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
     const { logging } = this.props;
   }
 
-  handleHistoryChange = (activeRoute) => {
+  handleHistoryChange = (activeRoute, actionType) => {
+    document.title = getRouteName(activeRoute);
+    // if (!activeRoute) {
+    //   // this.redirect();
+    //   // this.closeAll();
+    // } else {
+    //   setReqUrlByApp(this.appLocation?.app);
+    // }
     // console.log('object :>> ', activeRoute);
-    // setReqUrlByApp(this.appLocation.state?.app);
     // console.log(this.state.activeRoute);
   }
 
