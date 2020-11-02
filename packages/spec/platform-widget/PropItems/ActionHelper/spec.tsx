@@ -22,7 +22,7 @@ export const ActionHelperSpec: PropItemCompAccessSpec = {
       editingWidgetState, businessPayload
     } = ctx;
     const { interDatasources } = businessPayload;
-    const metaRefID = editingWidgetState[whichAttr] || genMetaRefID(metaAttr);
+    const metaRefID = editingWidgetState[whichAttr] || genMetaRefID(`a`);
     const actionConfig = takeMeta({
       metaAttr,
       metaRefID

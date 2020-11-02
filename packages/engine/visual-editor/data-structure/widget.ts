@@ -69,8 +69,6 @@ export interface WidgetEntity extends EditableWidgetMeta {
   /** 实例化后的状态 */
   _state: string
   // _state: 'active' | 'disable'
-  /** 实例化后的 class id */
-  _metaID: EditableWidgetMeta['id']
 }
 
 /**

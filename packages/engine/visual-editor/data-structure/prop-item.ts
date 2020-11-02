@@ -46,6 +46,12 @@ export type TakeMeta = (options: TakeMetaOptions) => unknown
 
 export type GenMetaRefID = (metaAttr: string) => string
 
+export interface UICtx {
+  utils: {
+    showMsg: (ctx: { msg: string, type: 'success' | 'error' }) => void
+  }
+}
+
 export interface PropItemRenderContext {
   /** 业务数据 */
   businessPayload: PD.PropItemRendererBusinessPayload
@@ -57,9 +63,11 @@ export interface PropItemRenderContext {
   changeEntityState: ChangeEntityState
   /** 更改页面的 meta 数据 */
   changeMetadata: typeof ChangeMetadata
+  /** 获取 meta */
   takeMeta: TakeMeta
   /** 生成 meta 引用的 ID */
   genMetaRefID: GenMetaRefID
+  UICtx: UICtx
 }
 
 /**

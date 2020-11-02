@@ -93,20 +93,20 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       }
     }
 
-    const itemClassCopy = Object.assign({}, widgetType);
+    const widgetMetaCopy = Object.assign({}, widgetType);
     if (parentID) {
-      itemClassCopy.parentID = parentID;
+      widgetMetaCopy.parentID = parentID;
     }
-    let _entity = itemClassCopy;
+    let _entity = widgetMetaCopy;
 
     /** 如果已经实例化的组件 */
-    const isMotify = itemClassCopy._state === 'active';
+    const isMotify = widgetMetaCopy._state === 'active';
 
     if (!isMotify) {
       /** 实例化组件类 */
-      const entity = makeWidgetEntity(itemClassCopy);
+      const entity = makeWidgetEntity(widgetMetaCopy);
       _entity = entity;
-      console.log('_entity :>> ', _entity);
+      // console.log('_entity :>> ', _entity);
       AddEntity(_entity, _idx);
     }
 

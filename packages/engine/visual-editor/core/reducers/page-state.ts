@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { mergeDeep } from '@infra/utils/tools';
 import {
-  INIT_APP, InitAppAction,
+  INIT_APP, InitAppAction, DEL_ENTITY, DelEntityAction,
   ADD_ENTITY, AddEntityAction, UPDATE_APP, UpdateAppAction, ChangeMetadataAction, CHANGE_METADATA
 } from "../actions";
 import { PageMetadata } from "../../data-structure";
@@ -21,7 +21,7 @@ const DefaultPageMeta: PageMetadata = {
  */
 export function pageMetadataReducer(
   state: PageMetadata = DefaultPageMeta,
-  action: InitAppAction | AddEntityAction | ChangeMetadataAction
+  action: InitAppAction | AddEntityAction | ChangeMetadataAction | DelEntityAction
 ) {
   switch (action.type) {
     case INIT_APP:
@@ -42,6 +42,20 @@ export function pageMetadataReducer(
         //   const varAttrID = `${id}.${attr}`;
         //   draft.varAttr[varAttrID] = attr;
         // });
+        return draft;
+      });
+    case DEL_ENTITY:
+      return produce(state, (draft) => {
+        const { idx, entity: delE } = action;
+        // 删除变量
+        Reflect.deleteProperty(draft.varRely, delE.id);
+
+        // 删除动作
+        Object.keys(draft.actions).forEach((actionID) => {
+          if (actionID.indexOf(delE.id) !== -1) {
+            Reflect.deleteProperty(draft.actions, actionID);
+          }
+        });
         return draft;
       });
     case CHANGE_METADATA:

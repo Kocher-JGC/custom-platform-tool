@@ -8,27 +8,27 @@ export const widgetPanelData: GroupPanelData = {
     {
       title: '通用',
       items: [
-        'widget-form-button',
+        'FormButton',
       ]
     },
     {
       title: '表单控件',
       items: [
-        'widget-id-1',
-        'widget-id-5',
-        'widget-id-11',
+        'FormInput',
+        'Textarea',
+        'DropdownSelector',
       ]
     },
     {
       title: '表格控件',
       items: [
-        'widget-id-3',
+        'NormalTable',
       ]
     },
     {
       title: '布局控件',
       items: [
-        'widget-id-2'
+        'FlexLayout'
       ]
     },
   ]

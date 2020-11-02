@@ -9,5 +9,5 @@ export interface WidgetRendererProps extends LayoutWrapperContext {
   onClick: React.DOMAttributes<HTMLDivElement>['onClick']
   entity: WidgetEntity
   entityState: WidgetEntityState
-  businessWidgetConfig: BusinessWidgetSpec
+  platformWidgetMeta: BusinessWidgetSpec
 }

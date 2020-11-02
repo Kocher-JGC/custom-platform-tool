@@ -13,13 +13,13 @@ export interface PDWidgetRendererProps extends WidgetRendererProps {
  */
 export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
   const {
+    onClick,
     entity,
     entityState = {},
     layoutNodeItem,
     className,
-    onClick,
     nestingInfo,
-    businessWidgetConfig,
+    platformWidgetMeta,
     ...otherProps
   } = props;
   const { widgetRef } = entity;
@@ -30,11 +30,11 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
   const { type, ...restWidgetProps } = widgetRef;
   const widgetProps = Object.assign({}, restWidgetProps, entityState);
 
-  if (businessWidgetConfig.unexpected) {
+  if (platformWidgetMeta.unexpected) {
     // 处理异常组件
     Com = <Unexpect />;
   } else {
-    Com = businessWidgetConfig.render(widgetProps);
+    Com = platformWidgetMeta.render(widgetProps);
   }
   const classes = classnames(
     "comp-renderer",
