@@ -11,13 +11,14 @@ import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
 import { wrapPageData, takeUsedWidgetIDs } from "./utils";
 import {
-  getFEDynamicData, getPageContentWithDatasource
+  getFEDynamicData, getPageContentWithDatasource,
 } from "./services";
 
 import './style';
 // import { VisualEditorStore } from "@engine/visual-editor/core/store";
 /** 是否离线模式，用于在家办公调试 */
-const offlineMode = true;
+const offlineMode = false;
+// const offlineMode = true;
 
 interface VisualEditorAppProps extends VisualEditorState {
   dispatcher: VEDispatcher
@@ -240,7 +241,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
             <WidgetPanel
               interDatasources={appContext?.payload?.interDatasources}
               widgetPanelData={appContext.widgetPanelData}
-              widgetMetaDataCollection={appContext.widgetMetaDataCollection}
               onUpdatedDatasource={this.onUpdatedDatasource}
             />
           </div>
@@ -269,8 +269,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                   pageMetadata={pageMetadata}
                   ChangeMetadata={ChangeMetadata}
                   interDatasources={this.getDatasources()}
-                  // eslint-disable-next-line max-len
-                  widgetBindedPropItemsMeta={appContext?.widgetMetaDataCollection[activeEntity?._classID]?.propItemsRely}
+                  widgetMetaID={activeEntity._metaID}
                   selectedEntity={activeEntity}
                   propItemGroupingData={appContext.propItemGroupingData}
                   defaultEntityState={activeEntity.propState}

@@ -69,9 +69,6 @@ export function pageMetadataReducer(
 export interface AppContext {
   /** App 是否做好准备 */
   ready: boolean
-  /** 存放所有组件的数据 */
-  /** 组件类数据 */
-  widgetMetaDataCollection?: any
   /** 属性项数据 */
   propItemData?: any
   /** 组件类面板数据 */
@@ -94,7 +91,7 @@ export function appContextReducer(
   switch (action.type) {
     case INIT_APP:
       const {
-        widgetMetaDataCollection, widgetPanelData,
+        widgetPanelData,
         propItemGroupingData,
         pagePropsData, propItemData,
         payload,
@@ -103,7 +100,6 @@ export function appContextReducer(
       return {
         ready: true,
         payload,
-        widgetMetaDataCollection,
         widgetPanelData,
         propItemGroupingData,
         pagePropsData,

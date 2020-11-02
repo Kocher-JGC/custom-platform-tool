@@ -40,13 +40,13 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     
     // 删除内部字段
     nodeItem = omit(nodeItem, [
-      '_classID',
+      '_metaID',
       '_state',
       'propState',
       'widgetRef',
     ]);
     // 删除内部字段
-    // Reflect.deleteProperty(nodeItem, '_classID');
+    // Reflect.deleteProperty(nodeItem, '_metaID');
     // Reflect.deleteProperty(nodeItem, '_state');
     // Reflect.deleteProperty(nodeItem, 'propState');
     // Reflect.deleteProperty(nodeItem, 'widgetRef');
