@@ -8,19 +8,14 @@ const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
 
-const baseUrl = "http://192.168.14.140:6090";
-const lesseeCode = "hy";
-
 /**
  * 子进程运行 shell 方法
  */
 const runExec = (shell: string): Promise<boolean> => {
-  console.log("shell", shell);
   return new Promise((resolve, reject) => {
-    if (!shell || typeof shell !== "string") reject(new Error("命令不存在"));
+    if (!shell) reject(new Error("命令不存在"));
     exec(shell, (error) => {
       if (error) {
-        console.log(999, shell, error, typeof error);
         reject(error);
       } else {
         resolve(true);
@@ -42,14 +37,43 @@ export class ReleaseAppService {
    */
   generatePageDataFolder(folderName: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (typeof folderName !== "string") reject(new Error("文件夹名称错误"));
-      fs.ensureDir(path.join(config.pageDataStoreDirectory, folderName), (err) => {
+      if (!folderName) reject(new Error("文件夹名称错误"));
+      fs.ensureDir(path.join(config.pageDataStoreDirectory, folderName, "/page"), (err) => {
         if (err) {
           reject(err);
           return;
         }
         resolve(true);
       });
+    });
+  }
+
+  /**
+   *
+   * 生成应用配置信息
+   * @param {string} folderName 放置文件夹
+   * @param {{ lesseeCode: string; applicationCode: string }} appConfig 应用配置文件 json 内容
+   * @returns
+   * @memberof ReleaseAppService
+   */
+  generateAppConfig(
+    folderName: string,
+    appConfig: { lesseeCode: string; applicationCode: string }
+  ) {
+    return new Promise((resolve, reject) => {
+      const { lesseeCode, applicationCode } = appConfig;
+      if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
+      fs.writeFile(
+        path.join(config.pageDataStoreDirectory, folderName, `appConfig.json`),
+        JSON.stringify(appConfig),
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(true);
+        }
+      );
     });
   }
 
@@ -69,7 +93,7 @@ export class ReleaseAppService {
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       fs.writeFile(
-        path.join(config.pageDataStoreDirectory, folderName, `${pageId}.json`),
+        path.join(config.pageDataStoreDirectory, folderName, "/page", `${pageId}.json`),
         pageContent,
         (err) => {
           if (err) {
@@ -81,10 +105,6 @@ export class ReleaseAppService {
       );
     });
   }
-
-  // removePageDataFolder(folderName: string): Promise<boolean> {
-  //   return runExec(``);
-  // }
 
   /**
    *
@@ -111,9 +131,9 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  async getPageDataFromProvider(applicationCode: string) {
+  async getPageDataFromProvider({ lesseeCode, applicationCode }) {
     const resData = await axios.get(
-      `${baseUrl}/paas/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      `${config.platformApiUrl}/paas/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       {
         headers: {
           Authorization: `Bearer 1295915065878388737`
@@ -121,35 +141,5 @@ export class ReleaseAppService {
       }
     );
     return resData?.data?.result || [];
-  }
-
-  /**
-   *
-   * 从配置端获取指定应用的指定页面详情
-   * @param {string} applicationCode app应用标示
-   * @param {string} pageId 页面 ID
-   * @returns
-   * @memberof ReleaseAppService
-   */
-  async getPageDetailFromProvider(applicationCode: string, pageId: string) {
-    const dsl = await this.pageDataService.getPageDataFromRemote({
-      lessee: lesseeCode,
-      app: applicationCode,
-      id: pageId
-    });
-    return dsl;
-  }
-
-  hasFile(folderName: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const filePath = path.join(config.pageDataStoreDirectory, `${folderName}.zip`);
-      fs.access(filePath, (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(filePath);
-      });
-    });
   }
 }
