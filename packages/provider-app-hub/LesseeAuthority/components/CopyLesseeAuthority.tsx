@@ -4,7 +4,7 @@ import pinyin4js from 'pinyin4js';
 import { NameCodeItem, FromFooterBtn } from "./FormItem";
 import './index.less';
 import { copyLesseeAuthorityService } from '../service';
-import { ICopyData } from './Table';
+import { ICopyData } from './LesseeAuthority';
 
 interface IProps {
   onOk: () => void;
