@@ -24,8 +24,8 @@ export interface ComponentPanelProps {
   itemRenderer?: (a, b) => JSX.Element
 }
 
-const defaultItemRendererFac = (widgetMetaDataCollection, getDragItemConfig) => (componentClassID) => {
-  const widgetType = widgetMetaDataCollection[componentClassID];
+const defaultItemRendererFac = (widgetMetaDataCollection, getDragItemConfig) => (widgetMetaID) => {
+  const widgetType = widgetMetaDataCollection[widgetMetaID];
   const {
     id, label
   } = widgetType;

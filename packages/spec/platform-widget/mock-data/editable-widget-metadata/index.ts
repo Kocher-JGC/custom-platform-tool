@@ -24,4 +24,4 @@ tempArr.forEach((meta) => {
   widgetMetadataCollection[meta.id] = meta;
 });
 
-export const getWidgetDefinitionData = ApiMock(widgetMetadataCollection);
+export const getWidgetMetadata = ApiMock(widgetMetadataCollection);

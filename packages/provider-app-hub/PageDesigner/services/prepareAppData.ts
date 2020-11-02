@@ -1,5 +1,5 @@
 import {
-  getWidgetDefinitionData, getWidgetPanelData,
+  getWidgetMetadata, getWidgetPanelData,
   getPagePropItems, getPropItemData,
   getPropItemGroupingData,
 } from "@spec/platform-widget/mock-data";
@@ -26,13 +26,12 @@ export const getPageContentWithDatasource = async (pageID) => {
  */
 export const getFEDynamicData = async () => {
   const [
-    widgetMetaDataCollection,
     widgetPanelData,
     pagePropsData,
     propItemData,
     propItemGroupingData,
   ] = await Promise.all([
-    getWidgetDefinitionData(),
+    // getWidgetMetadata(),
     getWidgetPanelData(),
     getPagePropItems(),
     getPropItemData(),
@@ -42,10 +41,11 @@ export const getFEDynamicData = async () => {
   const FEDynamicData = {
     widgetPanelData,
     propItemGroupingData,
-    widgetMetaDataCollection,
     propItemData,
     pagePropsData,
   };
+
+  console.log('FEDynamicData :>> ', FEDynamicData);
 
   return FEDynamicData;
 };

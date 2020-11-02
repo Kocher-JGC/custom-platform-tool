@@ -3,13 +3,6 @@ import { CustomEditor } from "@engine/visual-editor/spec/custom-editor";
 
 import { PropItemCompAccessSpec } from ".";
 
-/**
- * 基础组件类型
- */
-interface BasicWidgetType {
-  type: string
-}
-
 export type EditAttr = string | string[]
 
 /**
@@ -77,7 +70,7 @@ export interface WidgetEntity extends EditableWidgetMeta {
   _state: string
   // _state: 'active' | 'disable'
   /** 实例化后的 class id */
-  _classID: EditableWidgetMeta['id']
+  _metaID: EditableWidgetMeta['id']
 }
 
 /**
