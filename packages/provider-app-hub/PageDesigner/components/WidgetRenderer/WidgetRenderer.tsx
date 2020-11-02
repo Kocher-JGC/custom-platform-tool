@@ -22,12 +22,12 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
     businessWidgetConfig,
     ...otherProps
   } = props;
-  const { widgetDef } = entity;
+  const { widgetRef } = entity;
 
   let Com = <div></div>;
-  if (!widgetDef) return Com;
+  if (!widgetRef) return Com;
 
-  const { type, ...restWidgetProps } = widgetDef;
+  const { type, ...restWidgetProps } = widgetRef;
   const widgetProps = Object.assign({}, restWidgetProps, entityState);
 
   if (businessWidgetConfig.unexpected) {

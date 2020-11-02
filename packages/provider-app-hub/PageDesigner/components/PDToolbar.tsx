@@ -4,6 +4,7 @@ import { getPreviewUrl } from '@provider-app/config/getPreviewUrl';
 
 import { previewAppService } from '@provider-app/services';
 import { EditButton } from "./PDPageMetadataEditor/EditButton";
+import { PageConfigContainer } from "./PDPageConfiguration";
 
 const ReleaseBtn = ({
   onReleasePage
@@ -33,6 +34,7 @@ interface ToolbarCustomProps {
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   onReleasePage,
   flatLayoutItems,
+  pageMetadata,
   appLocation
 }) => {
   const previewUrl = getPreviewUrl(appLocation);
@@ -49,12 +51,17 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
         </EditButton> */}
       <Button
         className="mr10"
+        color="default"
         onClick={(e) => {
           ShowModal({
             title: '页面设置',
+            width: 900,
             children: ({ close }) => {
               return (
-                <div></div>
+                <PageConfigContainer
+                  pageMetadata={pageMetadata}
+                  flatLayoutItems={flatLayoutItems}
+                />
               );
             }
           });
@@ -63,7 +70,6 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
         页面设置
       </Button>
       <Button
-        hola
         color="default"
         className="mr10"
         onClick={(e) => {

@@ -104,10 +104,9 @@ class CanvasStage extends React.Component<CanvasStageProps> {
 
     if (!isMotify) {
       /** 实例化组件类 */
-      const entity = makeWidgetEntity(itemClassCopy, {
-        idCount: pageMetadata.lastCompID
-      });
+      const entity = makeWidgetEntity(itemClassCopy);
       _entity = entity;
+      console.log('_entity :>> ', _entity);
       AddEntity(_entity, _idx);
     }
 
