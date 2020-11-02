@@ -1,7 +1,7 @@
 /**
  * 对应
  */
-export enum WidgetType {
+export enum WidgetTypes {
   page = 0,
   button = 1,
   other = 2

@@ -31,25 +31,25 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     
     Object.assign(nodeItem, {
       type: 'componentRef',
-      compType: nodeItem?.widgetDef?.type,
-      // widgetDef: {
-      // ...nodeItem.widgetDef,
+      compType: nodeItem?.widgetRef,
+      // widgetRef: {
+      // ...nodeItem.widgetRef,
       ...nodeItem.propState
       // }
     });
     
     // 删除内部字段
     nodeItem = omit(nodeItem, [
-      '_classID',
+      '_metaID',
       '_state',
       'propState',
-      'widgetDef',
+      'widgetRef',
     ]);
     // 删除内部字段
-    // Reflect.deleteProperty(nodeItem, '_classID');
+    // Reflect.deleteProperty(nodeItem, '_metaID');
     // Reflect.deleteProperty(nodeItem, '_state');
     // Reflect.deleteProperty(nodeItem, 'propState');
-    // Reflect.deleteProperty(nodeItem, 'widgetDef');
+    // Reflect.deleteProperty(nodeItem, 'widgetRef');
     
     componentsCollection[id] = Object.assign({}, nodeItem,
       parentID && {

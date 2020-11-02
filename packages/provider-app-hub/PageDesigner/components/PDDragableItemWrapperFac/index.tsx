@@ -12,7 +12,7 @@ import {
   DragableItemTypes,
   DragableItemWrapperFac
 } from '@engine/visual-editor/spec';
-import { getWidget } from '@spec/business-widget';
+import { getWidget } from '@spec/platform-widget';
 import { TempEntityTip } from './TempEntityTip';
 import { WidgetRenderer } from '../WidgetRenderer';
 import { EditBtn } from './EditBtn';
@@ -53,11 +53,10 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
   const isTempEntity = currEntity._state === TEMP_ENTITY_ID;
 
   return isTempEntity ? <TempEntityTip key={id} /> : (() => {
-    const { widgetDef } = currEntity;
+    const { widgetRef, propEditor: PropEditor } = currEntity;
 
     // TODO: 调整获取组件的链路，通过远程获取的方式处理
-    const registeredEntity = getWidget(widgetDef.type);
-    const { propEditor: PropEditor } = registeredEntity;
+    const registeredEntity = getWidget(widgetRef);
     const actionCtx = { entity: currEntity, idx, nestingInfo };
     return (
       <div
@@ -95,7 +94,9 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
                   editorRenderer={(modalOptions) => {
                     return (
                       <PropEditor
-                        onSubmit={(e) => modalOptions?.close()}
+                        onSubmit={(nextValue) => {
+                          modalOptions?.close();
+                        }}
                         entityState={entityState}
                         changeEntityState={(changeVal) => {
                           // updateEntityState(changeVal);

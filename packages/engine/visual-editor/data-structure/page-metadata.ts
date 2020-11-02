@@ -1,5 +1,5 @@
 import { LayoutInfoActionReducerState } from "./layout";
-import { WidgetBindPropItemsType } from "./widget";
+import { WidgetRelyPropItems } from "./widget";
 
 export interface MetaStorage {
   [metaID: string]: any
@@ -24,7 +24,7 @@ export interface PageMetadata {
   /** 动作 meta */
   actions: MetaStorage
   /** 变量 meta */
-  variable: MetaStorage
+  varRely: MetaStorage
 }
 
 /**
@@ -52,5 +52,5 @@ export interface PageStageEntity {
   /** 存放后端返回的 page id */
   pageID: string
   /** 绑定可编辑的属性 */
-  bindPropItems: WidgetBindPropItemsType
+  propItemsRely: WidgetRelyPropItems
 }

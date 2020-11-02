@@ -7,7 +7,7 @@ import { nanoid } from 'nanoid';
 import { Debounce } from '@mini-code/base-func';
 import {
   WidgetEntity, WidgetEntityState, PropItemMeta,
-  WidgetBindPropItemsType,
+  WidgetRelyPropItems,
   PropItemsCollection,
   PropItemRefs,
   PropItemCompAccessSpec,
@@ -52,7 +52,7 @@ export interface PropertiesEditorProps {
   selectedEntity: WidgetEntity
   propItemData: PropItemsCollection
   /** 组件绑定的属性项配置 */
-  widgetBindedPropItemsMeta: WidgetBindPropItemsType
+  widgetBindedPropItemsMeta: WidgetRelyPropItems
   /** 属性编辑器的配置，通过该配置生成有层级结构的属性编辑面板 */
   editorConfig?: any
   /** 默认的表单数据state */
