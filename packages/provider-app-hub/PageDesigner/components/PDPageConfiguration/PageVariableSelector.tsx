@@ -1,19 +1,20 @@
 import React from 'react';
 import { Table } from 'antd';
 
-const takeVariableData = (variable, flatLayoutItems) => {
+const takeVariableData = (varRely, flatLayoutItems) => {
   const res = [];
-  for (const widgetID in variable) {
-    if (Object.prototype.hasOwnProperty.call(variable, widgetID)) {
-      const variableItems = variable[widgetID];
+  for (const widgetID in varRely) {
+    if (Object.prototype.hasOwnProperty.call(varRely, widgetID)) {
+      const variableItems = varRely[widgetID];
       const widgetEntity = flatLayoutItems[widgetID];
       console.log('widgetEntity :>> ', widgetEntity);
+      const { propState } = widgetEntity;
       variableItems.forEach((varItem) => {
         const varCode = `${widgetID}.${varItem}`;
         res.push({
-          varCode,
+          varCode: propState[varItem],
           varType: '字符串',
-          varDesc: widgetEntity.propState?.title + widgetEntity.propState[varItem],
+          varDesc: propState.title,
           id: varCode,
         });
       });
@@ -26,8 +27,8 @@ export const PageVariableSelector = ({
   flatLayoutItems,
   pageMetadata
 }) => {
-  const { variable } = pageMetadata;
-  // console.log('variable :>> ', variable);
+  const { varRely } = pageMetadata;
+  // console.log('varRely :>> ', varRely);
   // console.log('flatLayoutItems :>> ', flatLayoutItems);
   return (
     <div className="page-var-selector">
@@ -55,7 +56,7 @@ export const PageVariableSelector = ({
             }
           },
         ]}
-        dataSource={takeVariableData(variable, flatLayoutItems)}
+        dataSource={takeVariableData(varRely, flatLayoutItems)}
         rowKey="id"
       />
     </div>
