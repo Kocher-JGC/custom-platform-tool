@@ -1,15 +1,6 @@
-import { WidgetEntityState } from "@engine/visual-editor/data-structure";
+import { WidgetEditableProps, WidgetEntityState } from "@engine/visual-editor/data-structure";
 
-export interface WidgetEditablePropMeta {
-  /** 属性的类型 */
-  type: 'string' | 'number' | 'boolean' | 'any' | 'struct'
-  /** 属性的别名 */
-  alias?: string
-}
-
-export interface WidgetEditableProps {
-  [propName: string]: WidgetEditablePropMeta
-}
+export type BusinessWidgetRender = (widgetState: WidgetEntityState) => JSX.Element
 
 /**
  * 基础的 UI 接入规范
@@ -24,7 +15,7 @@ export interface BusinessWidgetMeta {
   /** 被卸载时的回调 */
   didUnmount?: () => void
   /** 用于渲染的组件 */
-  render: (widgetState: WidgetEntityState) => JSX.Element
+  render: BusinessWidgetRender
 }
 
 /**
@@ -38,4 +29,11 @@ export interface UnexpectedWidgetMeta {
 /**
  * 业务组件的接入标准
  */
-export type BusinessWidgetAccessSpec = () => BusinessWidgetMeta
+export class BusinessWidgetAccessSpec implements BusinessWidgetMeta {
+  name!: BusinessWidgetMeta['name']
+
+  editableProps!: BusinessWidgetMeta['editableProps']
+
+  render!: BusinessWidgetMeta['render']
+}
+// export type BusinessWidgetAccessSpec = () => BusinessWidgetMeta

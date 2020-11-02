@@ -24,7 +24,7 @@ export interface PageMetadata {
   /** 动作 meta */
   actions: MetaStorage
   /** 变量 meta */
-  variable: MetaStorage
+  varRely: MetaStorage
 }
 
 /**

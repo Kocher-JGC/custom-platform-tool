@@ -13,7 +13,7 @@ const DefaultPageMeta: PageMetadata = {
   linkpage: {},
   schema: {},
   actions: {},
-  variable: {},
+  varRely: {},
 };
 
 /**
@@ -32,12 +32,15 @@ export function pageMetadataReducer(
     case ADD_ENTITY:
       return produce(state, (draft) => {
         const { entity: { id, varAttr } } = action;
-        const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
-        draft.lastCompID += 1;
-        draft.variable[id] = varAttrArr;
+        if (varAttr) {
+          // 设置变量
+          const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
+          draft.lastCompID += 1;
+          draft.varRely[id] = varAttrArr;
+        }
         // varAttrArr.forEach((attr) => {
         //   const varAttrID = `${id}.${attr}`;
-        //   draft.variable[varAttrID] = attr;
+        //   draft.varAttr[varAttrID] = attr;
         // });
         return draft;
       });

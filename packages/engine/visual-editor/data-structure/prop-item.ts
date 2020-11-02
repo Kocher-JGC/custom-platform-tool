@@ -3,6 +3,18 @@
 import { ChangeMetadata } from "../core";
 import { WidgetEntity } from "./widget";
 
+export interface WidgetEditablePropMeta {
+  /** 属性的类型 */
+  type: 'string' | 'number' | 'boolean' | 'struct' | 'any'
+  /** 属性的别名 */
+  alias?: string
+}
+
+export interface WidgetEditableProps {
+  title: WidgetEditablePropMeta
+  [propName: string]: WidgetEditablePropMeta
+}
+
 export type PropItemCompRender = ({
   /** 属性的值 */
   propItemValue,
