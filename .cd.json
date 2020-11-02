@@ -7,17 +7,17 @@
     "queue": [
       {
         "name": "provider_app",
-        "build-cmd": "yarn build:provider-app-entry",
+        "buildCmd": "yarn build:provider-app-entry",
         "dockerfilePath": "./package/provider-app-entry"
       },
       {
         "name": "consumer_app",
-        "build-cmd": "yarn build:web-platform",
+        "buildCmd": "yarn build:web-platform",
         "dockerfilePath": "./package/web-platform"
       },
       {
         "name": "node_web_server",
-        "build-cmd": "yarn build:web-server",
+        "buildCmd": "yarn build:web-server",
         "dockerfilePath": "./package/web-server"
       }
     ]

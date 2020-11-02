@@ -1,8 +1,3 @@
-import {
-  getWidgetMetadata, getWidgetPanelData,
-  getPagePropItems, getPropItemData,
-  getPropItemGroupingData,
-} from "@spec/platform-widget/mock-data";
 import { getPageDetailService } from "@provider-app/services";
 // import { getDataSourcePanelConfig } from "../components/DataSource";
 import { takeDatasources } from "./datasource";
@@ -20,32 +15,4 @@ export const getPageContentWithDatasource = async (pageID) => {
     pageContent,
     interDatasources
   };
-};
-/**
- * 获取前端动态资源
- */
-export const getFEDynamicData = async () => {
-  const [
-    widgetPanelData,
-    pagePropsData,
-    propItemData,
-    propItemGroupingData,
-  ] = await Promise.all([
-    // getWidgetMetadata(),
-    getWidgetPanelData(),
-    getPagePropItems(),
-    getPropItemData(),
-    getPropItemGroupingData(),
-  ]);
-
-  const FEDynamicData = {
-    widgetPanelData,
-    propItemGroupingData,
-    propItemData,
-    pagePropsData,
-  };
-
-  console.log('FEDynamicData :>> ', FEDynamicData);
-
-  return FEDynamicData;
 };

@@ -29,6 +29,7 @@ interface ToolbarCustomProps {
   onReleasePage?: () => Promise<unknown>
   flatLayoutItems
   appLocation
+  pageMetadata
 }
 
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
