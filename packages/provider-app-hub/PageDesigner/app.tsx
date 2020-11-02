@@ -174,7 +174,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     return new Promise((resolve, reject) => {
       const interDatasources = datasources;
       const pageContent = this.getPageContent();
-      console.log('pageContent :>> ', pageContent);
       if (offlineMode) return resolve({});
       updatePageService({
         pageInfoForBN: this.getPageInfo(),

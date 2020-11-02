@@ -1,7 +1,6 @@
 import React from 'react';
 import Editor, { PropertiesEditorProps } from '@engine/visual-editor/components/PropertiesEditor';
 import { PropItemRenderer } from './PDPropItemRenderer';
-import { useWidgetMeta } from '../utils';
 import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } from '../services';
 
 interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer' | 'widgetBindedPropItemsMeta'> {
@@ -14,6 +13,7 @@ interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer
  * Page design prop editor
  */
 class PDPropertiesEditor extends React.Component<PropsEditorProps> {
+  // TODO: 完成 state 的 interface
   state = {
     ready: false,
     propItemGroupingData: {},
@@ -32,6 +32,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
       loadPropItemGroupingData(),
       loadPropItemData(),
     ]);
+    console.log('propItemData :>> ', propItemData);
     this.setState({
       propItemGroupingData,
       widgetMeta,
@@ -50,7 +51,6 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
       interDatasources,
       pageMetadata,
     } = this.props;
-    console.log('props :>> ', props);
     return (
       <PropItemRenderer
         {...props}
