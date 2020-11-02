@@ -80,7 +80,7 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
               onItemClick(e, actionCtx);
             }}
             entity={currEntity}
-            businessWidgetConfig={registeredEntity}
+            platformWidgetMeta={registeredEntity}
             entityState={entityState || {}}
           >
             {children}

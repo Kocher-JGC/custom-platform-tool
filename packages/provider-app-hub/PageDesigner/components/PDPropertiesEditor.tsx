@@ -6,7 +6,6 @@ import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } fr
 interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer' | 'widgetBindedPropItemsMeta'> {
   interDatasources: PD.Datasources
   customConfig?: any
-  widgetMetaID: string
 }
 
 /**
@@ -22,17 +21,16 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   }
 
   componentDidMount = async () => {
-    const { widgetMetaID } = this.props;
+    const { selectedEntity } = this.props;
     const [
       widgetMeta,
       propItemGroupingData,
       propItemData
     ] = await Promise.all([
-      loadPlatformWidgetMeta(widgetMetaID),
+      loadPlatformWidgetMeta(selectedEntity.widgetRef),
       loadPropItemGroupingData(),
       loadPropItemData(),
     ]);
-    console.log('propItemData :>> ', propItemData);
     this.setState({
       propItemGroupingData,
       widgetMeta,
@@ -46,6 +44,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   }
 
   propItemRenderer = (props) => {
+    // console.log('props :>> ', props);
     const {
       ChangeMetadata,
       interDatasources,
@@ -66,7 +65,6 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
       ChangeMetadata,
       interDatasources,
       pageMetadata,
-      widgetMetaID,
       ...otherProps
     } = this.props;
     const { widgetMeta, propItemGroupingData, ready } = this.state;

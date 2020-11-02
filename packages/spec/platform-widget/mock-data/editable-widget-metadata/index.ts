@@ -21,7 +21,7 @@ export const widgetMetadataCollection: WidgetTypeMetadataCollection = {
 
 /** 将数组转换成 collection 数据机构 */
 tempArr.forEach((meta) => {
-  widgetMetadataCollection[meta.id] = meta;
+  widgetMetadataCollection[meta.widgetRef] = meta;
 });
 
 export const getWidgetMetadata = ApiMock(widgetMetadataCollection);

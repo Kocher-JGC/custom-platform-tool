@@ -7,17 +7,19 @@ const takeVariableData = (varRely, flatLayoutItems) => {
     if (Object.prototype.hasOwnProperty.call(varRely, widgetID)) {
       const variableItems = varRely[widgetID];
       const widgetEntity = flatLayoutItems[widgetID];
-      console.log('widgetEntity :>> ', widgetEntity);
-      const { propState } = widgetEntity;
-      variableItems.forEach((varItem) => {
-        const varCode = `${widgetID}.${varItem}`;
-        res.push({
-          varCode: propState[varItem],
-          varType: '字符串',
-          varDesc: propState.title,
-          id: varCode,
+      if (widgetEntity) {
+        const { propState } = widgetEntity;
+        variableItems.forEach((varItem) => {
+          const varCode = `${widgetID}.${varItem}`;
+          if (!propState) return;
+          res.push({
+            varCode: propState[varItem],
+            varType: '字符串',
+            varDesc: propState.title,
+            id: varCode,
+          });
         });
-      });
+      }
     }
   }
   return res;

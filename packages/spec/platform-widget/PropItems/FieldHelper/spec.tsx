@@ -32,13 +32,35 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
     changeMetadata,
     takeMeta,
     genMetaRefID,
+    UICtx
   }) {
     const { interDatasources } = businessPayload;
-    const metaRefID = editingWidgetState[whichAttr] || genMetaRefID(metaAttr);
+    let metaRefID = editingWidgetState[whichAttr];
     const selectedField = takeMeta({
       metaAttr,
       metaRefID
     }) as SelectedField;
+    const schema = takeMeta({
+      metaAttr,
+    }) as {
+      [sID: string]: SelectedField
+    };
+
+    /**
+     * 检查该 column 是否已经被其他控件绑定
+     */
+    const checkColumnIsBeUsed = (_selectedField: SelectedField) => {
+      return new Promise((resolve, reject) => {
+        for (const sID in schema) {
+          const fieldCode = _selectedField.column?.fieldCode;
+          if (!fieldCode || sID.indexOf(fieldCode) !== -1) {
+            reject();
+            break;
+          }
+        }
+        resolve();
+      });
+    };
 
     return (
       <PopModelSelector
@@ -51,17 +73,28 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
                 <FieldSelector
                   interDatasources={interDatasources}
                   defaultSelected={selectedField}
-                  onSubmit={(val) => {
-                    changeEntityState({
-                      attr: whichAttr,
-                      value: metaRefID
-                    });
-                    changeMetadata({
-                      data: val,
-                      metaAttr,
-                      dataRefID: metaRefID
-                    });
-                    close();
+                  onSubmit={(_selectedField) => {
+                    const fieldCode = _selectedField.column?.fieldCode;
+                    checkColumnIsBeUsed(_selectedField)
+                      .then(() => {
+                        metaRefID = genMetaRefID(`s.${fieldCode}`);
+                        changeEntityState({
+                          attr: whichAttr,
+                          value: metaRefID
+                        });
+                        changeMetadata({
+                          data: _selectedField,
+                          metaAttr,
+                          dataRefID: metaRefID
+                        });
+                        close();
+                      })
+                      .catch(() => {
+                        UICtx.utils.showMsg({
+                          msg: '已被其他控件绑定',
+                          type: 'error'
+                        });
+                      });
                   }}
                 />
               </div>

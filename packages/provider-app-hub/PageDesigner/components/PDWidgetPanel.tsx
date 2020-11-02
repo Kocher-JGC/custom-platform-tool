@@ -16,9 +16,11 @@ export interface PageDesignerComponentPanelProps {
 
 const itemRendererFac = (
   getDragItemConfig
-): ItemRendererType => (widgetMetaID, groupType) => {
-  // const widgetMeta = loadPlatformWidgetMeta(widgetMetaID);
-  const [ready, widgetMeta] = useWidgetMeta(widgetMetaID);
+): ItemRendererType => (widgetRef, groupType) => {
+  // const widgetMeta = loadPlatformWidgetMeta(widgetRef);
+  const [ready, widgetMeta] = useWidgetMeta(widgetRef);
+  // console.log('widgetMeta :>> ', widgetMeta);
+  if (!ready) return null;
   if (!widgetMeta) {
     return (
       <div className="t_red">widget 未定义</div>

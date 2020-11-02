@@ -40,7 +40,6 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     
     // 删除内部字段
     nodeItem = omit(nodeItem, [
-      '_metaID',
       '_state',
       'propState',
       'widgetRef',
