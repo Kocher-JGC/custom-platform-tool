@@ -69,13 +69,6 @@ export function pageMetadataReducer(
 export interface AppContext {
   /** App 是否做好准备 */
   ready: boolean
-  /** 属性项数据 */
-  propItemData?: any
-  /** 组件类面板数据 */
-  widgetPanelData?: any
-  propItemGroupingData?: any
-  /** 页面可编辑属性数据 */
-  pagePropsData?: any
   /** 页面元数据 */
   payload?: any
 }
@@ -91,19 +84,12 @@ export function appContextReducer(
   switch (action.type) {
     case INIT_APP:
       const {
-        widgetPanelData,
-        propItemGroupingData,
-        pagePropsData, propItemData,
         payload,
         name, id
       } = action;
       return {
         ready: true,
         payload,
-        widgetPanelData,
-        propItemGroupingData,
-        pagePropsData,
-        propItemData
       };
     case UPDATE_APP:
       const { type, ...otherState } = action;

@@ -3,14 +3,14 @@ import { ComponentPanelProps } from '@engine/visual-editor/components/WidgetPane
 import DragItemComp from '@engine/visual-editor/spec/DragItemComp';
 import { DragableItemTypes } from '@engine/visual-editor/spec';
 import { Tab, Tabs } from '@infra/ui';
-import { GroupItemsRender, ItemRendererType, PanelItemsGroup } from '@engine/visual-editor/components/GroupPanel';
+import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/components/GroupPanel';
+import { LoadingTip } from '@provider-ui/loading-tip';
 import { DataSourceDragItem, DataSourceSelector } from './PDDataSource';
-import { useWidgetMeta } from '../utils';
+import { useWidgetMeta, useWidgetPanelData } from '../utils';
 
 export interface PageDesignerComponentPanelProps {
   interDatasources
   onUpdatedDatasource
-  widgetPanelData: PanelItemsGroup
   getDragItemConfig?: ComponentPanelProps['getDragItemConfig']
 }
 
@@ -57,9 +57,15 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
   getDragItemConfig,
   interDatasources,
   onUpdatedDatasource,
-  widgetPanelData,
+  // widgetPanelData,
   ...other
 }) => {
+  const [ready, widgetPanelData] = useWidgetPanelData();
+  if (!ready) {
+    return (
+      <LoadingTip />
+    );
+  }
   const { title: compPanelTitle, type: groupType, ...otherPanelConfig } = widgetPanelData;
 
   return (

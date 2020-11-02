@@ -50,7 +50,7 @@ export interface PropertiesEditorProps {
   /** 选中的 entity */
   propItemGroupingData: PropPanelData
   selectedEntity: WidgetEntity
-  propItemData: PropItemsCollection
+  getPropItem: (propItemID: string) => PropItemCompAccessSpec
   /** 组件绑定的属性项配置 */
   widgetBindedPropItemsMeta: WidgetRelyPropItems
   /** 属性编辑器的配置，通过该配置生成有层级结构的属性编辑面板 */
@@ -87,6 +87,7 @@ const wrapDefaultValues = (propItemMeta: PropItemMeta): NextEntityState[] => {
 
 interface PropertiesEditorState {
   entityState: WidgetEntityState
+  bindPropItemsMap: PropItemMetaMap | null
 }
 
 /**
@@ -96,6 +97,7 @@ class PropertiesEditor extends React.Component<
 PropertiesEditorProps, PropertiesEditorState
 > {
   state: PropertiesEditorState = {
+    bindPropItemsMap: null,
     entityState: {}
   }
 
@@ -112,6 +114,7 @@ PropertiesEditorProps, PropertiesEditorState
   }
 
   componentDidMount() {
+    this.setupBindPropItemsMap();
     if (!this.hasDefaultEntityState) {
       const {
         initEntityState,
@@ -127,12 +130,19 @@ PropertiesEditorProps, PropertiesEditorState
     }
   }
 
+  setupBindPropItemsMap = async () => {
+    const bindPropItemsMap = await this.takeAllPropItemMetaFormWidget();
+    this.setState({
+      bindPropItemsMap
+    });
+  }
+
   /**
    * 设置组件实例状态的默认值
    */
   getEntityDefaultState = () => {
     let defaultWidgetState: WidgetEntityState = {};
-    const { bindPropItemsMap } = this;
+    const { bindPropItemsMap } = this.state;
 
     for (const propID in bindPropItemsMap) {
       const propItemMeta = bindPropItemsMap[propID];
@@ -164,10 +174,10 @@ PropertiesEditorProps, PropertiesEditorState
   /**
    * 将组件绑定的属性项转换成 PropItemMetaMap
    */
-  getPropItemMetadatas = (): PropItemMetaMap => {
+  takeAllPropItemMetaFormWidget = async (): Promise<PropItemMetaMap> => {
     const {
       widgetBindedPropItemsMeta,
-      propItemData
+      getPropItem
     } = this.props;
     const { propItemRefs = [], rawPropItems = [] } = widgetBindedPropItemsMeta;
     const propItemMetaMap = {};
@@ -175,10 +185,14 @@ PropertiesEditorProps, PropertiesEditorState
     /**
      * 将 propItemRefs 转换成 PropItemMeta
      */
-    propItemRefs.forEach((refItem) => {
+    propItemRefs.forEach(async (refItem) => {
       const { propID, editAttr, ...overrideOptions } = refItem;
-      const propItemMetaFormCollection = propItemData[propID];
-      const mergedPropItemMeta = produce(propItemMetaFormCollection, (draft) => {
+
+      // 获取属性项的接口
+      const propItemMetaFormInterface = await getPropItem(propID);
+
+      // 合并属性项 meta
+      const mergedPropItemMeta = produce(propItemMetaFormInterface, (draft) => {
         if (editAttr) draft.whichAttr = editAttr;
         Object.assign(draft, overrideOptions);
         return draft;
@@ -191,7 +205,9 @@ PropertiesEditorProps, PropertiesEditorState
     return propItemMetaMap;
   }
 
-  bindPropItemsMap = this.getPropItemMetadatas()
+  takePropItemMeta = (metaID: string) => {
+    return this.state.bindPropItemsMap[metaID];
+  }
 
   /**
    * 获取属性项需要的值
@@ -240,7 +256,7 @@ PropertiesEditorProps, PropertiesEditorState
    */
   propItemRendererSelf = (propItemID, groupType) => {
     const { selectedEntity } = this.props;
-    const propItemMeta = this.bindPropItemsMap[propItemID];
+    const propItemMeta = this.takePropItemMeta(propItemID);
 
     /** 如果组件没有绑定该属性项，则直接返回 */
     if (!propItemMeta) return null;
@@ -277,8 +293,9 @@ PropertiesEditorProps, PropertiesEditorState
 
   render() {
     const { propItemGroupingData } = this.props;
+    const { bindPropItemsMap } = this.state;
 
-    return (
+    return bindPropItemsMap ? (
       <div
         className="entity-prop-editor"
       >
@@ -287,7 +304,7 @@ PropertiesEditorProps, PropertiesEditorState
           itemRenderer={this.propItemRendererSelf}
         />
       </div>
-    );
+    ) : null;
   }
 }
 

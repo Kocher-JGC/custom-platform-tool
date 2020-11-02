@@ -7,10 +7,6 @@
 import { BasePageData } from "../../data-structure";
 
 interface AppActionsContext {
-  widgetPanelData?
-  propItemGroupingData?
-  propItemData?
-  pagePropsData?
   pageContent?: BasePageData
   payload?: any
   name?: string
