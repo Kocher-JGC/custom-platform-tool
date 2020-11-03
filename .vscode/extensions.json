@@ -9,7 +9,6 @@
     "yzhang.markdown-all-in-one",
     "shd101wyy.markdown-preview-enhanced",
     "davidanson.vscode-markdownlint",
-    "esbenp.prettier-vscode",
-    "jpoissonnier.vscode-styled-components"
+    "esbenp.prettier-vscode"
   ]
 }

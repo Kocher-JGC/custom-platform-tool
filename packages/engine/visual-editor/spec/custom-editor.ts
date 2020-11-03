@@ -6,7 +6,7 @@ import { ChangeEntityState, WidgetEntityState } from "../data-structure";
 export interface CustomEditorCtx {
   entityState: WidgetEntityState
   changeEntityState: ChangeEntityState
-  onSubmit: () => void
+  onSubmit: (nextValue) => void
 }
 
-export type CustomEditor = (customEditorCtx: CustomEditorCtx) => JSX.Element
+export type CustomEditor = React.ElementType<CustomEditorCtx>

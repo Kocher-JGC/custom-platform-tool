@@ -3,21 +3,24 @@ import { ComponentPanelProps } from '@engine/visual-editor/components/WidgetPane
 import DragItemComp from '@engine/visual-editor/spec/DragItemComp';
 import { DragableItemTypes } from '@engine/visual-editor/spec';
 import { Tab, Tabs } from '@infra/ui';
-import { GroupItemsRender, PanelItemsGroup } from '@engine/visual-editor/components/GroupPanel';
+import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/components/GroupPanel';
+import { LoadingTip } from '@provider-ui/loading-tip';
 import { DataSourceDragItem, DataSourceSelector } from './PDDataSource';
+import { useWidgetMeta, useWidgetPanelData } from '../utils';
 
 export interface PageDesignerComponentPanelProps {
   interDatasources
   onUpdatedDatasource
-  widgetPanelData: PanelItemsGroup
-  widgetMetaDataCollection: ComponentPanelProps['widgetMetaDataCollection']
   getDragItemConfig?: ComponentPanelProps['getDragItemConfig']
 }
 
 const itemRendererFac = (
-  widgetMetaDataCollection, getDragItemConfig
-) => (componentClassID, groupType) => {
-  const widgetMeta = widgetMetaDataCollection[componentClassID];
+  getDragItemConfig
+): ItemRendererType => (widgetRef, groupType) => {
+  // const widgetMeta = loadPlatformWidgetMeta(widgetRef);
+  const [ready, widgetMeta] = useWidgetMeta(widgetRef);
+  // console.log('widgetMeta :>> ', widgetMeta);
+  if (!ready) return null;
   if (!widgetMeta) {
     return (
       <div className="t_red">widget 未定义</div>
@@ -42,10 +45,10 @@ const itemRendererFac = (
       );
     case 'dataSource':
       return (
-        <div>asd</div>
+        <div>dataSource</div>
       );
     default:
-      break;
+      return null;
   }
 };
 
@@ -53,17 +56,18 @@ const itemRendererFac = (
  * page designer widget panel
  */
 const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
-  widgetMetaDataCollection,
   getDragItemConfig,
   interDatasources,
   onUpdatedDatasource,
-  widgetPanelData,
+  // widgetPanelData,
   ...other
 }) => {
-  const itemRenderer = useMemo(
-    () => itemRendererFac(widgetMetaDataCollection, getDragItemConfig),
-    [widgetMetaDataCollection, getDragItemConfig],
-  );
+  const [ready, widgetPanelData] = useWidgetPanelData();
+  if (!ready) {
+    return (
+      <LoadingTip />
+    );
+  }
   const { title: compPanelTitle, type: groupType, ...otherPanelConfig } = widgetPanelData;
 
   return (
@@ -77,8 +81,9 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
           /> */}
           <GroupItemsRender
             groupType={groupType}
-            itemRenderer={itemRenderer}
+            itemRenderer={itemRendererFac(getDragItemConfig)}
             {...otherPanelConfig}
+            // itemsGroups={widgetPanelData}
           />
         </Tab>
         <Tab label={(

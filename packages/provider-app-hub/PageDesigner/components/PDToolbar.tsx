@@ -4,6 +4,7 @@ import { getPreviewUrl } from '@provider-app/config/getPreviewUrl';
 
 import { previewAppService } from '@provider-app/services';
 import { EditButton } from "./PDPageMetadataEditor/EditButton";
+import { PageConfigContainer } from "./PDPageConfiguration";
 
 const ReleaseBtn = ({
   onReleasePage
@@ -26,11 +27,15 @@ const ReleaseBtn = ({
 
 interface ToolbarCustomProps {
   onReleasePage?: () => Promise<unknown>
+  flatLayoutItems
   appLocation
+  pageMetadata
 }
 
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   onReleasePage,
+  flatLayoutItems,
+  pageMetadata,
   appLocation
 }) => {
   const previewUrl = getPreviewUrl(appLocation);
@@ -46,7 +51,26 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
           页面配置
         </EditButton> */}
       <Button
-        hola
+        className="mr10"
+        color="default"
+        onClick={(e) => {
+          ShowModal({
+            title: '页面设置',
+            width: 900,
+            children: ({ close }) => {
+              return (
+                <PageConfigContainer
+                  pageMetadata={pageMetadata}
+                  flatLayoutItems={flatLayoutItems}
+                />
+              );
+            }
+          });
+        }}
+      >
+        页面设置
+      </Button>
+      <Button
         color="default"
         className="mr10"
         onClick={(e) => {
@@ -63,7 +87,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
               console.log(previewUrl);
               return (
                 <div style={{
-                  height: '90vh'
+                  height: '80vh'
                 }}
                 >
                   <iframe src={previewUrl} width="100%" height="100%" frameBorder="0" />
@@ -73,9 +97,9 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
           });
         }}
       >
-          PC 预览
+        预览
       </Button>
-      <Button
+      {/* <Button
         hola
         color="default"
         className="mr10"
@@ -98,7 +122,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
         }}
       >
           手机预览
-      </Button>
+      </Button> */}
       <ReleaseBtn onReleasePage={onReleasePage} />
       {/* <Button
           className="mr10"

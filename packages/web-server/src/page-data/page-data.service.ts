@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import omit from 'lodash/omit';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
 import config from '../../config';
 
@@ -30,17 +31,24 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     
     Object.assign(nodeItem, {
       type: 'componentRef',
-      compType: nodeItem?.widgetDef?.type,
-      // widgetDef: {
-      // ...nodeItem.widgetDef,
+      compType: nodeItem?.widgetRef,
+      // widgetRef: {
+      // ...nodeItem.widgetRef,
       ...nodeItem.propState
       // }
     });
+    
     // 删除内部字段
-    Reflect.deleteProperty(nodeItem, '_classID');
-    Reflect.deleteProperty(nodeItem, '_state');
-    Reflect.deleteProperty(nodeItem, 'propState');
-    Reflect.deleteProperty(nodeItem, 'widgetDef');
+    nodeItem = omit(nodeItem, [
+      '_state',
+      'propState',
+      'widgetRef',
+    ]);
+    // 删除内部字段
+    // Reflect.deleteProperty(nodeItem, '_metaID');
+    // Reflect.deleteProperty(nodeItem, '_state');
+    // Reflect.deleteProperty(nodeItem, 'propState');
+    // Reflect.deleteProperty(nodeItem, 'widgetRef');
     
     componentsCollection[id] = Object.assign({}, nodeItem,
       parentID && {

@@ -1,5 +1,5 @@
 import { LayoutWrapperContext } from "@engine/layout-renderer";
-import { BusinessWidgetSpec } from "@spec/business-widget";
+import { BusinessWidgetSpec } from "@spec/platform-widget";
 import { WidgetEntity, WidgetEntityState } from "../../data-structure";
 
 /**
@@ -9,5 +9,5 @@ export interface WidgetRendererProps extends LayoutWrapperContext {
   onClick: React.DOMAttributes<HTMLDivElement>['onClick']
   entity: WidgetEntity
   entityState: WidgetEntityState
-  businessWidgetConfig: BusinessWidgetSpec
+  platformWidgetMeta: BusinessWidgetSpec
 }

@@ -9,7 +9,7 @@ import TableStructure from "@provider-app/table-structure/app";
 import PopupWindowSelector from "@provider-app/popup-window-selector/app";
 
 /// //////// 数据设计结束
-import { resolvePagePath } from "multiple-page-routing/utils";
+import { resolvePagePath, resolvePagePathWithSeperator } from "multiple-page-routing/utils";
 
 // const PageManager = React.lazy(() => import("@provider-app/page-manager/app"));
 // const MenuManager = React.lazy(() => import("@provider-app/menu-manager/app"));
@@ -82,7 +82,7 @@ const RouterConfig: RouterConfigType = {
  * @param route
  */
 export const getRouteName = (path) => {
-  const routeName = RouterConfig[resolvePagePath(path)]?.title;
+  const routeName = RouterConfig[resolvePagePathWithSeperator(path)]?.title;
   if (!routeName) console.warn(`请注意，没找到注册的路由信息 ${path}`);
   return routeName;
 };
