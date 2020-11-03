@@ -29,14 +29,14 @@ export const loadReactIcon = (reactIconType: reactIconType) => {
     if (allIconsCollectionCache[reactIconType]) resolve(allIconsCollectionCache[reactIconType]);
 
     switch (reactIconType) {
-      case 'react-icons/all':
-        import('react-icons/all').then(resolve);
-        break;
+      // case 'react-icons/all':
+      //   import(/* webpackChunkName: "react_icons_all" */'react-icons/all').then(resolve);
+      //   break;
       case 'react-icons/ri':
-        import('react-icons/ri').then(resolve);
+        import(/* webpackChunkName: "react_icons_ri" */'react-icons/ri').then(resolve);
         break;
       case 'react-icons/bi':
-        import('react-icons/bi').then(resolve);
+        import(/* webpackChunkName: "react_icons_bi" */'react-icons/bi').then(resolve);
         break;
       default:
     }

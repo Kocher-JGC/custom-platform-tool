@@ -25,7 +25,7 @@ export const takeUsedWidgetIDs = (
     if (Object.prototype.hasOwnProperty.call(flatLayoutItems, widgetID)) {
       const widgetItem = flatLayoutItems[widgetID];
       // console.log('widgetItem', widgetItem);
-      const _widgetType = /button/gi.test(widgetItem.widgetRef.type) ? WidgetTypes.button : WidgetTypes.other;
+      const _widgetType = /button/gi.test(widgetItem.widgetRef) ? WidgetTypes.button : WidgetTypes.other;
       pageUsedWidget.push({
         // 32 位以内的 UI_ID
         widgetId: `__${pageID}__${widgetID}`,

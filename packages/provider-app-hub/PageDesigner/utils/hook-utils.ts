@@ -2,7 +2,7 @@
 import { GroupPanelData } from '@engine/visual-editor/components/GroupPanel';
 import { EditableWidgetMeta, WidgetTypeMetadataCollection } from '@engine/visual-editor/data-structure';
 import React, { useState, useEffect } from 'react';
-import { loadPlatformWidgetMeta, loadWidgetPanelData } from '../services';
+import { loadCustomEditor, loadPlatformWidgetMeta, loadWidgetPanelData } from '../services';
 
 export const useResourceFac = <T>(
   api
@@ -28,6 +28,10 @@ export const useWidgetMeta = useResourceFac<WidgetTypeMetadataCollection>(
 
 export const useWidgetPanelData = useResourceFac<GroupPanelData>(
   loadWidgetPanelData
+);
+
+export const useCustomEditor = useResourceFac<GroupPanelData>(
+  loadCustomEditor
 );
 // export const useWidgetMeta = (widgetType: string): [boolean, EditableWidgetMeta] => {
 //   const [ready, setReady] = useState(!!widgetCache[widgetType]);
