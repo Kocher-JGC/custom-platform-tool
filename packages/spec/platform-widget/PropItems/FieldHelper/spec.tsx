@@ -102,7 +102,7 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
           }
         }}
       >
-        {selectedField ? takeBindColumnInfo(selectedField) : '点击绑定字段'}
+        {metaRefID ? takeBindColumnInfo(selectedField) : '点击绑定字段'}
       </PopModelSelector>
     );
   }
