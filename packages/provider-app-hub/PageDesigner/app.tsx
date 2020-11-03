@@ -264,7 +264,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                 <PropertiesEditor
                   key={activeEntityID}
                   pageMetadata={pageMetadata}
-                  ChangeMetadata={ChangeMetadata}
+                  changeMetadata={ChangeMetadata}
                   interDatasources={this.getDatasources()}
                   selectedEntity={activeEntity}
                   defaultEntityState={activeEntity.propState}

@@ -48,7 +48,7 @@ export const ActionHelperSpec: PropItemCompAccessSpec = {
                     changeMetadata({
                       data: actionSetting,
                       metaAttr,
-                      dataRefID: metaRefID
+                      metaID: metaRefID
                     });
                     close();
                   }}

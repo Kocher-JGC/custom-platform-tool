@@ -4,7 +4,7 @@ export const TextareaMeta: EditableWidgetMeta = {
   id: 'widget-id-11',
   label: '多行文本框',
   widgetRef: 'Textarea',
-  varAttr: ['title', 'labelColor', 'defValue'],
+  varAttr: ['title', 'labelColor', 'realVal'],
   propItemsRely: {
     propItemRefs: [
       { propID: 'prop_style_title_color', editAttr: ['labelColor'] },
@@ -15,7 +15,7 @@ export const TextareaMeta: EditableWidgetMeta = {
           title: '文本框'
         },
       },
-      { propID: 'prop_real_value', editAttr: ['defValue', 'exp', 'variable'] },
+      { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       { propID: 'prop_field', editAttr: ['field'] },
     ]
   }

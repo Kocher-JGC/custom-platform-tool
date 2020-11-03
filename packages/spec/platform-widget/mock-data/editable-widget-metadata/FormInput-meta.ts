@@ -4,7 +4,19 @@ export const FormInputMeta: EditableWidgetMeta = {
   id: 'widget-id-1',
   label: '文本框',
   widgetRef: 'FormInput',
-  varAttr: ['widgetCode'],
+  varAttr: [{
+    alias: '实际值',
+    attr: 'realVal',
+    type: 'string'
+  }, {
+    alias: '显示值',
+    attr: 'showVal',
+    type: 'string'
+  }, {
+    alias: '数据源',
+    attr: 'datasources',
+    type: 'Array<Object<>>'
+  }],
   propItemsRely: {
     propItemRefs: [
       { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
@@ -16,7 +28,7 @@ export const FormInputMeta: EditableWidgetMeta = {
           title: '文本框'
         },
       },
-      { propID: 'prop_real_value', editAttr: ['defValue', 'exp', 'variable'] },
+      { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       { propID: 'prop_field', editAttr: ['field'] },
     ]
   }

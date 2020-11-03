@@ -19,7 +19,7 @@ export class FormInput extends BusinessWidgetAccessSpec {
       labelColor: {
         type: "string"
       },
-      defValue: {
+      realVal: {
         type: "string"
       },
     };
