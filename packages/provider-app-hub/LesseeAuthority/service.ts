@@ -13,8 +13,21 @@ export async function queryLesseeAuthorityService(id) {
   });
 }
 
+export async function getPageElementInTreeService(id) {
+  return await $R_P.get({
+    url: `/auth/v1/authorities/getPageElementInTree`,
+    params: {},
+  });
+}
+
 /** 新增表 */
 export async function createLesseeAuthorityService(params) {
+  return await $R_P.post({
+    url: '/auth/v1/authorities/',
+    data: params,
+  });
+}
+export async function createLesseeAuthorityFastService(params) {
   return await $R_P.post({
     url: '/auth/v1/authorities/',
     data: params,

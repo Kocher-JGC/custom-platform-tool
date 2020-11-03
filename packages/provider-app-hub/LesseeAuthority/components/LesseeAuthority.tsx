@@ -7,7 +7,7 @@ import { FormInstance } from 'antd/lib/form';
 import { ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
 import {
   queryLesseeAuthorityListService, allowDeleteLesseeAuthorityService,
-  deleteLesseeAuthorityService, queryLesseeAuthorityService
+  deleteLesseeAuthorityService, queryLesseeAuthorityService, getPageElementInTreeService
 } from '../service';
 import {
   COLUMNS, OPERATIONALMENU, SELECT_ALL, MORE_MENU, PAGE_SIZE_OPTIONS, IModalData
@@ -15,6 +15,7 @@ import {
 import Operational from './Operational';
 import { IStatus } from '../interface';
 import CreateModal from './CreateModal';
+import { CreateModalFast } from './CreateModalFast';
 import CreateLesseeAuthorityCustom from './CreateLesseeAuthorityCustom';
 import CreateLesseeAuthorityFast from './CreateLesseeAuthorityFast';
 
@@ -62,6 +63,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
     render: (row, record, index) => <Operational data={record} onClick={handleLesseeAuthorityOperational} />
   };
   const columns = [...COLUMNS, LesseeAuthorityOperational];
+
   useEffect(() => {
     if (props.moduleId) {
       moduleId = props.moduleId === SELECT_ALL ? "" : props.moduleId;
@@ -243,7 +245,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
           upDataMenus={handleUpdataMenus}
         />
       </CreateModal>
-      <CreateModal
+      <CreateModalFast
         title="快速创建权限项"
         modalVisible={visibleFastLesseeAuthorityModal}
         onCancel={() => setVisibleFastLesseeAuthorityModal(false)}
@@ -253,7 +255,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
           onCancel={() => setVisibleFastLesseeAuthorityModal(false)}
           upDataMenus={handleUpdataMenus}
         />
-      </CreateModal>
+      </CreateModalFast>
     </>
   );
 };

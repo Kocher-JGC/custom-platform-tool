@@ -1,8 +1,8 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle
 } from 'react';
-import { TreeSelect, Input } from 'antd';
-import { queryMenusListService } from '../service';
+import { Tree, Input } from 'antd';
+import { queryMenusListService, getPageElementInTreeService } from '../service';
 import './index.less';
 import { MENUS_TYPE, SELECT_ALL } from '../constant';
 
@@ -25,6 +25,11 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
   const { onSelect } = props;
   let searchValue = "";
   const [menusData, setMenusData] = useState<any[]>([]);
+  const [expandedRightKeys, setExpandedRightKeys] = useState<string[]>(['0-0-0', '0-0-1']);
+  const [checkedRightKeys, setCheckedRightKeys] = useState<string[]>(["1319197100449341440"]);
+  const [selectedRightKeys, setSelectedRightKeys] = useState<string[]>([]);
+  const [autoExpandRightParent, setAutoExpandRightParent] = useState<boolean>(true);
+
   useImperativeHandle(ref, () => ({
     reload: () => getMenusListData()
   }));
@@ -69,12 +74,27 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
       );
     return title;
   };
-  const getMenusListData = async () => {
-    const res = await queryMenusListService({
-      type: MENUS_TYPE.MODULE,
-      name: searchValue
+
+  const getPageElementInTree = async () => {
+    return await getPageElementInTreeService({
+      selectType: 0
     });
+  };
+
+  const getMenusListData = async () => {
+    // const resA = await queryMenusListService({
+    //   type: MENUS_TYPE.MODULE,
+    //   name: searchValue
+    // });
+
+    // const res = await getPageElementInTreeService({
+    //   selectType: 0
+    // });
+
+    const res = await getPageElementInTree();
+
     const tree = constructTree(res?.result || []);
+    console.log(tree);
     setMenusData(tree);
   };
   // const handleSelect = (selectedKeys, {
@@ -92,17 +112,47 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
     searchValue = value;
     getMenusListData();
   };
+
+  const onRightExpand = (expandedKeysA) => {
+    console.log('onRightExpand', expandedKeysA);
+    // if not set autoExpandParent to false, if children expanded, parent can not collapse.
+    // or, you can remove all expanded children keys.
+    setExpandedRightKeys(expandedKeysA);
+    setAutoExpandRightParent(false);
+  };
+
+  const onRightCheck = (checkedKeysA) => {
+    console.log('onRightCheck', checkedKeysA);
+    setCheckedRightKeys(checkedKeysA);
+  };
+
+  const onRightSelect = (selectedKeysA, info) => {
+    console.log('onRightSelect', info);
+    setSelectedRightKeys(selectedKeysA);
+  };
+
   return (
     <div>
       <Search
         style={{ marginBottom: 8 }}
         onSearch={handleSearch}
       />
-      <TreeSelect
+      <Tree
+
+        checkable
+        onExpand={onRightExpand}
+        expandedKeys={expandedRightKeys}
+        autoExpandParent={autoExpandRightParent}
+        onCheck={onRightCheck}
+        checkedKeys={checkedRightKeys}
+        selectedKeys={selectedRightKeys}
+
+        onSelect={handleSelect}
+        defaultExpandAll={true}
         style={{ width: '100%' }}
-        treeCheckable
+        multiple={true}
         treeData={menusData}
-        onChange={handleSelect}
+
       />
     </div>
   );
