@@ -24,24 +24,24 @@ export type reactIconType = 'react-icons/all' |
 'react-icons/bi'
 
 const allIconsCollectionCache = {};
-// export const loadReactIcon = (reactIconType: reactIconType) => {
-//   return new Promise((resolve, reject) => {
-//     if (allIconsCollectionCache[reactIconType]) resolve(allIconsCollectionCache[reactIconType]);
+export const loadReactIcon = (reactIconType: reactIconType) => {
+  return new Promise((resolve, reject) => {
+    if (allIconsCollectionCache[reactIconType]) resolve(allIconsCollectionCache[reactIconType]);
 
-//     switch (reactIconType) {
-//       case 'react-icons/all':
-//         import('react-icons/all');
-//         break;
-//       case 'react-icons/ri':
-//         import('react-icons/ri');
-//         break;
-//       case 'react-icons/bi':
-//         import('react-icons/bi');
-//         break;
-//       default:
-//     }
-//   });
-// };
+    switch (reactIconType) {
+      // case 'react-icons/all':
+      //   import(/* webpackChunkName: "react_icons_all" */'react-icons/all').then(resolve);
+      //   break;
+      case 'react-icons/ri':
+        import(/* webpackChunkName: "react_icons_ri" */'react-icons/ri').then(resolve);
+        break;
+      case 'react-icons/bi':
+        import(/* webpackChunkName: "react_icons_bi" */'react-icons/bi').then(resolve);
+        break;
+      default:
+    }
+  });
+};
 export const useIcon = (reactIconType: reactIconType) => {
   const iconsCache = allIconsCollectionCache[reactIconType];
   const [ready, setReady] = useState(!!iconsCache);
@@ -51,23 +51,11 @@ export const useIcon = (reactIconType: reactIconType) => {
       allIconsCollectionCache[reactIconType] = icons;
       setReady(true);
     };
-    switch (reactIconType) {
-      // case 'react-icons/all':
-      //   import('react-icons/all').then(r);
-      //   break;
-      case 'react-icons/ri':
-        import('react-icons/ri').then(r);
-        break;
-      case 'react-icons/bi':
-        import('react-icons/bi').then(r);
-        break;
-      default:
-    }
-    // loadReactIcon(reactIconType)
-    //   .then((icons) => {
-    //     allIconsCollectionCache[reactIconType] = icons;
-    //     setReady(true);
-    //   });
+    loadReactIcon(reactIconType)
+      .then((icons) => {
+        allIconsCollectionCache[reactIconType] = icons;
+        setReady(true);
+      });
   }, []);
   return [
     ready,

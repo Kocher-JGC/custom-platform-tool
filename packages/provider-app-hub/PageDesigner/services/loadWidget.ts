@@ -1,13 +1,19 @@
+import { WidgetTypeMetadataCollection } from "@engine/visual-editor/data-structure";
 import {
   getWidgetMetadata, getWidgetPanelData,
   getPagePropItems, getPropItemData,
   getPropItemGroupingData,
+  getCustomEditor,
 } from "@spec/platform-widget/mock-data";
 
-// let widgetMetaDataCollection;
-// getWidgetMetadata().then((res) => {
-//   widgetMetaDataCollection = res;
-// });
+let widgetMetaDataCollection: WidgetTypeMetadataCollection;
+getWidgetMetadata().then((res) => {
+  widgetMetaDataCollection = res;
+});
+
+export const getWidgetMetadataSync = (metaID: string) => {
+  return widgetMetaDataCollection[metaID];
+};
 
 /**
  * 加载平台组件的可渲染组件
@@ -42,4 +48,11 @@ export async function loadPagePropItems(metaID: string) {
  */
 export async function loadPropItemGroupingData() {
   return await getPropItemGroupingData();
+}
+
+/**
+ * 加载自定义编辑器
+ */
+export async function loadCustomEditor(metaID: string) {
+  return await getCustomEditor(metaID);
 }

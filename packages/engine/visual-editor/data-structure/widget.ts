@@ -1,6 +1,4 @@
 /// //////////////// widget ///////////////////
-import { CustomEditor } from "@engine/visual-editor/spec/custom-editor";
-
 import { PropItemCompAccessSpec } from ".";
 
 export type EditAttr = string | string[]
@@ -57,9 +55,13 @@ export interface EditableWidgetMeta {
   /** 引用定义了的组件，对应组件的 name */
   widgetRef: string
   /** 可以提升为变量的属性的集合 */
-  varAttr?: string[] | string | 'all'
-  /** 自定义编辑器 */
-  propEditor?: CustomEditor
+  varAttr?: VarAttrType[]
+  /**
+   * 自定义编辑器，规则：
+   * 1. 必须已经在开发项中开发
+   * 2. 通过字符串找到对应的自定义编辑器
+   */
+  propEditor?: string
 }
 
 /// //////////////// widget entity ///////////////////

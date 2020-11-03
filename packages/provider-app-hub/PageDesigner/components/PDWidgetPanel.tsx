@@ -17,9 +17,7 @@ export interface PageDesignerComponentPanelProps {
 const itemRendererFac = (
   getDragItemConfig
 ): ItemRendererType => (widgetRef, groupType) => {
-  // const widgetMeta = loadPlatformWidgetMeta(widgetRef);
   const [ready, widgetMeta] = useWidgetMeta(widgetRef);
-  // console.log('widgetMeta :>> ', widgetMeta);
   if (!ready) return null;
   if (!widgetMeta) {
     return (
