@@ -132,6 +132,9 @@ const resetHttpReqHelper = () => {
 
 /**
  * 统一处理 http 业务码的函数
+ * 1. 如果有 showSuccessTip 配置，则解析完成后退出流程
+ * 2. 如果有 businessTip 配置，则解析完成后退出流程
+ * 3. 默认的 http 处理，这里根据时机情况再做调整
  */
 function handleRes({ res, resDetail }) {
   // return console.log('resData', resData);
@@ -141,37 +144,39 @@ function handleRes({ res, resDetail }) {
     if (code === HttpBusinessCodeMap.success) {
       AntdMessage.success(msg);
     }
+    return null;
   }
-  if (!businessTip) {
-    /** 如果没有配置，默认所有错误都弹出 */
-    switch (code) {
-      case HttpBusinessCodeMap.success:
-        // console.log('成功');
-        break;
-      case 'A0300':
-        // console.log(resData);
-        // 处理没找到应用的业务逻辑
-        AntdMessage.error(msg);
-        redirectToRoot();
-        authStore.setState({ isLogin: false });
-        resetHttpReqHelper();
-        // onNavigate({
-        //   type: 'PUSH',
-        //   path: '/login',
-        //   useDefaultParams: false
-        // });
-        break;
-      default:
-        // TODO: 完善请求
-        AntdMessage.error(msg);
-    }
-  } else {
+  if (businessTip) {
     const { whenCodeEq, type = 'info' } = businessTip as RequestOptions['businessTip'];
     if (code === whenCodeEq) {
       const antdMsgFunc = AntdMessage[type] || AntdMessage.info;
       antdMsgFunc(msg);
     }
+    return null;
   }
+  /** 如果没有配置，默认所有错误都弹出 */
+  switch (code) {
+    case HttpBusinessCodeMap.success:
+      // console.log('成功');
+      break;
+    case 'A0300':
+      // console.log(resData);
+      // 处理没找到应用的业务逻辑
+      AntdMessage.error(msg);
+      redirectToRoot();
+      authStore.setState({ isLogin: false });
+      resetHttpReqHelper();
+      // onNavigate({
+      //   type: 'PUSH',
+      //   path: '/login',
+      //   useDefaultParams: false
+      // });
+      break;
+    default:
+      // TODO: 完善请求
+      AntdMessage.error(msg);
+  }
+  return null;
 }
 
 const handleErr = (e) => {
