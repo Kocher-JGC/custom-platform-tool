@@ -70,6 +70,7 @@ export const PageVariableSelector = ({
             }
           },
         ]}
+        size="small"
         dataSource={takeVariableData(varRely, flatLayoutItems)}
         rowKey="id"
       />

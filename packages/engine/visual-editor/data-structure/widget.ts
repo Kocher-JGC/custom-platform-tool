@@ -57,7 +57,7 @@ export interface EditableWidgetMeta {
   /** 引用定义了的组件，对应组件的 name */
   widgetRef: string
   /** 可以提升为变量的属性的集合 */
-  varAttr?: string[] | string | 'all'
+  varAttr?: VarAttrType[]
   /** 自定义编辑器 */
   propEditor?: CustomEditor
 }

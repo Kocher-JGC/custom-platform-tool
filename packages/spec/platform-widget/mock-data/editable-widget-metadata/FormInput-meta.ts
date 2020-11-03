@@ -12,10 +12,6 @@ export const FormInputMeta: EditableWidgetMeta = {
     alias: '显示值',
     attr: 'showVal',
     type: 'string'
-  }, {
-    alias: '数据源',
-    attr: 'datasources',
-    type: 'Array<Object<>>'
   }],
   propItemsRely: {
     propItemRefs: [
