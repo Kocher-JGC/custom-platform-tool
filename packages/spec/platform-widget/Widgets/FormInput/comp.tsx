@@ -10,7 +10,7 @@ import { Input } from 'antd';
 export interface FormInputCompProps {
   title: string
   /** 默认值 */
-  defValue: string
+  realVal: string
   labelColor: string
 }
 
@@ -18,7 +18,7 @@ export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
   const {
     title,
     labelColor,
-    defValue,
+    realVal,
   } = props;
 
   return (
@@ -30,7 +30,7 @@ export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
       >
         {title}
       </div>
-      <Input value={defValue} style={{ width: 300 }} />
+      <Input value={realVal} style={{ width: 300 }} />
     </div>
   );
 };

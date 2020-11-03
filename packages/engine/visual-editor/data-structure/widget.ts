@@ -33,6 +33,14 @@ export interface WidgetRelyPropItems {
   rawPropItems?: PropItemCompAccessSpec[]
 }
 
+export interface VarAttrType {
+  /** 该属性变量的别名 */
+  alias: string
+  /** 该属性变量的别名 */
+  attr: string
+  type: 'string' | 'number'
+}
+
 /**
  * 1. 可被编辑属性的组件的定义
  * 2. 用于存储组件的元数据信息

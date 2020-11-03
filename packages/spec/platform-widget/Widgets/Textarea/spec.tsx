@@ -12,7 +12,7 @@ export const Textarea: BusinessWidgetAccessSpec = () => ({
     labelColor: {
       type: 'string'
     },
-    defValue: {
+    realVal: {
       type: 'string'
     },
   },

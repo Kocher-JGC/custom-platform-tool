@@ -1,6 +1,12 @@
 import React from 'react';
 import { Table } from 'antd';
 
+export enum VarAttrTypeMap {
+  string = '字符串',
+  number = '数字',
+  datasource = '数据源',
+}
+
 const takeVariableData = (varRely, flatLayoutItems) => {
   const res = [];
   for (const widgetID in varRely) {
@@ -10,12 +16,18 @@ const takeVariableData = (varRely, flatLayoutItems) => {
       if (widgetEntity) {
         const { propState } = widgetEntity;
         variableItems.forEach((varItem) => {
-          const varCode = `${widgetID}.${varItem}`;
+          const { alias, attr, type } = varItem;
+          const varCode = `${widgetID}.${attr}`;
+
+          // TODO: 这里取了特定的值，后续需要改进
+          const { widgetCode, title } = propState;
+
           if (!propState) return;
+
           res.push({
-            varCode: propState[varItem],
-            varType: '字符串',
-            varDesc: propState.title,
+            varCode: widgetCode,
+            varType: VarAttrTypeMap[type],
+            varDesc: `${title}.${alias}`,
             id: varCode,
           });
         });
