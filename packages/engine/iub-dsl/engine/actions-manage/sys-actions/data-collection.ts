@@ -1,5 +1,5 @@
 import {
-  DataCollection,
+  DataCollectionOptions,
   BaseCollectionStruct,
 } from "@iub-dsl/definition/actions";
 import {
@@ -9,8 +9,8 @@ import {
 } from "../../runtime/types";
 import { ActionDoFn } from "../types";
 
-export const dataCollectionAction = (conf: DataCollection, baseActionInfo: any = {}): ActionDoFn => {
-  const { actionName, actionOptions: { collectionType, struct }, when } = conf;
+export const dataCollectionAction = (conf: DataCollectionOptions, baseActionInfo: any = {}): ActionDoFn => {
+  const { collectionType, struct } = conf;
   if (collectionType === 'structArray') {
     return async ({ action, asyncDispatchOfIUBEngine }) => {
       return await asyncDispatchOfIUBEngine({
