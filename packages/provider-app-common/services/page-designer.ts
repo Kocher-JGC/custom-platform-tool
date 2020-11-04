@@ -20,6 +20,7 @@ export async function updatePageService({
   const updatePageData = Object.assign({}, pageInfoForBN, extendData, {
     pageContent: JSON.stringify(pageContentForFE),
   });
+  console.log('updatePageData', updatePageData);
   console.log('pageContentForFE', pageContentForFE);
   return await $R_P.put({
     url: `/page/v1/pages/${pageInfoForBN.id}`,

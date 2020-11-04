@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input, Selector } from '@infra/ui';
 import { PropItemCompAccessSpec } from '@engine/visual-editor/data-structure';
 
@@ -10,22 +10,33 @@ export const TitleHelperSpec: PropItemCompAccessSpec = {
 
   label: '标题',
 
-  whichAttr,
+  whichAttr: ['title', 'field'],
 
   defaultValues: {
-    [whichAttr]: '标题'
+    title: '标题'
   },
 
   render(ctx) {
-    const { changeEntityState, editingWidgetState } = ctx;
-    /** 取自身定义的 whichAttr */
-    const _value = editingWidgetState[whichAttr];
+    const { changeEntityState, editingWidgetState, takeMeta } = ctx;
+    const { title, field } = editingWidgetState;
+    const selectedField = takeMeta({
+      metaAttr: 'schema',
+      metaRefID: field
+    });
+    useEffect(() => {
+      const nextTitle = selectedField?.column?.name;
+      if (!nextTitle) return;
+      changeEntityState({
+        attr: 'title',
+        value: nextTitle
+      });
+    }, [selectedField]);
     return (
       <div>
         <Input
-          value={_value || ''}
+          value={title || ''}
           onChange={(value) => changeEntityState({
-            attr: whichAttr,
+            attr: 'title',
             value
           })}
         />

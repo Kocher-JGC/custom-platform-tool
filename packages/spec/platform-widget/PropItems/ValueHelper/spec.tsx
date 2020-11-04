@@ -7,7 +7,7 @@ export const ValueHelperSpec: PropItemCompAccessSpec = {
 
   label: '值',
 
-  whichAttr: ['defValue', 'exp', 'variable'],
+  whichAttr: ['realVal', 'exp', 'variable'],
 
   render(ctx) {
     const { changeEntityState, editingWidgetState } = ctx;

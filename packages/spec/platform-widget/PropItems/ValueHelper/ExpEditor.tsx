@@ -1,7 +1,7 @@
 import React, { useRef, useState, Suspense } from 'react';
 import { Button } from 'antd';
 
-const ExpressEditor = React.lazy(() => import('@engine/code-editor'));
+const ExpressEditor = React.lazy(() => import(/* webpackChunkName: "code_editor" */'@engine/code-editor'));
 
 export const ExpEditor = ({
   defaultValue,

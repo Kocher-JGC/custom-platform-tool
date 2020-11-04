@@ -1,6 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import { WidgetRendererProps } from '@engine/visual-editor/spec';
+import { getWidget } from '@spec/platform-widget';
 import { Unexpect } from './Unexpect';
 // import ContainerWrapperCom from './ContainerWrapperCom';
 
@@ -13,28 +14,28 @@ export interface PDWidgetRendererProps extends WidgetRendererProps {
  */
 export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
   const {
+    onClick,
     entity,
     entityState = {},
     layoutNodeItem,
     className,
-    onClick,
     nestingInfo,
-    businessWidgetConfig,
     ...otherProps
   } = props;
   const { widgetRef } = entity;
 
-  let Com = <div></div>;
-  if (!widgetRef) return Com;
+  // 从远端获取组件
+  const WidgetFormRemote = getWidget(widgetRef);
 
-  const { type, ...restWidgetProps } = widgetRef;
-  const widgetProps = Object.assign({}, restWidgetProps, entityState);
+  if (!widgetRef) return null;
 
-  if (businessWidgetConfig.unexpected) {
+  let Com;
+
+  if (WidgetFormRemote.unexpected) {
     // 处理异常组件
     Com = <Unexpect />;
   } else {
-    Com = businessWidgetConfig.render(widgetProps);
+    Com = WidgetFormRemote.render(entityState);
   }
   const classes = classnames(
     "comp-renderer",

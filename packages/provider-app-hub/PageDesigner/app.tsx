@@ -11,7 +11,7 @@ import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
 import { wrapPageData, takeUsedWidgetIDs } from "./utils";
 import {
-  getFEDynamicData, getPageContentWithDatasource,
+  getPageContentWithDatasource,
 } from "./services";
 
 import './style';
@@ -63,11 +63,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     await this.updatePage({
       datasources: addingDataFormRemote
     });
-    // await updatePageService(
-    //   this.getPageInfo(),
-    //   pageContent,
-    //   this.wrapDataSourceDataForUpdate(addingDataFormRemote)
-    // );
     const {
       interDatasources
     } = await getPageContentWithDatasource(pageID);
@@ -149,13 +144,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { InitApp } = dispatcher;
 
     /** 并发获取初始化数据 */
-    const [dynamicData, remotePageData] = await Promise.all([
-      getFEDynamicData(),
+    const [remotePageData] = await Promise.all([
       !offlineMode && getPageContentWithDatasource(pageID)
     ]);
 
     /** 准备初始化数据 */
-    const initData = produce(dynamicData, (draftInitData) => {
+    const initData = produce({}, (draftInitData) => {
       if (!offlineMode) {
         const {
           interDatasources, pageContent, pageDataRes
@@ -180,7 +174,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     return new Promise((resolve, reject) => {
       const interDatasources = datasources;
       const pageContent = this.getPageContent();
-      console.log('pageContent :>> ', pageContent);
       if (offlineMode) return resolve({});
       updatePageService({
         pageInfoForBN: this.getPageInfo(),
@@ -221,7 +214,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
-    return appContext.ready ? (
+    if (!appContext.ready) {
+      return (
+        <LoadingTip />
+      );
+    }
+
+    return (
       <div className="visual-app bg-white">
         <header className="app-header">
           <ToolBar
@@ -240,7 +239,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           >
             <WidgetPanel
               interDatasources={appContext?.payload?.interDatasources}
-              widgetPanelData={appContext.widgetPanelData}
               onUpdatedDatasource={this.onUpdatedDatasource}
             />
           </div>
@@ -265,13 +263,10 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               activeEntity && (
                 <PropertiesEditor
                   key={activeEntityID}
-                  propItemData={appContext.propItemData}
                   pageMetadata={pageMetadata}
-                  ChangeMetadata={ChangeMetadata}
+                  changeMetadata={ChangeMetadata}
                   interDatasources={this.getDatasources()}
-                  widgetMetaID={activeEntity._metaID}
                   selectedEntity={activeEntity}
-                  propItemGroupingData={appContext.propItemGroupingData}
                   defaultEntityState={activeEntity.propState}
                   initEntityState={(entityState) => InitEntityState(selectedInfo, entityState)}
                   updateEntityState={(entityState) => {
@@ -286,8 +281,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           </div>
         </div>
       </div>
-    ) : (
-      <LoadingTip />
     );
   }
 }

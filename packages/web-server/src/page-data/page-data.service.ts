@@ -12,8 +12,7 @@ const prevParam = {
   app: 'iot'
 };
 
-const baseUrl = 'http://192.168.14.140:6090';
-// const baseUrl = 'http://192.168.14.181:6090';
+const baseUrl = 'http://192.168.14.181:6090';
 
 const genUrl = (params: any = {}) => {
   prevParam.lessee = params.lessee || prevParam.lessee;
@@ -40,7 +39,6 @@ const flatLayoutNode = (layoutNode, parentID?) => {
     
     // 删除内部字段
     nodeItem = omit(nodeItem, [
-      '_metaID',
       '_state',
       'propState',
       'widgetRef',

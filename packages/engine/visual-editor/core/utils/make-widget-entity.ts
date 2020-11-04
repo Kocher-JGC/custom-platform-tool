@@ -37,7 +37,6 @@ export const makeWidgetEntity: MakeWidgetEntity = (
   const entity = produce(widgetType, (draft) => {
     Reflect.deleteProperty(draft, 'propItemsRely');
     draft.id = entityID;
-    draft._metaID = widgetType.id;
     draft._state = state;
   });
 

@@ -7,10 +7,6 @@
 import { BasePageData } from "../../data-structure";
 
 interface AppActionsContext {
-  widgetPanelData?
-  propItemGroupingData?
-  propItemData?
-  pagePropsData?
   pageContent?: BasePageData
   payload?: any
   name?: string
@@ -67,8 +63,10 @@ export interface ChangeMetadataOptions {
   metaAttr: string
   /** 更改 meta 后的数据 */
   data: unknown
-  /** 数据的引用 ID，如果不传，则创建一个新的 dataRefID */
-  dataRefID?: string
+  /** 数据的引用 ID，如果不传，则创建一个新的 metaID */
+  metaID?: string
+  /** 需要删除的 meta 的 ID */
+  rmMetaID?: string
 }
 
 export interface ChangeMetadataAction extends ChangeMetadataOptions {

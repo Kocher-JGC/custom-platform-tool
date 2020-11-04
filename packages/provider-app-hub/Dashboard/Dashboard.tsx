@@ -47,7 +47,7 @@ const AppTile = ({
         to={to}
         onClick={onClick}
         params={params}
-        className="text-gray-700 text-center block px-24 py-6 bg-white shadow-md cursor-pointer"
+        className="text-gray-700 text-center block py-6 bg-white shadow-md cursor-pointer"
       >
         <div className="app-icon text-6xl" style={{ height: 90 }}>
           {icon}
