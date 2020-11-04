@@ -2,8 +2,12 @@
 
 import { FlowCollection, FlowItemInfo, FlowOutItemWires } from '@iub-dsl/definition/flow';
 import { Condition, CommonCondition } from "@iub-dsl/definition";
+import { RunTimeCtxToBusiness, DispatchModuleName } from "../runtime/types/dispatch-types";
+import { DispatchMethodNameOfCondition } from '../runtime/types';
 
 const isPromise = (fn) => typeof fn?.then === 'function' || fn instanceof Promise;
+
+const noopError = () => { console.error('函数不存在~!'); return true; };
 
 export interface FlowItemParseRes {
   flowItemRun: any; // fn
@@ -195,14 +199,10 @@ const flowItemRunWrap = ({
       /** TODO: context和动作结果的处理 */
       if (isPromise(actionRunRes)) {
         actionRunRes = await actionRunRes || {};
-        newCtx = mergeActionRunRes(context, actionRunRes);
-        await actualFlowOutRun?.(flowRunOptions, newCtx);
-      } else {
-        newCtx = mergeActionRunRes(context, actionRunRes);
-        /** 当前项流程运行完, 运行出口 */
-        await actualFlowOutRun?.(flowRunOptions, newCtx);
       }
-
+      newCtx = mergeActionRunRes(context, actionRunRes);
+      /** 当前项流程运行完, 运行出口 */
+      await actualFlowOutRun?.(flowRunOptions, newCtx);
       return newCtx;
     };
   };
@@ -224,13 +224,41 @@ const flowOutRunWrap = (
   const flowOutNum = flowOut?.length || 0;
   const flowOutFns: OnceFlowOutRun[] = [];
 
-  // TODO:
   for (let i = 0; i < flowOutNum; i++) {
     const flowIds = flowOut[i];
     flowOutFns.push(onceFlowOutRunWrap(flowIds));
   }
-  return async (flowRunOptions: FlowRunOptions, context = {}) => {
-    return await Promise.all(flowOutFns.map((fn) => fn(flowRunOptions, context)));
+  return async (flowRunOptions: FlowRunOptions, context: RunTimeCtxToBusiness) => {
+    const { asyncDispatchOfIUBEngine = noopError } = context || {};
+
+    /** 条件过滤流程出口的处理 */
+    const runflowOutFns: OnceFlowOutRun[] = [];
+    const filterFlowOut = async (cond: CommonCondition[], idx: number) => {
+      const onceCond = cond[idx];
+      if (onceCond) {
+        const valid = await asyncDispatchOfIUBEngine({
+          dispatch: {
+            module: DispatchModuleName.condition,
+            method: DispatchMethodNameOfCondition.ConditionHandle,
+            params: [onceCond]
+          }
+        });
+        if (valid) {
+          runflowOutFns.push(flowOutFns[idx]);
+        }
+      } else {
+        runflowOutFns.push(flowOutFns[idx]);
+      }
+
+      if (idx < flowOutNum - 1) {
+        await filterFlowOut(cond, idx + 1);
+      }
+    };
+    if (flowOut.length) {
+      await filterFlowOut(flowOutCondition, 0);
+    }
+
+    return await Promise.all(runflowOutFns.map((fn) => fn(flowRunOptions, context)));
   };
 };
 
