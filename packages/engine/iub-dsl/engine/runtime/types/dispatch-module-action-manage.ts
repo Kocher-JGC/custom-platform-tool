@@ -5,7 +5,7 @@ export interface DispatchModuleActionManage {
   method: DispatchMethodNameOfActionManage
 }
 
-export type TDispatchMethodNameOfActionManage = 'string'
+export type TDispatchMethodNameOfActionManage = keyof typeof DispatchMethodNameOfActionManage
 
 export enum DispatchMethodNameOfActionManage {
 }

@@ -1,3 +1,4 @@
+import { PageManageInstance } from "@consumer-app/web-platform/src/page-manage";
 import {
   DispatchModuleActionManage, TDispatchMethodNameOfActionManage,
   DispatchModuleCondition, TDispatchMethodNameOfCondition,
@@ -15,20 +16,25 @@ export interface DispatchCtxOfIUBEngine {
 }
 
 export interface RunTimeCtxToBusiness {
+  pageId: string;
   pageMark: string;
-  action: any;
+  pageStatus: string;
+  action?: any;
+  pageManage: PageManageInstance;
   asyncDispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => Promise<any>;
   dispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => any
 }
 
 export type Dispatch =
-  (DispatchModuleActionManage |
-  DispatchModuleCondition |
-  DispatchModuleFlowManage |
-  DispatchModuleIUBStore |
-  DispatchModuleRelationship |
-  DispatchModuleSys |
-  DispatchModuleDatasourceMeta)
+  (
+    DispatchModuleActionManage |
+    DispatchModuleCondition |
+    DispatchModuleFlowManage |
+    DispatchModuleIUBStore |
+    DispatchModuleRelationship |
+    DispatchModuleSys |
+    DispatchModuleDatasourceMeta
+  )
   & { params: any[] };
 
 export enum DispatchModuleName {

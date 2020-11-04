@@ -5,11 +5,7 @@ export interface DispatchModuleRelationship {
   method: DispatchMethodNameOfRelationship
 }
 
-export type TDispatchMethodNameOfRelationship =
-  'effectAnalysis'|
-  'effectDispatch'|
-  'effectReceiver'|
-  'findEquMetadata';
+export type TDispatchMethodNameOfRelationship = keyof typeof DispatchMethodNameOfRelationship
 
 export enum DispatchMethodNameOfRelationship {
   effectAnalysis = 'effectAnalysis',

@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from 'react';
+/* eslint-disable no-shadow */
+import React, { useEffect, useMemo } from 'react';
 import { DispatchMethodNameOfCondition } from './types/dispatch-module-condition';
 import { genEventWrapFnList, useEventProps } from '../event-manage';
 import { useCacheState } from '../utils';
@@ -10,6 +11,9 @@ import {
   DispatchCtxOfIUBEngine, Dispatch,
   IUBEngineRuntimeCtx, AsyncIUBEngineRuntimeCtx, RunTimeCtxToBusiness,
 } from './types';
+import { IUBStoreEntity } from '../state-manage';
+import { EffectRelationshipEntity } from '../relationship';
+import { whenHandle } from '../condition-engine/when-handle';
 
 const useUU = (setListConf: any[] = []) => {
   const [prop, setProp] = useCacheState({});
@@ -59,7 +63,14 @@ const getDispatchMethod = (
  * TODO: 待修改问题
  * 1. 类型、调用上下文规范
  */
-export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
+
+interface GRCtx {
+  runTimeCtxToBusiness: React.MutableRefObject<RunTimeCtxToBusiness>,
+  IUBStoreEntity: IUBStoreEntity;
+  effectRelationship: EffectRelationshipEntity;
+}
+
+export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   const {
     // layoutContent, componentParseRes, getCompParseInfo,
     // schemas, mappingEntity, getActionFn,
@@ -72,7 +83,6 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
   } = dslParseRes;
   console.log('//___genRuntimeCtxFn___\\\\');
   const {
-    pageManageInstance,
     IUBStoreEntity, // IUB页面仓库实例
     runTimeCtxToBusiness, // useRef
     effectRelationship, // 副作用关系的实例
@@ -84,12 +94,13 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
     // IUBPageStore, pickPageStateKeyWord
   } = IUBStoreEntity;
 
-  const { effectAnalysis, effectReceiver } = effectRelationship;
+  const { effectAnalysis, effectDispatch } = effectRelationship;
 
   /** 事件运行调度中心的函数 */
   /**
+   * ?!性能:区分静态上下文和动态上下文
    * 同步调度的上下文
-   *  */
+   */
   const runtimeContext: IUBEngineRuntimeCtx = {
     IUBStore: {
       ...IUBStoreEntity
@@ -106,8 +117,9 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
     },
   };
   /**
+   * ?!性能:区分静态上下文和动态上下文
    * 异步调度的上下文
-  */
+   */
   const asyncRuntimeContext: AsyncIUBEngineRuntimeCtx = {
     IUBStore: {
       ...IUBStoreEntity
@@ -123,14 +135,13 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
       ...effectRelationship,
     },
     condition: {
-      ConditionHandleOfAPBDSL: conditionEngine
+      ConditionHandleOfAPBDSL: conditionEngine,
+      ConditionHandle: conditionEngine
     },
     flowManage: {
       flowsRun
     },
     sys: {
-      // TODO: 需要做一层代理封装
-      ...pageManageInstance,
       APBDSLrequest
     },
   };
@@ -170,13 +181,23 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
         }
       );
     }
+    if (method === DispatchMethodNameOfCondition.ConditionHandle) {
+      return await whenHandle(
+        runTimeCtxToBusiness.current,
+        params[0].when || []
+      );
+    }
 
     params.unshift(runTimeCtxToBusiness.current);
 
     const runRes = await dispatchMethod(...params);
 
     // /** 确定副作用信息可以被使用 */
-    shouldUseEffect();
+    const effectInfo = shouldUseEffect();
+    /** 执行需要立即执行的副作用 */
+    if (effectInfo && effectInfo.isImmed) {
+      effectDispatch(runTimeCtxToBusiness.current, { pageIdOrMark: runTimeCtxToBusiness.current.pageMark });
+    }
 
     return runRes;
   };
@@ -242,9 +263,12 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
     ]);
   };
 
-  /** 在事件运行中使用的上下文 */
+  /** 更新在事件运行中使用的上下文 */
   runTimeCtxToBusiness.current = {
-    pageMark: runTimeCtxToBusiness.current.pageMark || '',
+    pageId: runTimeCtxToBusiness.current.pageId,
+    pageMark: runTimeCtxToBusiness.current.pageMark,
+    pageManage: runTimeCtxToBusiness.current.pageManage,
+    pageStatus: runTimeCtxToBusiness.current.pageStatus,
     asyncDispatchOfIUBEngine,
     dispatchOfIUBEngine
   };
@@ -253,10 +277,10 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
    * 生成运行时事件绑定的props
    * @param dynamicProps 动态的props
    */
-  const useRunTimeEventProps = (dynamicProps = {}) => {
+  const useRunTimeEventProps = (dynamicProps = {}, renderCompInfo) => {
     /** 载入上下文,生成实际的fn */
     // watch 事件 用到的state
-    const eventWrapFnList = useMemo(() => genEventWrapFnList(dynamicProps, { getFlowItemInfo }), []);
+    const eventWrapFnList = useMemo(() => genEventWrapFnList(dynamicProps, { getFlowItemInfo, renderCompInfo }), []);
 
     const eventProps = useEventProps(eventWrapFnList, runTimeCtxToBusiness);
     // const eventProps = {};
@@ -264,6 +288,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx) => {
   };
 
   return {
+    pageStatus: runTimeCtxToBusiness.current.pageStatus,
     useDynamicPropHandle,
     useRunTimeEventProps,
     runTimeCtxToBusiness

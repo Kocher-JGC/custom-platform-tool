@@ -5,8 +5,7 @@ export interface DispatchModuleFlowManage {
   method: DispatchMethodNameOfFlowManage
 }
 
-export type TDispatchMethodNameOfFlowManage =
-  'flowsRun';
+export type TDispatchMethodNameOfFlowManage = keyof typeof DispatchMethodNameOfFlowManage
 
 export enum DispatchMethodNameOfFlowManage {
   flowsRun = 'flowsRun'

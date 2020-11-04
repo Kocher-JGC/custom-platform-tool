@@ -5,13 +5,12 @@ export interface DispatchModuleDatasourceMeta {
   method: DispatchMethodNameOfDatasourceMeta
 }
 
-export type TDispatchMethodNameOfDatasourceMeta =
-  'getTable' |
-  'getFiledCode' |
-  'getFiledsCodeFromTable';
+export type TDispatchMethodNameOfDatasourceMeta = keyof typeof DispatchMethodNameOfDatasourceMeta
 
 export enum DispatchMethodNameOfDatasourceMeta {
   getTable = 'getTable',
   getFiledCode = 'getFiledCode',
-  getFiledsCodeFromTable = 'getFiledsCodeFromTable'
+  getFiledsCodeFromTable = 'getFiledsCodeFromTable',
+  getMetadata = 'getMetadata',
+  fieldCodeMapToFieldMark = 'fieldCodeMapToFieldMark'
 }

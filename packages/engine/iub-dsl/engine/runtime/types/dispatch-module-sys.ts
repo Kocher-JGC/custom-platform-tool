@@ -5,8 +5,7 @@ export interface DispatchModuleSys {
   method: DispatchMethodNameOfSys | string
 }
 
-export type TDispatchMethodNameOfSys =
-  'APBDSLrequest';
+export type TDispatchMethodNameOfSys = keyof typeof DispatchMethodNameOfSys
 
 export enum DispatchMethodNameOfSys {
   APBDSLrequest = 'APBDSLrequest',
