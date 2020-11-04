@@ -16,7 +16,7 @@ import { ConnectState } from '@/models/connect';
 import { SiderMenuProps } from '@ant-design/pro-layout/lib/SiderMenu/SiderMenu';
 import MenuExtra from '@/components/MenuExtra';
 import TabsContainer from '@/components/TabsContainer';
-import { getQueryByParams } from '@/utils/utils';
+import { getQueryByParams, getPageQuery } from '@/utils/utils';
 import { ITabsItem } from "@/models/tabs";
 import { IMenuItem } from "@/models/menu";
 import { MODE_PREVIEW } from '@/constant';
@@ -49,7 +49,11 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
   }
 
   async componentDidMount() {
+    const { mode } = getPageQuery();
     this.setPreviewMenuAndTabs();
+    if (!mode) {
+      await this.getAppConfig();
+    }
     const res = await this.getMenu();
     this.setDefaultTabs(res.result || []);
     this.setDefaultOpenKeys();
@@ -163,6 +167,13 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
         });
       }
     }
+  }
+
+  getAppConfig = async () => {
+    const { dispatch } = this.props;
+    return dispatch({
+      type: "user/fetchAppConfig"
+    });
   }
 
   getMenu = async () => {

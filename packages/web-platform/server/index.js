@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const express = require('express');
+const path = require('path');
 const multer = require('multer');
-const { access, ensureDir } = require('fs-extra');
+const { access, ensureDir, readJson } = require('fs-extra');
 const { exec } = require('child_process');
 const config = require('./config.json');
 
 const app = express();
-const port = 3300;
 const { uploadFolder, projectFolder } = config;
+app.use(express.static(path.join(__dirname, '/app')));
 
 const checkFolders = (name, cb) => {
   access(name, (err) => {
@@ -49,6 +50,20 @@ const returnError = (err) => ({
   result: null,
   code: '10000',
   msg: err.toString(),
+});
+
+app.get('/node-web/page-data', (req, res) => {
+  const { id } = req.query;
+  readJson(path.join(__dirname, '/app', '/page', `/${id}.json`), (err, json) => {
+    if (err) {
+      res.json({
+        err: err.toString(),
+        code: '10000'
+      });
+    } else {
+      res.json(json);
+    }
+  });
 });
 
 app.post('/upload', (req, res) => {
@@ -93,6 +108,6 @@ app.post('/upload', (req, res) => {
   });
 });
 
-app.listen(port, () => {
+app.listen(config.port, () => {
   console.log('启动应用端更新服务成功');
 });
