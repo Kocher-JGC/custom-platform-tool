@@ -36,6 +36,7 @@ export function pageMetadataReducer(
           // 设置变量
           const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
           draft.lastCompID += 1;
+          if (!draft.varRely) draft.varRely = {};
           draft.varRely[id] = varAttrArr;
         }
         // varAttrArr.forEach((attr) => {
@@ -60,18 +61,23 @@ export function pageMetadataReducer(
       });
     case CHANGE_METADATA:
       return produce(state, (draft) => {
-        const { data, metaAttr, dataRefID } = action;
+        const {
+          data, metaAttr, metaID, rmMetaID
+        } = action;
         if (!draft[metaAttr]) {
           console.error('尝试修改了不存在的 meta，请检查代码');
           draft[metaAttr] = {};
         }
-        if (dataRefID) {
-          draft[metaAttr][dataRefID] = data;
+        if (metaID) {
+          draft[metaAttr][metaID] = data;
         } else {
           const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
           Object.assign(draft[metaAttr], {
             [newDataRefID]: data
           });
+        }
+        if (rmMetaID) {
+          Reflect.deleteProperty(draft[metaAttr], rmMetaID);
         }
         return draft;
       });

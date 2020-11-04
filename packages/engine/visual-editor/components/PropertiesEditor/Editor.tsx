@@ -66,7 +66,7 @@ export interface PropertiesEditorProps {
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
   /** 更改元数据 */
-  ChangeMetadata: VEAppDispatcher['ChangeMetadata']
+  changeMetadata: VEAppDispatcher['ChangeMetadata']
 }
 
 const debounce = new Debounce();
@@ -233,7 +233,8 @@ PropertiesEditorProps, PropertiesEditorState
 
     /** 延后更新整个应用的数据 */
     debounce.exec(() => {
-      this.props.updateEntityState(this.state.entityState);
+      const { entityState } = this.state;
+      entityState && this.props.updateEntityState(entityState);
     }, 100);
   }
 
@@ -277,7 +278,7 @@ PropertiesEditorProps, PropertiesEditorState
     if (!entityState || !propItemMeta) return null;
 
     const {
-      propItemRenderer, ChangeMetadata: changeMetadata
+      propItemRenderer, changeMetadata
     } = this.props;
 
     const editingAttr = propItemMeta.whichAttr;

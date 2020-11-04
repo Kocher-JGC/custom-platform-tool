@@ -10,7 +10,7 @@ import { Input } from 'antd';
 export interface TextareaCompProps {
   title: string
   /** 默认值 */
-  defValue: string
+  realVal: string
   labelColor: string
 }
 
@@ -18,7 +18,7 @@ export const TextareaComp: React.FC<TextareaCompProps> = (props) => {
   const {
     title,
     labelColor,
-    defValue,
+    realVal,
   } = props;
 
   return (
@@ -30,7 +30,7 @@ export const TextareaComp: React.FC<TextareaCompProps> = (props) => {
       >
         {title}
       </div>
-      <textarea value={defValue} style={{ width: 300 }} />
+      <textarea value={realVal} style={{ width: 300 }} />
     </div>
   );
 };

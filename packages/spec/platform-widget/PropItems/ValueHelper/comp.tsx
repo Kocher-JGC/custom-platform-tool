@@ -31,15 +31,15 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   onChange,
 }) => {
   const [selectedItem, setSelectedItem] = React.useState('costomValue');
-  const { exp, defValue, variable } = editingWidgetState;
+  const { exp, realVal, variable } = editingWidgetState;
   let Comp;
   switch (selectedItem) {
     case 'costomValue':
       Comp = (
         <Input
-          value={defValue || ''}
+          value={realVal || ''}
           onChange={(value) => onChange([
-            { value, attr: 'defValue' },
+            { value, attr: 'realVal' },
             /** 需要将 value 清空 */
             { value: null, attr: 'exp' },
           ])}
@@ -63,7 +63,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
                         onChange([
                           { value: val, attr: 'exp' },
                           /** 需要将 value 清空 */
-                          { attr: 'defValue', value: null }
+                          { attr: 'realVal', value: null }
                         ]);
                         CloseModal(modalID);
                       }}

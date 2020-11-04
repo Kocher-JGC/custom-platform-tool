@@ -35,10 +35,10 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
     UICtx
   }) {
     const { interDatasources } = businessPayload;
-    let metaRefID = editingWidgetState[whichAttr];
+    const currMetaRefID = editingWidgetState[whichAttr];
     const selectedField = takeMeta({
       metaAttr,
-      metaRefID
+      metaRefID: currMetaRefID
     }) as SelectedField;
     const schema = takeMeta({
       metaAttr,
@@ -65,7 +65,7 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
     return (
       <PopModelSelector
         modelSetting={{
-          title: '设置表达式',
+          title: '绑定列',
           width: 900,
           children: ({ close }) => {
             return (
@@ -75,17 +75,20 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
                   defaultSelected={selectedField}
                   onSubmit={(_selectedField) => {
                     const fieldCode = _selectedField.column?.fieldCode;
+                    const prevMetaRefID = currMetaRefID;
                     checkColumnIsBeUsed(_selectedField)
                       .then(() => {
-                        metaRefID = genMetaRefID(`s.${fieldCode}`);
+                        const nextMetaRefID = genMetaRefID(`s.${fieldCode}`);
                         changeEntityState({
                           attr: whichAttr,
-                          value: metaRefID
+                          value: nextMetaRefID
                         });
                         changeMetadata({
                           data: _selectedField,
                           metaAttr,
-                          dataRefID: metaRefID
+                          metaID: nextMetaRefID,
+                          // 将上一个 meta 删除
+                          rmMetaID: prevMetaRefID
                         });
                         close();
                       })
@@ -102,7 +105,7 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
           }
         }}
       >
-        {metaRefID ? takeBindColumnInfo(selectedField) : '点击绑定字段'}
+        {currMetaRefID && selectedField ? takeBindColumnInfo(selectedField) : '点击绑定字段'}
       </PopModelSelector>
     );
   }

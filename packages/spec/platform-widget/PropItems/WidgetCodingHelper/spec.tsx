@@ -15,21 +15,27 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
   const lastCompID = takeMeta({
     metaAttr: 'lastCompID',
   });
-  // console.log('schema :>> ', schema);
   /** 取自身定义的 whichAttr */
-  const _value = widgetCode;
   useEffect(() => {
-    if (schema || !_value) {
-      const fieldCode = schema.column?.fieldCode;
-      changeEntityState({
-        attr: 'widgetCode',
-        value: fieldCode || `${widgetRef}.${lastCompID}`
-      });
+    let nextWidgetCode;
+    /**
+     * 业务需求逻辑
+     * 1. 如果绑定了列名，则使用列名作为控件编码
+     * 2. 如果没有绑定，控件编码为 `控件类型 + 组件数量`
+     */
+    if (field && schema) {
+      nextWidgetCode = schema.column?.fieldCode;
+    } else {
+      nextWidgetCode = widgetCode || `${widgetRef}.${lastCompID}`;
     }
+    changeEntityState({
+      attr: 'widgetCode',
+      value: nextWidgetCode
+    });
   }, [schema]);
   return (
     <div>
-      <Label>{_value}</Label>
+      <Label>{widgetCode}</Label>
     </div>
   );
 };

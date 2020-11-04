@@ -24,34 +24,19 @@ export type reactIconType = 'react-icons/all' |
 'react-icons/bi'
 
 const allIconsCollectionCache = {};
-export const importIcon = async () => {
-  /** 并发 import */
-  const [ri, bi] = await Promise.all([
-    import('react-icons/all'),
-    // import('react-icons/bi'),
-  ]);
-  return {
-    ...ri,
-    // ...bi,
-  };
-  // const iconRi = await import('react-icons/ri');
-  // const iconBi = await import('react-icons/bi');
-  // return { ...iconRi, ...iconBi };
-};
-
 export const loadReactIcon = (reactIconType: reactIconType) => {
   return new Promise((resolve, reject) => {
     if (allIconsCollectionCache[reactIconType]) resolve(allIconsCollectionCache[reactIconType]);
 
     switch (reactIconType) {
-      case 'react-icons/all':
-        import('react-icons/all').then(resolve);
-        break;
+      // case 'react-icons/all':
+      //   import(/* webpackChunkName: "react_icons_all" */'react-icons/all').then(resolve);
+      //   break;
       case 'react-icons/ri':
-        import('react-icons/ri').then(resolve);
+        import(/* webpackChunkName: "react_icons_ri" */'react-icons/ri').then(resolve);
         break;
       case 'react-icons/bi':
-        import('react-icons/bi').then(resolve);
+        import(/* webpackChunkName: "react_icons_bi" */'react-icons/bi').then(resolve);
         break;
       default:
     }
@@ -62,6 +47,10 @@ export const useIcon = (reactIconType: reactIconType) => {
   const [ready, setReady] = useState(!!iconsCache);
   useEffect(() => {
     if (ready) return;
+    const r = (icons) => {
+      allIconsCollectionCache[reactIconType] = icons;
+      setReady(true);
+    };
     loadReactIcon(reactIconType)
       .then((icons) => {
         allIconsCollectionCache[reactIconType] = icons;

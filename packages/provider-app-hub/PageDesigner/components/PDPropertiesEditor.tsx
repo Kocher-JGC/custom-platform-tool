@@ -46,7 +46,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   propItemRenderer = (props) => {
     // console.log('props :>> ', props);
     const {
-      ChangeMetadata,
+      changeMetadata,
       interDatasources,
       pageMetadata,
     } = this.props;
@@ -54,7 +54,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
       <PropItemRenderer
         {...props}
         pageMetadata={pageMetadata}
-        ChangeMetadata={ChangeMetadata}
+        changeMetadata={changeMetadata}
         interDatasources={interDatasources}
       />
     );
@@ -62,7 +62,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
 
   render() {
     const {
-      ChangeMetadata,
+      changeMetadata,
       interDatasources,
       pageMetadata,
       ...otherProps
@@ -77,7 +77,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
           propItemGroupingData={propItemGroupingData}
           widgetBindedPropItemsMeta={widgetBindedPropItemsMeta}
           pageMetadata={pageMetadata}
-          ChangeMetadata={ChangeMetadata}
+          changeMetadata={changeMetadata}
           propItemRenderer={this.propItemRenderer}
         />
       </div>
