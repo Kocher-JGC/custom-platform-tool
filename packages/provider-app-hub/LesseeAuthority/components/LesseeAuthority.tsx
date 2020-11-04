@@ -7,7 +7,7 @@ import { FormInstance } from 'antd/lib/form';
 import { ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
 import {
   queryLesseeAuthorityListService, allowDeleteLesseeAuthorityService,
-  deleteLesseeAuthorityService, queryLesseeAuthorityService, getPageElementInTreeService
+  deleteLesseeAuthorityService, queryLesseeAuthorityService, getPageElementInTreeService, batchDeleteLesseeAuthorityService
 } from '../service';
 import {
   COLUMNS, OPERATIONALMENU, SELECT_ALL, MORE_MENU, PAGE_SIZE_OPTIONS, IModalData
@@ -41,10 +41,13 @@ export interface ILesseeAuthority {
   id?: string;
   name?: string;
   code?: string;
+  showTypeWithoutAuthority?: string,
+  parentCode?: string,
+
 }
 
 const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
-  let moduleId = "";
+  const { moduleId } = props;
   const actionRef = useRef<ActionType>();
   const formRef = useRef<FormInstance>();
   const [copyData = {}, setCopyData] = useState<ICopyData>();
@@ -65,11 +68,15 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   const columns = [...COLUMNS, LesseeAuthorityOperational];
 
   useEffect(() => {
-    if (props.moduleId) {
-      moduleId = props.moduleId === SELECT_ALL ? "" : props.moduleId;
-      proLesseeAuthorityReset();
-      fromReset();
-    }
+    console.log(props.moduleId);
+    proLesseeAuthorityReset();
+    fromReset();
+
+    // if (props.moduleId) {
+    //   moduleId = props.moduleId === SELECT_ALL ? "" : props.moduleId;
+    //   proLesseeAuthorityReset();
+    //   fromReset();
+    // }
   }, [props.moduleId]);
   const handleMenuClick = ({ key }) => {
     console.dir(key);
@@ -77,6 +84,13 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
       setVisibleFastLesseeAuthorityModal(true);
     }
     if (key === "custom_create_lessee_authority") {
+      setEditData({
+        name: "",
+        code: "",
+        showTypeWithoutAuthority: "",
+        parentCode: ""
+
+      });
       setVisibleCustomLesseeAuthorityModal(true);
     }
   };
@@ -86,8 +100,16 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
       ...params,
       offset: (current - 1) * pageSize || 0,
       size: pageSize || 10,
-      moduleId
+      code: moduleId
     };
+
+    // if (moduleId) {
+    //   const tempArr = moduleId.split(',');
+    //   tempArr.forEach((value) => {
+    //     Object.assign(LesseeAuthorityParmas, { codes: value });
+    //   });
+    // }
+    console.log(LesseeAuthorityParmas);
     const res = await queryLesseeAuthorityListService(LesseeAuthorityParmas);
     const { data, total } = res.result;
     return Promise.resolve({
@@ -101,12 +123,17 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   };
   const handleLesseeAuthorityOperational = async (item) => {
     const {
-      operate, id, name, code
+      operate, id, name, code, createType
     } = item;
     if (operate === "edit") {
       if (!id) {
         return;
       }
+      if (createType !== "CUSTOM") {
+        console.log(item);
+        openNotification('error', 'can not edit');
+      }
+
       queryLesseeAuthorityService(id).then((res) => {
       /** 如果接口没有提供提示信息 */
         if (!res?.msg) {
@@ -116,15 +143,15 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
         const initEditData = getInitEditPopupWinndow();
         const retEditData = res?.result;
 
-        if (!res?.result.tablePopupWindowDetail) {
-          retEditData.tablePopupWindowDetail = initEditData.tablePopupWindowDetail;
-        }
-        if (!res?.result.treePopupWindowDetail) {
-          retEditData.treePopupWindowDetail = initEditData.treePopupWindowDetail;
-        }
-        if (!res?.result.treeTablePopupWindowDetail) {
-          retEditData.treeTablePopupWindowDetail = initEditData.treeTablePopupWindowDetail;
-        }
+        // if (!res?.result.tablePopupWindowDetail) {
+        //   retEditData.tablePopupWindowDetail = initEditData.tablePopupWindowDetail;
+        // }
+        // if (!res?.result.treePopupWindowDetail) {
+        //   retEditData.treePopupWindowDetail = initEditData.treePopupWindowDetail;
+        // }
+        // if (!res?.result.treeTablePopupWindowDetail) {
+        //   retEditData.treeTablePopupWindowDetail = initEditData.treeTablePopupWindowDetail;
+        // }
 
         console.log(retEditData);
         // temp = Object.assign(temp, res?.result);
@@ -133,7 +160,13 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
         setVisibleCustomLesseeAuthorityModal(true);
       });
     } else if (operate === "delete") {
-      checkBeforeDelete(id);
+      const res = await batchDeleteLesseeAuthorityService(Array.from([id]));
+      if (res.code === "00000") {
+        openNotification("success", "删除成功");
+        proLesseeAuthorityReload();
+      } else {
+        openNotification("error", "删除失败");
+      }
     } else if (operate === "copy") {
       setCopyData({ id, name, code });
       setVisibleCopyModal(true);
@@ -141,6 +174,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
   };
   const checkBeforeDelete = async (id: string) => {
     const res = await allowDeleteLesseeAuthorityService(id);
+
     if (res.code === "00000") {
       if (res.result) {
         confirm({
@@ -204,7 +238,11 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
     }
   </Menu>;
   const renderToolBarRender = () => [
-    <Button key="3" type="primary" onClick={() => setVisibleCustomLesseeAuthorityModal(true)}>
+    <Button
+      key="3" type="primary" onClick={() => {
+        setVisibleCustomLesseeAuthorityModal(true);
+      }}
+    >
       新建权限项
     </Button>,
     <Dropdown overlay={renderMenu}>
@@ -243,6 +281,7 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
           onOk={handleCustomLesseeAuthorityOk}
           onCancel={() => setVisibleCustomLesseeAuthorityModal(false)}
           upDataMenus={handleUpdataMenus}
+          editData = {editData}
         />
       </CreateModal>
       <CreateModalFast

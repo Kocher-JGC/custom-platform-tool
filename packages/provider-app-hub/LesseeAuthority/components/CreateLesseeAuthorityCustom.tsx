@@ -8,7 +8,7 @@ import {
   NameCodeItem, ModuleTreeItem, PrimaryTreeItem, FromFooterBtn
 } from "./FormItem";
 import CreateMenu from './CreateMenu';
-import { queryLesseeAuthorityListService, createLesseeAuthorityService } from '../service';
+import { queryLesseeAuthorityListService, createLesseeAuthorityService, editLesseeAuthorityService } from '../service';
 import { ILesseeAuthority, ISELECTSMENU } from '../interface';
 
 import './index.less';
@@ -22,6 +22,15 @@ interface IProps {
   onCancel: () => void;
 
   upDataMenus: () => void;
+  editData?:
+  {
+    id?: string,
+    name?: string,
+    code?: string,
+    showTypeWithoutAuthority?: string,
+    parentCode?: string,
+
+  }
 }
 const layout = {
   labelCol: { span: 5 },
@@ -42,24 +51,43 @@ export const translateParentCodeToSelectMenus = (record: ILesseeAuthority[]):ISE
 };
 
 const CreateLesseeAuthorityCustom: React.FC<IProps> = (props: IProps) => {
-  const { onCancel, onOk, upDataMenus } = props;
+  const {
+    onCancel, onOk, upDataMenus, editData: {
+      id, name, code, showTypeWithoutAuthority, parentCode
+    }
+  } = props;
   const [form] = Form.useForm();
   const [visibleModal, setVisibleModal] = useState<boolean>(false);
   const [parentCodeOptions, setParentCodeOptions] = useState<ISELECTSMENU[]>([]);
-  const [showTypeWithoutAuthority, setShowTypeWithoutAuthority] = useState<string>('FORBIDDEN');
+  // const [showTypeWithoutAuthority, setShowTypeWithoutAuthority] = useState<string>('FORBIDDEN');
 
   const handleFinish = async (values) => {
-    const params = assemblyParams(values);
-    Object.assign(params, { createType: 'CUSTOM' });
-    const res = await createLesseeAuthorityService(params);
-    if (res.code === "00000") {
-      notification.success({
-        message: "新增成功",
-        duration: 2
-      });
-      onOk && onOk();
+    if (id) {
+      const params = assemblyParams(values);
+      Object.assign(params, { id });
+      const res = await editLesseeAuthorityService(params, id);
+      if (res.code === "00000") {
+        notification.success({
+          message: "编辑成功",
+          duration: 2
+        });
+        onOk && onOk();
+      } else {
+        message.error(res.msg);
+      }
     } else {
-      message.error(res.msg);
+      const params = assemblyParams(values);
+      Object.assign(params, { createType: 'CUSTOM' });
+      const res = await createLesseeAuthorityService(params);
+      if (res.code === "00000") {
+        notification.success({
+          message: "新增成功",
+          duration: 2
+        });
+        onOk && onOk();
+      } else {
+        message.error(res.msg);
+      }
     }
   };
   /**
@@ -68,7 +96,7 @@ const CreateLesseeAuthorityCustom: React.FC<IProps> = (props: IProps) => {
    */
   const assemblyParams = (values) => {
     const {
-      name, code, type, parentCode
+      name, code, type, parentCode, showTypeWithoutAuthority
     } = values;
     const params = {
       name,
@@ -92,9 +120,14 @@ const CreateLesseeAuthorityCustom: React.FC<IProps> = (props: IProps) => {
     onCancel && onCancel();
   };
   useEffect(() => {
+    console.log(props);
+
     queryLesseeAuthorityListService({}).then((res) => {
-      /** 如果接口没有提供提示信息 */
       setParentCodeOptions(translateParentCodeToSelectMenus(res?.result?.data));
+    });
+    form.setFieldsValue({
+      id, name, code, showTypeWithoutAuthority, parentCode
+      // : getShowTypeTitleById(showType)
     });
   }, []);
 

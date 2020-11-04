@@ -13,10 +13,17 @@ export async function queryLesseeAuthorityService(id) {
   });
 }
 
-export async function getPageElementInTreeService(id) {
+export async function getPageElementInTreeService(params) {
   return await $R_P.get({
     url: `/auth/v1/authorities/getPageElementInTree`,
-    params: {},
+    data: params,
+  });
+}
+
+export async function findAuthorityInTreeService(params) {
+  return await $R_P.get({
+    url: `/auth/v1/authorities/getAuthorityInTree`,
+    params,
   });
 }
 
@@ -27,10 +34,24 @@ export async function createLesseeAuthorityService(params) {
     data: params,
   });
 }
+export async function editLesseeAuthorityService(params, id) {
+  return await $R_P.put({
+    url: `/auth/v1/authorities/`,
+    data: params,
+  });
+}
+
 export async function createLesseeAuthorityFastService(params) {
   return await $R_P.post({
     url: '/auth/v1/authorities/',
     data: params,
+  });
+}
+
+export async function batchDeleteLesseeAuthorityService(id) {
+  return await $R_P.del({
+    url: `/auth/v1/authorities/batchDelete/`,
+    data: id,
   });
 }
 /** 删除表前确认能否删除 */

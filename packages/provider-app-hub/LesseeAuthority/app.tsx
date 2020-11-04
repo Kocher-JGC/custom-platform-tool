@@ -30,9 +30,12 @@ class DataDesign extends PureComponent<IProps, IState> {
   public handleTreeSelect = (id) => {
     const { moduleId } = this.state;
     if (id === moduleId) return;
+    console.log(moduleId);
+    console.log(id);
     this.setState({
       moduleId: id
     });
+    this.setState({});
   }
 
   /**

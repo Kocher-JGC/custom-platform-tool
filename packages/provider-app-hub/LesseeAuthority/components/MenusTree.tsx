@@ -2,7 +2,7 @@ import React, {
   useEffect, useState, forwardRef, useImperativeHandle
 } from 'react';
 import { Tree, Input } from 'antd';
-import { queryMenusListService, getPageElementInTreeService } from '../service';
+import { queryMenusListService, getPageElementInTreeService, findAuthorityInTreeService } from '../service';
 import './index.less';
 import { MENUS_TYPE, SELECT_ALL } from '../constant';
 
@@ -20,13 +20,20 @@ interface INode {
   id: string;
   pid: string;
 }
+interface IAuthorityNode {
+  title: string | React.ReactElement;
+  name: string;
+  key: string;
+  id: string;
+  pid: string;
+}
 
 const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
   const { onSelect } = props;
   let searchValue = "";
   const [menusData, setMenusData] = useState<any[]>([]);
   const [expandedRightKeys, setExpandedRightKeys] = useState<string[]>(['0-0-0', '0-0-1']);
-  const [checkedRightKeys, setCheckedRightKeys] = useState<string[]>(["1319197100449341440"]);
+  const [checkedRightKeys, setCheckedRightKeys] = useState<string[]>([]);
   const [selectedRightKeys, setSelectedRightKeys] = useState<string[]>([]);
   const [autoExpandRightParent, setAutoExpandRightParent] = useState<boolean>(true);
 
@@ -38,9 +45,9 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
   }, []);
   const constructTree = (data) => {
     const idMap = {};
-    const jsonTree: INode[] = [];
+    const jsonTree: IAuthorityNode[] = [];
     data.forEach((node) => { node && (idMap[node.id] = node); });
-    data.forEach((node: INode) => {
+    data.forEach((node: IAuthorityNode) => {
       if (node) {
         // eslint-disable-next-line no-param-reassign
         node.title = renderHighlightValue(node.name);
@@ -81,6 +88,12 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
     });
   };
 
+  const findAuthorityInTree = async () => {
+    return await findAuthorityInTreeService({
+      selectType: 0
+    });
+  };
+
   const getMenusListData = async () => {
     // const resA = await queryMenusListService({
     //   type: MENUS_TYPE.MODULE,
@@ -91,7 +104,7 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
     //   selectType: 0
     // });
 
-    const res = await getPageElementInTree();
+    const res = await findAuthorityInTree();
 
     const tree = constructTree(res?.result || []);
     console.log(tree);
@@ -105,7 +118,7 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
 
   const handleSelect = (value) => {
     console.log(value);
-    onSelect && onSelect(value ? value[0] : SELECT_ALL);
+    // onSelect && onSelect(value ? value[0] : SELECT_ALL);
   };
 
   const handleSearch = (value) => {
@@ -124,6 +137,7 @@ const MeunsTree: React.FC<IProps> = forwardRef((props: IProps, ref) => {
   const onRightCheck = (checkedKeysA) => {
     console.log('onRightCheck', checkedKeysA);
     setCheckedRightKeys(checkedKeysA);
+    onSelect && onSelect(checkedKeysA.join(','));
   };
 
   const onRightSelect = (selectedKeysA, info) => {
