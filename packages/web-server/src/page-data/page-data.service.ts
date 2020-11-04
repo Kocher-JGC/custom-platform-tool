@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import omit from 'lodash/omit';
+import { omit } from 'lodash';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
 import config from '../../config';
 
@@ -25,13 +25,14 @@ const flatLayoutNode = (layoutNode, parentID?) => {
   console.log(parentID);
   const componentsCollection = {};
   const layoutContentBody = [];
+  
   layoutNode.forEach((nodeItem) => {
     // const nodeItemI = produce(nodeItem, draft => draft);
     const { id, body } = nodeItem;
     
     Object.assign(nodeItem, {
       type: 'componentRef',
-      compType: nodeItem?.widgetRef,
+      compType: nodeItem?.widgetDef.type,
       // widgetRef: {
       // ...nodeItem.widgetRef,
       ...nodeItem.propState

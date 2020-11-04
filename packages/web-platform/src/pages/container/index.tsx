@@ -45,7 +45,7 @@ const Container: React.FC<IContainerProps> = (props) => {
   // const [data, setData] = useState(D);
   const { query } = history.location;
 
-  const isLoading = useRef(false);
+  const isLoading = useRef(true);
 
   const Renderer = useMemo(() => {
     if (isLoading.current) {
