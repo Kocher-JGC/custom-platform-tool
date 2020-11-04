@@ -59,7 +59,8 @@ const genBaseRenderStruct = (
     originConf,
     renderCompInfo,
     renderStructInfo,
-    index
+    index,
+    widgetId
   } = genRenderStructContext;
 
   const {
@@ -108,6 +109,8 @@ const genBaseRenderStruct = (
     genRenderStructContext.renderStructInfo = childrenStructInfo;
     renderCompInfo[mark] = {
       ...propsParseRes,
+      widgetId,
+      originConf,
       mark,
       compTag
     };

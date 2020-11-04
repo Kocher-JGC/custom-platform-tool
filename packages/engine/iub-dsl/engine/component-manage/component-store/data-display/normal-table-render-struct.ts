@@ -42,6 +42,7 @@ export const normalTableRenderStructParser = (
   const renderStructInfo: RenderStructInfo[] = [];
   const renderCompInfo: RenderCompInfo = {};
   genRenderStructList(fullRenderStruct, {
+    widgetId: baseMark,
     allConfKey,
     originConf,
     baseMark,

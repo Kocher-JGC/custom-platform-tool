@@ -70,6 +70,7 @@ export const normalInputRenderStructParser = (
   const renderCompInfo: RenderCompInfo = {};
 
   genRenderStructList(fullRenderStruct, {
+    widgetId: baseMark,
     allConfKey,
     originConf,
     baseMark,
