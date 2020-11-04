@@ -1,3 +1,4 @@
+import { RunTimeCtxToBusiness } from "@iub-dsl/engine/runtime/types";
 import { initPageCtxManage, PageCtxInfo, AddPageCtx } from "./page-context";
 
 /**
@@ -25,37 +26,31 @@ type StateType = 'tableRowData' | 'selectData' | 'tableData' | 'schemasData'
 export interface PageManageInstance {
   addPageCtx: AddPageCtx;
   removePageCtx: (pageIdOrMark: string) => PageCtxInfo<any>[]
-  getIUBPageCtx: (pageIdOrMark: string) => any[]
+  getIUBPageCtx: (options: GetIUBPageCtxParam) => RunTimeCtxToBusiness[]
+}
+
+interface GetIUBPageCtxParam {
+  pageIdOrMark: string, // 页面ID或页面mark
+  isMatch?: boolean, // 是否模糊匹配
+  isShelf?: boolean, // 是否只自身广播
 }
 
 let pageManageInstance: PageManageInstance;
 
-export const pageManage = () => {
+export const pageManage = (): PageManageInstance => {
   if (pageManageInstance) return pageManageInstance;
   const { addPageCtx, removePageCtx, getPageCtx: gPC } = initPageCtxManage();
 
   /** 获取IUB页面的上下文 */
-  const getIUBPageCtx = (pageIdOrMark: string) => {
+  const getIUBPageCtx = ({ pageIdOrMark, isMatch = true, isShelf = false, }) => {
     const pageCtx = gPC(pageIdOrMark);
+
     /** 获取useRef的上下文并且过滤无效的 */
     return pageCtx.map((c) => c.context?.current).filter((v) => v);
   };
 
-  /** 页面广播: TODO: 自身的观察者 */
-  const pageBroadcast = async ({
-    pageIdOrMark, //
-    isMatch, // 是否模糊匹配
-    isShelf, // 是否只自身广播
-    receiveHandle, // 接收处理函数
-  }) => {
-    const pageCtx = gPC(pageIdOrMark);
-    if (pageCtx[0]) {
-      await receiveHandle(pageCtx[0]);
-    }
-  };
-
   const instance = {
-    addPageCtx, removePageCtx, getIUBPageCtx, pageBroadcast
+    addPageCtx, removePageCtx, getIUBPageCtx
   };
 
   return (pageManageInstance = instance);
