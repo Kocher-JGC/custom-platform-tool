@@ -32,7 +32,7 @@ const actionRefWithFnWrap = ({
 /** 运行时事件处理 */
 export const genEventWrapFnList = (
   dynamicProps,
-  { getFlowItemInfo }: { getFlowItemInfo: GetFlowItemInfo}
+  { getFlowItemInfo, renderCompInfo }: { getFlowItemInfo: GetFlowItemInfo, renderCompInfo: any}
 ) => {
   const { widgetEvent } = dynamicProps;
   const eventWrapFnList = widgetEvent?.map((conf) => {
@@ -40,7 +40,7 @@ export const genEventWrapFnList = (
     /** 获取真实使用的动作 */
     const { flowItemRun } = getFlowItemInfo(actionID);
     /** 获取规范化事件输入的函数 */
-    const normalActionHandle = eventHandle(); // param0: 配置
+    const normalActionHandle = eventHandle(renderCompInfo); // param0: 配置
     if (actionType === 'actionRef') {
       return {
         eventType,
