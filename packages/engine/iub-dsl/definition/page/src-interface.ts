@@ -1,5 +1,3 @@
-import Expression from "../actions/expression";
-
 type FieldType = "string" | "int" | "num";
 
 interface PageVariable {
@@ -19,7 +17,7 @@ interface PageInterface {
     /** uuid: variable */
     [uuid: string]: string;
   };
-  refVar?: Expression[];
+  refVar?: any[];
   /**
    * 输出范围, 本页面所有的页面变量,
    * 应该是统一的又描述元数据又描述结构的数据
