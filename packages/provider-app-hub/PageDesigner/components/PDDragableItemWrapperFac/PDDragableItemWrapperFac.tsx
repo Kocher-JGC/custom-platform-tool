@@ -53,6 +53,7 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
   const isTempEntity = currEntity._state === TEMP_ENTITY_ID;
 
   return isTempEntity ? <TempEntityTip key={id} /> : (() => {
+    if (!widgetMeta) return null;
     const { propEditor } = widgetMeta;
 
     // 通过远端获取组件
