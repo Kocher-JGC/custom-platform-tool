@@ -34,6 +34,7 @@ interface EffectBaseInfo {
  */
 export interface ActionEffect extends EffectBaseInfo {
   actionId: string;
+  isImmed?: boolean;
   actionType?: string;
 }
 

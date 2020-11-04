@@ -19,6 +19,7 @@ const effectAnalysisOfAPBDSLCURD = (APBDSLCURDParam): APBDSLActionEffect[] => {
       case ApbFunction.SET:
         effectInfo.push({
           actionId,
+          isImmed: code === ApbFunction.DEL,
           effectType: EffectType.tableSelect,
           effectInfo: {
             table,
@@ -35,9 +36,20 @@ const effectAnalysisOfAPBDSLCURD = (APBDSLCURDParam): APBDSLActionEffect[] => {
   return effectInfo;
 };
 
-export const effectRelationship = () => {
+export interface EffectRelationshipEntity {
+  effectAnalysis: (ctx: RunTimeCtxToBusiness, dispatchCtx: DispatchCtxOfIUBEngine) => () => any;
+  effectDispatch: (ctx: RunTimeCtxToBusiness, options: any) => void;
+  effectReceiver: (ctx: RunTimeCtxToBusiness, effectCollect: any[]) => void;
+}
+
+export const effectRelationship = (): EffectRelationshipEntity => {
   const effectCollection: any[] = [];
 
+  /**
+   * 动作运行的副作用分析 「收集副作用」
+   * @param ctx 运行时调度器标准上下文
+   * @param dispatchCtx 调度上下文
+   */
   const effectAnalysis = (ctx: RunTimeCtxToBusiness, dispatchCtx: DispatchCtxOfIUBEngine) => {
     const {
       actionInfo,
@@ -50,13 +62,17 @@ export const effectRelationship = () => {
       return shouldUseEffect;
     }
 
+    /** 当前正在执行的动作类型 */
     const { actionType, actionId } = actionInfo;
     // console.log(actionType, actionId);
 
     switch (actionType) {
       case 'APBDSLCURDAction':
         shouldUseEffect = () => {
-          effectCollection.push(...effectAnalysisOfAPBDSLCURD({ actionId, ...params[1] }));
+          const effectInfos = effectAnalysisOfAPBDSLCURD({ actionId, ...params[1] });
+          effectCollection.push(...effectInfos);
+          // TODO: 临时
+          return effectInfos[0];
         };
         break;
       default:
@@ -65,15 +81,23 @@ export const effectRelationship = () => {
 
     return shouldUseEffect;
   };
-  const effectDispatch = (c: RunTimeCtxToBusiness, allPageCtx: RunTimeCtxToBusiness[]) => {
-    allPageCtx.forEach((ctx) => {
-      const { pageMark, dispatchOfIUBEngine, asyncDispatchOfIUBEngine } = ctx;
-      console.log(pageMark);
+
+  /**
+   * IUBUnMount的副作用调度 「触发副作用」
+   * TODO: 多个相同副作用
+   * @param c 本页面的运行时调度器标准上下文
+   * @param options 选项函数的选项, 目前默认是获取页面上下文的选项
+   */
+  const effectDispatch = (ctx: RunTimeCtxToBusiness, options) => {
+    const { pageManage, pageMark: nowPageMark } = ctx;
+    const pageCtxArr = pageManage.getIUBPageCtx(options);
+    pageCtxArr.forEach((pCtx) => {
+      const { pageMark, dispatchOfIUBEngine, asyncDispatchOfIUBEngine } = pCtx;
       asyncDispatchOfIUBEngine({
         actionInfo: {
           actionType: 'effectCollection',
-          actionName: `${pageMark}__${effectReceiver}`,
-          actionId: `${pageMark}__${effectReceiver}`
+          actionName: `${pageMark}__effectReceiver`,
+          actionId: `${pageMark}__effectReceiver`
         },
         dispatch: {
           module: DispatchModuleName.relationship,
@@ -81,11 +105,19 @@ export const effectRelationship = () => {
           params: [effectCollection],
         },
       }).then((res) => {
+        /** 理论上应该运行几个删除几个 */
+        effectCollection.length = 0;
+        console.log('副作用处理完成');
         // console.log(res);
       });
     });
   };
 
+  /**
+   * 页面接受者, 接收其他页面dispatch的副作用并处理 「处理副作用」
+   * @param ctx 运行时调度器标准上下文
+   * @param effectCollect 副作用集合
+   */
   const effectReceiver = (ctx: RunTimeCtxToBusiness, effectCollect: any[]) => {
     const { pageMark, dispatchOfIUBEngine, asyncDispatchOfIUBEngine } = ctx;
     effectCollect.forEach(({ effectType, effectInfo }) => {
