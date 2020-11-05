@@ -151,6 +151,7 @@ class AuthList extends PureComponent<IProps, IState> {
                   if (!canICreate) return;
                   CloseModal(modalID);
                   this.getList();
+                  this.props.handleUpdateShowTree();
                 });
               }}
               onCancel={() => {
