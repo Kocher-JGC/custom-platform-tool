@@ -12,16 +12,18 @@ interface IOnSuccessParams {
 interface IProps {
   onSuccess:(item: IOnSuccessParams) => void;
   onCancel: ()=>void;
+  authItems?: string[]
 }
 
 export const SelectAuthItem = ({
-  onSuccess, onCancel
+  onSuccess, onCancel, authItems
 }: IProps) => {
   const [authParent, setAuthParent] = useState<IOnSuccessParams>({ id: '', name: '' });
   return (
     <>
       <div style={{ minHeight: 300 }}>
         <AuthItemTree
+          authItems = {authItems}
           onSelect = {(selectedKeys, selectedNames) => {
             setAuthParent({ id: selectedKeys[0], name: selectedNames[0] });
           }}
