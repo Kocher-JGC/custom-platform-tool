@@ -1,10 +1,7 @@
 import { ConditionOperator } from '@iub-dsl/definition';
-import { normalCondParam } from '../utils';
+import { normalCondParam, NormalParserFn } from '../types';
 
 const expValid = (exps: any[], validLength = 1) => exps.slice(0, validLength).every((e) => e !== undefined);
-interface NormalParserFn {
-  (param: normalCondParam): boolean;
-}
 
 const nEmptyHandle = ({ operator, expsValue }: normalCondParam) => {
   return !emptyHandle({ operator, expsValue });

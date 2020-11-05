@@ -6,6 +6,7 @@ import {
 import { RunTimeCtxToBusiness } from "../runtime/types/dispatch-types";
 import { condControlRun, normalParamOfCondList } from "./utils";
 import { getPageCondOperatorHandle, pageCondControlResHandle } from "./page-condition";
+import { ConditionEngineCtx } from "./types";
 
 const conditionExample: Condition = {
   conditionList: {
@@ -31,12 +32,6 @@ const conditionExample: Condition = {
     or: ['condId0']
   }
 };
-
-interface ConditionEngineCtx {
-  expsValueHandle: any;
-  getOperatorHandle: any;
-  condControlResHandle: any;
-}
 
 /**
  * 条件处理引擎
