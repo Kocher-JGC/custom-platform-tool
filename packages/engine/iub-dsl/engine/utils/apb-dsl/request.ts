@@ -77,22 +77,40 @@ interface APBDSLRespone<T = any> {
 export const APBDSLrequest = <R = any>(reqParam) => {
   // const reqUrl = genUrl('UserInfo');
   // console.dir(reqParam, { depth: 3 });
+  // $A_R.interceptors.response.use((response) => {
+  //   return response;
+  // }, (err) => { // 这里是返回状态码不为200时候的错误处理
+  //   console.log(err);
+
+  //   return Promise.reject(err);
+  // });
   return $A_R(getAPBDSLtestUrl(), {
     method: 'POST',
-    data: reqParam
-  }).then(({ data }: AxiosResponse<APBDSLRespone<R | boolean>>) => {
-    if (data.code === APBDSLResponeCode.SA0000) {
-      notification.success({
-        message: 'APBDSL请求成功!',
+    data: reqParam,
+  }).then((response: AxiosResponse<APBDSLRespone<R | boolean>>) => {
+    console.log(response);
+
+    const { data, status } = response;
+    if (status === 200) {
+      if (data.code === APBDSLResponeCode.SA0000) {
+        notification.success({
+          message: 'APBDSL请求成功!',
+        });
+        return Promise.resolve(data.result);
+      }
+      notification.error({
+        message: 'APBDSL请求失败!',
+        description: APBDSLResponseMsg[data.code] || `失败了!${JSON.stringify(data)}`
       });
-      return Promise.resolve(data.result);
+
+      return Promise.resolve(false);
     }
+  }).catch((e) => {
     notification.error({
       message: 'APBDSL请求失败!',
-      description: APBDSLResponseMsg[data.code] || `失败了!${JSON.stringify(data)}`
+      description: `错了`
+      // description: `${JSON.stringify(e)}`
     });
-
-    return Promise.resolve(false);
   });
 };
 
