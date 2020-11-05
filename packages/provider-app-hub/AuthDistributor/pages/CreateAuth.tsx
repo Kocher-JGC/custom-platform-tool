@@ -4,8 +4,8 @@ import {
 } from 'antd';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { TERMINAL_TYPE_MENU } from '../constants';
-import { SelectShowAuthParent } from './SelectShowAuthParent';
-import { SelectAuthItem } from './SelectAuthItem';
+import SelectShowAuthParent from './SelectShowAuthParent';
+import SelectAuthItem from './SelectAuthItem';
 import { ITerminalType } from '../interface';
 
 const layout = {
@@ -35,7 +35,7 @@ interface IProps {
   authData?: IAuthData
 }
 
-export const CreateAuth = ({
+const CreateAuth = ({
   onSuccess, onCancel, authData
 }: IProps) => {
   const [form] = Form.useForm();
@@ -159,3 +159,4 @@ export const CreateAuth = ({
     </Form>
   );
 };
+export default React.memo(CreateAuth);
