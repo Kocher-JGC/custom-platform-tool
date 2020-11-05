@@ -2,17 +2,16 @@ import React, { useState, useCallback, useRef } from "react";
 import { Row, Col, ConfigProvider } from "antd";
 import zhCN from 'antd/es/locale/zh_CN';
 import AuthList from "./components/AuthList";
-import { AuthShowTree } from "./components/AuthShowTree";
+import AuthShowTree from "./components/AuthShowTree";
 
 // import "./index.less";
 
-const App: HY.SubApp = (props) => {
+const App: HY.SubApp = () => {
   const [authorities, setAuthorities] = useState<string[]>([]);
   const handleTreeSelect = useCallback((selectedKeys) => {
     setAuthorities(selectedKeys);
   }, [authorities]);
   const [showAuthTreeRef, setShowAuthTreeRef] = useState<{reload?:()=>void}>({});
-  const showTreeRef = useRef();
   const handleUpdateShowTree = () => {
     showAuthTreeRef && showAuthTreeRef.reload && showAuthTreeRef.reload();
   };
@@ -26,7 +25,6 @@ const App: HY.SubApp = (props) => {
           <AuthShowTree
             expandAll = {true}
             onRef = {onRef}
-            ref = {showTreeRef}
             checkable = {true}
             onSelect = {handleTreeSelect}
           />
