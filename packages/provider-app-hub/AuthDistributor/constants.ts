@@ -2,31 +2,40 @@ import { ColumnType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { ITableItem } from './interface';
 
+export enum TEMINAL_TYPE {
+  CS = 'CS',
+  BS = 'BS',
+  PHONE = 'PHONE'
+}
 export const TERMINAL_TYPE_MENU = [
-  { label: "CS客户端", value: 'CS', key: 'CS' },
-  { label: "BS客户端", value: 'BS', key: 'BS' },
-  { label: "手机移动客户端", value: 'PHONE', key: 'PHONE' }
+  { label: "BS客户端", value: TEMINAL_TYPE.BS, key: TEMINAL_TYPE.BS },
+  { label: "CS客户端", value: TEMINAL_TYPE.CS, key: TEMINAL_TYPE.CS },
+  { label: "手机移动客户端", value: TEMINAL_TYPE.PHONE, key: TEMINAL_TYPE.PHONE }
 ];
 export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '序号',
     dataIndex: 'index',
+    key: 'index',
     width: 80,
     render: (text, _, index) => index + 1
   },
   {
     title: '权限树名称',
     dataIndex: 'name',
+    key: 'name',
     width: 200,
     ellipsis: true
   },
   {
     title: '权限编码',
+    key: 'authorityCode',
     dataIndex: 'authorityCode',
     width: 150,
   },
   {
     title: '上级',
+    key: 'parentName',
     dataIndex: 'parentName',
     ellipsis: true,
     width: 180,
