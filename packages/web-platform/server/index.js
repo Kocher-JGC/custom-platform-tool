@@ -31,7 +31,12 @@ const storage = multer.diskStorage({
     });
   },
   filename(req, file, cb) {
-    cb(null, file.originalname);
+    const tmp = file.originalname.split("-");
+    if (!tmp[1]) {
+      cb(new Error("压缩包名称异常"));
+    } else {
+      cb(null, tmp[1]);
+    }
   },
 });
 
@@ -76,13 +81,14 @@ app.post('/upload', (req, res) => {
         if (checkErr) {
           res.json(returnError(checkErr));
         } else {
+          const tmp = file.originalname.split("-");
           exec(
-            `cd ${uploadFolder} && tar -zxvf ${file.originalname}`,
+            `cd ${uploadFolder} && tar -zxvf ${tmp[1]}`,
             (unzipError) => {
               if (unzipError) {
                 res.json(returnError(unzipError));
               } else {
-                const tmpArr = file.originalname.split('.');
+                const tmpArr = tmp[1].split('.');
                 const folder = tmpArr[0];
                 exec(
                   `cd ${uploadFolder} && mv -f ${folder}/* ${projectFolder} `,

@@ -64,7 +64,7 @@ export class ReleaseAppService {
       const { lesseeCode, applicationCode } = appConfig;
       if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
       fs.writeFile(
-        path.join(config.pageDataStoreDirectory, folderName, `appConfig.json`),
+        path.join(config.pageDataStoreDirectory, folderName, `main.json`),
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
@@ -131,15 +131,14 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  async getPageDataFromProvider({ lesseeCode, applicationCode }) {
+  async getPageDataFromProvider({ lesseeCode, applicationCode }, authorization) {
     const resData = await axios.get(
-      `${config.platformApiUrl}/paas/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
-      {
-        headers: {
-          Authorization: `Bearer 1295915065878388737`
-        }
-      }
+      `${config.platformApiUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      { headers: { Authorization: authorization } }
     );
+    if(resData?.data?.code !== "00000"){
+      throw new Error(resData?.data?.msg);
+    }
     return resData?.data?.result || [];
   }
 }
