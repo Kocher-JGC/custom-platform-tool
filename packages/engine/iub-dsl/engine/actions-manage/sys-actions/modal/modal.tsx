@@ -27,10 +27,10 @@ export const openModal = (conf: OpenModalOptions, baseActionInfo): ActionDoFn =>
     };
     if (pageUrl) {
       try {
-        // const pageData = await queryPageData({ id: pageUrl });
+        const pageData = await queryPageData({ id: pageUrl });
         const m = Modal.confirm({
           icon: false,
-          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={D} />
+          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
         });
 
         console.log(m);

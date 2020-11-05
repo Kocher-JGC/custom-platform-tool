@@ -22,12 +22,12 @@ export const openModelFromTable = (conf: OpenModalOptions, baseActionInfo): Acti
   //   },
   // } = conf;
 
-  const pageUrl = '1321030671367544832';
+  // const pageUrl = '1321030671367544832';
   return async ({
     pageId, action, pageMark, dispatchOfIUBEngine
   }) => {
     const {
-      type, payload: { schemasPatch, pageStatus }
+      type, payload: { schemasPatch, pageStatus, openPageUrl }
     } = action;
     const variableData: PageVariable[] = [];
 
@@ -70,18 +70,21 @@ export const openModelFromTable = (conf: OpenModalOptions, baseActionInfo): Acti
         pageCommunicationReceiver(current, pageCommunication);
       }
     };
-    if (pageUrl) {
+    if (openPageUrl) {
       try {
-        // const pageData = await queryPageData({ id: pageUrl });
+        const pageData = await queryPageData({ id: openPageUrl });
         const mInstance = Modal.confirm({
           icon: false,
-          content: <IUBDSLRenderer hooks={IUBRendererHooks} pageStatus={pageStatus} dsl={D} />
+          content: <IUBDSLRenderer hooks={IUBRendererHooks} pageStatus={pageStatus} dsl={pageData} />
         });
         // console.log(mInstance);
       } catch (e) {
         console.error(e);
       }
     } else {
+      Modal.error({
+        content: <div>未获取页面ID</div>
+      });
       console.error('无pageUrl');
     }
   };

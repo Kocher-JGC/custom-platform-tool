@@ -5,7 +5,7 @@ import {
 import {
   DispatchModuleName,
   DispatchMethodNameOfIUBStore,
-  DispatchMethodNameOfDatasourceMeta
+  DispatchMethodNameOfMetadata
 } from "../../runtime/types";
 import { ActionDoFn } from "../types";
 
@@ -53,8 +53,8 @@ const genGetPagetStateStruct = (struct: (string | BaseCollectionStruct)[], dispa
         if (field !== undefined) {
           const fieldCode = dispatchOfIUBEngine({
             dispatch: {
-              module: DispatchModuleName.datasourceMeta,
-              method: DispatchMethodNameOfDatasourceMeta.getFiledCode,
+              module: DispatchModuleName.metadata,
+              method: DispatchMethodNameOfMetadata.getFieldKeyInfo,
               params: [field]
             }
           });

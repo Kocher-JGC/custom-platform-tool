@@ -12,7 +12,7 @@ import { ActionDoFn } from "../types";
 import {
   DispatchCtxOfIUBEngine,
   DispatchModuleName,
-  DispatchMethodNameOfDatasourceMeta,
+  DispatchMethodNameOfMetadata,
   DispatchMethodNameOfSys,
   DispatchMethodNameOfCondition,
   RunTimeCtxToBusiness
@@ -21,8 +21,8 @@ import {
 const getActualTable = (dispatchOfIUBEngine: (ctx: DispatchCtxOfIUBEngine) => string, table) => {
   return dispatchOfIUBEngine({
     dispatch: {
-      module: DispatchModuleName.datasourceMeta,
-      method: DispatchMethodNameOfDatasourceMeta.getTable,
+      module: DispatchModuleName.metadata,
+      method: DispatchMethodNameOfMetadata.getMetaKeyInfo,
       params: [table]
     }
   });
