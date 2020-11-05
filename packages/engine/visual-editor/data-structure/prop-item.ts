@@ -11,6 +11,8 @@ export interface WidgetEditablePropMeta {
   alias?: string
 }
 
+export type MetaAttr = keyof PageMetadata
+
 export interface WidgetEditableProps {
   title: WidgetEditablePropMeta
   [propName: string]: WidgetEditablePropMeta
@@ -38,14 +40,17 @@ export type ChangeEntityState = (nextEntityState: NextEntityStateType) => void
 
 export interface TakeMetaOptions {
   /** meta 的 attr */
-  metaAttr: keyof PageMetadata
+  metaAttr: MetaAttr
   /** meta 的引用 ID */
   metaRefID?: string
 }
 
 export type TakeMeta = (options: TakeMetaOptions) => unknown
 
-export type GenMetaRefID = (metaAttr: string) => string
+export type GenMetaRefID = (
+  /** 前缀 */
+  perfix: string
+) => string
 
 export interface UICtx {
   utils: {
@@ -89,7 +94,7 @@ export interface PropItemMeta {
    */
   readonly whichAttr: string | string[]
   /** 是否使用 meta */
-  readonly useMeta?: string | string[]
+  readonly useMeta?: MetaAttr | MetaAttr[]
   /**
    * 1. 属性项给予组件实例的默认值
    * 2. 会被组件元数据的 defaultValues 中覆盖

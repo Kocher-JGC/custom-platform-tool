@@ -35,21 +35,21 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     businessPayload,
   } = props;
   const { interDatasources, $services } = businessPayload;
-  const { options } = editingWidgetState as {options: OptionsType};
-  const datasourceMeta = takeMeta({
+  // 选项数据源的引用
+  const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
+  const datasourceMeta = DSOptionsRef ? takeMeta({
     metaAttr: 'dataSource',
-    metaRefID: ''
-  });
-  console.log('options :>> ', options);
-  const [optionType, setOptionType] = useState(options?.type || 'dict');
+    metaRefID: DSOptionsRef
+  }) as OptionsType : null;
+  const [dsType, setDsType] = useState(datasourceMeta?.type || 'dict');
   return (
     <div>
       <div className="py-2">
         <Radio.Group
           onChange={(e) => {
-            setOptionType(e.target.value);
+            setDsType(e.target.value);
           }}
-          value={optionType}
+          value={dsType}
         >
           <Radio value={'table'}>数据表</Radio>
           <Radio value={'dict'}>字典表</Radio>
@@ -60,9 +60,9 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
           title: '选择数据源',
           width: 900,
           children: ({ close }) => {
-            const defaultSelectedInfo = options ? {
-              id: options?.tableInfo.id,
-              name: options?.tableInfo.name,
+            const defaultSelectedInfo = DSOptionsRef ? {
+              id: DSOptionsRef?.tableInfo.id,
+              name: DSOptionsRef?.tableInfo.name,
             } : undefined;
             return (
               <DictSelector
@@ -71,7 +71,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
                 onSubmit={(selectedRowInfo) => {
                   const { id, name } = selectedRowInfo;
                   const nextState: OptionsType = {
-                    type: optionType,
+                    type: dsType,
                     tableInfo: {
                       id,
                       name,
@@ -80,19 +80,26 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
                       sort: 'desc'
                     }
                   };
+                  const nextMetaID = genMetaRefID(`ds`);
                   changeEntityState({
                     attr: whichAttr,
-                    value: nextState
+                    value: nextMetaID
+                  });
+                  changeMetadata({
+                    metaAttr: 'dataSource',
+                    metaID: nextMetaID,
+                    rmMetaID: DSOptionsRef,
+                    data: nextState
+                    // metaID:
                   });
                   close();
-                // options
                 }}
               />
             );
           }
         }}
       >
-        {options ? takeTableInfo(options.tableInfo) : '点击绑定'}
+        {datasourceMeta ? takeTableInfo(datasourceMeta.tableInfo) : '点击绑定'}
       </PopModelSelector>
     </div>
   );

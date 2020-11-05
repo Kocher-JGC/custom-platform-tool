@@ -17,6 +17,20 @@ const DefaultPageMeta: PageMetadata = {
 };
 
 /**
+ * 删除 pageMetadata 的某项数据
+ * @param pageMetadata
+ * @param delID
+ */
+const delMetaData = (pageMetadata, delID) => {
+  if (!pageMetadata) return;
+  Object.keys(pageMetadata).forEach((metaID) => {
+    if (metaID.indexOf(delID) !== -1) {
+      Reflect.deleteProperty(pageMetadata, metaID);
+    }
+  });
+};
+
+/**
  * 组件选择状态管理。如果组件未被实例化，则实例化后被选择
  */
 export function pageMetadataReducer(
@@ -48,15 +62,19 @@ export function pageMetadataReducer(
     case DEL_ENTITY:
       return produce(state, (draft) => {
         const { idx, entity: delE } = action;
+        const { id: delID } = delE;
+
         // 删除变量
-        Reflect.deleteProperty(draft.varRely, delE.id);
+        delMetaData(draft.varRely, delID);
 
         // 删除动作
-        Object.keys(draft.actions).forEach((actionID) => {
-          if (actionID.indexOf(delE.id) !== -1) {
-            Reflect.deleteProperty(draft.actions, actionID);
-          }
-        });
+        delMetaData(draft.actions, delID);
+
+        // 删除数据源
+        delMetaData(draft.dataSource, delID);
+
+        // 删除 schema
+        delMetaData(draft.schema, delID);
         return draft;
       });
     case CHANGE_METADATA:
@@ -76,7 +94,7 @@ export function pageMetadataReducer(
             [newDataRefID]: data
           });
         }
-        if (rmMetaID) {
+        if (rmMetaID && draft[metaAttr]) {
           Reflect.deleteProperty(draft[metaAttr], rmMetaID);
         }
         return draft;
