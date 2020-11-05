@@ -1,38 +1,17 @@
 /** TODO: 流程上下文运行不是特别规范 */
 
 import { FlowCollection, FlowItemInfo, FlowOutItemWires } from '@iub-dsl/definition/flow';
-import { Condition, CommonCondition } from "@iub-dsl/definition";
+import { CommonCondition } from "@iub-dsl/definition";
 import { RunTimeCtxToBusiness, DispatchModuleName } from "../runtime/types/dispatch-types";
 import { DispatchMethodNameOfCondition } from '../runtime/types';
+import {
+  OnceFlowOutRun, FlowParseRes, FlowItemListParseRes,
+  GetFlowItemInfo, OnceFlowOutRunWrap, FlowRunOptions, FlowItemParseRes
+} from './types/flow';
 
 const isPromise = (fn) => typeof fn?.then === 'function' || fn instanceof Promise;
 
 const noopError = () => { console.error('函数不存在~!'); return true; };
-
-export interface FlowItemParseRes {
-  flowItemRun: any; // fn
-  changeStateToUse: string[]
-  getStateToUse: string[]
-}
-interface FlowItemListParseRes {
-  [flowId: string]: FlowItemParseRes
-}
-
-interface FlowParseRes {
-  flowIds: string[];
-  flowItemListParseRes: FlowItemListParseRes;
-  getFlowItemInfo: GetFlowItemInfo;
-  flowsRun: any;
-}
-
-interface FlowRunOptions {
-  getFlowItemInfo: GetFlowItemInfo
-
-}
-
-export interface GetFlowItemInfo {
-  (flowId: string): FlowItemParseRes
-}
 
 /**
  * 流程集合描述的解析器
@@ -112,14 +91,6 @@ const getFlowItemInfoFnWrap = (resolvedOfFlow: FlowItemListParseRes, flowIds: st
   };
 };
 
-interface OnceFlowOutRunWrap {
-  (flowIds: FlowOutItemWires): OnceFlowOutRun
-}
-
-interface OnceFlowOutRun<C = any> {
-  (flowRunOptions: FlowRunOptions, context?: C): Promise<any>
-}
-
 /**
  *「出口以及出口的线的运行不阻塞, 但是往下走是阻塞的」
  * 注意: 区分是否需要阻塞
@@ -159,20 +130,6 @@ const onceFlowOutRun = async (flowCtx, { flowIds, getFlowItemInfo }: { flowIds: 
   });
 
   return await Promise.all(onceFlowOutRunRes);
-};
-
-/** 预留: 阻塞的运行 */
-const onceFlowOutBlockRun = async (flowIds: string[], runtimeCtx = {}, { getFlowItemInfo }) => {
-  const flowId = flowIds.pop();
-  if (flowId) {
-    const { flowFn } = getFlowItemInfo(flowId);
-    const res = flowFn(runtimeCtx, { getFlowItemInfo });
-    if (isPromise(res)) {
-      return await res;
-    }
-    return res;
-  }
-  return false;
 };
 
 /** 单项流程运行函数生成的参数 */
