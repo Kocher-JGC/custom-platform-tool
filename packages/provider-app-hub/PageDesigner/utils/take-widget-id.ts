@@ -50,24 +50,28 @@ export const genBusinessCode = (
   pageDataFormRemote
 ) => {
   const { id: pageID, name } = pageDataFormRemote;
-  // const businessCode: PageUsedWidget[] = [];
-  // for (const widgetID in flatLayoutItems) {
-  //   if (Object.prototype.hasOwnProperty.call(flatLayoutItems, widgetID)) {
-  //     const widgetItem = flatLayoutItems[widgetID];
-  //     // console.log('widgetItem', widgetItem);
-  //     businessCode.push({
-  //       // 32 位以内的 UI_ID
-  //       widgetId: `__${pageID}__${widgetID}`,
-  //       name: widgetItem.label,
-  //       code: `queryParam`
-  //     });
-  //   }
-  // }
-  return [
-    {
-      widgetId: `__${pageID}__`,
-      name,
-      code: `queryPerson`
+  const businessCodes: PageUsedWidget[] = [];
+  for (const widgetID in flatLayoutItems) {
+    if (Object.prototype.hasOwnProperty.call(flatLayoutItems, widgetID)) {
+      const widgetItem = flatLayoutItems[widgetID];
+      // console.log('widgetItem', widgetItem);
+      const isButton = /button/gi.test(widgetItem.widgetRef);
+      if (isButton) {
+        businessCodes.push({
+          // 32 位以内的 UI_ID
+          widgetId: `__${pageID}__${widgetID}`,
+          name: widgetItem.label,
+          code: `__${pageID}__${widgetID}`
+        });
+      }
     }
-  ];
+  }
+  return businessCodes;
+  // return [
+  //   {
+  //     widgetId: `__${pageID}__`,
+  //     name,
+  //     code: `queryPerson`
+  //   }
+  // ];
 };

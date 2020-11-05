@@ -3,8 +3,9 @@ import { Button, ShowModal } from '@infra/ui';
 import { getPreviewUrl } from '@provider-app/config/getPreviewUrl';
 
 import { previewAppService } from '@provider-app/services';
-import { EditButton } from "./PDPageMetadataEditor/EditButton";
 import { PageConfigContainer } from "./PDPageConfiguration";
+
+const isDevEnv = process.env.NODE_ENV === 'development';
 
 const ReleaseBtn = ({
   onReleasePage
@@ -78,7 +79,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
           previewAppService(appLocation.app);
           // previewAppService('1319181529431285760');
           ShowModal({
-            title: `PC 预览 ${previewUrl}`,
+            title: `PC 预览 ${!isDevEnv ?? previewUrl}`,
             modalType: 'side',
             position: 'bottom',
             maxHeightable: false,

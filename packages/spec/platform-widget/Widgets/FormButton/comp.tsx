@@ -21,6 +21,7 @@ export const FormButtonComp: React.FC<FormButtonProps> = (props) => {
   return (
     <div>
       <Button
+        type="primary"
         onClick={(e) => {
           onClick?.();
         }}

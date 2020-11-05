@@ -27,7 +27,6 @@ export const TableSelector: React.FC<TableSelectorProps> = ({
     $services.table.getTable()
       .then(({ result }) => {
         const { data } = result;
-        console.log('result :>> ', result);
         setDictList(data);
       });
   }, []);

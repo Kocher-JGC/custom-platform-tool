@@ -104,11 +104,11 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       'id', 'type', 'moduleID', 'name', 'belongMenus',
     ]);
     const usedWidgets = takeUsedWidgetIDs(flatLayoutItems, pageDataFormRemote);
-    const businessCode = genBusinessCode(flatLayoutItems, pageDataFormRemote);
+    const businessCodes = genBusinessCode(flatLayoutItems, pageDataFormRemote);
     return {
       ...submitData,
       usedWidgets,
-      businessCode,
+      businessCodes,
     };
   }
 
