@@ -5,7 +5,8 @@ import { getAuthorityItemsTree } from '../services/apiAgents';
 const AuthItemTree = (props) => {
   return (
     <AuthTree
-      checkedValues = {props.authItems}
+      width = {props.width}
+      height = {props.height}
       checkable = {props.checkable || false}
       selectable = {props.selectable || false}
       expandType = {props.expandType}
@@ -21,6 +22,16 @@ const AuthItemTree = (props) => {
           name: 'name'
         },
         titleBeautifyBySearchValue: true
+      }}
+      nodeBeautify = {(node) => {
+        node.disabled = node.attachment?.binding || false;
+        return node;
+      }}
+      onInitCheckedKeys = {(list, map, originalList) => {
+        const checkedKeys:string[] = originalList.filter((node) => node.attachment?.binding).map((item) => item.key);
+        const values = props.authItems || [];
+        if (values.length === 0) return checkedKeys;
+        return [...checkedKeys, ...originalList.map((item) => item.value).filter((value) => values.includes(value))];
       }}
     />
   );
