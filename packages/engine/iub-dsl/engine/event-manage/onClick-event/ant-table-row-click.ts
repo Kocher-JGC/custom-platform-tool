@@ -18,8 +18,9 @@ export const antTableRowClick = (
   pageStatus
 }) => {
   const {
-    originConf: { dataSource: schemasPatch }, compTag, mark: compMark, widgetId
+    originConf: { dataSource: schemasPatch, openPageUrl }, compTag, mark: compMark, widgetId
   } = renderCompInfo;
+
   return {
     type: 'antTableRowClick',
     payload: {
@@ -30,7 +31,8 @@ export const antTableRowClick = (
       schemasPatch,
       compTag,
       compMark,
-      widgetId
+      widgetId,
+      openPageUrl
     }
   };
 };

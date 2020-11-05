@@ -4,7 +4,7 @@ import {
 import { WidgetEvents, ActionTypes, ActionRefType } from "@iub-dsl/definition/events/events";
 import { getOnChangeHandle } from './onChange-event';
 import { getOnClickHandle } from './onClick-event';
-import { FlowItemParseRes, GetFlowItemInfo } from '../flow-engine';
+import { GetFlowItemInfo } from '../flow-engine/types';
 // import { overArgs } from "lodash"; // 包裹函数
 
 interface EventBaseContext {
