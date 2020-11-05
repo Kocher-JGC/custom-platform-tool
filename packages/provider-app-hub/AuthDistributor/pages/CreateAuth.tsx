@@ -142,11 +142,17 @@ const CreateAuth = ({
         />
       </Form.Item>
       <Form.Item name="terminalType" label="终端类型" rules={[{ required: true, message: "终端类型必填" }]}>
-        <Radio.Group>
-          {
-            TERMINAL_TYPE_MENU.map(({ label, value }) => <Radio key={value} value={value}>{label}</Radio>)
-          }
-        </Radio.Group>
+        <Radio.Group
+          onChange={() => {
+            form.setFieldsValue({
+              authorityName: '',
+              authorityId: '',
+              parentName: '',
+              parentCode: ''
+            });
+          }}
+          options = {TERMINAL_TYPE_MENU}
+        />
       </Form.Item>
       <Form.Item {...tailLayout} style={{ marginBottom: 0 }}>
         <Space className="float-right">
