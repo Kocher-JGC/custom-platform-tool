@@ -49,9 +49,9 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
   }
 
   async componentDidMount() {
-    const { mode } = getPageQuery();
+    const { lessee, app } = getPageQuery();
     this.setPreviewMenuAndTabs();
-    if (!mode) {
+    if (!lessee || !app) {
       await this.getAppConfig();
     }
     const res = await this.getMenu();
