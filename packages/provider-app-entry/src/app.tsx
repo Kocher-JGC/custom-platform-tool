@@ -238,6 +238,7 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
                         /** 设置 app 为空，因为还未选择 app */
                         $R_P.urlManager.setApp('');
                       }}
+                      appLocation={this.appLocation}
                       onSelectApp={({ app, appName }) => {
                         setReqUrlByApp(app);
                         setDefaultParams({
