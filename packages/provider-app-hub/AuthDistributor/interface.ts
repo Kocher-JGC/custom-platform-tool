@@ -15,6 +15,7 @@ export interface INode {
   value: string
   parentUniqueId: string
   terminalType?: ITerminalType
+  children?: INode[]
 }
 
 export interface INodeConfig {
