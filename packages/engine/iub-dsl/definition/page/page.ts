@@ -10,6 +10,17 @@ import { FlowCollection } from '../flow';
 import { Schemas } from "../schemas";
 import { LayoutContent } from "../layout";
 import { MetadataMappingCollection } from "..";
+import { PageVariable } from '../page-variable';
+
+export interface PageCommunication {
+  pageInfo: {
+    pageId: string;
+    pageMrak: string;
+  }
+  /** 元数据信息 */
+  metadata: any;
+  variableData: PageVariable[];
+}
 
 /**
  * 描述页面信息的 DSL
@@ -46,4 +57,5 @@ export interface TypeOfIUBDSL extends PageMetadata {
 
   /** 布局信息 */
   layoutContent: LayoutContent;
+  openPageUrl: string; // TODO: TEMP
 }

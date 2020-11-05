@@ -1,3 +1,5 @@
+import { CommonCondition } from "@iub-dsl/definition";
+
 export default {
   sysRtCxtInterface: {},
   schemas: {
@@ -41,7 +43,7 @@ export default {
       id: "6jBAxlGp", compType: "FormInput", label: "描述", title: "描述", value: "@(schemas).schema_gcl50wFr", defValue: "随便说点什么~~!11", type: "componentRef", compCode: "6jBAxlGp", actions: { onChange: { type: "actionRef", actionID: "@(flow).f_6jBAxlGp" } }
     },
     RbAPem6Z: {
-      id: "RbAPem6Z", compType: "NormalButton", title: "提交", label: "提交", text: "提交", type: "componentRef", actions: { onClick: { type: "actionRef", actionID: "@(flow).f_actions_ckK0BdL8" } }
+      id: "RbAPem6Z", compType: "NormalButton", title: "提交", label: "提交", text: "提交", type: "componentRef", actions: { onClick: { type: "actionRef", actionID: "@(flow).f_middle" } }
     }
   },
   actionsCollection: {
@@ -65,7 +67,62 @@ export default {
             type: "TableInsert",
             table: "@(metadata).1321031025329053696",
             fieldMapping: {
-              actionId: "actions_ckK0BdL8dataCollection", actionName: "新增", actionType: "dataCollection", actionOptions: { collectionType: "structObject", struct: [{ field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" }, { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" }, { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" }, { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }] }, actionOutput: { type: "structObject", struct: [] }
+              collectionType: "structObject",
+              struct: [
+                { field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
+                { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
+                { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
+                { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
+              ]
+            }
+          }
+        },
+        actionStep: ["apbId1"]
+      },
+      actionOutput: "undefined"
+    },
+    actions_ckK0BdL9: {
+      actionId: "actions_ckK0BdL9",
+      actionName: "修改",
+      actionType: "APBDSLCURD",
+      actionOptions: {
+        businesscode: "34562",
+        actionList: {
+          apbId1: {
+            type: "TableUpdate",
+            table: "@(metadata).1321031025329053696",
+            fieldMapping: {
+              collectionType: "structObject",
+              struct: [
+                { field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
+                { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
+                { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
+                { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
+              ]
+            },
+            condition: {
+              conditionControl: { and: ["0_0"] },
+              conditionList: { "0_0": { operator: "equ", exp1: "@(metadata).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
+            }
+          }
+        },
+        actionStep: ["apbId1"]
+      },
+      actionOutput: "undefined"
+    },
+    actions_ckK0BdL0: {
+      actionId: "actions_ckK0BdL0",
+      actionName: "删除",
+      actionType: "APBDSLCURD",
+      actionOptions: {
+        businesscode: "34562",
+        actionList: {
+          apbId1: {
+            type: "TableDelete",
+            table: "@(metadata).1321031025329053696",
+            condition: {
+              conditionControl: { and: ["0_0"] },
+              conditionList: { "0_0": { operator: "equ", exp1: "@(metadata).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
             }
           }
         },
@@ -84,9 +141,39 @@ export default {
     f_6jBAxlGp: {
       id: "f_6jBAxlGp", actionId: "@(actions).6jBAxlGp", flowOutCondition: [], flowOut: [[]]
     },
+    f_middle: {
+      id: "f_middle",
+      actionId: "",
+      flowOutCondition: [
+        {
+          condition: {},
+          when: ['']
+        },
+        {
+          condition: {},
+          when: ['updateStatus']
+        },
+        {
+          condition: {},
+          when: ['deleteStatus']
+        },
+      ] as CommonCondition[],
+      flowOut: [
+        ['f_actions_ckK0BdL8'],
+        ['f_actions_ckK0BdL9'],
+        ['f_actions_ckK0BdL0']
+      ]
+    },
     f_actions_ckK0BdL8: {
       id: "f_actions_ckK0BdL8", actionId: "@(actions).actions_ckK0BdL8", flowOutCondition: [], flowOut: [[]]
-    }
+    },
+    f_actions_ckK0BdL9: {
+      id: "f_actions_ckK0BdL9", actionId: "@(actions).actions_ckK0BdL9", flowOutCondition: [], flowOut: [[]]
+    },
+    f_actions_ckK0BdL0: {
+      id: "f_actions_ckK0BdL0", actionId: "@(actions).actions_ckK0BdL0", flowOutCondition: [], flowOut: [[]]
+    },
+
   },
   layoutContent: {
     type: "general",
@@ -142,7 +229,7 @@ export default {
       componentID: "6jBAxlGp",
       refID: "6jBAxlGp"
     }, {
-      id: "RbAPem6Z", editableProps: { title: { type: "string" } }, label: "动作按钮", type: "componentRef", compType: "FormButton", title: "提交", actionRef: "actions_ckK0BdL8", componentID: "RbAPem6Z", refID: "RbAPem6Z"
+      id: "RbAPem6Z", editableProps: { title: { type: "string" } }, label: "动作按钮", type: "componentRef", compType: "FormButton", title: "提交", actionRef: "f_middle", componentID: "RbAPem6Z", refID: "RbAPem6Z"
     }]
   },
   pageID: "1321030671367544832",

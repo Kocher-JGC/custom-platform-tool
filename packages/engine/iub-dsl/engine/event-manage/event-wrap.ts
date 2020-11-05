@@ -4,7 +4,7 @@ import {
 import { WidgetEvents, ActionTypes, ActionRefType } from "@iub-dsl/definition/events/events";
 import { getOnChangeHandle } from './onChange-event';
 import { getOnClickHandle } from './onClick-event';
-import { FlowItemParseRes, GetFlowItemInfo } from '../flow-engine';
+import { GetFlowItemInfo } from '../flow-engine/types';
 // import { overArgs } from "lodash"; // 包裹函数
 
 interface EventBaseContext {
@@ -32,15 +32,15 @@ const actionRefWithFnWrap = ({
 /** 运行时事件处理 */
 export const genEventWrapFnList = (
   dynamicProps,
-  { getFlowItemInfo }: { getFlowItemInfo: GetFlowItemInfo}
+  { getFlowItemInfo, renderCompInfo }: { getFlowItemInfo: GetFlowItemInfo, renderCompInfo: any}
 ) => {
   const { widgetEvent } = dynamicProps;
   const eventWrapFnList = widgetEvent?.map((conf) => {
     const { eventType, eventConf: { type: actionType, actionID }, eventHandle } = conf;
     /** 获取真实使用的动作 */
-    const { flowItemRun, changeStateToUse, getStateToUse } = getFlowItemInfo(actionID);
+    const { flowItemRun } = getFlowItemInfo(actionID);
     /** 获取规范化事件输入的函数 */
-    const normalActionHandle = eventHandle(); // param0: 配置
+    const normalActionHandle = eventHandle(renderCompInfo); // param0: 配置
     if (actionType === 'actionRef') {
       return {
         eventType,
@@ -48,7 +48,6 @@ export const genEventWrapFnList = (
           runFn: flowItemRun,
           normalActionHandle
         }),
-        eventDeps: getStateToUse // ** 动作解析可以得到
       };
     }
     return false;
@@ -60,7 +59,7 @@ export const useEventProps = (eventWrapFnList: any[], runTimeCtx) => {
   /** 用useRef缓存, 不需要对事件进行watch */
   const eventProps = {};
 
-  eventWrapFnList.forEach(({ eventType, eventHandle, eventDeps }) => {
+  eventWrapFnList.forEach(({ eventType, eventHandle }) => {
     /** 缓存每个事件 用useRef缓存减少很多计算 */
     eventProps[eventType] = eventHandle(runTimeCtx);
   });

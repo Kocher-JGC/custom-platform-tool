@@ -1,16 +1,16 @@
 import {
-  DataCollection,
+  DataCollectionOptions,
   BaseCollectionStruct,
 } from "@iub-dsl/definition/actions";
 import {
   DispatchModuleName,
   DispatchMethodNameOfIUBStore,
-  DispatchMethodNameOfDatasourceMeta
+  DispatchMethodNameOfMetadata
 } from "../../runtime/types";
 import { ActionDoFn } from "../types";
 
-export const dataCollectionAction = (conf: DataCollection, baseActionInfo: any = {}): ActionDoFn => {
-  const { actionName, actionOptions: { collectionType, struct }, when } = conf;
+export const dataCollectionAction = (conf: DataCollectionOptions, baseActionInfo: any = {}): ActionDoFn => {
+  const { collectionType, struct } = conf;
   if (collectionType === 'structArray') {
     return async ({ action, asyncDispatchOfIUBEngine }) => {
       return await asyncDispatchOfIUBEngine({
@@ -53,8 +53,8 @@ const genGetPagetStateStruct = (struct: (string | BaseCollectionStruct)[], dispa
         if (field !== undefined) {
           const fieldCode = dispatchOfIUBEngine({
             dispatch: {
-              module: DispatchModuleName.datasourceMeta,
-              method: DispatchMethodNameOfDatasourceMeta.getFiledCode,
+              module: DispatchModuleName.metadata,
+              method: DispatchMethodNameOfMetadata.getFieldKeyInfo,
               params: [field]
             }
           });

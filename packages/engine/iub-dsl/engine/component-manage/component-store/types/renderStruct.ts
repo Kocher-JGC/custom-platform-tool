@@ -45,8 +45,11 @@ type RenderStructInfo = {
 }
 
 export type RenderCompInfoItem = {
+  widgetId: string;
   compTag: AllUI;
   mark: string;
+  /** TODO: 问题 */
+  originConf: any;
   // TODO: types
   dynamicProps: {
     [propsKey: string]: any
@@ -66,6 +69,7 @@ interface CommonRenderStructParser {
 }
 
 interface GenRenderStructContext {
+  widgetId: string;
   allConfKey: string[];
   originConf: any;
   baseMark: string;

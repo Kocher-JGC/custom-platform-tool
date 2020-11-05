@@ -1,25 +1,7 @@
-import React, { useState } from 'react';
-import { TypeOfIUBDSL } from "@iub-dsl/definition";
-import { ColumnItem, DatasourceItem } from '@provider-app/page-designer/types';
-import { TABLE_PATH_SPLIT_MARK } from './const';
-// import { dependencyInspect } from "..";
-
-export interface TableInfo {
-  /** 该条记录的 id */
-  id: string
-  /** 该条记录关联的表的 id */
-  moduleId: string
-  /** 名字 */
-  name: string
-  /** 类型 */
-  type: string
-  /** columns-mark */
-  columns: string[]
-  code: string;
-}
-interface ParseMetaDataCtx {
-  baseMark: string
-}
+import { TABLE_PATH_SPLIT_MARK } from '../const';
+import {
+  ColumnItem, ParseMetaDataCtx, TableInfo, TableMetadata
+} from '../types';
 
 const parseColumn = (column: ColumnItem) => {
   return column;
@@ -42,6 +24,7 @@ const parseColumns = (c: ColumnItem[], ctx: ParseMetaDataCtx) => {
 
   const columnsIdMarks: string[] = [];
   let columnsList: { [mark: string]: ColumnItem } = {};
+  let tablePKInfo: any;
 
   let mark = '';
 
@@ -54,10 +37,15 @@ const parseColumns = (c: ColumnItem[], ctx: ParseMetaDataCtx) => {
       ...columnsList,
       [mark]: parseColumn(columnInfo)
     };
+
+    if (columnInfo.dataType === 'PK') {
+      tablePKInfo = columnInfo;
+    }
   }
   return {
     columnsIdMarks,
-    columnsList
+    columnsList,
+    tablePKInfo
   };
 };
 
@@ -73,21 +61,23 @@ const initialMetaDataParseRes = (): MetaDateParseRes => ({
   allColumnsIdMarks: []
 });
 
-export const parseMetaData = (datasources: DatasourceItem[]) => {
+export const parseTableMetadata = (tableMetadatas: TableMetadata[]) => {
   const tableIds: string[] = [];
   const metaDateParseRes = initialMetaDataParseRes();
   const { allColumnsIdMarks, allColumnsList, tableList } = metaDateParseRes;
 
   let baseMark = '';
-  for (let i = 0; i < datasources.length; i++) {
-    const tableInfo = datasources[i];
+  for (let i = 0; i < tableMetadatas.length; i++) {
+    const tableInfo = tableMetadatas[i];
     tableIds.push(tableInfo.id);
     baseMark = tableInfo.id + TABLE_PATH_SPLIT_MARK;
     /** 列解析 */
-    const { columnsIdMarks, columnsList } = parseColumns(tableInfo.columns, { baseMark });
+    const { columnsIdMarks, columnsList, tablePKInfo } = parseColumns(tableInfo.columns, { baseMark });
     /** 添加表格信息 */
     tableList[tableInfo.id] = {
       ...tableInfo,
+      PKInfo: tablePKInfo,
+      columnsList,
       columns: columnsIdMarks
     };
 

@@ -3,7 +3,12 @@
  */
 
 import { isPageState } from "../../state-manage";
-import { isPageDatasoruceMeta } from "../../datasource-meta";
+import {
+  DispatchMethodNameOfIUBStore, DispatchMethodNameOfMetadata,
+  RunTimeCtxToBusiness, DispatchModuleName,
+} from "../types";
+import { } from "../types/dispatch-types";
+import { isPageDatasoruceMeta } from "../../metadata-manage";
 
 /**
  * 将含有特殊标示的值进行转换转换值
@@ -11,12 +16,26 @@ import { isPageDatasoruceMeta } from "../../datasource-meta";
  * @param value 需要被转换的值
  * @param ctx 上下文
  */
-const transformMarkValue = (value: string, ctx: any) => {
-  const { IUBStore: { getPageState }, datasourceMeta: { getFiledCode } } = ctx;
+const transformMarkValue = (ctx: RunTimeCtxToBusiness, value: string) => {
+  const { dispatchOfIUBEngine } = ctx;
   if (isPageState(value)) {
-    return getPageState(value);
+    return dispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.IUBStore,
+        method: DispatchMethodNameOfIUBStore.getPageState,
+        params: [value]
+      }
+    });
   }
-  if (isPageDatasoruceMeta(value)) { return getFiledCode(value); }
+  if (isPageDatasoruceMeta(value)) {
+    return dispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.metadata,
+        method: DispatchMethodNameOfMetadata.getFieldKeyInfo,
+        params: [value]
+      }
+    });
+  }
   return value;
 };
 
@@ -26,8 +45,8 @@ const transformMarkValue = (value: string, ctx: any) => {
  * @param values 需要被转换的值数组
  * @param ctx 上下文
  */
-export const transMarkValFromArr = (values: string[], ctx: any) => {
-  return values.map((v) => transformMarkValue(v, ctx));
+export const transMarkValFromArr = (ctx: RunTimeCtxToBusiness, values: string[]) => {
+  return values.map((v) => transformMarkValue(ctx, v));
 };
 
 /**

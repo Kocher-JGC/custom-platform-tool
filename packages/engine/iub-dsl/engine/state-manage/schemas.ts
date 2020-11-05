@@ -4,19 +4,6 @@ import {
 } from '@iub-dsl/definition';
 import { testSchemas } from "@iub-dsl/demo/business-case/location";
 import schemasAnalysis from './analysis/analysis';
-import { PATH_SPLIT_MARK, PATH_SPLIT_MARK_ARR } from './const';
-
-/** 描述对象从[from]: any 转换成 [to]:any */
-interface MapConf {
-  from: string;
-  to: string;
-}
-/** 映射的参数 */
-interface MapDataParam<T> {
-  pathKey: string;
-  mapConf: MapConf;
-  data: T | T[]
-}
 
 /**
  * 数据模型解析器

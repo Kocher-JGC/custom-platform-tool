@@ -16,10 +16,10 @@ const hooksEg = {
 };
 
 /** IUB-DSL引擎对外暴露的组件 */
-const IUBDSLRenderer = ({ dsl, hooks = {} as any }) => {
+const IUBDSLRenderer = ({ dsl, hooks = {} as any, pageStatus = '' }) => {
   const { pageID } = dsl;
 
-  if (typeof pageID !== 'string') {
+  if (pageID === "" || typeof pageID !== 'string') {
     return <ErrorRenderer msg='IUB-DSL Data Error'/>;
   }
 
@@ -39,7 +39,7 @@ const IUBDSLRenderer = ({ dsl, hooks = {} as any }) => {
   }
 
   if (dslParseRes) {
-    ActualRender = <IUBDSLRuntimeContainer key={pageID} hooks={hooks} dslParseRes={dslParseRes} />;
+    ActualRender = <IUBDSLRuntimeContainer key={pageID} pageStatus={pageStatus} hooks={hooks} dslParseRes={dslParseRes} />;
   }
 
   return ActualRender;

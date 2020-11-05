@@ -16,6 +16,11 @@ interface SetOfAPBDSL {
   }
 }
 
+export interface UpdateParamOfAPBDSL {
+  table: string;
+  set: ColunmItem | ColunmItem[]
+  condition: APBDSLCondition
+}
 interface UpdateOfAPBDSL {
   code: ApbFunction.UPD;
   params: {
@@ -34,6 +39,11 @@ interface SelectOfAPBDSL {
     table: string;
     condition?: APBDSLCondition;
   }
+}
+
+export interface DelParamOfAPBDSL {
+  table: string;
+  condition: APBDSLCondition
 }
 
 interface DelOfAPBDSL {
@@ -59,7 +69,7 @@ export const genUpdateOfAPBDSL = ({
   code: ApbFunction.UPD,
   params: {
     table,
-    set,
+    set: Array.isArray(set) ? set : [set],
     condition
   }
 });

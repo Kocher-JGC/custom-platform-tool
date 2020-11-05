@@ -14,8 +14,9 @@ import { renderStructInfoListRenderer } from './component-manage/component-store
 
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 import { effectRelationship as genEffectRelationship } from './relationship';
+import { RunTimeCtxToBusiness } from './runtime/types';
 
-const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
+const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
   const {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
@@ -26,46 +27,45 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
   /** 获取单例的页面管理 */
   const pageManageInstance = pageManage();
 
-  const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
-  const IUBStoreEntity = useIUBStore();
-  const {
-    getPageState
-  } = IUBStoreEntity;
-
-  const [runTimeLine, setRunTimeLine] = useState([]);
+  /** 页面运行时上下文 */
+  const runTimeCtxToBusiness = useRef<RunTimeCtxToBusiness>({
+    pageStatus,
+    pageId,
+    pageMark: '',
+    action: {},
+    pageManage: pageManageInstance,
+    asyncDispatchOfIUBEngine: async (dispatchCtx) => false,
+    dispatchOfIUBEngine: (dispatchCtx) => false
+  });
 
   const effectRelationship = useMemo(() => genEffectRelationship(), []);
 
-  const runTimeCtxToBusiness = useRef<any>(() => ({ pageMark: '' }));
   /** 页面管理添加页面上下文 */
   useEffect(() => {
+    // ?? 是否初始化的是否就要添加页面上下文, 而不是页面挂载完成
     const { pageMark, removeFn } = pageManageInstance.addPageCtx({
       pageId,
       pageType: 'IUBPage',
       context: runTimeCtxToBusiness
     });
     runTimeCtxToBusiness.current.pageMark = pageMark;
-    /** 跨页面调用例子 */
-    // if (pageMark === "pageID_$_1") {
-    //   setInterval(() => {
-    //     const ctxx = pageManageInstance.getIUBPageCtx('pageID_$_0')[0];
-    //     console.log(ctxx.dispatchOfIUBEngine({}));
-    //   }, 1000);
-    // }
-
-    // effectRelationship.effectReceiver([]);
-
-    hooks?.mounted?.();
+    /** 页面正式挂载完成 */
+    hooks?.mounted?.({ pageMark, pageId, runTimeCtxToBusiness });
 
     return () => {
       removeFn();
-      hooks?.unmounted?.();
-      const allPageCtx = pageManageInstance.getIUBPageCtx('');
-      effectRelationship.effectDispatch(allPageCtx);
+      hooks?.unmounted?.({ pageMark, pageId, runTimeCtxToBusiness });
+      effectRelationship.effectDispatch(runTimeCtxToBusiness.current, { pageIdOrMark: '' });
     };
   }, []);
 
-  // useTempCode(IUBStoreEntity);
+  const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
+  const IUBStoreEntity = useIUBStore();
+  const {
+    getPageState
+  } = IUBStoreEntity;
+
+  // const [runTimeLine, setRunTimeLine] = useState([]);
 
   const genCompRenderFCToUse = useMemo(() => {
     return genCompRenderFC(getWidget);
@@ -99,11 +99,8 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
     ]);
   });
 
-  const ctx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
-    pageManageInstance,
+  const defaultCtx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
     IUBStoreEntity,
-    runTimeLine,
-    setRunTimeLine,
     runTimeCtxToBusiness,
     effectRelationship,
   }), [IUBStoreEntity]);
@@ -113,7 +110,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks }) => {
   hooks?.beforeMount?.();
 
   return (
-    <DefaultCtx.Provider value={ctx}>
+    <DefaultCtx.Provider value={defaultCtx}>
       <FromWrapFactory>
         <LayoutRenderer
           layoutNode={actualRenderComponentList}

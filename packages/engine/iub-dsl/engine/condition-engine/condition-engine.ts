@@ -3,8 +3,10 @@ import {
   ConditionList,
   ConditionControl
 } from "@iub-dsl/definition";
+import { RunTimeCtxToBusiness } from "../runtime/types/dispatch-types";
 import { condControlRun, normalParamOfCondList } from "./utils";
 import { getPageCondOperatorHandle, pageCondControlResHandle } from "./page-condition";
+import { ConditionEngineCtx } from "./types";
 
 const conditionExample: Condition = {
   conditionList: {
@@ -31,25 +33,23 @@ const conditionExample: Condition = {
   }
 };
 
-interface ConditionEngineCtx {
-  expsValueHandle: any;
-  getOperatorHandle: any;
-  condControlResHandle: any;
-}
-
 /**
  * 条件处理引擎
  * @param conf 需要处理的条件信息
  * @param param1 条件引擎需要使用的参数
  */
 export const conditionEngine = async (
+  ctx: RunTimeCtxToBusiness,
   conf: Condition = conditionExample,
   {
     expsValueHandle,
-    getOperatorHandle = getPageCondOperatorHandle.bind(null, {}), // 绑定默认上下文
+    getOperatorHandle = getPageCondOperatorHandle,
     condControlResHandle = pageCondControlResHandle,
   }: ConditionEngineCtx
 ) => {
+  /** 绑定默认上下文 */
+  getOperatorHandle = getOperatorHandle.bind(null, ctx);
+
   const { conditionControl, conditionList } = conf;
 
   /** 解析 */

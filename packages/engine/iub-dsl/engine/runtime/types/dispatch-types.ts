@@ -1,3 +1,4 @@
+import { PageManageInstance } from "@consumer-app/web-platform/src/page-manage";
 import {
   DispatchModuleActionManage, TDispatchMethodNameOfActionManage,
   DispatchModuleCondition, TDispatchMethodNameOfCondition,
@@ -5,7 +6,7 @@ import {
   DispatchModuleIUBStore, TDispatchMethodNameOfIUBStore,
   DispatchModuleRelationship, TDispatchMethodNameOfRelationship,
   DispatchModuleSys, TDispatchMethodNameOfSys,
-  DispatchModuleDatasourceMeta, TDispatchMethodNameOfDatasourceMeta
+  DispatchModuleMetadata, TDispatchMethodNameOfDatasourceMeta
 } from ".";
 import { BaseActionInfo } from "../../actions-manage/types";
 
@@ -15,25 +16,30 @@ export interface DispatchCtxOfIUBEngine {
 }
 
 export interface RunTimeCtxToBusiness {
+  pageId: string;
   pageMark: string;
-  action: any;
+  pageStatus: string;
+  action?: any;
+  pageManage: PageManageInstance;
   asyncDispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => Promise<any>;
   dispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => any
 }
 
 export type Dispatch =
-  (DispatchModuleActionManage |
-  DispatchModuleCondition |
-  DispatchModuleFlowManage |
-  DispatchModuleIUBStore |
-  DispatchModuleRelationship |
-  DispatchModuleSys |
-  DispatchModuleDatasourceMeta)
+  (
+    DispatchModuleActionManage |
+    DispatchModuleCondition |
+    DispatchModuleFlowManage |
+    DispatchModuleIUBStore |
+    DispatchModuleRelationship |
+    DispatchModuleSys |
+    DispatchModuleMetadata
+  )
   & { params: any[] };
 
 export enum DispatchModuleName {
   IUBStore = 'IUBStore',
-  datasourceMeta = 'datasourceMeta',
+  metadata = 'metadata',
   sys = 'sys',
   relationship = 'relationship',
   flowManage = 'flowManage',
@@ -45,7 +51,7 @@ export interface IUBEngineRuntimeCtx {
   [DispatchModuleName.IUBStore]: {
     [K in TDispatchMethodNameOfIUBStore]: (...args: any[]) => unknown
   };
-  [DispatchModuleName.datasourceMeta]: {
+  [DispatchModuleName.metadata]: {
     [K in TDispatchMethodNameOfDatasourceMeta]: (...args: any[]) => unknown
   };
   [DispatchModuleName.actionMenage]: {
@@ -58,7 +64,8 @@ export interface IUBEngineRuntimeCtx {
 
 export interface AsyncIUBEngineRuntimeCtx extends IUBEngineRuntimeCtx {
   [DispatchModuleName.sys]: {
-    [K in TDispatchMethodNameOfSys]: (...args: any[]) => unknown
+    // [K in TDispatchMethodNameOfSys]: (...args: any[]) => unknown
+    [str: string]: (...args: any[]) => unknown;
   };
   [DispatchModuleName.flowManage]: {
     [K in TDispatchMethodNameOfFlowManage]: (...args: any[]) => unknown

@@ -1,34 +1,17 @@
 /** TODO: 流程上下文运行不是特别规范 */
 
 import { FlowCollection, FlowItemInfo, FlowOutItemWires } from '@iub-dsl/definition/flow';
-import { Condition, CommonCondition } from "@iub-dsl/definition";
+import { CommonCondition } from "@iub-dsl/definition";
+import { RunTimeCtxToBusiness, DispatchModuleName } from "../runtime/types/dispatch-types";
+import { DispatchMethodNameOfCondition } from '../runtime/types';
+import {
+  OnceFlowOutRun, FlowParseRes, FlowItemListParseRes,
+  GetFlowItemInfo, OnceFlowOutRunWrap, FlowRunOptions, FlowItemParseRes
+} from './types/flow';
 
 const isPromise = (fn) => typeof fn?.then === 'function' || fn instanceof Promise;
 
-export interface FlowItemParseRes {
-  flowItemRun: any; // fn
-  changeStateToUse: string[]
-  getStateToUse: string[]
-}
-interface FlowItemListParseRes {
-  [flowId: string]: FlowItemParseRes
-}
-
-interface FlowParseRes {
-  flowIds: string[];
-  flowItemListParseRes: FlowItemListParseRes;
-  getFlowItemInfo: GetFlowItemInfo;
-  flowsRun: any;
-}
-
-interface FlowRunOptions {
-  getFlowItemInfo: GetFlowItemInfo
-
-}
-
-export interface GetFlowItemInfo {
-  (flowId: string): FlowItemParseRes
-}
+const noopError = () => { console.error('函数不存在~!'); return true; };
 
 /**
  * 流程集合描述的解析器
@@ -70,7 +53,7 @@ export const flowParser = (flows: FlowCollection, { parseContext, parseRes }): F
   });
   tempArr.length = 0;
 
-  const flowsRun = (runFlowIds: string[], ctx) => {
+  const flowsRun = (ctx, runFlowIds: string[]) => {
     runFlowIds.forEach((id) => {
       if (flowIds.includes(id)) {
         const { flowItemRun } = getFlowItemInfo(id);
@@ -107,14 +90,6 @@ const getFlowItemInfoFnWrap = (resolvedOfFlow: FlowItemListParseRes, flowIds: st
     };
   };
 };
-
-interface OnceFlowOutRunWrap {
-  (flowIds: FlowOutItemWires): OnceFlowOutRun
-}
-
-interface OnceFlowOutRun<C = any> {
-  (flowRunOptions: FlowRunOptions, context?: C): Promise<any>
-}
 
 /**
  *「出口以及出口的线的运行不阻塞, 但是往下走是阻塞的」
@@ -157,20 +132,6 @@ const onceFlowOutRun = async (flowCtx, { flowIds, getFlowItemInfo }: { flowIds: 
   return await Promise.all(onceFlowOutRunRes);
 };
 
-/** 预留: 阻塞的运行 */
-const onceFlowOutBlockRun = async (flowIds: string[], runtimeCtx = {}, { getFlowItemInfo }) => {
-  const flowId = flowIds.pop();
-  if (flowId) {
-    const { flowFn } = getFlowItemInfo(flowId);
-    const res = flowFn(runtimeCtx, { getFlowItemInfo });
-    if (isPromise(res)) {
-      return await res;
-    }
-    return res;
-  }
-  return false;
-};
-
 /** 单项流程运行函数生成的参数 */
 interface FlowItemRunWrapParam<C = any> extends CommonCondition {
   /** TODO: 实际动作运行的interface如何写? */
@@ -195,14 +156,10 @@ const flowItemRunWrap = ({
       /** TODO: context和动作结果的处理 */
       if (isPromise(actionRunRes)) {
         actionRunRes = await actionRunRes || {};
-        newCtx = mergeActionRunRes(context, actionRunRes);
-        await actualFlowOutRun?.(flowRunOptions, newCtx);
-      } else {
-        newCtx = mergeActionRunRes(context, actionRunRes);
-        /** 当前项流程运行完, 运行出口 */
-        await actualFlowOutRun?.(flowRunOptions, newCtx);
       }
-
+      newCtx = mergeActionRunRes(context, actionRunRes);
+      /** 当前项流程运行完, 运行出口 */
+      await actualFlowOutRun?.(flowRunOptions, newCtx);
       return newCtx;
     };
   };
@@ -224,13 +181,41 @@ const flowOutRunWrap = (
   const flowOutNum = flowOut?.length || 0;
   const flowOutFns: OnceFlowOutRun[] = [];
 
-  // TODO:
   for (let i = 0; i < flowOutNum; i++) {
     const flowIds = flowOut[i];
     flowOutFns.push(onceFlowOutRunWrap(flowIds));
   }
-  return async (flowRunOptions: FlowRunOptions, context = {}) => {
-    return await Promise.all(flowOutFns.map((fn) => fn(flowRunOptions, context)));
+  return async (flowRunOptions: FlowRunOptions, context: RunTimeCtxToBusiness) => {
+    const { asyncDispatchOfIUBEngine = noopError } = context || {};
+
+    /** 条件过滤流程出口的处理 */
+    const runflowOutFns: OnceFlowOutRun[] = [];
+    const filterFlowOut = async (cond: CommonCondition[], idx: number) => {
+      const onceCond = cond[idx];
+      if (onceCond) {
+        const valid = await asyncDispatchOfIUBEngine({
+          dispatch: {
+            module: DispatchModuleName.condition,
+            method: DispatchMethodNameOfCondition.ConditionHandle,
+            params: [onceCond]
+          }
+        });
+        if (valid) {
+          runflowOutFns.push(flowOutFns[idx]);
+        }
+      } else {
+        runflowOutFns.push(flowOutFns[idx]);
+      }
+
+      if (idx < flowOutNum - 1) {
+        await filterFlowOut(cond, idx + 1);
+      }
+    };
+    if (flowOut.length) {
+      await filterFlowOut(flowOutCondition, 0);
+    }
+
+    return await Promise.all(runflowOutFns.map((fn) => fn(flowRunOptions, context)));
   };
 };
 
