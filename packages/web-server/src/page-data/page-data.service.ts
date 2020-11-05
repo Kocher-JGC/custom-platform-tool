@@ -256,8 +256,8 @@ export class PageDataService {
     return {
       id, compType: 'NormalButton', title, label: title, text: title, type,
       actions: {
-        ...genFormButtonDefaltAction('middle_1234')
-        // ...genFormButtonDefaltAction(actionRef)
+        // ...genFormButtonDefaltAction('middle_1234')
+        ...genFormButtonDefaltAction(actionRef)
         
       }
     };
@@ -360,7 +360,7 @@ export class PageDataService {
       this.tempFlow.push(data);
     });
     this.tempFlow.push({
-      id: "f_middle_1234",
+      id: `f_${actionId}`,
       actionId: "",
       flowOutCondition: [
         { condition: {}, when: [''] },
