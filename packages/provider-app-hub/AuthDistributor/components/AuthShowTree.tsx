@@ -2,7 +2,7 @@ import React from 'react';
 import AuthTree from './AuthTree';
 import { getShowAuthoritiesTree } from '../services/apiAgents';
 
-export const AuthShowTree = (props) => {
+const AuthShowTree = (props) => {
   return (
     <AuthTree
       checkedValues = {props.showAuthItems}
@@ -26,3 +26,4 @@ export const AuthShowTree = (props) => {
     />
   );
 };
+export default React.memo(AuthShowTree);
