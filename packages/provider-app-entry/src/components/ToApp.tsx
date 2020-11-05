@@ -1,5 +1,5 @@
-import { getPreviewUrl } from '@provider-app/config/getPreviewUrl';
 import React from 'react';
+import { getAppPreviewUrl } from '@provider-app/config';
 
 export const ToApp = ({
   appLocation
@@ -14,13 +14,13 @@ export const ToApp = ({
         // });
       }}
     >
-      <a
-        href={getPreviewUrl()}
+      {/* <a
+        href={getAppPreviewUrl()}
         className="text-gray-600"
         target="_blank"
       >
         进入应用系统
-      </a>
+      </a> */}
     </div>
   );
 };
