@@ -3,6 +3,7 @@ import {
   Button, Space
 } from 'antd';
 import AuthShowTree from '../components/AuthShowTree';
+import { EXPAND_TYPE } from '../constants';
 
 interface IOnSuccessParams {
   id:string;
@@ -24,6 +25,7 @@ const SelectShowAuthParent = ({
     <>
       <div style={{ minHeight: 300 }}>
         <AuthShowTree
+          expandType = {EXPAND_TYPE.EXPAND_VALUES}
           searchParams = {searchParams}
           showAuthItems = {showAuthItems}
           onSelect = {(selectedKeys, selectedNames) => {
