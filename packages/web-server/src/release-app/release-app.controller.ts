@@ -3,7 +3,9 @@ import { Request, Response } from "express";
 import { Controller, Get, Param, Query, Req, Res } from "@nestjs/common";
 import { PageDataService } from "../page-data/page-data.service";
 import { ReleaseAppService } from "./release-app.service";
+import config from '../../config';
 
+const { mockToken } = config;
 @Controller("release-app")
 export class ReleaseAppController {
   constructor(
@@ -51,28 +53,14 @@ export class ReleaseAppController {
         if (Array.isArray(pageDataRes) && pageDataRes.length > 0) {
           await generatePageDataFolder(folderName);
           await generateAppConfig(folderName, { lesseeCode, applicationCode });
+          
           // TODO 循环生成实现方式
-          const createAllJSONFileRes = pageDataRes.map(async (item) => {
-            const { id, pageContent, dataSources } = item;
-            // let tableMetaData;
-            // if (Array.isArray(dataSources) && dataSources.length > 0) {
-            //   tableMetaData = await this.pageDataService.getTableMetadata(dataSources, {
-            //     t: ""
-            //   });
-            // }
-            // const dsl = this.pageDataService.pageData2IUBDSL(item, { tableMetaData });
-            const dsl = JSON.parse(pageContent);
-            const createJSONFileRes = await generatePageDataJSONFile(
-              folderName,
-              id,
-              JSON.stringify(dsl)
-            );
-            return { [id]: createJSONFileRes };
-          });
-          for (const resPromise of createAllJSONFileRes) {
-            // eslint-disable-next-line no-await-in-loop
-            console.log(await resPromise);
-          }
+          const genPageFilesPromise = pageDataRes.map(pageData => this.genFileFromPageData(pageData, { folderName, token: mockToken, }));
+          const result = await Promise.all(genPageFilesPromise);
+          
+          this.printGenFileRes(result, pageDataRes); // 打印结果
+          
+
           link = await generatePageDataJSONZip(folderName, zipName);
           return res.download(link);
         }
@@ -84,5 +72,29 @@ export class ReleaseAppController {
     } else {
       return res.status(400).json({ msg: "需要参数 app" });
     }
+  }
+
+  printGenFileRes(genResult: boolean[], pageData: any[]) {
+    const res = pageData.map(({ id }, index) => ({ [id]: genResult[index] }));
+    console.log(res);
+  }
+
+
+  async genFileFromPageData(pageData, { folderName, token }) {
+    const {
+      generatePageDataJSONFile,
+    } = this.releaseAppService;
+    const { id, dataSources } = pageData;
+    let tableMetaData;
+    if (Array.isArray(dataSources) && dataSources.length > 0) {
+      tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token });
+    }
+    const dsl = this.pageDataService.pageData2IUBDSL(pageData, { tableMetaData });
+    const createJSONFileRes = await generatePageDataJSONFile(
+      folderName,
+      id,
+      JSON.stringify(dsl)
+    );
+    return createJSONFileRes;
   }
 }
