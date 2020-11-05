@@ -12,6 +12,7 @@ export const AuthShowTree = (props) => {
       onRequest = {(searchValue) => {
         return getShowAuthoritiesTree({ name: searchValue });
       }}
+      expandAll = {props.expandAll}
       onRef = {props.onRef}
       nodeConfig = {{
         columnImg: {

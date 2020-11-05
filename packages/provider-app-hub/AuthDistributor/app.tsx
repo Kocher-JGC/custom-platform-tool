@@ -24,6 +24,7 @@ const App: HY.SubApp = (props) => {
       <Row className="data-design-layout">
         <Col xs={24} sm={8} md={7} lg={7} xl={5} className="sidebar-menu-tree">
           <AuthShowTree
+            expandAll = {true}
             onRef = {onRef}
             ref = {showTreeRef}
             checkable = {true}
