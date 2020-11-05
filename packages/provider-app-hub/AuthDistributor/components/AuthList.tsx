@@ -9,14 +9,12 @@ import {
   deleteShowAuthItem, getShowAuthorities, createShowAuth, updateShowAuth, getShowAuthDetail, allowDeleteShowAuth
 } from '../services/apiAgents';
 import { ITableItem } from '../interface';
-import {
-  TABLE_COLUMNS, MORE_MENU, MORE_MENU_TYPE, TEMINAL_TYPE
-} from '../constants';
-import { CreateAuth, BatchCreateAuth } from '../pages';
+import { TABLE_COLUMNS, MORE_MENU, MORE_MENU_TYPE } from '../constants';
+import { CreateAuth } from '../pages';
 
 interface IProps {
   authorities: string[]
-  handleUpdateShowTree: ()=>void
+  handleUpdateShowTree: ()=>vpod
 }
 
 interface IState {
@@ -63,19 +61,16 @@ class AuthList extends PureComponent<IProps, IState> {
     {
       title: '操作',
       dataIndex: "action",
-      key: "action",
       fixed: "right",
       width: 160,
       render: (text, record) => (
         <>
           <span
-            key = "edit"
             className="link-btn mr-4"
             onClick={(e) => { this.handleEdit(record); }}
           >编辑</span>
           <span
             className="link-btn"
-            key = "delete"
             onClick={(e) => { this.handleDelete(record); }}
           >删除</span>
         </>
@@ -138,56 +133,12 @@ class AuthList extends PureComponent<IProps, IState> {
 
   }
 
-  handleCreateShowAuth = () => {
-    const modalID = ShowModal({
-      title: '创建权限展示树',
-      width: 600,
-      children: () => {
-        return (
-          <div className="p20">
-            <CreateAuth
-              onSuccess={(authData) => {
-                createShowAuth(authData).then((canICreate) => {
-                  if (!canICreate) return;
-                  CloseModal(modalID);
-                  this.getList();
-                  this.props.handleUpdateShowTree();
-                });
-              }}
-              onCancel={() => {
-                CloseModal(modalID);
-              }}
-              authData = {{ terminalType: TEMINAL_TYPE.BS }}
-            />
-          </div>
-        );
-      }
-    });
+  handleCreateAuthority = () => {
+
   }
 
-  handleBatchCreateShowAuth = () => {
-    const modalID = ShowModal({
-      title: '生成权限展示树',
-      width: 700,
-      children: () => {
-        return (
-          <div className="p20">
-            <BatchCreateAuth
-              onSuccess={(authData) => {
-                createShowAuth(authData).then((res) => {
-                  if (res.code !== "00000") return;
-                  CloseModal(modalID);
-                  this.getList();
-                });
-              }}
-              onCancel={() => {
-                CloseModal(modalID);
-              }}
-            />
-          </div>
-        );
-      }
-    });
+  handleCreateAuthoritySpeedy = () => {
+
   }
 
   handlePageSizeChange = (current, size) => {
@@ -196,9 +147,30 @@ class AuthList extends PureComponent<IProps, IState> {
 
   handleMenuClick = ({ key }) => {
     if (key === MORE_MENU_TYPE.CREATEAUTHORITY) {
-      this.handleCreateShowAuth();
+      const modalID = ShowModal({
+        title: '创建权限展示树',
+        width: 600,
+        children: () => {
+          return (
+            <div className="p20">
+              <CreateAuth
+                onSuccess={(authData) => {
+                  createShowAuth(authData).then((res) => {
+                    if (res.code !== "00000") return;
+                    CloseModal(modalID);
+                    this.getList();
+                  });
+                }}
+                onCancel={() => {
+                  CloseModal(modalID);
+                }}
+              />
+            </div>
+          );
+        }
+      });
     } else if (key === MORE_MENU_TYPE.CREATEAUTHORITYSPEEDY) {
-      this.handleBatchCreateShowAuth();
+
     }
   };
 
@@ -252,4 +224,4 @@ class AuthList extends PureComponent<IProps, IState> {
     );
   }
 }
-export default React.memo(AuthList);
+export default AuthList;

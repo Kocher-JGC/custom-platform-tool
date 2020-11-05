@@ -87,7 +87,7 @@ export const ProviderAppMenuData: MenuDataType[] = [
             id: '123qweasd',
             icon: '',
             path: '/auth-distributor'
-          },{
+          }, {
             title: '权限项管理',
             id: '1416rwqtqr',
             icon: '',
