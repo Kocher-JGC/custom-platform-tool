@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Button, Space
 } from 'antd';
-import { AuthShowTree } from '../components/AuthShowTree';
+import AuthShowTree from '../components/AuthShowTree';
 
 interface IOnSuccessParams {
   id:string;
@@ -13,16 +13,18 @@ interface IProps {
   onSuccess:(item: IOnSuccessParams) => void;
   onCancel: ()=>void;
   showAuthItems?: string[]
+  searchParams: {[key: string]: any}
 }
 
-export const SelectShowAuthParent = ({
-  onSuccess, onCancel, showAuthItems
+const SelectShowAuthParent = ({
+  onSuccess, onCancel, showAuthItems, searchParams
 }: IProps) => {
   const [authParent, setAuthParent] = useState<IOnSuccessParams>({ id: '', name: '' });
   return (
     <>
       <div style={{ minHeight: 300 }}>
         <AuthShowTree
+          searchParams = {searchParams}
           showAuthItems = {showAuthItems}
           onSelect = {(selectedKeys, selectedNames) => {
             setAuthParent({ id: selectedKeys[0], name: selectedNames[0] });
@@ -45,3 +47,4 @@ export const SelectShowAuthParent = ({
     </>
   );
 };
+export default React.memo(SelectShowAuthParent);
