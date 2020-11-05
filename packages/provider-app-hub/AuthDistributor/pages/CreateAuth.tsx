@@ -87,6 +87,7 @@ const CreateAuth = ({
                 return (
                   <div className="p20 clearfix">
                     <SelectAuthItem
+                      searchParams = {{ terminalType: form.getFieldValue('terminalType') }}
                       authItems={[form.getFieldValue('authorityId')]}
                       onSuccess = {({ id, name }) => {
                         form.setFieldsValue({
@@ -120,6 +121,7 @@ const CreateAuth = ({
                 return (
                   <div className="p20 clearfix">
                     <SelectShowAuthParent
+                      searchParams = {{ terminalType: form.getFieldValue('terminalType') }}
                       showAuthItems={[form.getFieldValue('parentCode')]}
                       onSuccess = {({ id, name }) => {
                         form.setFieldsValue({
