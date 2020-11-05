@@ -5,6 +5,7 @@ import { getAuthorityItemsTree } from '../services/apiAgents';
 export const AuthItemTree = (props) => {
   return (
     <AuthTree
+      checkedValues = {props.authItems}
       checkable = {props.checkable || false}
       selectable = {props.selectable || false}
       onSelect = {props.onSelect}
