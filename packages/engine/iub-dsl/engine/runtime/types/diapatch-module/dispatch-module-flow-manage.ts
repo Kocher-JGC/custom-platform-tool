@@ -1,4 +1,4 @@
-import { DispatchModuleName } from ".";
+import { DispatchModuleName } from "..";
 
 export interface DispatchModuleFlowManage {
   module: DispatchModuleName.flowManage;

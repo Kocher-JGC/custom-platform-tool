@@ -6,7 +6,7 @@ import {
   DispatchModuleIUBStore, TDispatchMethodNameOfIUBStore,
   DispatchModuleRelationship, TDispatchMethodNameOfRelationship,
   DispatchModuleSys, TDispatchMethodNameOfSys,
-  DispatchModuleDatasourceMeta, TDispatchMethodNameOfDatasourceMeta
+  DispatchModuleMetadata, TDispatchMethodNameOfDatasourceMeta
 } from ".";
 import { BaseActionInfo } from "../../actions-manage/types";
 
@@ -33,13 +33,13 @@ export type Dispatch =
     DispatchModuleIUBStore |
     DispatchModuleRelationship |
     DispatchModuleSys |
-    DispatchModuleDatasourceMeta
+    DispatchModuleMetadata
   )
   & { params: any[] };
 
 export enum DispatchModuleName {
   IUBStore = 'IUBStore',
-  datasourceMeta = 'datasourceMeta',
+  metadata = 'metadata',
   sys = 'sys',
   relationship = 'relationship',
   flowManage = 'flowManage',
@@ -51,7 +51,7 @@ export interface IUBEngineRuntimeCtx {
   [DispatchModuleName.IUBStore]: {
     [K in TDispatchMethodNameOfIUBStore]: (...args: any[]) => unknown
   };
-  [DispatchModuleName.datasourceMeta]: {
+  [DispatchModuleName.metadata]: {
     [K in TDispatchMethodNameOfDatasourceMeta]: (...args: any[]) => unknown
   };
   [DispatchModuleName.actionMenage]: {

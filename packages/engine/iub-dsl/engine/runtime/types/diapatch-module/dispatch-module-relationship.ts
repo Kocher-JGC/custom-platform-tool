@@ -1,4 +1,4 @@
-import { DispatchModuleName } from ".";
+import { DispatchModuleName } from "..";
 
 export interface DispatchModuleRelationship {
   module: DispatchModuleName.relationship;

@@ -1,6 +1,6 @@
 /* eslint-disable no-shadow */
 import React, { useEffect, useMemo } from 'react';
-import { DispatchMethodNameOfCondition } from './types/dispatch-module-condition';
+import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
 import { genEventWrapFnList, useEventProps } from '../event-manage';
 import { useCacheState } from '../utils';
 import { APBDSLrequest as originReq } from '../utils/apb-dsl';
@@ -11,9 +11,8 @@ import {
   DispatchCtxOfIUBEngine, Dispatch,
   IUBEngineRuntimeCtx, AsyncIUBEngineRuntimeCtx, RunTimeCtxToBusiness,
 } from './types';
-import { IUBStoreEntity } from '../state-manage';
-import { EffectRelationshipEntity } from '../relationship';
 import { whenHandle } from '../condition-engine/when-handle';
+import { GRCtx } from './types/runtime-context';
 
 const useUU = (setListConf: any[] = []) => {
   const [prop, setProp] = useCacheState({});
@@ -56,20 +55,6 @@ const getDispatchMethod = (
   return dispatchMethod;
 };
 
-/**
- * TODO: 分类
- * 1. 异步/同步
- * 2. 静态/动态 「运行时useMemo会改变的」
- * TODO: 待修改问题
- * 1. 类型、调用上下文规范
- */
-
-interface GRCtx {
-  runTimeCtxToBusiness: React.MutableRefObject<RunTimeCtxToBusiness>,
-  IUBStoreEntity: IUBStoreEntity;
-  effectRelationship: EffectRelationshipEntity;
-}
-
 export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   const {
     // layoutContent, componentParseRes, getCompParseInfo,
@@ -108,7 +93,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     actionMenage: {
       string: () => {},
     },
-    datasourceMeta: {
+    metadata: {
       ...datasourceMetaEntity,
     },
     relationship: {
@@ -127,7 +112,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     actionMenage: {
       string: () => {},
     },
-    datasourceMeta: {
+    metadata: {
       ...datasourceMetaEntity,
     },
     relationship: {

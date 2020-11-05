@@ -1,5 +1,5 @@
-import { DispatchModuleName } from ".";
-import { IUBStoreMethod } from "../../state-manage";
+import { DispatchModuleName } from "..";
+import { IUBStoreMethod } from "../../../state-manage";
 
 export interface DispatchModuleIUBStore {
   module: DispatchModuleName.IUBStore;

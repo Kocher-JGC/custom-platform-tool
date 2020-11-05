@@ -3,12 +3,12 @@
  */
 
 import { isPageState } from "../../state-manage";
-import { isPageDatasoruceMeta } from "../../datasource-meta";
 import {
-  DispatchMethodNameOfIUBStore, DispatchMethodNameOfDatasourceMeta,
+  DispatchMethodNameOfIUBStore, DispatchMethodNameOfMetadata,
   RunTimeCtxToBusiness, DispatchModuleName,
 } from "../types";
 import { } from "../types/dispatch-types";
+import { isPageDatasoruceMeta } from "../../metadata-manage";
 
 /**
  * 将含有特殊标示的值进行转换转换值
@@ -30,8 +30,8 @@ const transformMarkValue = (ctx: RunTimeCtxToBusiness, value: string) => {
   if (isPageDatasoruceMeta(value)) {
     return dispatchOfIUBEngine({
       dispatch: {
-        module: DispatchModuleName.datasourceMeta,
-        method: DispatchMethodNameOfDatasourceMeta.getFiledCode,
+        module: DispatchModuleName.metadata,
+        method: DispatchMethodNameOfMetadata.getFieldKeyInfo,
         params: [value]
       }
     });
