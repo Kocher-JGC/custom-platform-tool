@@ -81,30 +81,20 @@ app.post('/upload', (req, res) => {
         if (checkErr) {
           res.json(returnError(checkErr));
         } else {
-          const tmp = file.originalname.split("-");
+          const tmp1 = file.originalname.split("-");
+          const tmp2 = tmp1[1].split('.');
+          const folder = tmp2[0];
           exec(
-            `cd ${uploadFolder} && tar -zxvf ${tmp[1]}`,
+            `cd ${uploadFolder} && tar -zxvf ${tmp1[1]} && rm -rf ${projectFolder}/page && rm -rf ${projectFolder}/main.json && mv -f ${folder}/* ${projectFolder}`,
             (unzipError) => {
               if (unzipError) {
                 res.json(returnError(unzipError));
               } else {
-                const tmpArr = tmp[1].split('.');
-                const folder = tmpArr[0];
-                exec(
-                  `cd ${uploadFolder} && mv -f ${folder}/* ${projectFolder} `,
-                  (mvError) => {
-                    if (mvError) {
-                      console.log(mvError);
-                      res.json(returnError(mvError));
-                    } else {
-                      res.json({
-                        result: null,
-                        code: '00000',
-                        msg: '更新成功',
-                      });
-                    }
-                  }
-                );
+                res.json({
+                  result: null,
+                  code: '00000',
+                  msg: '更新成功',
+                });
               }
             }
           );
