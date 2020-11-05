@@ -23,10 +23,13 @@ export const OptionsSelectorHelper: PropItemCompAccessSpec = {
   id: 'prop_options_selector',
   name: 'PropDataSource',
   label: '选项数据源',
-  whichAttr: ['options'],
+  // optDS => option datasource
+  whichAttr: ['optDS'],
+  useMeta: ['dataSource'],
   render(ctx) {
     return (
       <OptionsSelector
+        whichAttr="optDS"
         {...ctx}
       />
     );
