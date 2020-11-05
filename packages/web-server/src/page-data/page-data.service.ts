@@ -303,7 +303,7 @@ export class PageDataService {
       action:{
         actionName,  actionType, forEntrieTable, targetTable
       },
-      condition, event, preTrigger, triggerAction
+      // condition, event, preTrigger, triggerAction
     } = actionConf;
 
     const { collectStruct, condition } = this.getDataCollectionFromSchema(pageSchema) || { collectStruct: [], condition: { conditionControl: {}, conditionList: {} } };
@@ -398,15 +398,17 @@ export class PageDataService {
   }
 
   transfromAction(actions, { pageSchema }) {
-    const res = {};
+    let res = {};
     const actionIds = Object.keys(actions);
     actionIds.forEach(id => {
       const action = actions[id][0];
       if (action) {
         const { triggerAction, event, action: { pageID } } = action;
         if (triggerAction === 'submit' && event === 'onClick') {
-          res[id] = this.genAPBDSLAction(id, action, pageSchema);
-          this.tempFlow.push(genDefalutFlow(id));
+          res = {
+            ...res,
+            ...this.genAPBDSLAction(id, action, pageSchema)
+          };
         }
         if (triggerAction === 'openPage' && pageID) {
           res[id] = this.genOpenPageAction(id, action);
@@ -481,9 +483,6 @@ export class PageDataService {
   }
 
   addSearchWieght(extralSchema) {
-    console.log('rfejwgkshdjfkhdsjkhjk');
-    console.log(extralSchema);
-
     const { columns, id } = extralSchema;
     const widget = {
       type: 'componentRef',
@@ -623,8 +622,18 @@ export class PageDataService {
   }
 
   async getTableMetadata(dataSources, processCtx) {
-    console.log(dataSources, processCtx);
-    return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
+    if (dataSources[0] && dataSources[0].datasourceId) {
+      return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
+    }
+    return false;
+    // return {
+    //   tableInfo:  {
+    //     id: 'data.id',
+    //     name: 'data.name',
+    //     code: 'data.code'
+    //   },
+    //   columns: []
+    // };
     //   const schemaPk = this.tableInfoToSchema(columns, tableInfo);
   }
 
@@ -802,12 +811,6 @@ export class PageDataService {
           }
         });
       const data = resData?.data?.result;
-      let tableMetaData = null;
-      console.log('resDataMsg', resData?.data?.msg);
-      if (data) {
-        const { dataSources } = data;
-        tableMetaData = await this.getTableMetadata(dataSources, processCtx);
-      }
       if(!data) {
         console.error('页面输出存在问题?', data);
         throw Error(resData?.data?.msg);
@@ -820,8 +823,8 @@ export class PageDataService {
         }
 
 
-
-      return this.pageData2IUBDSL(data, { tableMetaData });
+        return this.pageData2IUBDSL(data, { tableMetaData });
+      }
     } catch(e) {
       console.error('error', e);
       throw Error(e);
