@@ -1,12 +1,17 @@
 # dockerfile
 # build stage
 FROM node:lts-alpine as build-stage
-RUN mkdir -p /usr/src/web-platform-update/app
-WORKDIR /usr/src/web-platform-update/app
-COPY dist ./
+
+RUN mkdir -p /usr/src/web-platform-update/app/
+
 WORKDIR /usr/src/web-platform-update
-COPY server ./
-EXPOSE 3300
+
+COPY ./server ./
+
+COPY ./dist ./app
+
+EXPOSE 5020
+
 CMD npm run start
 
 # production stage

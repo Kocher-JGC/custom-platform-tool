@@ -3,7 +3,7 @@ import ProLayout, {
   BasicLayoutProps as ProLayoutProps,
   Settings
 } from '@ant-design/pro-layout';
-import * as IconMap from "react-icons/all";
+import * as IconMap from "react-icons/bi";
 import React from 'react';
 import {
   Link, connect, Dispatch, history
