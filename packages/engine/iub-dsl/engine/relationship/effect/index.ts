@@ -1,5 +1,5 @@
 import { ApbFunction } from "@iub-dsl/definition";
-import { APBDSLActionEffect, EffectType } from "../types";
+import { APBDSLActionEffect, EffectType, EffectRelationshipEntity } from "../types";
 import {
   DispatchModuleName, DispatchMethodNameOfRelationship, DispatchMethodNameOfFlowManage, DispatchCtxOfIUBEngine,
   RunTimeCtxToBusiness
@@ -35,12 +35,6 @@ const effectAnalysisOfAPBDSLCURD = (APBDSLCURDParam): APBDSLActionEffect[] => {
   });
   return effectInfo;
 };
-
-export interface EffectRelationshipEntity {
-  effectAnalysis: (ctx: RunTimeCtxToBusiness, dispatchCtx: DispatchCtxOfIUBEngine) => () => any;
-  effectDispatch: (ctx: RunTimeCtxToBusiness, options: any) => void;
-  effectReceiver: (ctx: RunTimeCtxToBusiness, effectCollect: any[]) => void;
-}
 
 export const effectRelationship = (): EffectRelationshipEntity => {
   const effectCollection: any[] = [];
