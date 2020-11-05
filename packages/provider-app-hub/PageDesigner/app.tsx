@@ -9,7 +9,7 @@ import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
-import { wrapPageData, takeUsedWidgetIDs } from "./utils";
+import { wrapPageData, takeUsedWidgetIDs, genBusinessCode } from "./utils";
 import {
   getPageContentWithDatasource,
 } from "./services";
@@ -101,12 +101,14 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const pageDataFormRemote = this.getCurrPageDataDetail();
     // const { pageID, title } = appLocation;
     const submitData = pick(pageDataFormRemote, [
-      'id', 'type', 'moduleID', 'name', 'belongMenus'
+      'id', 'type', 'moduleID', 'name', 'belongMenus',
     ]);
     const usedWidgets = takeUsedWidgetIDs(flatLayoutItems, pageDataFormRemote);
+    const businessCode = genBusinessCode(flatLayoutItems, pageDataFormRemote);
     return {
       ...submitData,
       usedWidgets,
+      businessCode,
     };
   }
 
