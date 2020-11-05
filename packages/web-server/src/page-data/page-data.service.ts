@@ -395,10 +395,9 @@ export class PageDataService {
       }
     });
     const extralSchema = this.genExtralSchema(extralData.tableMetaData, hasTable);
-
     console.log(hasTable, extralSchema);
-
-    if (hasTable) {
+    
+    if (hasTable && extralSchema) {
       this.genTableExtralData(tableD[0], extralSchema);
       this.addSearchWieght(extralSchema);
       this.addSearchBuntton(extralSchema);
@@ -517,7 +516,7 @@ export class PageDataService {
   }
 
   genExtralSchema(tableMetadata, isAll = false) {
-    if (tableMetadata) {
+    if (tableMetadata && Reflect.has(tableMetadata, 'id') && Reflect.has(tableMetadata, 'columns')) {
       const { columns, id } = tableMetadata;
       const coulumsIds = Object.keys(columns);
       const cc = coulumsIds?.map((coulumsId) => {
@@ -559,6 +558,8 @@ export class PageDataService {
   }
 
   async getTableMetadata(dataSources, processCtx) {
+    console.log(dataSources, processCtx);
+    
     return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
     //   const schemaPk = this.tableInfoToSchema(columns, tableInfo);
   }
