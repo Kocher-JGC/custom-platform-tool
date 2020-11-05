@@ -1,15 +1,20 @@
 import React, { PureComponent } from 'react';
 import {
-  Table, Input, Button, Menu, Dropdown
+  Table, Input, Button, Menu, Dropdown, message, Modal
 } from 'antd';
 import { ColumnType } from 'antd/lib/table';
-import { DownOutlined } from '@ant-design/icons';
-import { getShowAuthorities } from '../services/apiAgents';
+import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { CloseModal, ShowModal } from "@infra/ui";
+import {
+  deleteShowAuthItem, getShowAuthorities, createShowAuth, updateShowAuth, getShowAuthDetail, allowDeleteShowAuth
+} from '../services/apiAgents';
 import { ITableItem } from '../interface';
-import { TABLE_COLUMNS, MORE_MENU } from '../constants';
+import { TABLE_COLUMNS, MORE_MENU, MORE_MENU_TYPE } from '../constants';
+import { CreateAuth } from '../pages';
 
 interface IProps {
   authorities: string[]
+  handleUpdateShowTree: ()=>vpod
 }
 
 interface IState {
@@ -19,7 +24,7 @@ interface IState {
   list: ITableItem[]
   total: number
 }
-class AuthorityList extends PureComponent<IProps, IState> {
+class AuthList extends PureComponent<IProps, IState> {
   state = {
     pageOffset: 0,
     pageSize: 10,
@@ -73,12 +78,55 @@ class AuthorityList extends PureComponent<IProps, IState> {
     },
   ];
 
-  handleEdit = (record) => {
-
+  handleEdit = async ({ id }) => {
+    const authData = await getShowAuthDetail({ id });
+    const modalID = ShowModal({
+      title: '编辑权限展示树',
+      width: 600,
+      children: () => {
+        return (
+          <div className="p20">
+            <CreateAuth
+              authData = {authData}
+              onSuccess={(authDataModal) => {
+                updateShowAuth(authDataModal).then((canIupdate) => {
+                  if (!canIupdate) return;
+                  CloseModal(modalID);
+                  this.getList();
+                  this.props.handleUpdateShowTree();
+                });
+              }}
+              onCancel={() => {
+                CloseModal(modalID);
+              }}
+            />
+          </div>
+        );
+      }
+    });
   }
 
-  handleDelete = (record) => {
-
+  handleDelete = ({ id }) => {
+    allowDeleteShowAuth({ id }).then(({ allowDelete, title }) => {
+      if (!allowDelete) {
+        message.error(title);
+        return;
+      }
+      /** 允许删除 */
+      Modal.confirm({
+        title,
+        icon: <ExclamationCircleOutlined />,
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          deleteShowAuthItem({ id }).then((canIDelete) => {
+            if (!canIDelete) return;
+            this.getList();
+            this.props.handleUpdateShowTree();
+          });
+        }
+      });
+    });
   }
 
   handleSearch = (value) => {
@@ -98,9 +146,30 @@ class AuthorityList extends PureComponent<IProps, IState> {
   }
 
   handleMenuClick = ({ key }) => {
-    if (key === "createAuthority") {
-
-    } else if (key === "createAuthoritySpeedy") {
+    if (key === MORE_MENU_TYPE.CREATEAUTHORITY) {
+      const modalID = ShowModal({
+        title: '创建权限展示树',
+        width: 600,
+        children: () => {
+          return (
+            <div className="p20">
+              <CreateAuth
+                onSuccess={(authData) => {
+                  createShowAuth(authData).then((res) => {
+                    if (res.code !== "00000") return;
+                    CloseModal(modalID);
+                    this.getList();
+                  });
+                }}
+                onCancel={() => {
+                  CloseModal(modalID);
+                }}
+              />
+            </div>
+          );
+        }
+      });
+    } else if (key === MORE_MENU_TYPE.CREATEAUTHORITYSPEEDY) {
 
     }
   };
@@ -155,4 +224,4 @@ class AuthorityList extends PureComponent<IProps, IState> {
     );
   }
 }
-export default AuthorityList;
+export default AuthList;
