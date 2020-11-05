@@ -58,4 +58,6 @@ export interface TypeOfIUBDSL extends PageMetadata {
   /** 布局信息 */
   layoutContent: LayoutContent;
   openPageUrl: string; // TODO: TEMP
+  isSearch: boolean;
+  businessCode: string[];
 }

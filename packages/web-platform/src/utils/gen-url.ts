@@ -8,7 +8,7 @@ export const originGenUrl = (lesseeCode, appCode, businessCode) => {
   return `${baseUrl}/${lesseeCode || "hy"}/${appCode || "zxx"}/business/${businessCode}`;
 };
 
-export const getAPBDSLtestUrl = () => {
+export const getAPBDSLtestUrl = (code = 'queryPerson') => {
   const { app, lessee } = getPageQuery();
-  return originGenUrl(lessee, app, 'queryPerson');
+  return originGenUrl(lessee, app, code);
 };

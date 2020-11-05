@@ -83,7 +83,8 @@ const IUBDSLParser = ({ dsl }) => {
     componentsCollection, schemas,
     metadataCollection, relationshipsCollection,
     layoutContent, pageID, name, type,
-    flowCollection, openPageUrl
+    flowCollection, openPageUrl, isSearch,
+    businessCode
   } = dsl as TypeOfIUBDSL;
 
   let parseRes: any = {
@@ -93,7 +94,9 @@ const IUBDSLParser = ({ dsl }) => {
     pageID,
     name,
     type,
-    schemas
+    schemas,
+    isSearch,
+    businessCode
   };
 
   /** TODO: 有问题 */
