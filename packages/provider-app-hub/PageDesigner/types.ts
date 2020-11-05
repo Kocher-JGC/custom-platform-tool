@@ -33,6 +33,10 @@ export interface DatasourceItem {
 export interface PDPropItemRendererBusinessPayload {
   /** 内部的已绑定的数据源 */
   interDatasources: PD.Datasources
+  /** 请求服务 */
+  $services: {
+    [sName: string]: Promise<unknown>
+  }
 }
 
 export type DatasourceGroup = DatasourceItem[]

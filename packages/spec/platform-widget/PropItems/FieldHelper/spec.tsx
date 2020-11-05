@@ -18,13 +18,10 @@ const metaAttr = 'schema';
  */
 export const FieldHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_field',
-
+  name: 'PropField',
   label: '列',
-
   whichAttr,
-
   useMeta: metaAttr,
-
   render({
     businessPayload,
     editingWidgetState,

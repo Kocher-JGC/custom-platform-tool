@@ -6,7 +6,17 @@ export const DropdownSelectorMeta: EditableWidgetMeta = {
   widgetRef: 'DropdownSelector',
   propItemsRely: {
     propItemRefs: [
-      { propID: 'prop_style_title_color', editAttr: 'title' },
+      { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
+      { propID: 'prop_options_selector', editAttr: ['options'] },
+      { propID: 'prop_style_title_color', editAttr: 'labelColor' },
+      {
+        propID: 'prop_title_value',
+        editAttr: ['title'],
+        defaultValues: {
+          title: '下拉选择'
+        },
+      },
+      { propID: 'prop_field', editAttr: ['field'] },
       // { propID: 'prop_flex_config' },
     ]
   }
