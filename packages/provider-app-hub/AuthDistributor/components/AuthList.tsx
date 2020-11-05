@@ -14,7 +14,7 @@ import { CreateAuth } from '../pages';
 
 interface IProps {
   authorities: string[]
-  handleUpdateShowTree: ()=>vpod
+  handleUpdateShowTree: ()=>void
 }
 
 interface IState {
