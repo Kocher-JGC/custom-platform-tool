@@ -263,7 +263,7 @@ export class PageDataService {
       actions: {
         // ...genFormButtonDefaltAction('middle_1234')
         ...genFormButtonDefaltAction(actionRef)
-        
+
       }
     };
   }
@@ -281,7 +281,7 @@ export class PageDataService {
     const schemaIds = Object.keys(schema);
     console.log(schema);
     let condition;
-    
+
     schemaIds.forEach(id => {
       if (schema[id].isPk) {
         condition = this.genCond(schema[id].fieldMapping, `@(schemas).${ schema[id].schemaId}`);
@@ -295,7 +295,7 @@ export class PageDataService {
   }
 
   genAPBCreataAction() {
-    
+
   }
 
   genAPBDSLAction(actionId: string, actionConf, pageSchema) {
@@ -462,7 +462,7 @@ export class PageDataService {
     });
     const extralSchema = this.genExtralSchema(extralData.tableMetaData, hasTable);
     console.log(hasTable, extralSchema);
-    
+
     if (hasTable && extralSchema) {
       this.genTableExtralData(tableD[0], extralSchema);
       this.addSearchWieght(extralSchema);
@@ -624,7 +624,7 @@ export class PageDataService {
   async getTableMetadata(dataSources, processCtx) {
     if (dataSources[0] && dataSources[0].datasourceId) {
       return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
-    } 
+    }
     return false;
     // return {
     //   tableInfo:  {
@@ -643,7 +643,7 @@ export class PageDataService {
    */
   pageData2IUBDSL(pageData, extralData) {
     console.log(pageData, extralData);
-    
+
     const { pageContent, dataSources } = pageData;
     const { tableMetaData } = extralData;
     let contentData;
@@ -821,8 +821,8 @@ export class PageDataService {
           const { dataSources } = data;
           tableMetaData = await this.getTableMetadata(dataSources, processCtx);
         }
-  
-  
+
+
         return this.pageData2IUBDSL(data, { tableMetaData });
       }
     } catch(e) {
