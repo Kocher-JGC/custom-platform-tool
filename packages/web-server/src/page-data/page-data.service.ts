@@ -624,7 +624,6 @@ export class PageDataService {
 
   async getTableMetadata(dataSources, processCtx) {
     console.log(dataSources, processCtx);
-
     return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
     //   const schemaPk = this.tableInfoToSchema(columns, tableInfo);
   }
@@ -819,6 +818,7 @@ export class PageDataService {
           const { dataSources } = data;
           tableMetaData = await this.getTableMetadata(dataSources, processCtx);
         }
+
 
 
       return this.pageData2IUBDSL(data, { tableMetaData });
