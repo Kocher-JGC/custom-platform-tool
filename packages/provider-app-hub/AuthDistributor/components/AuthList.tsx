@@ -147,8 +147,8 @@ class AuthList extends PureComponent<IProps, IState> {
           <div className="p20">
             <CreateAuth
               onSuccess={(authData) => {
-                createShowAuth(authData).then((res) => {
-                  if (res.code !== "00000") return;
+                createShowAuth(authData).then((canICreate) => {
+                  if (!canICreate) return;
                   CloseModal(modalID);
                   this.getList();
                 });
