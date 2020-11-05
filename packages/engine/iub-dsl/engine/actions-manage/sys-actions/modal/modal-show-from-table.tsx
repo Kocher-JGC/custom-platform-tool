@@ -82,7 +82,7 @@ export const openModelFromTable = (conf: OpenModalOptions, baseActionInfo): Acti
           icon: false,
           cancelButtonProps: { style: { display: 'none' } },
           okButtonProps: { style: { display: 'none' } },
-          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
+          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} pageStatus={pageStatus}/>
         });
       } catch (e) {
         console.error(e);

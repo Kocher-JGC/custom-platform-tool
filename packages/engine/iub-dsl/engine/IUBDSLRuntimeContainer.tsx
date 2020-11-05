@@ -22,7 +22,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
     renderComponentKeys,
-    schemasParseRes, pageID: pageId, businessCode
+    schemasParseRes, pageID: pageId, businessCode, isSearch
   } = dslParseRes;
 
   /** 获取单例的页面管理 */
@@ -107,29 +107,40 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
     businessCode,
   }), [IUBStoreEntity]);
 
-  const extralProps = useMemo(() => ({ extral: '扩展props' }), []);
+  const extralProps = useMemo(() => ({ extral: '扩展props', isSearch }), []);
 
   hooks?.beforeMount?.();
 
   return (
     <DefaultCtx.Provider value={defaultCtx}>
-      <FromWrapFactory >
-        <LayoutRenderer
-          layoutNode={actualRenderComponentList}
-          componentRenderer={({ layoutNodeItem }) => {
-            const { id: compId, Widget } = layoutNodeItem;
+      <LayoutRenderer
+        layoutNode={actualRenderComponentList}
+        componentRenderer={({ layoutNodeItem }) => {
+          const { id: compId, Widget } = layoutNodeItem;
+          return <Widget key={compId} compId={compId} extralProps={extralProps}/>;
+        }}
+        RootRender={(child) => {
+          if (isSearch) {
+            const res: any[] = [];
+            const form: any[] = [];
+            let i;
+            child.forEach((Ch, ii) => {
+              if (Number(Ch.props.compId)) {
+                if (!i) i = ii;
+                form.push(Ch);
+              } else {
+                res.push(Ch);
+              }
+            });
 
-            return <Widget key={compId} extralProps={extralProps}/>;
-          }}
-          RootRender={(child) => {
-            // return (<div>
-            //   {child}
-            // </div>);
-            return child;
-          }}
-        />
-      </FromWrapFactory>
+            const FromWrap = <FromWrapFactory key={i} {...extralProps} >{form}</FromWrapFactory>;
+            res.splice(i, 0, FromWrap);
 
+            return res;
+          }
+          return <FromWrapFactory key={'ajklhgjh'} {...extralProps} >{child}</FromWrapFactory>;
+        }}
+      />
       {/* <pre>
         {JSON.stringify(getPageState(), null, 2)}
       </pre> */}
