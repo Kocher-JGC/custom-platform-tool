@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Response } from "express";
-import { Controller, Get, Param, Res } from "@nestjs/common";
+import { Request, Response } from "express";
+import { Controller, Get, Param, Query, Req, Res } from "@nestjs/common";
 import { PageDataService } from "../page-data/page-data.service";
-import { ResHelperService } from "../res-helper/res-helper.service";
 import { ReleaseAppService } from "./release-app.service";
 
 @Controller("release-app")
 export class ReleaseAppController {
   constructor(
     private readonly pageDataService: PageDataService,
-    private readonly releaseAppService: ReleaseAppService,
-    private readonly resHelperService: ResHelperService
+    private readonly releaseAppService: ReleaseAppService
   ) {}
 
   /**
@@ -28,15 +26,12 @@ export class ReleaseAppController {
    */
   @Get("/:lesseeCode/:applicationCode")
   async releaseApp(
-  @Res() res: Response,
-    @Param() { lesseeCode, applicationCode }: { lesseeCode: string; applicationCode: string }
+  @Req() req: Request,
+    @Res() res: Response,
+    @Param() { lesseeCode, applicationCode },
+    @Query() { releaseId }
   ) {
-    const curTime = new Date().getTime();
-    const resData = {
-      data: null,
-      code: this.resHelperService.BusinessCodes.Error,
-      msg: `应用${applicationCode}`
-    };
+    const { headers } = req;
     const {
       getPageDataFromProvider,
       generatePageDataFolder,
@@ -46,21 +41,27 @@ export class ReleaseAppController {
     } = this.releaseAppService;
     if (applicationCode) {
       let link = "";
-      const folderName = `${applicationCode}_${curTime}`;
-      const zipName = `${applicationCode}_${curTime}.zip`;
+      const folderName = `${applicationCode}_${releaseId}`;
+      const zipName = `${applicationCode}_${releaseId}.zip`;
       try {
-        const pageDataRes = await getPageDataFromProvider({ lesseeCode, applicationCode });
-        if (pageDataRes.length > 0) {
+        const pageDataRes = await getPageDataFromProvider(
+          { lesseeCode, applicationCode },
+          headers.authorization
+        );
+        if (Array.isArray(pageDataRes) && pageDataRes.length > 0) {
           await generatePageDataFolder(folderName);
           await generateAppConfig(folderName, { lesseeCode, applicationCode });
-          const createAllJSONFileRes = pageDataRes.map(async ({ id, pageContent, dataSources }) => {
-            let tableMetaData;
-            if (Array.isArray(dataSources) && dataSources.length > 0) {
-              tableMetaData = await this.pageDataService.getTableMetadata(dataSources, {
-                t: ""
-              });
-            }
-            const dsl = this.pageDataService.pageData2IUBDSL({ pageContent }, { tableMetaData });
+          // TODO 循环生成实现方式
+          const createAllJSONFileRes = pageDataRes.map(async (item) => {
+            const { id, pageContent, dataSources } = item;
+            // let tableMetaData;
+            // if (Array.isArray(dataSources) && dataSources.length > 0) {
+            //   tableMetaData = await this.pageDataService.getTableMetadata(dataSources, {
+            //     t: ""
+            //   });
+            // }
+            // const dsl = this.pageDataService.pageData2IUBDSL(item, { tableMetaData });
+            const dsl = JSON.parse(pageContent);
             const createJSONFileRes = await generatePageDataJSONFile(
               folderName,
               id,
@@ -75,15 +76,13 @@ export class ReleaseAppController {
           link = await generatePageDataJSONZip(folderName, zipName);
           return res.download(link);
         }
-        throw new Error("没有页面可以发布");
+        // throw new Error(pageDataRes.msg || "没有页面可以发布");
+        return res.status(404).json({ msg: "没有页面可以发布" });
       } catch (error) {
-        console.log(error);
-        resData.msg += `生成页面压缩文件失败，${error.toString()}`;
-        return this.resHelperService.wrapResStruct(resData);
+        return res.status(500).json({ msg: error.message });
       }
     } else {
-      resData.msg = "需要参数 app";
-      return this.resHelperService.wrapResStruct(resData);
+      return res.status(400).json({ msg: "需要参数 app" });
     }
   }
 }

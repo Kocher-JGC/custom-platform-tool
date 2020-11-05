@@ -1,5 +1,5 @@
 {
   "uploadFolder":"/tmp/web-platform/page-unzip-data",
   "projectFolder":"/usr/src/web-platform-update/app",
-  "port": 3300
+  "port": 3000
 }

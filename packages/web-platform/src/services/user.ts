@@ -71,5 +71,5 @@ export async function queryUserInfo() {
 }
 
 export async function queryAppConfig() {
-  return await fetch(`/appConfig.json?${new Date().getTime()}`).then((res) => res.json());
+  return await fetch(`/main.json?${new Date().getTime()}`).then((res) => res.json());
 }

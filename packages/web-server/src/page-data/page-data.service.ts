@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import omit from 'lodash/omit';
+import { omit } from 'lodash';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
 import config from '../../config';
 
@@ -21,16 +21,17 @@ const genUrl = (params: any = {}) => {
 };
 
 const flatLayoutNode = (layoutNode, parentID?) => {
-  // console.log(parentID);
+  console.log(parentID);
   const componentsCollection = {};
   const layoutContentBody = [];
+
   layoutNode.forEach((nodeItem) => {
     // const nodeItemI = produce(nodeItem, draft => draft);
     const { id, body } = nodeItem;
-
     Object.assign(nodeItem, {
       type: 'componentRef',
-      compType: nodeItem?.widgetRef,
+      // compType: nodeItem?.widgetDef.type,
+      compType: nodeItem.widgetRef,
       // widgetRef: {
       // ...nodeItem.widgetRef,
       ...nodeItem.propState
@@ -191,28 +192,25 @@ export class PageDataService {
 
   genMetadataFromTableInfo(onceTableInfo) {
     // tableInfo: { id: '1320554257547665408', name: '用户表单', code: 'yonghubiaodan' }
-    if (onceTableInfo && 'columns' in onceTableInfo && 'tableInfo' in onceTableInfo) {
-      const { columns: oldColumns, tableInfo } = onceTableInfo;
-      const columns = oldColumns.map((info) => {
-        return {
-          id: info.id,
-          name: info.name,
-          fieldCode: info.code,
-          fieldType: info.fieldType,
-          fieldSize: info.fieldSize,
-          dataType: info.dataType,
-          colDataType: info.dataType,
-          type: 'string',
-        };
-      }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
+    const { columns: oldColumns, tableInfo } = onceTableInfo;
+    const columns = oldColumns.map((info) => {
       return {
-        ...tableInfo,
-        type: 'general',
-        moduleId: '', // 关联表Id
-        columns
+        id: info.id,
+        name: info.name,
+        fieldCode: info.code,
+        fieldType: info.fieldType,
+        fieldSize: info.fieldSize,
+        dataType: info.dataType,
+        colDataType: info.dataType,
+        type: 'string',
       };
-    }
-    return {};
+    }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
+    return {
+      ...tableInfo,
+      type: 'general',
+      moduleId: '', // 关联表Id
+      columns
+    };;
   }
 
   transfromSchema(schema: any) {
@@ -337,25 +335,24 @@ export class PageDataService {
 
   transfromAction(actions, { pageSchema }) {
     const res = {};
-    if(Array.isArray(actions) && pageSchema){
-      const actionIds = Object.keys(actions);
-      actionIds.forEach(id => {
-        const action = actions[id][0];
-        if (action) {
-          const { triggerAction, event, action: { pageID } } = action;
-          if (triggerAction === 'submit' && event === 'onClick') {
-            res[id] = this.genAPBDSLAction(id, action, pageSchema);
-            this.tempFlow.push(genDefalutFlow(id));
-          }
-          if (triggerAction === 'openPage' && pageID) {
-            res[id] = this.genOpenPageAction(id, action);
-            this.tempFlow.push(genDefalutFlow(id));
-          }
-        } else {
-          console.error('获取action失败');
+    const actionIds = Object.keys(actions);
+    actionIds.forEach(id => {
+      const action = actions[id][0];
+      if (action) {
+        const { triggerAction, event, action: { pageID } } = action;
+        if (triggerAction === 'submit' && event === 'onClick') {
+          res[id] = this.genAPBDSLAction(id, action, pageSchema);
+          this.tempFlow.push(genDefalutFlow(id));
         }
-      });
-    }
+        if (triggerAction === 'openPage' && pageID) {
+          res[id] = this.genOpenPageAction(id, action);
+          this.tempFlow.push(genDefalutFlow(id));
+        }
+      } else {
+        console.error('获取action失败');
+      }
+    });
+
     return res;
   }
 
@@ -398,6 +395,9 @@ export class PageDataService {
       }
     });
     const extralSchema = this.genExtralSchema(extralData.tableMetaData, hasTable);
+
+    console.log(hasTable, extralSchema);
+
     if (hasTable) {
       this.genTableExtralData(tableD[0], extralSchema);
       this.addSearchWieght(extralSchema);
@@ -417,7 +417,10 @@ export class PageDataService {
   }
 
   addSearchWieght(extralSchema) {
-    const { columns = [] } = extralSchema || {};
+    console.log('rfejwgkshdjfkhdsjkhjk');
+    console.log(extralSchema);
+
+    const { columns, id } = extralSchema;
     const widget = {
       type: 'componentRef',
       compType: 'FormInput',
@@ -439,66 +442,62 @@ export class PageDataService {
   }
 
   addSearchBuntton(extralSchema) {
-    const { columns, id } = extralSchema || {};
-    if(Array.isArray(columns) && id){
-      const weightId = `button_${id}`;
-      this.tempWeight.push({
-        id: weightId,
-        compType: 'NormalButton',
-        title: '查询', label: '查询', text: '查询',
-        type: 'componentRef',
-        actions: {
-          ...genFormButtonDefaltAction(weightId)
-        }
-      });
-      const conditionList = {};
-      const conditionControl = [];
-      Object.keys(columns).forEach((key, i) => {
-        const info = columns[key];
-        if (info.isPk) return;
-        conditionList[`${key}_${i}`] = {
-          operator: 'like',
-          exp1: `@(metadata).${id}.${info.schemaId}`,
-          exp2: `@(schemas).${info.schemaId}`,
-        };
-        conditionControl.push(`${key}_${i}`);
-      });
-      const updId = `${weightId}_U`;
-      this.tempAction.push(
-        {
-          actionId: weightId,
-          actionName: `${weightId}TableSelect`,
-          actionType: 'APBDSLCURD',
-          actionOptions: {
-            businesscode: '34562',
-            actionList: {
-              apbA1: {
-                type: 'TableSelect',
-                table: `@(metadata).${id}`,
-                condition: {
-                  conditionControl: {
-                    and: conditionControl
-                  },
-                  conditionList
+    const { columns, id } = extralSchema;
+    const weightId = `button_${id}`;
+    this.tempWeight.push({
+      id: weightId,
+      compType: 'NormalButton',
+      title: '查询', label: '查询', text: '查询',
+      type: 'componentRef',
+      actions: {
+        ...genFormButtonDefaltAction(weightId)
+      }
+    });
+    const conditionList = {};
+    const conditionControl = [];
+    Object.keys(columns).forEach((key, i) => {
+      const info = columns[key];
+      if (info.isPk) return;
+      conditionList[`${key}_${i}`] = {
+        operator: 'like',
+        exp1: `@(metadata).${id}.${info.schemaId}`,
+        exp2: `@(schemas).${info.schemaId}`,
+      };
+      conditionControl.push(`${key}_${i}`);
+    });
+    const updId = `${weightId}_U`;
+    this.tempAction.push(
+      {
+        actionId: weightId,
+        actionName: `${weightId}TableSelect`,
+        actionType: 'APBDSLCURD',
+        actionOptions: {
+          businesscode: '34562',
+          actionList: {
+            apbA1: {
+              type: 'TableSelect',
+              table: `@(metadata).${id}`,
+              condition: {
+                conditionControl: {
+                  and: conditionControl
                 },
-              }
-            },
-            actionStep: ['apbA1']
+                conditionList
+              },
+            }
           },
-          actionOutput: 'string', // TODO
+          actionStep: ['apbA1']
         },
-        updateStateAction(updId, `@(schemas).${id}`)
-      );
-      this.tempFlow.push(
-        genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
-        genDefalutFlow(updId),
-      );
-    }
+        actionOutput: 'string', // TODO
+      },
+      updateStateAction(updId, `@(schemas).${id}`)
+    );
+    this.tempFlow.push(
+      genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
+      genDefalutFlow(updId),
+    );
   }
 
   genTableExtralData(tableData, data) {
-    console.log(tableData, data);
-
     const { columns, id } = data;
     tableData.columns = Object.keys(columns).filter(key => !columns[key].isPk).map(key => ({
       dataIndex: columns[key].fieldCode,
@@ -518,7 +517,7 @@ export class PageDataService {
   }
 
   genExtralSchema(tableMetadata, isAll = false) {
-    if (tableMetadata && tableMetadata.id && Array.isArray(tableMetadata.columns)) {
+    if (tableMetadata) {
       const { columns, id } = tableMetadata;
       const coulumsIds = Object.keys(columns);
       const cc = coulumsIds?.map((coulumsId) => {
@@ -593,7 +592,8 @@ export class PageDataService {
       const { componentsCollection, layoutContentBody } = flatLayoutNode(pageLayoutContent);
 
       /** 生成元数据 */
-      const actualMetadata = this.genMetadataFromTableInfo(tableMetaData);
+
+      const actualMetadata = tableMetaData && this.genMetadataFromTableInfo(tableMetaData) || {};
       extralData.tableMetaData = actualMetadata;
       // const actualMetadata = this.genMetadataFromOnceTable(actualSchema, dataSources[0]);
       // const actualMetadata = dataSources.map((onceTableInfo) => this.genMetadataFromOnceTable(actualSchema, onceTableInfo));
@@ -736,6 +736,7 @@ export class PageDataService {
       if(!data) {
         throw Error(resData?.data?.msg);
       }
+
 
       return this.pageData2IUBDSL(data, { tableMetaData });
     } catch(e) {

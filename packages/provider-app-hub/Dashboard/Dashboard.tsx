@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { message } from 'antd';
 import {
   BankOutlined, PieChartOutlined, GithubOutlined, PlusOutlined, MoreOutlined
 } from "@ant-design/icons";
@@ -8,6 +9,8 @@ import { Menus } from "@deer-ui/core/menu";
 import { GetApplication, DelApplication } from "@provider-app/services";
 import { ShowModal } from "@infra/ui";
 import { CreateApp } from "./CreateApp";
+
+import { downloadBackEnd, downloadFrontEnd } from "./services/apis";
 
 import './dashboard.scss';
 
@@ -112,7 +115,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
         {
           appData && appData.map(((data, idx) => {
             const {
-              appShortNameEn, id, appCode, accessName
+              appShortNameEn, id, accessName
             } = data;
             return (
               <AppTile
@@ -153,7 +156,13 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                   {
                     text: '发布应用',
                     action: () => {
-                      console.log('object :>> ', 'object');
+                      const cur = new Date().getTime();
+                      downloadBackEnd(accessName, `${appShortNameEn}后端部署文件-${accessName}_${new Date().getTime()}`).catch((error) => {
+                        message.error(error.message);
+                      });
+                      downloadFrontEnd(accessName, `${appShortNameEn}前端部署文件-${accessName}_${cur}`, cur).catch((error) => {
+                        message.error(error.message);
+                      });
                     }
                   }
                 ]}
@@ -170,7 +179,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
               children: ({ close }) => {
                 return (
                   <CreateApp
-                    onSuccess={(e) => {
+                    onSuccess={() => {
                       close();
                       updateAppList();
                     }}
