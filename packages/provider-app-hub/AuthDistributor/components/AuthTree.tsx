@@ -12,6 +12,7 @@ interface IProps {
   nodeConfig: INodeConfig
   checkedValues?: string[]
   onRef?: (param: React.ReactNode)=>void;
+  expandAll?: boolean
 }
 
 interface IState {
@@ -39,12 +40,13 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    const { checkedValues, onRef } = this.props;
+    const { checkedValues, onRef, expandAll } = this.props;
     this.getList().then(() => {
       const { authList } = this.state;
       const checkedKeysTmpl = authList.filter((item) => checkedValues?.includes(item.value)).map((item) => item.key);
       this.setState({
-        checkedKeys: checkedKeysTmpl
+        checkedKeys: checkedKeysTmpl,
+        expandedKeys: expandAll ? this.state.allParentKeys : []
       });
     });
     onRef && onRef(this);
