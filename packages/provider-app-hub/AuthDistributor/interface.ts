@@ -1,4 +1,6 @@
-export type ITerminalType = 'CS'|'BS'|'PHONE'
+import { DataNode as TreeNode } from 'antd/lib/tree';
+
+export type ITerminalType = 'CS'|'BS'|'PHONE';
 export interface ITableItem {
   name: string
   authorityCode: string
@@ -7,7 +9,7 @@ export interface ITableItem {
   gmtModified: number
   createdUserName: string
 }
-export interface INode {
+export interface INode extends TreeNode{
   title: string | React.ReactElement
   name: string
   key: string
@@ -16,6 +18,10 @@ export interface INode {
   parentUniqueId: string
   terminalType?: ITerminalType
   children?: INode[]
+  attachment?: {
+    binding?: boolean
+    authorityId?: string
+  }
 }
 
 export interface INodeConfig {
