@@ -93,3 +93,8 @@ export enum MESSAGE {
   NOT_ALLOW_DELETE = '不允许删除',
   MAY_I_DELETE = '请确认是否删除'
 }
+
+export enum EXPAND_TYPE {
+  EXPAND_ALL,
+  EXPAND_VALUES
+}

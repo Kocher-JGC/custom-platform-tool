@@ -3,6 +3,7 @@ import { Tree, Input } from 'antd';
 import { CompressOutlined, DragOutlined } from '@ant-design/icons';
 import get from 'lodash/get';
 import { INode, INodeConfig } from '../interface';
+import { EXPAND_TYPE } from '../constants';
 
 interface IProps {
   onSelect?: (selectedKeys: React.Key[], selectedNames: string[]) => void;
@@ -12,10 +13,11 @@ interface IProps {
   nodeConfig: INodeConfig
   checkedValues?: string[]
   onRef?: (param: React.ReactNode)=>void;
-  expandAll?: boolean
+  expandType?: EXPAND_TYPE.EXPAND_ALL|EXPAND_TYPE.EXPAND_VALUES
 }
 
 interface IState {
+  originalAuthList: INode[]
   authList: INode[]
   authMapByKey: {[param: string]: INode}
   allParentKeys: React.Key[]
@@ -30,6 +32,7 @@ class AuthTree extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
     this.state = {
+      originalAuthList: [],
       authList: [],
       authMapByKey: {},
       allParentKeys: [],
@@ -40,16 +43,47 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    const { checkedValues, onRef, expandAll } = this.props;
+    const { checkedValues = [], onRef } = this.props;
     this.getList().then(() => {
-      const { authList } = this.state;
-      const checkedKeysTmpl = authList.filter((item) => checkedValues?.includes(item.value)).map((item) => item.key);
+      const checkedKeysTmpl = this.getKeysByValues(checkedValues);
       this.setState({
         checkedKeys: checkedKeysTmpl,
-        expandedKeys: expandAll ? this.state.allParentKeys : []
+        expandedKeys: this.getExpandedKeysByExpandType(checkedKeysTmpl)
       });
     });
     onRef && onRef(this);
+  }
+
+  getKeysByValues = (values) => {
+    const { originalAuthList } = this.state;
+    const list:string[] = [];
+    originalAuthList.forEach((item) => {
+      if (!values.includes(item.value)) return;
+      list.push(item.key);
+    });
+    return list;
+  }
+
+  getExpandedKeysByExpandType = (checkedKeysTmpl) => {
+    const { expandType } = this.props;
+    const { allParentKeys } = this.state;
+    if (expandType === EXPAND_TYPE.EXPAND_ALL) {
+      return allParentKeys;
+    } if (expandType === EXPAND_TYPE.EXPAND_VALUES) {
+      return checkedKeysTmpl.reduce((arr, item) => {
+        return arr.concat(this.getAllParentKeysByKey(item));
+      }, []);
+    }
+    return [];
+  }
+
+  getAllParentKeysByKey = (key) => {
+    const { authMapByKey } = this.state;
+    const { parentUniqueId } = authMapByKey[key];
+    if (parentUniqueId) {
+      return [parentUniqueId, ...this.getAllParentKeysByKey(parentUniqueId)];
+    }
+    return [];
   }
 
   reload = () => {
@@ -147,6 +181,7 @@ class AuthTree extends React.Component<IProps, IState> {
       this.props.onRequest(searchValue).then((res) => {
         const { tree, parentKeyList, map } = this.constructTree(res);
         this.setState({
+          originalAuthList: res,
           authList: tree,
           authMapByKey: map,
           allParentKeys: parentKeyList,
@@ -179,7 +214,9 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   render() {
-    const { expandedKeys, checkedKeys, authList } = this.state;
+    const {
+      expandedKeys, checkedKeys, authList
+    } = this.state;
     const { checkable, selectable } = this.props;
     return (
       <div>
@@ -187,7 +224,11 @@ class AuthTree extends React.Component<IProps, IState> {
           className="mb-4"
           onSearch={(searchValue) => {
             this.setState({ searchValue }, () => {
-              this.getList();
+              this.getList().then(() => {
+                this.setState({
+                  expandedKeys: this.state.allParentKeys
+                });
+              });
             });
           }}
         />
