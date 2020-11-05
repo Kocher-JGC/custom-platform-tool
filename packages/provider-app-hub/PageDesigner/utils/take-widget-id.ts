@@ -44,3 +44,30 @@ export const takeUsedWidgetIDs = (
     ...pageUsedWidget
   ];
 };
+
+export const genBusinessCode = (
+  flatLayoutItems: FlatLayoutItems,
+  pageDataFormRemote
+) => {
+  const { id: pageID, name } = pageDataFormRemote;
+  // const businessCode: PageUsedWidget[] = [];
+  // for (const widgetID in flatLayoutItems) {
+  //   if (Object.prototype.hasOwnProperty.call(flatLayoutItems, widgetID)) {
+  //     const widgetItem = flatLayoutItems[widgetID];
+  //     // console.log('widgetItem', widgetItem);
+  //     businessCode.push({
+  //       // 32 位以内的 UI_ID
+  //       widgetId: `__${pageID}__${widgetID}`,
+  //       name: widgetItem.label,
+  //       code: `queryParam`
+  //     });
+  //   }
+  // }
+  return [
+    {
+      widgetId: `__${pageID}__`,
+      name,
+      code: `queryPerson`
+    }
+  ];
+};
