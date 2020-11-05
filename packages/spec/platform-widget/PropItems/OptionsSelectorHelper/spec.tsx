@@ -27,6 +27,7 @@ export const OptionsSelectorHelper: PropItemCompAccessSpec = {
   render(ctx) {
     return (
       <OptionsSelector
+        whichAttr="options"
         {...ctx}
       />
     );

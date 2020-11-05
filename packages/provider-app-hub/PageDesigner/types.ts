@@ -33,9 +33,20 @@ export interface DatasourceItem {
 export interface PDPropItemRendererBusinessPayload {
   /** 内部的已绑定的数据源 */
   interDatasources: PD.Datasources
-  /** 请求服务 */
+  /** 提供给属性项的请求服务 */
   $services: {
-    [sName: string]: Promise<unknown>
+    /** 字典 */
+    dict: {
+      /** 获取字典 */
+      getDictList: Promise<unknown>
+      /** 获取字典的子项 */
+      getDictWithSubItems: Promise<unknown>
+    }
+    /** 表格 */
+    table: {
+      /** 获取表格 */
+      getTable: Promise<unknown>
+    }
   }
 }
 

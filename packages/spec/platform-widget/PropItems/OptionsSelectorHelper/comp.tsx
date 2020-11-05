@@ -8,6 +8,7 @@ interface OptionsType {
   type: 'table' | 'dict'
   tableInfo: {
     id: string
+    name: string
     condition
     defaultVal
     sort
@@ -15,15 +16,20 @@ interface OptionsType {
 }
 
 const takeTableInfo = (_tableInfo: OptionsType['tableInfo']) => {
-  return _tableInfo.defaultVal;
+  return _tableInfo.name;
 };
 
-export const OptionsSelector = (props: PropItemRenderContext) => {
+interface OptionsSelectorProps extends PropItemRenderContext {
+  whichAttr: string
+}
+
+export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   const {
     changeEntityState,
     changeMetadata,
     takeMeta,
     genMetaRefID,
+    whichAttr,
     editingWidgetState,
     widgetEntity,
     businessPayload,
@@ -34,6 +40,7 @@ export const OptionsSelector = (props: PropItemRenderContext) => {
     metaAttr: 'dataSource',
     metaRefID: ''
   });
+  console.log('options :>> ', options);
   const [optionType, setOptionType] = useState(options?.type || 'dict');
   return (
     <div>
@@ -52,9 +59,35 @@ export const OptionsSelector = (props: PropItemRenderContext) => {
         modelSetting={{
           title: '选择数据源',
           width: 900,
-          children: () => {
+          children: ({ close }) => {
+            const defaultSelectedInfo = options ? {
+              id: options?.tableInfo.id,
+              name: options?.tableInfo.name,
+            } : undefined;
             return (
-              <DictSelector {...businessPayload} />
+              <DictSelector
+                {...businessPayload}
+                defaultSelectedInfo={defaultSelectedInfo}
+                onSubmit={(selectedRowInfo) => {
+                  const { id, name } = selectedRowInfo;
+                  const nextState: OptionsType = {
+                    type: optionType,
+                    tableInfo: {
+                      id,
+                      name,
+                      condition: null,
+                      defaultVal: null,
+                      sort: 'desc'
+                    }
+                  };
+                  changeEntityState({
+                    attr: whichAttr,
+                    value: nextState
+                  });
+                  close();
+                // options
+                }}
+              />
             );
           }
         }}

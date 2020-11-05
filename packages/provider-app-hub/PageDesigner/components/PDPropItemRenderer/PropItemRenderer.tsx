@@ -9,6 +9,19 @@ interface PDPropItemRendererProps extends PropItemRendererProps {
 }
 
 /**
+ * 提供给属性项的服务接口
+ */
+const servicesForPropItems: PD.PropItemRendererBusinessPayload['$services'] = {
+  dict: {
+    getDictList: getDictionaryListServices,
+    getDictWithSubItems: getListOfDictionaryServices
+  },
+  table: {
+
+  }
+};
+
+/**
  * 属性项渲染器
  * 根据属性项的 type 选择对应的组件进行渲染
  */
@@ -29,10 +42,7 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
       ...renderCtx,
       businessPayload: {
         interDatasources,
-        $services: {
-          getDictionaryListServices,
-          getListOfDictionaryServices,
-        }
+        $services: servicesForPropItems
       }
     };
     Com = propItemMeta.render(propItemRenderContext);
