@@ -7,15 +7,12 @@ const whichAttr = 'title';
 
 export const TitleHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_title_value',
-
+  name: 'PropTitle',
   label: '标题',
-
   whichAttr: ['title', 'field'],
-
   defaultValues: {
     title: '标题'
   },
-
   render(ctx) {
     const { changeEntityState, editingWidgetState, takeMeta } = ctx;
     const { title, field } = editingWidgetState;

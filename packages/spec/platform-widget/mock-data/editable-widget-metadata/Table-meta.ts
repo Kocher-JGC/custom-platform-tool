@@ -7,7 +7,7 @@ export const TableMeta: EditableWidgetMeta = {
   propEditor: 'TableEditor',
   propItemsRely: {
     propItemRefs: [
-      // { propID: 'prop_style_title_color' },
+      // { propID: 'PropLabelColor' },
       // { propID: 'prop_flex_config' },
     ]
   }

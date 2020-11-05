@@ -7,11 +7,9 @@ const whichAttr = 'labelColor';
 
 export const TitleColorHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_style_title_color',
-
+  name: 'PropLabelColor',
   label: '标题颜色',
-
   whichAttr,
-
   render: (ctx) => {
     const { changeEntityState, editingWidgetState } = ctx;
     /** 取自身定义的 whichAttr */

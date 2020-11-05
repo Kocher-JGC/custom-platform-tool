@@ -45,13 +45,10 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
  */
 export const WidgetCodingHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_widget_coding',
-
+  name: 'PropWidgetCodeing',
   label: '编码',
-
   whichAttr: ['field', 'widgetCode'],
-
   useMeta: ['schema'],
-
   render: (ctx) => {
     return <WidgetCodeComp {...ctx} />;
   }

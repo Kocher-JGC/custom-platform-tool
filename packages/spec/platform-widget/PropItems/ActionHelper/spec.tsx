@@ -9,13 +9,10 @@ const metaAttr = 'actions';
 
 export const ActionHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_action_config',
-
+  name: 'PropActionConfig',
   label: '动作设置',
-
   whichAttr,
-
   useMeta: metaAttr,
-
   render(ctx) {
     const {
       takeMeta, genMetaRefID, changeEntityState, changeMetadata,

@@ -7,7 +7,7 @@ import { ApiMock } from "./api-mock";
 export const pagePropItems: PropItemCompAccessSpec[] = [
   (entity) => {
     return {
-      id: 'prop_style_title_color',
+      id: 'PropLabelColor',
       label: '背景颜色',
       target: 'backgroundColor',
       component: {

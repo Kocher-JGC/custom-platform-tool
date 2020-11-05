@@ -5,9 +5,8 @@ import PageDesignerApp from "@provider-app/page-designer/main";
 import TableEditor from "@provider-app/table-editor/app";
 import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
-
+import LesseeAuthority from "@provider-app/lessee-authority/app";
 import PopupWindowSelector from "@provider-app/popup-window-selector/app";
-
 /// //////// 数据设计结束
 import { resolvePagePath, resolvePagePathWithSeperator } from "multiple-page-routing/utils";
 
@@ -66,6 +65,14 @@ const RouterConfig: RouterConfigType = {
   '/dictionary-manager': {
     component: DictionaryManager,
     title: '字典管理'
+  },
+  // '/table-info': {
+  //   title: '编辑表',
+  //   component: TableInfo
+  // },
+  '/lessee-authority': {
+    title: '权限项',
+    component: LesseeAuthority
   },
   '/popup-window-selector': {
     title: '弹窗选择',
