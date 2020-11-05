@@ -13,7 +13,7 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_field',
           'prop_real_value',
           'prop_action_config',
-          'prop_options_selector',
+          'prop_datasource_selector',
         ]
       },
       {

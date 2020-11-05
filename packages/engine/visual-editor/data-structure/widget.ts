@@ -14,7 +14,7 @@ export interface PropItemRefs {
    * 2. 可以覆盖由属性项元数据中声明的 whichAttr 属性
    * 3. 如果不填，默认可以修改全部属性
    */
-  editAttr: EditAttr
+  editAttr?: EditAttr
   /** 覆盖属性项定义的默认值 */
   defaultValues?: {
     [editAttr: string]: any
