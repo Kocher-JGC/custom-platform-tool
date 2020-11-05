@@ -34,6 +34,7 @@ export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '终端',
     dataIndex: 'terminalType',
+    key: 'terminalType',
     width: 180,
     render: (text) => {
       return TERMINAL_TYPE_MENU.reduce((a, b) => {
@@ -45,6 +46,7 @@ export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '最后修改时间',
     dataIndex: 'gmtModified',
+    key: 'gmtModified',
     width: 210,
     render: (date) => {
       return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
@@ -53,6 +55,7 @@ export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '创建人',
     dataIndex: 'createdUserName',
+    key: 'createdUserName',
     width: 120
   }
 ];
