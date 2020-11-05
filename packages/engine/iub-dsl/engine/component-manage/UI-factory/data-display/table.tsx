@@ -59,7 +59,7 @@ export const normalTableCompName = AllUI.NormalTable;
 
 const TableFactory = ({
   id, columns, children, compMark,
-  dataSource,
+  dataSource, pageUrl,
   compInfo, ...ohterProps
 }) => {
   // PK、dataSource、metadata
@@ -80,7 +80,12 @@ const TableFactory = ({
             onClick={() => {
               const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
               const action = antTableRowClick(compInfo)({
-                gridData, rowData, colKey, dataSource, pageStatus: 'updateStatus' // TODO 应该也是配置
+                pageUrl,
+                gridData,
+                rowData,
+                colKey,
+                dataSource,
+                pageStatus: 'updateStatus' // TODO 应该也是配置
               });
               context.runTimeCtxToBusiness.current.action = action;
               asyncDispatchOfIUBEngine({
@@ -100,7 +105,12 @@ const TableFactory = ({
             onClick={() => {
               const { asyncDispatchOfIUBEngine } = context.runTimeCtxToBusiness.current;
               const action = antTableRowClick(compInfo)({
-                gridData, rowData, colKey, dataSource, pageStatus: 'detailStatus' // TODO 应该也是配置
+                pageUrl,
+                gridData,
+                rowData,
+                colKey,
+                dataSource,
+                pageStatus: 'detailStatus' // TODO 应该也是配置
               });
               context.runTimeCtxToBusiness.current.action = action;
               asyncDispatchOfIUBEngine({
