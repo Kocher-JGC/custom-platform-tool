@@ -2,7 +2,6 @@ import { ColumnType } from 'antd/lib/table';
 import dayjs from 'dayjs';
 import { ITableItem } from './interface';
 
-const dayjs = import('dayjs');
 export const TERMINAL_TYPE_MENU = [
   { label: "CS客户端", value: 'CS', key: 'CS' },
   { label: "BS客户端", value: 'BS', key: 'BS' },
@@ -67,8 +66,18 @@ export const SELECT_ALL = "all";
 
 export const MORE_MENU = [{
   title: "快速创建权限树",
-  key: "createAuthority"
+  key: "createAuthoritySpeedy"
 }, {
   title: "自定义创建权限树",
-  key: "createAuthoritySpeedy"
+  key: "createAuthority"
 }];
+export enum MORE_MENU_TYPE {
+  "CREATEAUTHORITY" = "createAuthority",
+  "CREATEAUTHORITYSPEEDY" = "createAuthoritySpeedy"
+}
+
+export enum MESSAGE {
+  ALLOW_DELETE_FAILED = '无法删除数据，请联系技术人员',
+  NOT_ALLOW_DELETE = '不允许删除',
+  MAY_I_DELETE = '请确认是否删除'
+}
