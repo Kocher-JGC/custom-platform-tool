@@ -383,7 +383,7 @@ class TableEditor extends React.Component {
       await this.expandInfoFormRef.current?.validateFields();
       const record = this.getRecordFromExpandForm[activeAreaInExpandedInfo]?.();
       const index = this.getIndexByEditingKey();
-      debugger;
+      // debugger;
       this.setEffect({
         oldRecord: this.state[activeAreaInExpandedInfo][index],
         newRecord: record
