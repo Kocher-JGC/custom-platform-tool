@@ -11,8 +11,18 @@ export interface INode {
   title: string | React.ReactElement
   name: string
   key: string
-  code: string
+  uniqueId: string
   value: string
-  parentCode: string
-  terminalType: ITerminalType
+  parentUniqueId: string
+  terminalType?: ITerminalType
+}
+
+export interface INodeConfig {
+  columnImg: {
+    uniqueId: string
+    parentUniqueId: string
+    value: string
+    name: string
+  }
+  titleBeautifyBySearchValue?:boolean
 }
