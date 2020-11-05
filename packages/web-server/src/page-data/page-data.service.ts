@@ -121,6 +121,10 @@ export class PageDataService {
 
   tempOpenPageUrl: string;
 
+  isSearch = false;
+
+  tempBusinessCode: string[] = [];
+
   mockDataSource =   {
     id: '1320563055356157952',
     version: null,
@@ -253,6 +257,7 @@ export class PageDataService {
 
   genFromButton(widgetData) {
     const { compType, field, id, title, type, actionRef } = widgetData;
+    this.tempBusinessCode.push(`__${id}`);
     return {
       id, compType: 'NormalButton', title, label: title, text: title, type,
       actions: {
@@ -462,6 +467,7 @@ export class PageDataService {
       this.genTableExtralData(tableD[0], extralSchema);
       this.addSearchWieght(extralSchema);
       this.addSearchBuntton(extralSchema);
+      this.isSearch = true;
     }
 
     return result.reduce((res, val, i) => {
@@ -655,6 +661,8 @@ export class PageDataService {
       name: '',
       type: '',
       openPageUrl: '',
+      isSearch: false,
+      businessCode: []
     };
     try {
       contentData = JSON.parse(pageContent);
@@ -701,11 +709,15 @@ export class PageDataService {
       IUBDSLData.actionsCollection = actualActions;
       IUBDSLData.flowCollection = actualFlowCollection;
       IUBDSLData.openPageUrl = this.tempOpenPageUrl;
+      IUBDSLData.isSearch = this.isSearch;
+      IUBDSLData.businessCode = this.tempBusinessCode.map(v=> `__${IUBDSLData.pageID}${v}`);
 
       this.tempFlow.length = 0;
       this.tempAction.length = 0;
       this.tempSchema.length = 0;
       this.tempWeight.length = 0;
+      this.tempBusinessCode.length = 0;
+      this.isSearch = false;
     } catch(e) {
       console.log(e);
       contentData = pageContent;
