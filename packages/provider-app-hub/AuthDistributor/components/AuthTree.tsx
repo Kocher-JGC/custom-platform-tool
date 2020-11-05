@@ -6,14 +6,17 @@ import { INode, INodeConfig } from '../interface';
 import { EXPAND_TYPE } from '../constants';
 
 interface IProps {
-  onSelect?: (selectedKeys: React.Key[], selectedNames: string[]) => void;
+  onSelect?: (selectedKeys: React.Key[], selectedNames: string[], selectedNodes: INode[]) => void;
   checkable?: boolean
   selectable?: boolean
   onRequest: (searchValue?: string) => Promise<INode[]>
   nodeConfig: INodeConfig
-  checkedValues?: string[]
+  nodeBeautify?: (node: INode)=> INode
+  onInitCheckedKeys?: (authList: INode[], authMapByKey: {[param: string]: INode}, originalAuthList: INode[])=>void
   onRef?: (param: React.ReactNode)=>void;
   expandType?: EXPAND_TYPE.EXPAND_ALL|EXPAND_TYPE.EXPAND_VALUES
+  width?: number
+  height?: number
 }
 
 interface IState {
@@ -43,25 +46,16 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   componentDidMount() {
-    const { checkedValues = [], onRef } = this.props;
+    const { onRef, onInitCheckedKeys } = this.props;
     this.getList().then(() => {
-      const checkedKeysTmpl = this.getKeysByValues(checkedValues);
+      const { authList, authMapByKey, originalAuthList } = this.state;
+      const checkedKeysTmpl = onInitCheckedKeys && onInitCheckedKeys(authList, authMapByKey, originalAuthList) || [];
       this.setState({
         checkedKeys: checkedKeysTmpl,
         expandedKeys: this.getExpandedKeysByExpandType(checkedKeysTmpl)
       });
     });
     onRef && onRef(this);
-  }
-
-  getKeysByValues = (values) => {
-    const { originalAuthList } = this.state;
-    const list:string[] = [];
-    originalAuthList.forEach((item) => {
-      if (!values.includes(item.value)) return;
-      list.push(item.key);
-    });
-    return list;
   }
 
   getExpandedKeysByExpandType = (checkedKeysTmpl) => {
@@ -131,7 +125,10 @@ class AuthTree extends React.Component<IProps, IState> {
    * @param node 节点数据
    */
   constructNodeByColumnConfig = (node: INode) => {
-    const { columnImg, titleBeautifyBySearchValue } = this.props.nodeConfig;
+    const {
+      nodeBeautify,
+      nodeConfig: { columnImg, titleBeautifyBySearchValue }
+    } = this.props;
     for (const key in columnImg) {
       node[key] = get(node, columnImg[key]);
     }
@@ -140,6 +137,7 @@ class AuthTree extends React.Component<IProps, IState> {
       node.title = this.renderHighlightValue(name);
     }
     node.key = node.uniqueId;
+    typeof nodeBeautify === 'function' && nodeBeautify(node);
     return node;
   };
 
@@ -210,14 +208,17 @@ class AuthTree extends React.Component<IProps, IState> {
     const { onSelect } = this.props;
     const checkedValues = checkedKeys.map((item) => authMapByKey[item].value);
     const checkedNames = checkedKeys.map((item) => authMapByKey[item].name);
-    onSelect && onSelect(checkedValues, checkedNames);
+    const checkedNodes = checkedKeys.map((item) => authMapByKey[item]);
+    onSelect && onSelect(checkedValues, checkedNames, checkedNodes);
   }
 
   render() {
     const {
       expandedKeys, checkedKeys, authList
     } = this.state;
-    const { checkable, selectable } = this.props;
+    const {
+      checkable, selectable, height, width
+    } = this.props;
     return (
       <div>
         <Input.Search
@@ -245,6 +246,8 @@ class AuthTree extends React.Component<IProps, IState> {
           }
         </div>
         <Tree
+          width = {width}
+          height = {height}
           checkable = {checkable || false}
           selectable = {selectable || false}
           checkedKeys = {checkedKeys}
