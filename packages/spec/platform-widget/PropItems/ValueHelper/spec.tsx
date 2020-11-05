@@ -4,11 +4,9 @@ import { ValueHelper } from './comp';
 
 export const ValueHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_real_value',
-
+  name: 'PropValue',
   label: '值',
-
   whichAttr: ['realVal', 'exp', 'variable'],
-
   render(ctx) {
     const { changeEntityState, editingWidgetState } = ctx;
 
