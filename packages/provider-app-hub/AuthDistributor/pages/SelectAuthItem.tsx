@@ -3,6 +3,7 @@ import {
   Button, Space
 } from 'antd';
 import AuthItemTree from '../components/AuthItemTree';
+import { EXPAND_TYPE } from '../constants';
 
 interface IOnSuccessParams {
   id:string;
@@ -24,6 +25,7 @@ const SelectAuthItem = ({
     <>
       <div style={{ minHeight: 300 }}>
         <AuthItemTree
+          expandType = {EXPAND_TYPE.EXPAND_VALUES}
           searchParams = {searchParams}
           authItems = {authItems}
           onSelect = {(selectedKeys, selectedNames) => {
