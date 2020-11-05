@@ -8,8 +8,8 @@ import { actionsCollectionParser } from "./actions-manage/actions-parser";
 import { flowParser } from './flow-engine';
 import { isPageState } from "./state-manage";
 import { eventPropsHandle } from "./event-manage";
-import { datasourceMetaHandle } from "./datasource-meta";
 import { actionsCollectConstor } from "./relationship/depend-collet/action-depend";
+import { metadataManage } from "./metadata-manage";
 
 const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContext) => {
   const { changeTarget } = actionConf;
@@ -83,7 +83,7 @@ const IUBDSLParser = ({ dsl }) => {
     componentsCollection, schemas,
     metadataCollection, relationshipsCollection,
     layoutContent, pageID, name, type,
-    flowCollection
+    flowCollection, openPageUrl
   } = dsl as TypeOfIUBDSL;
 
   let parseRes: any = {
@@ -102,7 +102,7 @@ const IUBDSLParser = ({ dsl }) => {
   const renderComponentKeys = Object.keys(componentsCollection);
 
   /** 数据源元数据解析和实体 */
-  const datasourceMetaEntity = datasourceMetaHandle(metadataCollection as any);
+  const datasourceMetaEntity = metadataManage({ metadata: metadataCollection });
 
   /** 页面模型解析 */
   const schemasParseRes = SchemasParser(schemas);
@@ -119,7 +119,8 @@ const IUBDSLParser = ({ dsl }) => {
 
   /** 组件解析 TODO: propsMap有问题, 上下文没有对其进行干预 */
   const componentParseRes = widgetParser(componentsCollection, {
-    parseContext
+    parseContext,
+    openPageUrl
   });
 
   const flowParseRes = flowParser(Object.assign(flowCollection, tableExtralFlow), { parseContext, parseRes });
