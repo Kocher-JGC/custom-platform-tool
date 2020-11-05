@@ -10,7 +10,7 @@ const AuthShowTree = (props) => {
       selectable = {props.selectable || false}
       onSelect = {props.onSelect}
       onRequest = {(searchValue) => {
-        return getShowAuthoritiesTree({ name: searchValue });
+        return getShowAuthoritiesTree({ ...(props.searchParams || {}), name: searchValue });
       }}
       expandAll = {props.expandAll}
       onRef = {props.onRef}

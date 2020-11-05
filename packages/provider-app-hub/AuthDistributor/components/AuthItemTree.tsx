@@ -10,7 +10,7 @@ const AuthItemTree = (props) => {
       selectable = {props.selectable || false}
       onSelect = {props.onSelect}
       onRequest = {(searchValue) => {
-        return getAuthorityItemsTree({ name: searchValue });
+        return getAuthorityItemsTree({ ...(props.searchParams || {}), name: searchValue });
       }}
       nodeConfig = {{
         columnImg: {
