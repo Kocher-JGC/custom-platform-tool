@@ -1,5 +1,6 @@
 /* eslint-disable no-shadow */
 import React, { useEffect, useMemo } from 'react';
+import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
 import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
 import { genEventWrapFnList, useEventProps } from '../event-manage';
 import { useCacheState } from '../utils';
@@ -24,8 +25,9 @@ const useUU = (setListConf: any[] = []) => {
   });
   return prop;
 };
-const APBDSLrequest = async (ctx: RunTimeCtxToBusiness, reqParam) => {
-  const APBDSLRes = await originReq(reqParam);
+
+const APBDSLrequest = (url) => async (ctx: RunTimeCtxToBusiness, reqParam) => {
+  const APBDSLRes = await originReq(url, reqParam);
   const action = {
     action: {
       type: 'APBDSLRes',
@@ -71,6 +73,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     IUBStoreEntity, // IUB页面仓库实例
     runTimeCtxToBusiness, // useRef
     effectRelationship, // 副作用关系的实例
+    businessCode
   } = runtimeCtx;
   const {
     getPageState,
@@ -127,7 +130,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
       flowsRun
     },
     sys: {
-      APBDSLrequest
+      APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || 'queryPerson'))
     },
   };
 

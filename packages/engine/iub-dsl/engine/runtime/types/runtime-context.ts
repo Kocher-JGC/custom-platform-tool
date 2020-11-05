@@ -13,4 +13,5 @@ export interface GRCtx {
   runTimeCtxToBusiness: React.MutableRefObject<RunTimeCtxToBusiness>,
   IUBStoreEntity: IUBStoreEntity;
   effectRelationship: EffectRelationshipEntity;
+  businessCode: any
 }

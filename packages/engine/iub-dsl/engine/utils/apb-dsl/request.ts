@@ -74,7 +74,7 @@ interface APBDSLRespone<T = any> {
   result: T
   timestamp: string
 }
-export const APBDSLrequest = <R = any>(reqParam) => {
+export const APBDSLrequest = <R = any>(url, reqParam) => {
   // const reqUrl = genUrl('UserInfo');
   // console.dir(reqParam, { depth: 3 });
   // $A_R.interceptors.response.use((response) => {
@@ -84,7 +84,7 @@ export const APBDSLrequest = <R = any>(reqParam) => {
 
   //   return Promise.reject(err);
   // });
-  return $A_R(getAPBDSLtestUrl(), {
+  return $A_R(url, {
     method: 'POST',
     data: reqParam,
   }).then((response: AxiosResponse<APBDSLRespone<R | boolean>>) => {

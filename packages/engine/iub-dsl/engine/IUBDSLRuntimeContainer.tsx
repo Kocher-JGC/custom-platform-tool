@@ -6,6 +6,7 @@ import { LayoutRenderer } from '@engine/layout-renderer';
 
 import { pageManage } from '@consumer-app/web-platform/src/page-manage';
 
+import Modal from 'antd/lib/modal/Modal';
 import { widgetRenderer, genCompRenderFC } from './component-manage/component-store/render-component';
 import { getWidget } from './component-manage/UI-factory/all-UI';
 import { FromWrapFactory } from './component-manage/UI-factory';
@@ -21,7 +22,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
     renderComponentKeys,
-    schemasParseRes, pageID: pageId
+    schemasParseRes, pageID: pageId, businessCode
   } = dslParseRes;
 
   /** 获取单例的页面管理 */
@@ -103,6 +104,7 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
     IUBStoreEntity,
     runTimeCtxToBusiness,
     effectRelationship,
+    businessCode,
   }), [IUBStoreEntity]);
 
   const extralProps = useMemo(() => ({ extral: '扩展props' }), []);
@@ -111,25 +113,28 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
 
   return (
     <DefaultCtx.Provider value={defaultCtx}>
-      <FromWrapFactory>
+      <FromWrapFactory >
         <LayoutRenderer
           layoutNode={actualRenderComponentList}
           componentRenderer={({ layoutNodeItem }) => {
             const { id: compId, Widget } = layoutNodeItem;
 
-            return <Widget key={compId} {...extralProps}/>;
+            return <Widget key={compId} extralProps={extralProps}/>;
           }}
           RootRender={(child) => {
-            return (<div>
-              {child}
-            </div>);
+            // return (<div>
+            //   {child}
+            // </div>);
+            return child;
           }}
         />
       </FromWrapFactory>
+
       {/* <pre>
         {JSON.stringify(getPageState(), null, 2)}
       </pre> */}
     </DefaultCtx.Provider>
+
   );
 };
 

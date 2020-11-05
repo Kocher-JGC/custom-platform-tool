@@ -1,4 +1,5 @@
-import { Modal, Form, Input } from 'antd';
+import { Modal } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import React from 'react';
 import { OpenModalOptions } from '@iub-dsl/definition';
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
@@ -73,11 +74,16 @@ export const openModelFromTable = (conf: OpenModalOptions, baseActionInfo): Acti
     if (openPageUrl) {
       try {
         const pageData = await queryPageData({ id: openPageUrl });
-        const mInstance = Modal.confirm({
+        const m = Modal.confirm({
+          title: <div style={{ textAlign: 'right' }}><CloseOutlined onClick={() => {
+            m.destroy();
+          }}
+          /></div>,
           icon: false,
-          content: <IUBDSLRenderer hooks={IUBRendererHooks} pageStatus={pageStatus} dsl={pageData} />
+          cancelButtonProps: { style: { display: 'none' } },
+          okButtonProps: { style: { display: 'none' } },
+          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
         });
-        // console.log(mInstance);
       } catch (e) {
         console.error(e);
       }
