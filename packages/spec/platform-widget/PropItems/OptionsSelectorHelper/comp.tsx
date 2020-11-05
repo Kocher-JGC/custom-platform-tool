@@ -8,6 +8,7 @@ interface OptionsType {
   type: 'table' | 'dict'
   tableInfo: {
     id: string
+    name: string
     condition
     defaultVal
     sort
@@ -15,34 +16,40 @@ interface OptionsType {
 }
 
 const takeTableInfo = (_tableInfo: OptionsType['tableInfo']) => {
-  return _tableInfo.defaultVal;
+  return _tableInfo.name;
 };
 
-export const OptionsSelector = (props: PropItemRenderContext) => {
+interface OptionsSelectorProps extends PropItemRenderContext {
+  whichAttr: string
+}
+
+export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   const {
     changeEntityState,
     changeMetadata,
     takeMeta,
     genMetaRefID,
+    whichAttr,
     editingWidgetState,
     widgetEntity,
     businessPayload,
   } = props;
   const { interDatasources, $services } = businessPayload;
-  const { options } = editingWidgetState as {options: OptionsType};
-  const datasourceMeta = takeMeta({
+  // 选项数据源的引用
+  const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
+  const datasourceMeta = DSOptionsRef ? takeMeta({
     metaAttr: 'dataSource',
-    metaRefID: ''
-  });
-  const [optionType, setOptionType] = useState(options?.type || 'dict');
+    metaRefID: DSOptionsRef
+  }) as OptionsType : null;
+  const [dsType, setDsType] = useState(datasourceMeta?.type || 'dict');
   return (
     <div>
       <div className="py-2">
         <Radio.Group
           onChange={(e) => {
-            setOptionType(e.target.value);
+            setDsType(e.target.value);
           }}
-          value={optionType}
+          value={dsType}
         >
           <Radio value={'table'}>数据表</Radio>
           <Radio value={'dict'}>字典表</Radio>
@@ -52,14 +59,47 @@ export const OptionsSelector = (props: PropItemRenderContext) => {
         modelSetting={{
           title: '选择数据源',
           width: 900,
-          children: () => {
+          children: ({ close }) => {
+            const defaultSelectedInfo = DSOptionsRef ? {
+              id: DSOptionsRef?.tableInfo.id,
+              name: DSOptionsRef?.tableInfo.name,
+            } : undefined;
             return (
-              <DictSelector {...businessPayload} />
+              <DictSelector
+                {...businessPayload}
+                defaultSelectedInfo={defaultSelectedInfo}
+                onSubmit={(selectedRowInfo) => {
+                  const { id, name } = selectedRowInfo;
+                  const nextState: OptionsType = {
+                    type: dsType,
+                    tableInfo: {
+                      id,
+                      name,
+                      condition: null,
+                      defaultVal: null,
+                      sort: 'desc'
+                    }
+                  };
+                  const nextMetaID = genMetaRefID(`ds`);
+                  changeEntityState({
+                    attr: whichAttr,
+                    value: nextMetaID
+                  });
+                  changeMetadata({
+                    metaAttr: 'dataSource',
+                    metaID: nextMetaID,
+                    rmMetaID: DSOptionsRef,
+                    data: nextState
+                    // metaID:
+                  });
+                  close();
+                }}
+              />
             );
           }
         }}
       >
-        {options ? takeTableInfo(options.tableInfo) : '点击绑定'}
+        {datasourceMeta ? takeTableInfo(datasourceMeta.tableInfo) : '点击绑定'}
       </PopModelSelector>
     </div>
   );
