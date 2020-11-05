@@ -18,11 +18,11 @@ interface IProps {
 interface IState {
   authList: INode[]
   authMapByKey: {[param: string]: INode}
-  allParentKeys: string[]
-  checkedKeys: string[]
+  allParentKeys: React.Key[]
+  checkedKeys: React.Key[]
 
-  expandedKeys: string[]
-  searchValue: string
+  expandedKeys: React.Key[]
+  searchValue: React.Key
 
 }
 
@@ -65,19 +65,25 @@ class AuthTree extends React.Component<IProps, IState> {
     const { searchValue } = this.state;
     const nameSplit = name.split(searchValue);
     const nameSplitLength = nameSplit.length;
-    const title = nameSplitLength > 0
+    const title = searchValue && nameSplitLength > 0
       ? (
         <span>
           {nameSplit.map((item, index) => {
-            if (index === nameSplitLength - 1) {
-              return <span>{item}</span>;
+            if (item) {
+              if (index === nameSplitLength - 1) {
+                return <span key={index.toString()}>{item}</span>;
+              }
+              return (
+                <span key={index.toString()}>
+                  <span>{item}</span>
+                  <span className="tree-search-value">{searchValue}</span>
+                </span>
+              );
             }
-            return (
-              <>
-                <span>{item}</span>
-                <span className="tree-search-value">{searchValue}</span>
-              </>
-            );
+            if (index < nameSplitLength - 1) {
+              return <span key={searchValue} className="tree-search-value">{searchValue}</span>;
+            }
+            return null;
           })}
         </span>
       ) : (
@@ -91,7 +97,6 @@ class AuthTree extends React.Component<IProps, IState> {
    * @param node 节点数据
    */
   constructNodeByColumnConfig = (node: INode) => {
-    const { searchValue } = this.state;
     const { columnImg, titleBeautifyBySearchValue } = this.props.nodeConfig;
     for (const key in columnImg) {
       node[key] = get(node, columnImg[key]);
