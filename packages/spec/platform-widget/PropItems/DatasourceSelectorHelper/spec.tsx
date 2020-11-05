@@ -4,7 +4,7 @@ import { OptionsSelector } from './comp';
 // import { PropItem } from '../../utils';
 
 // @PropItem({
-//   id: 'prop_options_selector',
+//   id: 'prop_datasource_selector',
 //   name: 'PropDataSource',
 //   label: '选项数据源',
 //   whichAttr: ['options'],
@@ -19,8 +19,8 @@ import { OptionsSelector } from './comp';
 
 // console.dir(A);
 
-export const OptionsSelectorHelper: PropItemCompAccessSpec = {
-  id: 'prop_options_selector',
+export const DatasourceSelectotHelper: PropItemCompAccessSpec = {
+  id: 'prop_datasource_selector',
   name: 'PropDataSource',
   label: '选项数据源',
   // optDS => option datasource
