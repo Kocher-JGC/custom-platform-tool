@@ -16,7 +16,7 @@ interface IIconAppointed {
 export const IconAppointed: React.FC<IIconAppointed> = ({
   iconType
 }) => {
-  const [ready, icons] = useIcon('react-icons/all');
+  const [ready, icons] = useIcon('react-icons/ri');
   if (!ready || !icons) return null;
   const Icon = icons[iconType];
   return Icon ? (

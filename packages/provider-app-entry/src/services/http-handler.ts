@@ -8,6 +8,7 @@ import { message as AntdMessage } from 'antd';
 
 import { clearDefaultParams, onNavigate, redirectToRoot } from "multiple-page-routing";
 import { authStore } from "../auth/actions";
+import { HttpBusinessCodeMap } from "./http-business-code-map";
 
 /**
  * 后端返回的数据结构
@@ -40,8 +41,10 @@ export interface RExtend extends RequestClass<ResStruct, RequestOptions> {
 }
 
 export interface RequestOptions {
+  /** 是否显示成功的信息 */
+  showSuccessTip?: boolean
   /** 业务提示 */
-  businessTip: {
+  businessTip?: {
     /** 提示的类型 */
     type?: 'error' | 'success' | 'info'
     /** 弹出的提示的类型，是顶部提示或者是右上角提示 */
@@ -129,41 +132,51 @@ const resetHttpReqHelper = () => {
 
 /**
  * 统一处理 http 业务码的函数
+ * 1. 如果有 showSuccessTip 配置，则解析完成后退出流程
+ * 2. 如果有 businessTip 配置，则解析完成后退出流程
+ * 3. 默认的 http 处理，这里根据时机情况再做调整
  */
 function handleRes({ res, resDetail }) {
   // return console.log('resData', resData);
   const { code, msg } = res;
-  const { businessTip } = resDetail.__originReq;
-  if (!businessTip) {
-    /** 如果没有配置，默认所有错误都弹出 */
-    switch (code) {
-      case '00000':
-        // console.log('成功');
-        break;
-      case 'A0300':
-        // console.log(resData);
-        // 处理没找到应用的业务逻辑
-        AntdMessage.error(msg);
-        redirectToRoot();
-        authStore.setState({ isLogin: false });
-        resetHttpReqHelper();
-        // onNavigate({
-        //   type: 'PUSH',
-        //   path: '/login',
-        //   useDefaultParams: false
-        // });
-        break;
-      default:
-        // TODO: 完善请求
-        AntdMessage.error(msg);
+  const { businessTip, showSuccessTip } = resDetail.__originReq;
+  if (showSuccessTip) {
+    if (code === HttpBusinessCodeMap.success) {
+      AntdMessage.success(msg);
     }
-  } else {
+    return null;
+  }
+  if (businessTip) {
     const { whenCodeEq, type = 'info' } = businessTip as RequestOptions['businessTip'];
     if (code === whenCodeEq) {
       const antdMsgFunc = AntdMessage[type] || AntdMessage.info;
       antdMsgFunc(msg);
     }
+    return null;
   }
+  /** 如果没有配置，默认所有错误都弹出 */
+  switch (code) {
+    case HttpBusinessCodeMap.success:
+      // console.log('成功');
+      break;
+    case 'A0300':
+      // console.log(resData);
+      // 处理没找到应用的业务逻辑
+      AntdMessage.error(msg);
+      redirectToRoot();
+      authStore.setState({ isLogin: false });
+      resetHttpReqHelper();
+      // onNavigate({
+      //   type: 'PUSH',
+      //   path: '/login',
+      //   useDefaultParams: false
+      // });
+      break;
+    default:
+      // TODO: 完善请求
+      AntdMessage.error(msg);
+  }
+  return null;
 }
 
 const handleErr = (e) => {

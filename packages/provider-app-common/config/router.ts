@@ -7,10 +7,10 @@ import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
 import ShowAuthority from "@provider-app/auth-distributor/app";
 
+import LesseeAuthority from "@provider-app/lessee-authority/app";
 import PopupWindowSelector from "@provider-app/popup-window-selector/app";
-
 /// //////// 数据设计结束
-import { resolvePagePath } from "multiple-page-routing/utils";
+import { resolvePagePath, resolvePagePathWithSeperator } from "multiple-page-routing/utils";
 
 // const PageManager = React.lazy(() => import("@provider-app/page-manager/app"));
 // const MenuManager = React.lazy(() => import("@provider-app/menu-manager/app"));
@@ -68,6 +68,14 @@ const RouterConfig: RouterConfigType = {
     component: DictionaryManager,
     title: '字典管理'
   },
+  // '/table-info': {
+  //   title: '编辑表',
+  //   component: TableInfo
+  // },
+  '/lessee-authority': {
+    title: '权限项',
+    component: LesseeAuthority
+  },
   '/popup-window-selector': {
     title: '弹窗选择',
     component: PopupWindowSelector
@@ -87,7 +95,7 @@ const RouterConfig: RouterConfigType = {
  * @param route
  */
 export const getRouteName = (path) => {
-  const routeName = RouterConfig[resolvePagePath(path)]?.title;
+  const routeName = RouterConfig[resolvePagePathWithSeperator(path)]?.title;
   if (!routeName) console.warn(`请注意，没找到注册的路由信息 ${path}`);
   return routeName;
 };

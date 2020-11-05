@@ -1,10 +1,12 @@
 /**
  * 应用管理 API
  */
+import { getAppConfig } from "@provider-app/config/config-manager";
 
 /**
  * 获取应用
  */
+
 export async function GetApplication() {
   return await $R_P.get({
     url: '/manage/v1/applications',
@@ -43,4 +45,16 @@ export async function CreateApplication(data) {
  */
 export async function DelApplication(appID) {
   return await $R_P.del(`/manage/v1/applications/${appID}`);
+}
+
+/**
+ * 预览
+ * @param appID
+ */
+export async function previewAppService(appID: string) {
+  const lessee = $R_P.urlManager.currLessee;
+  const appUrl = getAppConfig('apiUrl');
+  return await $R_P.get({
+    url: `${appUrl}/paas/${lessee}/manage/v1/applications/preview/${appID}`,
+  });
 }

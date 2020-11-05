@@ -1,7 +1,20 @@
 /// //////////////// 属性项 ///////////////////
 
 import { ChangeMetadata } from "../core";
+import { PageMetadata } from "./page-metadata";
 import { WidgetEntity } from "./widget";
+
+export interface WidgetEditablePropMeta {
+  /** 属性的类型 */
+  type: 'string' | 'number' | 'boolean' | 'struct' | 'any'
+  /** 属性的别名 */
+  alias?: string
+}
+
+export interface WidgetEditableProps {
+  title: WidgetEditablePropMeta
+  [propName: string]: WidgetEditablePropMeta
+}
 
 export type PropItemCompRender = ({
   /** 属性的值 */
@@ -25,7 +38,7 @@ export type ChangeEntityState = (nextEntityState: NextEntityStateType) => void
 
 export interface TakeMetaOptions {
   /** meta 的 attr */
-  metaAttr: string
+  metaAttr: keyof PageMetadata
   /** meta 的引用 ID */
   metaRefID?: string
 }
@@ -33,6 +46,12 @@ export interface TakeMetaOptions {
 export type TakeMeta = (options: TakeMetaOptions) => unknown
 
 export type GenMetaRefID = (metaAttr: string) => string
+
+export interface UICtx {
+  utils: {
+    showMsg: (ctx: { msg: string, type: 'success' | 'error' }) => void
+  }
+}
 
 export interface PropItemRenderContext {
   /** 业务数据 */
@@ -45,9 +64,11 @@ export interface PropItemRenderContext {
   changeEntityState: ChangeEntityState
   /** 更改页面的 meta 数据 */
   changeMetadata: typeof ChangeMetadata
+  /** 获取 meta */
   takeMeta: TakeMeta
   /** 生成 meta 引用的 ID */
   genMetaRefID: GenMetaRefID
+  UICtx: UICtx
 }
 
 /**
@@ -55,8 +76,10 @@ export interface PropItemRenderContext {
  * @description 节点含义说明：第一层为描述属性项的元数据，propItemCompDef 节点为描述该属性项中用于交互的组件
  */
 export interface PropItemMeta {
-  /** 属性项 ID */
+  /** 属性项 ID，随机生成的 */
   readonly id: string
+  /** 被 widget 引用的属性名字 */
+  readonly name: string
   /** 属性项显示的 label */
   readonly label: string
   /**
