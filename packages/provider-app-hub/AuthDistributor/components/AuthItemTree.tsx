@@ -8,6 +8,7 @@ const AuthItemTree = (props) => {
       checkedValues = {props.authItems}
       checkable = {props.checkable || false}
       selectable = {props.selectable || false}
+      expandType = {props.expandType}
       onSelect = {props.onSelect}
       onRequest = {(searchValue) => {
         return getAuthorityItemsTree({ ...(props.searchParams || {}), name: searchValue });

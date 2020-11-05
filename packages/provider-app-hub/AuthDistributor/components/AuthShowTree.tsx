@@ -12,7 +12,7 @@ const AuthShowTree = (props) => {
       onRequest = {(searchValue) => {
         return getShowAuthoritiesTree({ ...(props.searchParams || {}), name: searchValue });
       }}
-      expandAll = {props.expandAll}
+      expandType = {props.expandType}
       onRef = {props.onRef}
       nodeConfig = {{
         columnImg: {
