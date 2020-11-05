@@ -5,7 +5,13 @@ import { getShowAuthoritiesTree } from '../services/apiAgents';
 const AuthShowTree = (props) => {
   return (
     <AuthTree
-      checkedValues = {props.showAuthItems}
+      width = {props.width}
+      height = {props.height}
+      onInitCheckedKeys = {(list, map, originalList) => {
+        const values = props.authItems || [];
+        if (values.length === 0) return [];
+        return originalList.map((item) => item.value).filter((value) => values.includes(value));
+      }}
       checkable = {props.checkable || false}
       selectable = {props.selectable || false}
       onSelect = {props.onSelect}
