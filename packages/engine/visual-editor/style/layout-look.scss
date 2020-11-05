@@ -9,7 +9,8 @@
     .canvas-container {
       border-left: 1px solid #EEE;
       border-right: 1px solid #EEE;
-      padding: 10px;
+      padding: 20px;
+      background-color: #EEE;
     }
     .prop-panel {
     }
@@ -24,6 +25,7 @@
 }
 
 .canvas-stage-container {
+  background-color: #FFF;
 }
 
 .canvas-stage {

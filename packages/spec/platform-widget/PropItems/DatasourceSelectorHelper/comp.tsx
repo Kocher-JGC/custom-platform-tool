@@ -43,6 +43,92 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     metaRefID: DSOptionsRef
   }) as OptionsType : null;
   const [dsType, setDsType] = useState(datasourceMeta?.type);
+
+  const dsBinder = dsType ? (
+    <PopModelSelector
+      modelSetting={{
+        title: '选择数据源',
+        width: 900,
+        children: ({ close }) => {
+          const defaultSelectedInfo = datasourceMeta ? {
+            id: datasourceMeta?.tableInfo.id,
+            name: datasourceMeta?.tableInfo.name,
+          } : undefined;
+          switch (dsType) {
+            case 'dict':
+              return (
+                <DictSelector
+                  {...businessPayload}
+                  defaultSelectedInfo={defaultSelectedInfo}
+                  onSubmit={(selectedRowInfo) => {
+                    const { id, name } = selectedRowInfo;
+                    const nextState: OptionsType = {
+                      type: dsType,
+                      tableInfo: {
+                        id,
+                        name,
+                        condition: null,
+                        defaultVal: null,
+                        sort: 'desc'
+                      }
+                    };
+                    const nextMetaID = genMetaRefID(`ds`);
+                    changeEntityState({
+                      attr: whichAttr,
+                      value: nextMetaID
+                    });
+                    changeMetadata({
+                      metaAttr: 'dataSource',
+                      metaID: nextMetaID,
+                      rmMetaID: DSOptionsRef,
+                      data: nextState
+                      // metaID:
+                    });
+                    close();
+                  }}
+                />
+              );
+            case 'table':
+              return (
+                <TableSelector
+                  {...businessPayload}
+                  defaultSelectedInfo={defaultSelectedInfo}
+                  onSubmit={(selectedRowInfo) => {
+                    const { id, name } = selectedRowInfo;
+                    const nextState: OptionsType = {
+                      type: dsType,
+                      tableInfo: {
+                        id,
+                        name,
+                        condition: null,
+                        defaultVal: null,
+                        sort: 'desc'
+                      }
+                    };
+                    const nextMetaID = genMetaRefID(`ds`);
+                    changeEntityState({
+                      attr: whichAttr,
+                      value: nextMetaID
+                    });
+                    changeMetadata({
+                      metaAttr: 'dataSource',
+                      metaID: nextMetaID,
+                      rmMetaID: DSOptionsRef,
+                      data: nextState
+                      // metaID:
+                    });
+                    close();
+                  }}
+                />
+              );
+          }
+        }
+      }}
+    >
+      {datasourceMeta ? takeTableInfo(datasourceMeta.tableInfo) : '点击绑定'}
+    </PopModelSelector>
+  ) : null;
+
   return (
     <div>
       <div className="py-2">
@@ -56,88 +142,9 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
           <Radio value={'dict'}>字典表</Radio>
         </Radio.Group>
       </div>
-      <PopModelSelector
-        modelSetting={{
-          title: '选择数据源',
-          width: 900,
-          children: ({ close }) => {
-            const defaultSelectedInfo = datasourceMeta ? {
-              id: datasourceMeta?.tableInfo.id,
-              name: datasourceMeta?.tableInfo.name,
-            } : undefined;
-            switch (dsType) {
-              case 'dict':
-                return (
-                  <DictSelector
-                    {...businessPayload}
-                    defaultSelectedInfo={defaultSelectedInfo}
-                    onSubmit={(selectedRowInfo) => {
-                      const { id, name } = selectedRowInfo;
-                      const nextState: OptionsType = {
-                        type: dsType,
-                        tableInfo: {
-                          id,
-                          name,
-                          condition: null,
-                          defaultVal: null,
-                          sort: 'desc'
-                        }
-                      };
-                      const nextMetaID = genMetaRefID(`ds`);
-                      changeEntityState({
-                        attr: whichAttr,
-                        value: nextMetaID
-                      });
-                      changeMetadata({
-                        metaAttr: 'dataSource',
-                        metaID: nextMetaID,
-                        rmMetaID: DSOptionsRef,
-                        data: nextState
-                        // metaID:
-                      });
-                      close();
-                    }}
-                  />
-                );
-              case 'table':
-                return (
-                  <TableSelector
-                    {...businessPayload}
-                    defaultSelectedInfo={defaultSelectedInfo}
-                    onSubmit={(selectedRowInfo) => {
-                      const { id, name } = selectedRowInfo;
-                      const nextState: OptionsType = {
-                        type: dsType,
-                        tableInfo: {
-                          id,
-                          name,
-                          condition: null,
-                          defaultVal: null,
-                          sort: 'desc'
-                        }
-                      };
-                      const nextMetaID = genMetaRefID(`ds`);
-                      changeEntityState({
-                        attr: whichAttr,
-                        value: nextMetaID
-                      });
-                      changeMetadata({
-                        metaAttr: 'dataSource',
-                        metaID: nextMetaID,
-                        rmMetaID: DSOptionsRef,
-                        data: nextState
-                        // metaID:
-                      });
-                      close();
-                    }}
-                  />
-                );
-            }
-          }
-        }}
-      >
-        {datasourceMeta ? takeTableInfo(datasourceMeta.tableInfo) : '点击绑定'}
-      </PopModelSelector>
+      {
+        dsBinder
+      }
     </div>
   );
 };
