@@ -1,7 +1,7 @@
 import {
   Schemas, FoundationTypeSchemas, ComplexType, ComplexTypeSchemas, FoundationType, SchemaItem
 } from "@iub-dsl/definition";
-import { SchemasAnalysisRes, SchemasAnalysisCommonFn, SchemaItemAnalysisCtx } from "./i-analysis";
+import { SchemasAnalysisRes, SchemasAnalysisCommonFn, SchemaItemAnalysisCtx } from "../types";
 import { SCHEMAS_DEFAULT_KEY, PATH_SPLIT_MARK_ARR, PATH_SPLIT_MARK } from "../const";
 
 /** 分析结果的数据结构模型 */

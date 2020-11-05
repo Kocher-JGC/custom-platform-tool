@@ -1,13 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
 import {
-  get as LGet, set as LSet, defaultsDeep, cloneDeep
+  get as LGet, set as LSet
 } from 'lodash';
 import { CommonObjStruct } from '@iub-dsl/definition';
-import { SchemasAnalysisRes } from './analysis/i-analysis';
 import { useCacheState } from '../utils';
 import { isPageState, pickPageStateKeyWord } from './const';
-import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfDatasourceMeta } from '../runtime/types';
+import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from '../runtime/types';
+import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 
 // TODO
 const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
@@ -42,24 +42,6 @@ const collectFieldMapping = (schemaInfo: any) => {
 
   return res;
 };
-
-type GetStruct = string | {
-  [str: string]: any
-} | any[]
-
-export type IUBStoreMethod = keyof IUBStoreEntity;
-
-export interface IUBStoreEntity {
-  updatePageState: (ctx: RunTimeCtxToBusiness, newState: CommonObjStruct) => void;
-  isPageState: (ctx: RunTimeCtxToBusiness, param: string) => boolean;
-  pickPageStateKeyWord: (ctx: RunTimeCtxToBusiness, param: string) => string;
-  targetUpdateState: (ctx: RunTimeCtxToBusiness, target: any, value: any) => void;
-  getPageState: (ctx: RunTimeCtxToBusiness, strOrStruct?: GetStruct) => any;
-  getWatchDeps: (ctx: RunTimeCtxToBusiness, strOrStruct?: GetStruct) => any;
-  getSchemaMetadata: (ctx: RunTimeCtxToBusiness, schemaPath: string) => any;
-  updatePageStateFromTableRecord: (ctx: RunTimeCtxToBusiness, tableRecord, metadata) => any;
-  updatePageStateFromMetaMapping: (ctx: RunTimeCtxToBusiness, fieldMappingValue: any) => any;
-}
 
 /** TODO: 跨页面问题 */
 export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
@@ -133,8 +115,8 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         const { dispatchOfIUBEngine } = ctx;
         const fieldMappingValue = dispatchOfIUBEngine({
           dispatch: {
-            module: DispatchModuleName.datasourceMeta,
-            method: DispatchMethodNameOfDatasourceMeta.fieldCodeMapToFieldMark,
+            module: DispatchModuleName.metadata,
+            method: DispatchMethodNameOfMetadata.fieldDataMapToFieldMarkData,
             params: [tableRecord, metadata]
           }
         });
@@ -146,8 +128,8 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         const fieldMapping = collectFieldMapping(schemaInfo);
         return dispatchOfIUBEngine({
           dispatch: {
-            module: DispatchModuleName.datasourceMeta,
-            method: DispatchMethodNameOfDatasourceMeta.getMetadata,
+            module: DispatchModuleName.metadata,
+            method: DispatchMethodNameOfMetadata.getMetaFromMark,
             params: [fieldMapping]
           }
         });
