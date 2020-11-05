@@ -53,6 +53,7 @@ export const CreateAuth = ({
       form={form}
       name="control-hooks"
     >
+      <Form.Item name="id" className="hidden"></Form.Item>
       <Form.Item
         name="name" label="权限树名称" rules={[
           { required: true, message: "权限树名称必填" },
@@ -86,6 +87,7 @@ export const CreateAuth = ({
                 return (
                   <div className="p20 clearfix">
                     <SelectAuthItem
+                      authItems={[form.getFieldValue('authorityId')]}
                       onSuccess = {({ id, name }) => {
                         form.setFieldsValue({
                           authorityName: name || '',
@@ -118,6 +120,7 @@ export const CreateAuth = ({
                 return (
                   <div className="p20 clearfix">
                     <SelectShowAuthParent
+                      showAuthItems={[form.getFieldValue('parentCode')]}
                       onSuccess = {({ id, name }) => {
                         form.setFieldsValue({
                           parentName: name || '',

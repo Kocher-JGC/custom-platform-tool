@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Row, Col } from "antd";
+import { Row, Col, ConfigProvider } from "antd";
+import zhCN from 'antd/es/locale/zh_CN';
 import AuthList from "./components/AuthList";
 import { AuthShowTree } from "./components/AuthShowTree";
+
 // import "./index.less";
 
 const App: HY.SubApp = (props) => {
@@ -9,26 +11,33 @@ const App: HY.SubApp = (props) => {
   const handleTreeSelect = useCallback((selectedKeys) => {
     setAuthorities(selectedKeys);
   }, [authorities]);
+  const [showAuthTreeRef, setShowAuthTreeRef] = useState<{reload?:()=>void}>({});
   const showTreeRef = useRef();
   const handleUpdateShowTree = () => {
-    showTreeRef.reload();
+    showAuthTreeRef && showAuthTreeRef.reload && showAuthTreeRef.reload();
+  };
+  const onRef = (ref) => {
+    setShowAuthTreeRef(ref);
   };
   return (
-    <Row className="data-design-layout">
-      <Col xs={24} sm={8} md={7} lg={7} xl={5} className="sidebar-menu-tree">
-        <AuthShowTree
-          ref = {showTreeRef}
-          checkable = {true}
-          onSelect = {handleTreeSelect}
-        />
-      </Col>
-      <Col xs={24} sm={16} md={17} lg={17} xl={19} className="content-pro-table">
-        <AuthList
-          authorities={authorities}
-          handleUpdateShowTree = {handleUpdateShowTree}
-        />
-      </Col>
-    </Row>
+    <ConfigProvider locale={zhCN}>
+      <Row className="data-design-layout">
+        <Col xs={24} sm={8} md={7} lg={7} xl={5} className="sidebar-menu-tree">
+          <AuthShowTree
+            onRef = {onRef}
+            ref = {showTreeRef}
+            checkable = {true}
+            onSelect = {handleTreeSelect}
+          />
+        </Col>
+        <Col xs={24} sm={16} md={17} lg={17} xl={19} className="content-pro-table">
+          <AuthList
+            authorities={authorities}
+            handleUpdateShowTree = {handleUpdateShowTree}
+          />
+        </Col>
+      </Row>
+    </ConfigProvider>
   );
 };
 
