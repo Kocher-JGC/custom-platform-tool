@@ -1,13 +1,26 @@
+import { urlParamsToQuery } from '@mini-code/request';
 import { getAppConfig } from "./config-manager";
+
+interface Options {
+  appName: string
+  mode: string
+  defaultPath: string
+  pageID: string
+  lessee: string
+  app: string
+}
 
 /**
  * 获取预览地址
- * @param appLocation
- * @param appName
  */
-export const getPreviewUrl = (appLocation?, appName = '测试应用') => {
+export const getAppPreviewUrl = (options?: Options) => {
+  const {
+    appName = '测试应用',
+    mode = '',
+    defaultPath = '',
+    pageID,
+    app
+  } = options || {};
   const perviewAppUrl = getAppConfig('perviewAppUrl');
-  if (!appLocation) return `${perviewAppUrl}`;
-  const { pageID, lessee = 'hy', app } = appLocation;
-  return `${perviewAppUrl}/#/page?menuid=/preview&mode=preview&pageId=${pageID}&lessee=${lessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}`;
+  return `${perviewAppUrl}/#/page?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}`;
 };

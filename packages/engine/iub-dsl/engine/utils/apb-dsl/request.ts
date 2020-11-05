@@ -107,8 +107,8 @@ export const APBDSLrequest = <R = any>(url, reqParam) => {
     }
   }).catch((e) => {
     notification.error({
-      message: 'APBDSL请求失败!',
-      description: `错了`
+      message: APBDSLResponseMsg[e.response.data.code],
+      description: e.response.data.msg
       // description: `${JSON.stringify(e)}`
     });
   });

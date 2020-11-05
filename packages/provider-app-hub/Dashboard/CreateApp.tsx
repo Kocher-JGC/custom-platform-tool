@@ -5,7 +5,6 @@ import { CreateApplication } from "@provider-app/services";
 export const CreateApp = ({
   onSuccess
 }) => {
-  const id = 'hy';
   return (
     <div className="create-app">
       <FormLayout
@@ -35,14 +34,12 @@ export const CreateApp = ({
             ref: 'accessName',
             type: 'input',
             title: '应用访问编号',
-            defaultValue: id,
             required: true
           },
           {
             ref: 'appCode',
             type: 'input',
             title: '应用编码',
-            defaultValue: id,
             required: true
           },
         ]}

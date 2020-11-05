@@ -7,6 +7,7 @@ import { DropdownWrapper } from "@deer-ui/core/dropdown-wrapper";
 import { Menus } from "@deer-ui/core/menu";
 import { GetApplication, DelApplication } from "@provider-app/services";
 import { ShowModal } from "@infra/ui";
+import { getAppPreviewUrl } from "@provider-app/config";
 import { CreateApp } from "./CreateApp";
 
 import './dashboard.scss';
@@ -91,7 +92,7 @@ export interface DashboardProps {
  * 1. 设置默认的路由为 app
  */
 export const Dashboard: React.FC<DashboardProps> = (props) => {
-  const { didMount, onSelectApp } = props;
+  const { appLocation, didMount, onSelectApp } = props;
   const [appData, setAppData] = useState([]);
 
   const updateAppList = () => {
@@ -154,6 +155,18 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                     text: '发布应用',
                     action: () => {
                       console.log('object :>> ', 'object');
+                    }
+                  },
+                  {
+                    text: '进入应用',
+                    action: () => {
+                      // console.log('object :>> ', 'object');
+                      window.open(getAppPreviewUrl({
+                        ...appLocation,
+                        app: accessName,
+                        mode: 'pro',
+                        appName: appShortNameEn
+                      }));
                     }
                   }
                 ]}
