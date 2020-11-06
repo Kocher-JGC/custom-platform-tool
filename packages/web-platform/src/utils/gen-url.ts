@@ -1,5 +1,7 @@
 import curry from 'lodash/curry';
+import store from 'store';
 import { getPageQuery } from './utils';
+
 // const egUrl = 'http://192.168.14.140:7091/hy/saas/haoyun/erp/business/34562'
 // const baseUrl = 'http://192.168.14.140:7091/hy/saas';
 const baseUrl = '';
@@ -12,6 +14,8 @@ export const originGenUrl = (lesseeCode, appCode, businessCode) => {
 };
 
 export const getAPBDSLtestUrl = (code = SYS_MENU_BUSINESSCODE) => {
-  const { app, lessee } = getPageQuery();
+  let { lessee, app } = getPageQuery();
+  if (!lessee) lessee = store.get("lesseeCode");
+  if (!app) app = store.get("applicationCode");
   return originGenUrl(lessee, app, code);
 };

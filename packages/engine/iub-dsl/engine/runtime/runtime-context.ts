@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { notification } from 'antd';
 import React, { useEffect, useMemo } from 'react';
-import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+import { getAPBDSLtestUrl, SYS_MENU_BUSINESSCODE } from '@consumer-app/web-platform/src/utils/gen-url';
 import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
 import { genEventWrapFnList, useEventProps } from '../event-manage';
 import { useCacheState } from '../utils';
@@ -139,7 +139,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
       flowsRun
     },
     sys: {
-      APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || 'queryPerson'))
+      APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || SYS_MENU_BUSINESSCODE))
     },
   };
 
