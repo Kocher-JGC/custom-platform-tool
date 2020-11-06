@@ -15,19 +15,12 @@ const filterRes = (res) => {
   return {};
 };
 
-/** 请求设计不合理,临时代码 */
-const prevParam = {
-  mode: 'prod',
-  lessee: 'hy',
-  app: 'iot'
-};
-
 const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
-  prevParam.mode = params.mode || prevParam.mode;
-  prevParam.lessee = params.lessee || prevParam.lessee;
-  prevParam.app = params.app || prevParam.app;
+  params.lessee = params.lessee || store.get('lessee');
+  params.mode = params.mode || store.get('mode');
+  params.app = params.app || store.get('app');
   return {
-    ...prevParam,
+    ...params,
     id: params.id,
     t: store.get("providerAppToken")
   };
@@ -35,7 +28,8 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
 
 export const queryPageData = async (params: API.IPageDataParams) => {
   const pageUrl = HOSTENV.get();
-  const res = await $A_R(`${pageUrl['NODE-WEB']}/node-web/page-data`, {
+  const url = store.get('NODE-WEB') || pageUrl['NODE-WEB'];
+  const res = await $A_R(`${url}/node-web/page-data`, {
     method: 'GET',
     params: mergeParam(params)
   });
