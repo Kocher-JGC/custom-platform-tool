@@ -9,6 +9,19 @@ interface Options {
   app: string
 }
 
+const toQueryString = (params) => {
+  let res = '';
+  for (const key in params) {
+    if (Object.prototype.hasOwnProperty.call(params, key)) {
+      const val = params[key];
+      if (val) {
+        res += `&${key}=${val}`;
+      }
+    }
+  }
+  return res;
+};
+
 /**
  * 获取预览地址
  */
@@ -21,6 +34,20 @@ export const getAppPreviewUrl = (options?: Options) => {
     app,
   } = options || {};
   const appApiUrl = mode === 'pro' ? getAppConfig('prodAppApiUrl') : null;
+  const getPageApiUrl = mode === 'pro' ? getAppConfig('proNodeWebServerUrl') : null;
   const perviewAppUrl = getAppConfig('perviewAppUrl');
-  return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
+  const queryUrl = toQueryString({
+    mode,
+    appName,
+    pageId: pageID,
+    lessee: $R_P.urlManager.currLessee,
+    app,
+    t: $R_P.config.commonHeaders?.Authorization,
+    API: appApiUrl,
+    'NODE-WEB': getPageApiUrl,
+    menuid: defaultPath ? `menuid=/${defaultPath}` : ''
+  });
+  console.log('queryUrl', queryUrl);
+  return `${perviewAppUrl}/#/page${defaultPath ? 'page' : ''}?${queryUrl}`;
+  // return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
 };
