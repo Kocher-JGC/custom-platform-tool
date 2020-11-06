@@ -16,7 +16,7 @@ export const originGenUrl = (lesseeCode, appCode, businessCode) => {
 
 export const getAPBDSLtestUrl = (code = SYS_MENU_BUSINESSCODE) => {
   let { lessee, app } = getPageQuery();
-  if (!lessee) lessee = store.get("lesseeCode");
-  if (!app) app = store.get("applicationCode");
+  if (!lessee) lessee = store.get("lessee");
+  if (!app) app = store.get("app");
   return originGenUrl(lessee, app, code);
 };
