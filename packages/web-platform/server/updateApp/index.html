@@ -96,7 +96,9 @@
           axios.request({
             url: "/upload",
             method: "POST",
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
             data: formData
           }).then((res) => {
             console.log("前端", res);
@@ -118,9 +120,12 @@
           const formData = new FormData();
           formData.set("file", file);
           axios.request({
-            url: `http://192.168.14.181:7090/appManager/installApp`,
+            url: `http://192.168.14.140:7090/appManager/installApp`,
+            // url: `http://192.168.14.181:7090/appManager/installApp`,
             method: "POST",
-            headers: { 'Content-Type': 'multipart/form-data' },
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            },
             data: formData
           }).then((res) => {
             console.log("后端", res);
