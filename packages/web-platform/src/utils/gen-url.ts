@@ -10,7 +10,8 @@ const baseUrl = '';
 export const SYS_MENU_BUSINESSCODE = '__system_get_app_menu__';
 
 export const originGenUrl = (lesseeCode, appCode, businessCode) => {
-  return `${baseUrl}/${lesseeCode || "hy"}/${appCode || "zxx"}/business/${businessCode}`;
+  const isHttp = /http/.test(baseUrl);
+  return `${(isHttp ? 'http://' : '') + baseUrl}/${lesseeCode}/${appCode}/business/${businessCode}`;
 };
 
 export const getAPBDSLtestUrl = (code = SYS_MENU_BUSINESSCODE) => {
