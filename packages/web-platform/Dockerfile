@@ -1,6 +1,6 @@
 # dockerfile
 # build stage
-FROM node:lts-alpine as build-stage
+FROM reg.hydevops.com/base_images/node:14.4-alpine3.12
 
 RUN mkdir -p /usr/src/web-platform-update/app/
 
