@@ -16,18 +16,18 @@ const filterRes = (res) => {
 };
 
 /** 请求设计不合理,临时代码 */
-const prevParam = {
-  mode: 'prod',
-  lessee: 'hy',
-  app: 'iot'
-};
+// const prevParam = {
+//   mode: 'prod',
+//   lessee: 'hy',
+//   app: 'iot'
+// };
 
 const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
-  prevParam.mode = params.mode || prevParam.mode;
-  prevParam.lessee = params.lessee || prevParam.lessee;
-  prevParam.app = params.app || prevParam.app;
+  params.lessee = params.lessee || store.get('lessee');
+  params.mode = params.mode || store.get('mode');
+  params.app = params.app || store.get('app');
   return {
-    ...prevParam,
+    ...params,
     id: params.id,
     t: store.get("providerAppToken")
   };
