@@ -2,9 +2,9 @@
 # build stage
 FROM node:lts-alpine as build-stage
 
-RUN mkdir -p /usr/src/web-platform-update/app/
+RUN mkdir -p /tmp/web-platform-update/app/
 
-WORKDIR /usr/src/web-platform-update
+WORKDIR /tmp/web-platform-update
 
 COPY ./server ./
 
@@ -16,7 +16,7 @@ CMD npm run start
 
 # production stage
 # FROM nginx:stable-alpine as production-stage
-# WORKDIR /usr/src/web-platform
+# WORKDIR /tmp/web-platform
 # COPY dist /usr/share/nginx/html
 # COPY nginx.conf /etc/nginx/nginx.conf
 # EXPOSE 80

@@ -9,12 +9,14 @@ const config = require('./config.json');
 const app = express();
 const { uploadFolder, projectFolder } = config;
 app.use(express.static(path.join(__dirname, '/app')));
+app.use('/update-app', express.static(path.join(__dirname, '/updateApp')));
+app.use('/public', express.static(path.join(__dirname, '/public')));
 
 const checkFolders = (name, cb) => {
   access(name, (err) => {
     err
       ? ensureDir(projectFolder, (err1) => {
-        err1 ? cb(new Error('创建暂存文件夹失败')) : cb(null);
+        err1 ? cb(err1) : cb(null);
       })
       : cb(null);
   });
@@ -25,7 +27,7 @@ const storage = multer.diskStorage({
     access(uploadFolder, (err) => {
       err
         ? ensureDir(uploadFolder, (err1) => {
-          err1 ? cb(new Error('创建暂存文件夹失败')) : cb(null, uploadFolder);
+          err1 ? cb(err1) : cb(null, uploadFolder);
         })
         : cb(null, uploadFolder);
     });
