@@ -92,9 +92,10 @@ export const openPageForm = (): FormOptions => [
     title: '页面类型',
     values: {
       create: '新增',
-      update: '更新(未完成)',
-      readonly: '只读(未完成)',
-    }
+      update: '更新(未实现)',
+      readonly: '只读(未实现)',
+    },
+    defaultValue: 'create'
   },
   {
     ref: 'pageID',
@@ -132,12 +133,14 @@ export const createActionForm = (interDatasources): FormOptions => [
   {
     ref: 'actionName',
     type: 'input',
+    required: true,
     title: '动作名称'
   },
   {
     ref: 'forEntrieTable',
     type: 'switch',
     title: '整表回写',
+    defaultChecked: true,
     hints: ['是', '否']
   },
   {
@@ -147,20 +150,21 @@ export const createActionForm = (interDatasources): FormOptions => [
     defaultValue: 'create',
     values: {
       create: '新增',
-      update: '修改',
-      del: '删除',
+      update: '修改(未实现)',
+      del: '删除(未实现)',
     }
   },
   {
     ref: 'targetTable',
     type: 'radio',
     title: '目标数据表',
+    required: true,
     values: convertDatasource2RadioValues(interDatasources)
   },
   {
     ref: 'firld',
     type: 'customForm',
-    title: '字段值',
+    title: '字段值(未实现)',
     render: () => {
       // TODO: 先完成页面和控件变量
       return (

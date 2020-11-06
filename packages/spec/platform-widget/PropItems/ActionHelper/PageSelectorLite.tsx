@@ -27,8 +27,9 @@ export const PageSelectorLite = ({
       setPageList(pageListRes.result?.data);
     });
   }, []);
+
   return (
-    <div>
+    <div className="flex flex-1">
       <Table
         columns={[
           {
@@ -38,6 +39,7 @@ export const PageSelectorLite = ({
             ellipsis: true
           }
         ]}
+        size="small"
         rowKey="id"
         rowSelection={rowSelection}
         dataSource={pageList}

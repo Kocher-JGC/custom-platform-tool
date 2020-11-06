@@ -5,47 +5,47 @@ import { ActionSettingPanel } from './ActionSettingPanel';
 
 const whichAttr = 'actionRef';
 
-const metaAttr = 'actions';
-
 export const ActionHelperSpec: PropItemCompAccessSpec = {
   id: 'prop_action_config',
   name: 'PropActionConfig',
   label: '动作设置',
   whichAttr,
-  useMeta: metaAttr,
+  useMeta: ['actions'],
   render(ctx) {
     const {
       takeMeta, genMetaRefID, changeEntityState, changeMetadata,
       editingWidgetState, businessPayload
     } = ctx;
     const { interDatasources } = businessPayload;
-    const metaRefID = editingWidgetState[whichAttr] || genMetaRefID(`a`);
-    const actionConfig = takeMeta({
-      metaAttr,
+    const metaRefID = editingWidgetState[whichAttr];
+    const actionConfig = metaRefID ? takeMeta({
+      metaAttr: 'actions',
       metaRefID
-    });
+    }) : undefined;
 
     return (
       <div>
         <PopModelSelector
           modelSetting={{
             title: '设置动作',
-            width: 900,
+            width: 500,
+            position: 'right',
+            type: 'side',
             children: ({ close }) => {
               return (
                 <ActionSettingPanel
                   interDatasources={interDatasources}
                   defaultConfig={actionConfig}
                   onSubmit={(actionSetting) => {
-                    console.log('actionSetting :>> ', actionSetting);
+                    const nextMetaID = genMetaRefID(`a`);
                     changeEntityState({
                       attr: whichAttr,
-                      value: metaRefID
+                      value: nextMetaID
                     });
                     changeMetadata({
                       data: actionSetting,
-                      metaAttr,
-                      metaID: metaRefID
+                      metaAttr: 'actions',
+                      metaID: nextMetaID
                     });
                     close();
                   }}

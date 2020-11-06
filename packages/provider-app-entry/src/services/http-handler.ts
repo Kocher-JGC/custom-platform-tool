@@ -143,16 +143,16 @@ function handleRes({ res, resDetail }) {
   if (showSuccessTip) {
     if (code === HttpBusinessCodeMap.success) {
       AntdMessage.success(msg);
+      return null;
     }
-    return null;
   }
   if (businessTip) {
     const { whenCodeEq, type = 'info' } = businessTip as RequestOptions['businessTip'];
     if (code === whenCodeEq) {
       const antdMsgFunc = AntdMessage[type] || AntdMessage.info;
       antdMsgFunc(msg);
+      return null;
     }
-    return null;
   }
   /** 如果没有配置，默认所有错误都弹出 */
   switch (code) {

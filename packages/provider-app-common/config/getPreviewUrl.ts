@@ -1,4 +1,3 @@
-import { urlParamsToQuery } from '@mini-code/request';
 import { getAppConfig } from "./config-manager";
 
 interface Options {
