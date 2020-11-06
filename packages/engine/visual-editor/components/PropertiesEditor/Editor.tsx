@@ -197,7 +197,9 @@ PropertiesEditorProps, PropertiesEditorState
 
       // 合并属性项 meta
       const mergedPropItemMeta = produce(propItemMetaFormInterface, (draft) => {
-        if (editAttr) draft.whichAttr = union(draft.whichAttr, editAttr);
+        if (editAttr) {
+          draft.whichAttr = union(makeArray(draft.whichAttr), editAttr);
+        }
         Object.assign(draft, overrideOptions);
         return draft;
       });

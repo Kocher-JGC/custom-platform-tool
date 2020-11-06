@@ -48,7 +48,9 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     <PopModelSelector
       modelSetting={{
         title: '选择数据源',
-        width: 900,
+        type: 'side',
+        position: 'right',
+        width: 400,
         children: ({ close }) => {
           const defaultSelectedInfo = datasourceMeta ? {
             id: datasourceMeta?.tableInfo.id,

@@ -22,7 +22,7 @@ import { OptionsSelector } from './comp';
 export const DatasourceSelectotHelper: PropItemCompAccessSpec = {
   id: 'prop_datasource_selector',
   name: 'PropDataSource',
-  label: '选项数据源',
+  label: '选项数据源(待完善)',
   // optDS => option datasource
   whichAttr: ['optDS'],
   useMeta: ['dataSource'],

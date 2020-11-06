@@ -32,10 +32,7 @@ export async function CreateApplication(data) {
     url: '/manage/v1/applications',
     data,
     options: {
-      businessTip: {
-        type: 'success',
-        whenCodeEq: '00000'
-      }
+      showSuccessTip: true,
     }
   });
 }

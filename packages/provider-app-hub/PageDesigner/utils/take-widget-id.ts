@@ -1,4 +1,4 @@
-import { FlatLayoutItems } from "@engine/visual-editor/data-structure";
+import { FlatLayoutItems, PageMetadata } from "@engine/visual-editor/data-structure";
 import { WidgetTypes } from "@provider-app/config/widgetTypes";
 
 /**
@@ -67,6 +67,32 @@ export const genBusinessCode = (
     }
   }
   return businessCodes;
+  // return [
+  //   {
+  //     widgetId: `__${pageID}__`,
+  //     name,
+  //     code: `queryPerson`
+  //   }
+  // ];
+};
+
+export const genDataSources = (
+  pageMetadata: PageMetadata,
+) => {
+  const { dataSource } = pageMetadata;
+  const dataSources: [] = [];
+  for (const metaID in dataSource) {
+    if (Object.prototype.hasOwnProperty.call(dataSource, metaID)) {
+      const metaItem = dataSource[metaID];
+      // console.log('metaItem', metaItem);
+      dataSources.push({
+        // 32 位以内的 UI_ID
+        datasourceId: metaItem.tableInfo.id,
+        datasourceType: 'TABLE',
+      });
+    }
+  }
+  return dataSources;
   // return [
   //   {
   //     widgetId: `__${pageID}__`,
