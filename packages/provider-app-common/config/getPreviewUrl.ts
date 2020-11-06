@@ -20,6 +20,7 @@ export const getAppPreviewUrl = (options?: Options) => {
     pageID,
     app,
   } = options || {};
-  const perviewAppUrl = getAppConfig(mode === 'perv' ? 'perviewAppUrl' : 'prodAppUrl');
-  return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}`;
+  const appApiUrl = mode === 'pro' ? getAppConfig('prodAppApiUrl') : null;
+  const perviewAppUrl = getAppConfig('perviewAppUrl');
+  return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
 };
