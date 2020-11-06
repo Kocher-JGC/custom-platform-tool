@@ -102,9 +102,10 @@ export const APBDSLrequest = <R = any>(url, reqParam) => {
     }
     return Promise.resolve(false);
   }).catch((e) => {
+    console.log('e.response', e);
     notification.error({
-      message: APBDSLResponseMsg[e.response.data.code],
-      description: e.response.data.msg
+      message: APBDSLResponseMsg[e.response?.data.code || e.response?.status],
+      description: e.response?.data.msg
       // description: `${JSON.stringify(e)}`
     });
   });
