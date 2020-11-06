@@ -7,7 +7,12 @@ import HOSTENV from '../utils/env';
  */
 
 const filterRes = (res) => {
-  return res.data?.result || {};
+  if (res.data.code === "00000") {
+    return res.data?.result;
+  } if (res.status === 200) {
+    return res.data;
+  }
+  return {};
 };
 
 /** 请求设计不合理,临时代码 */
