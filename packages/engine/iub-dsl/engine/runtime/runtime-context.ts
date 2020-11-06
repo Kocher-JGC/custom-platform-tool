@@ -1,4 +1,5 @@
 /* eslint-disable no-shadow */
+import { notification } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
 import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
@@ -26,15 +27,23 @@ const useUU = (setListConf: any[] = []) => {
   return prop;
 };
 
-const APBDSLrequest = (url) => async (ctx: RunTimeCtxToBusiness, reqParam) => {
+const APBDSLrequest = (url) => async (ctx: RunTimeCtxToBusiness, reqParam, search) => {
   const APBDSLRes = await originReq(url, reqParam);
-  const action = {
-    action: {
-      type: 'APBDSLRes',
-      payload: APBDSLRes
+  if (APBDSLRes) {
+    if (!search) {
+      notification.success({
+        message: '请求成功!',
+      });
     }
-  };
-  return action;
+    const action = {
+      action: {
+        type: 'APBDSLRes',
+        payload: APBDSLRes
+      }
+    };
+    return action;
+  }
+  return {};
 };
 
 const getDispatchMethod = (

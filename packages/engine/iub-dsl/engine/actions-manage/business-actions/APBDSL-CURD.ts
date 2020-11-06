@@ -115,7 +115,7 @@ const genTableSelectFn = (actionConf: TableSelect): ActionDoFn => {
       table: getActualTable(dispatchOfIUBEngine, table),
       condition: await getAPBDSLCond(asyncDispatchOfIUBEngine, condition),
     };
-
+    ctx.search = true;
     const getSelectOfAPBDSL = getGenAPBDSLFunctionTransform(ApbFunction.SELECT);
     const APBDSLItem = getSelectOfAPBDSL(selectParam);
     return APBDSLItem;
@@ -184,7 +184,7 @@ export const APBDSLCURDAction = (conf: APBDSLCURDOptions, baseActionInfo): Actio
       dispatch: {
         module: DispatchModuleName.sys,
         method: DispatchMethodNameOfSys.APBDSLrequest,
-        params: [APBDSL],
+        params: [APBDSL, runtimeCtx.search],
       }
     });
   };

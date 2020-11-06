@@ -93,18 +93,14 @@ export const APBDSLrequest = <R = any>(url, reqParam) => {
     const { data, status } = response;
     if (status === 200) {
       if (data.code === APBDSLResponeCode.SA0000) {
-        notification.success({
-          message: 'APBDSL请求成功!',
-        });
         return Promise.resolve(data.result);
       }
       notification.error({
-        message: 'APBDSL请求失败!',
+        message: '请求失败!',
         description: APBDSLResponseMsg[data.code] || `失败了!${JSON.stringify(data)}`
       });
-
-      return Promise.resolve(false);
     }
+    return Promise.resolve(false);
   }).catch((e) => {
     notification.error({
       message: APBDSLResponseMsg[e.response.data.code],
