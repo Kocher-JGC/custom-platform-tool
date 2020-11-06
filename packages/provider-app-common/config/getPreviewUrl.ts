@@ -33,8 +33,8 @@ export const getAppPreviewUrl = (options?: Options) => {
     pageID,
     app,
   } = options || {};
-  const appApiUrl = mode === 'pro' ? getAppConfig('prodAppApiUrl') : null;
-  const getPageApiUrl = mode === 'pro' ? getAppConfig('proNodeWebServerUrl') : null;
+  const appApiUrl = getAppConfig(mode === 'pro' ? 'prodAppApiUrl' : 'previewAppApiUrl');
+  const getPageApiUrl = getAppConfig(mode === 'pro' ? 'proNodeWebServerUrl' : 'prevNodeWebServerUrl');
   const perviewAppUrl = getAppConfig('perviewAppUrl');
   const queryUrl = toQueryString({
     mode,
