@@ -48,6 +48,6 @@ export const getAppPreviewUrl = (options?: Options) => {
     menuid: defaultPath ? `menuid=/${defaultPath}` : ''
   });
   console.log('queryUrl', queryUrl);
-  return `${perviewAppUrl}/#/page${defaultPath ? 'page' : ''}?${queryUrl}`;
+  return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`;
   // return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
 };
