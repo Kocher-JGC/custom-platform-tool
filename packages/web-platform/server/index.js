@@ -4,10 +4,12 @@ const path = require('path');
 const multer = require('multer');
 const { access, ensureDir, readJson } = require('fs-extra');
 const { exec } = require('child_process');
+// const cors = require('cors');
 const config = require('./config.json');
 
 const app = express();
 const { uploadFolder, projectFolder } = config;
+// app.use(cors());
 app.use(express.static(path.join(__dirname, '/app')));
 app.use('/update-app', express.static(path.join(__dirname, '/updateApp')));
 app.use('/public', express.static(path.join(__dirname, '/public')));
