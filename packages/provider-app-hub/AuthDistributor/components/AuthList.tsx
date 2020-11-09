@@ -20,8 +20,8 @@ interface IProps {
 }
 
 interface IState {
-  pageOffset: number
-  pageSize: number
+  offset: number
+  size: number
   searchArea: string
   list: ITableItem[]
   total: number
@@ -32,8 +32,8 @@ interface IState {
  */
 class AuthList extends PureComponent<IProps, IState> {
   state = {
-    pageOffset: 0,
-    pageSize: 10,
+    offset: 0,
+    size: 10,
     searchArea: '',
     list: [],
     total: 0
@@ -52,18 +52,18 @@ class AuthList extends PureComponent<IProps, IState> {
    */
   getList = (props?: IProps) => {
     const {
-      pageOffset, pageSize, searchArea
+      offset, size, searchArea
     } = this.state;
     props = props || this.props;
     const { authorities } = props;
     const param = {
       showAuthorityName: searchArea,
       keyWord: searchArea,
-      offset: pageOffset * pageSize,
-      size: pageSize
+      offset: offset * size,
+      size
     };
     if (authorities?.length > 0) {
-      param.code = authorities.join(',');
+      Object.assign(param, { code: authorities.join(',') });
     }
     getShowAuthorities(param).then((res) => {
       this.setState({
@@ -235,8 +235,12 @@ class AuthList extends PureComponent<IProps, IState> {
     });
   }
 
-  handlePageSizeChange = (current, size) => {
-
+  handlePageSizeChange = (offset, size) => {
+    this.setState({
+      offset: offset - 1, size
+    }, () => {
+      this.getList();
+    });
   }
 
   /**
