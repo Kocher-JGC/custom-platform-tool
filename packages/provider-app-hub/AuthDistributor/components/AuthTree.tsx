@@ -12,7 +12,7 @@ interface IProps {
   onRequest: (searchValue?: string) => Promise<INode[]>
   nodeConfig: INodeConfig
   nodeBeautify?: (node: INode)=> INode
-  onDeleteNode?: (node: INode)=>void
+  onDeleteNode?: (nodes: INode[], keys: React.Key[])=>void
   canIDeleteNode?: (node: INode)=>boolean
   onInitCheckedKeys?: (authList: INode[], authMapByKey: {[param: string]: INode}, originalAuthList: INode[])=>void
   onRef?: (param: React.ReactNode)=>void;
@@ -47,32 +47,48 @@ class AuthTree extends React.Component<IProps, IState> {
     };
   }
 
+  /**
+   * 组件初始化
+   */
   componentDidMount() {
     const { onRef, onInitCheckedKeys } = this.props;
+    /** 1.请求回树形数据，进行结构化转化 */
     this.getList().then(() => {
       const { authList, authMapByKey, originalAuthList } = this.state;
+      /** 2.根据父级指示初始化选中节点； */
       const checkedKeysTmpl = onInitCheckedKeys && onInitCheckedKeys(authList, authMapByKey, originalAuthList) || [];
       this.setState({
-        checkedKeys: checkedKeysTmpl,
-        expandedKeys: this.getExpandedKeysByExpandType(checkedKeysTmpl)
+        checkedKeys: checkedKeysTmpl
+      }, () => {
+        /** 3.根据父级指示进行节点展开 */
+        this.getExpandedKeysByExpandType();
       });
     });
     onRef && onRef(this);
   }
 
-  getExpandedKeysByExpandType = (checkedKeysTmpl) => {
+  /**
+   * 根据 props.expandType 计算 expandedKeys
+   * 全部展开/展开回填数据所有上级
+   */
+  getExpandedKeysByExpandType = () => {
     const { expandType } = this.props;
-    const { allParentKeys } = this.state;
+    const { allParentKeys, checkedKeys } = this.state;
     if (expandType === EXPAND_TYPE.EXPAND_ALL) {
       return allParentKeys;
     } if (expandType === EXPAND_TYPE.EXPAND_VALUES) {
-      return checkedKeysTmpl.reduce((arr, item) => {
+      return checkedKeys.reduce((arr, item) => {
         return arr.concat(this.getAllParentKeysByKey(item));
       }, []);
     }
     return [];
   }
 
+  /**
+   * 根据节点唯一标识返回所有上级节点唯一标识列表
+   * @param key 节点唯一标识
+   * @returns keys 所有上级节点唯一标识列表
+   */
   getAllParentKeysByKey = (key) => {
     const { authMapByKey } = this.state;
     const { parentUniqueId } = authMapByKey[key];
@@ -83,13 +99,21 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   reloadWithKeysRetain = () => {
-    this.getList();
+    this.getList().then(() => {
+      const { originalAuthList, checkedKeys, expandedKeys } = this.state;
+      const allKeys = originalAuthList.map((item) => item.uniqueId);
+      this.setState({
+        checkedKeys: checkedKeys.filter((item) => allKeys.includes(item)),
+        expandedKeys: expandedKeys.filter((item) => allKeys.includes(item)),
+      });
+    });
   }
 
   reload = () => {
     this.getList().then(() => {
       this.setState({
-        checkedKeys: []
+        checkedKeys: [],
+        expandedKeys: [],
       });
     });
   }
@@ -127,9 +151,7 @@ class AuthTree extends React.Component<IProps, IState> {
       authList,
       allParentKeys
     }, () => {
-      this.setState({
-        expandedKeys: this.getExpandedKeysByExpandType([])
-      });
+      this.getExpandedKeysByExpandType();
     });
   }
 
@@ -177,7 +199,7 @@ class AuthTree extends React.Component<IProps, IState> {
     const {
       nodeBeautify,
       nodeConfig: { columnImg, titleBeautifyBySearchValue },
-      onDeleteNode, canIDeleteNode
+      canIDeleteNode
     } = this.props;
     for (const key in columnImg) {
       node[key] = get(node, columnImg[key]);
@@ -264,7 +286,48 @@ class AuthTree extends React.Component<IProps, IState> {
   };
 
   onDeleteNode = (node) => {
+    const { onDeleteNode } = this.props;
+    const { parentList, index } = this.findParentUntilNotOnlyOne(node);
+    const relatedNodeList = this.getChildNodeList(parentList[index]);
+    if (typeof onDeleteNode === 'function') {
+      onDeleteNode(relatedNodeList, relatedNodeList.map((item) => item.uniqueId));
+    }
+    parentList.splice(index, 1);
+    const { authList } = this.state;
+    this.setState({
+      authList: authList.slice()
+    });
+  }
 
+  getChildNodeList = (node: INode): INode[] => {
+    if (!node.children) {
+      return [node];
+    }
+    const list: INode[] = [];
+    node.children.forEach((item) => list.push.apply(list, [...this.getChildNodeList(item)]));
+    return [...list, node];
+  }
+
+  findParentUntilNotOnlyOne = (node) => {
+    const { authMapByKey, authList } = this.state;
+    const { parentUniqueId, uniqueId } = node;
+    let parentList = authList;
+    const { [parentUniqueId]: parentNode } = authMapByKey;
+    if (parentNode) {
+      parentList = parentNode.children || [];
+      if (parentList.length === 1) {
+        return this.findParentUntilNotOnlyOne(parentNode);
+      }
+    }
+    let index = -1;
+    parentList.some((item, loopIndex) => {
+      if (item.uniqueId === uniqueId) {
+        index = loopIndex;
+        return true;
+      }
+      return false;
+    });
+    return { parentList, index };
   }
 
   onUpdateCheckedNodes = (actionFn) => {
@@ -273,7 +336,9 @@ class AuthTree extends React.Component<IProps, IState> {
       checkedKeys, originalAuthList, authList, authMapByKey
     } = this.state;
     const checkedNodes = originalAuthList.filter((item) => checkedKeys.includes(item.key));
-    checkedNodes.forEach(actionFn);
+    checkedNodes.forEach((item) => {
+      actionFn(item, item.uniqueId);
+    });
     this.setState({
       originalAuthList: originalAuthList.slice(),
       authList: authList.slice(),
@@ -291,6 +356,12 @@ class AuthTree extends React.Component<IProps, IState> {
     const checkedNames = checkedKeys.map((item) => authMapByKey[item].name);
     const checkedNodes = originalAuthList.filter((item) => checkedKeys.includes(item.key));
     onSelect && onSelect(checkedValues, checkedNames, checkedNodes);
+  }
+
+  onCancelCheckedKeys = (keys) => {
+    this.setState({
+      checkedKeys: this.state.checkedKeys.filter((key) => !keys.includes(key))
+    });
   }
 
   render() {

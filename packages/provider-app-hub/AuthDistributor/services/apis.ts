@@ -81,3 +81,14 @@ export async function deleteShowAuth(data: string[]) {
     data
   });
 }
+
+/**
+ * 批量新增权限展示树数据
+ * @param params
+ */
+export async function batchCreateAuth(data) {
+  return await $R_P.post({
+    url: `/auth/v1/showAuthorities/batchSave`,
+    data
+  });
+}
