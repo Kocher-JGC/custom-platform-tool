@@ -94,7 +94,7 @@ class AuthTree extends React.Component<IProps, IState> {
     });
   }
 
-  onAdd = (list) => {
+  onBatchAdd = (list) => {
     list.forEach((node) => {
       node.children = null;
     });
