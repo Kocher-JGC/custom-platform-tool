@@ -5,6 +5,7 @@ import { getAuthorityItemsTree } from '../services/apiAgents';
 const AuthItemTree = (props) => {
   return (
     <AuthTree
+      onRef = {props.onRef}
       width = {props.width}
       height = {props.height}
       checkable = {props.checkable || false}
