@@ -37,7 +37,7 @@ const AuthItemTree = (props) => {
         const checkedKeys:string[] = originalList.filter((node) => node.attachment?.binding).map((item) => item.key);
         const values = props.authItems || [];
         if (values.length === 0) return checkedKeys;
-        return [...checkedKeys, ...originalList.map((item) => item.value).filter((value) => values.includes(value))];
+        return [...originalList.filter((node) => values.includes(node.value)).map((item) => item.key), ...checkedKeys];
       }}
     />
   );
