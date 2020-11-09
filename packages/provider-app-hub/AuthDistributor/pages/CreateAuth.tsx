@@ -121,7 +121,7 @@ const CreateAuth = ({
                 return (
                   <div className="p20 clearfix">
                     <SelectShowAuthParent
-                      searchParams = {{ terminalType: form.getFieldValue('terminalType') }}
+                      searchParams = {{ terminalType: form.getFieldValue('terminalType'), excludeTerminalData: true }}
                       showAuthItems={[form.getFieldValue('parentCode')]}
                       onSuccess = {({ id, name }) => {
                         form.setFieldsValue({
