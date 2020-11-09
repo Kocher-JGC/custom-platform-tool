@@ -29,7 +29,8 @@ const AuthItemTree = (props) => {
         titleBeautifyBySearchValue: true
       }}
       nodeBeautify = {(node) => {
-        node.disabled = node.attachment?.binding || false;
+        const isInValue = (props.authItems || []).includes(node.value);
+        node.disabled = (!isInValue && node.attachment?.binding) || false;
         return node;
       }}
       onInitCheckedKeys = {(list, map, originalList) => {
