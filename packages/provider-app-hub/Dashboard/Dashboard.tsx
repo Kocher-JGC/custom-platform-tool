@@ -111,7 +111,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
 
   return (
     <div className="container mx-auto my-8 dashboard">
-      <div className="text-3xl px-2 py-10 font-bold">我的应用</div>
+      <div className="text-3xl px-2 py-10 font-bold">我的应用, 新的</div>
       <div className="flex flex-wrap">
         {
           appData && appData.map(((data, idx) => {
