@@ -2,26 +2,50 @@ import React, { useState, useEffect } from 'react';
 import { RightOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 import {
-  Divider, Radio, Space, Button
+  Divider, Radio, Space, Button, message
 } from 'antd';
 import AuthItemTree from '../components/AuthItemTree';
 import AuthShowTree from '../components/AuthShowTree';
-import { TEMINAL_TYPE, TERMINAL_TYPE_MENU, EXPAND_TYPE } from '../constants';
+import {
+  TEMINAL_TYPE, TERMINAL_TYPE_MENU, EXPAND_TYPE, MESSAGE
+} from '../constants';
 import { INode } from '../interface';
 
 const BatchCreateAuth = (props) => {
+  const {
+    onSuccess, onCancel
+  } = props;
   const [terminalType, setTerminalType] = useState(TEMINAL_TYPE.BS);
   const [AuthItemTreeRef, setAuthItemTreeRef] = useState<{reload?:()=>void}>({});
   const [AuthShowTreeRef, setAuthShowTreeRef] = useState<{reload?:()=>void}>({});
   const [checkedNodes, setCheckedNodes] = useState<INode[]>([]);
-  const onFinish = () => {};
-  const onCancel = () => {};
+  const onFinish = () => {
+    if (checkedNodes.length === 0) {
+      message.warn(MESSAGE.NO_RECORD_TO_BATCH_CREATE);
+      return;
+    }
+    const checkedKeys = checkedNodes.map((item) => item.uniqueId);
+    checkedNodes.forEach((item) => {
+      const { parentUniqueId } = item;
+      if (parentUniqueId && !checkedKeys.includes(parentUniqueId)) {
+        item.parentUniqueId = '';
+      }
+    });
+    const showAuthorityList = checkedNodes
+      .map((item) => {
+        return {
+          name: item.name, code: item.uniqueId, parentCode: item.parentUniqueId, authorityId: item.attachment?.authorityId, terminalType
+        };
+      });
+    onSuccess({ showAuthorityList });
+  };
   useEffect(() => {
     AuthItemTreeRef?.reload?.();
     AuthShowTreeRef?.reload?.();
     setCheckedNodes([]);
   }, [terminalType]);
   const handleTransfer = () => {
+    if (checkedNodes.length === 0) return;
     const checkedNodesTmpl = JSON.parse(JSON.stringify(checkedNodes));
     checkedNodes.forEach((item) => item.disabled = true);
     AuthShowTreeRef?.onBatchAdd?.(checkedNodesTmpl);
@@ -29,8 +53,14 @@ const BatchCreateAuth = (props) => {
       node.disabled = true;
     });
   };
-  const handleDelteShowItem = (node) => {
-
+  const handleDelteShowItem = (nodes, keys) => {
+    AuthItemTreeRef?.onUpdateCheckedNodes?.((node, key) => {
+      if (keys.includes(key)) {
+        node.disabled = false;
+      }
+    });
+    AuthItemTreeRef?.onCancelCheckedKeys?.(keys);
+    setCheckedNodes(checkedNodes.filter((item) => !keys.includes(item.uniqueId)));
   };
   return (
     <>
@@ -47,6 +77,7 @@ const BatchCreateAuth = (props) => {
               selectedNodes = selectedNodes.filter((item) => !item.attachment?.binding);
               setCheckedNodes(selectedNodes);
             }}
+            checked
             checkable = {true}
           />
         </div>
