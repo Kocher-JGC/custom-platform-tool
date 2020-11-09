@@ -6,7 +6,7 @@ import { ColumnType } from 'antd/lib/table';
 import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { CloseModal, ShowModal } from "@infra/ui";
 import {
-  deleteShowAuthItem, getShowAuthorities, createShowAuth, updateShowAuth, getShowAuthDetail, allowDeleteShowAuth
+  batchCreateAuth, deleteShowAuthItem, getShowAuthorities, createShowAuth, updateShowAuth, getShowAuthDetail, allowDeleteShowAuth
 } from '../services/apiAgents';
 import { ITableItem } from '../interface';
 import {
@@ -174,10 +174,11 @@ class AuthList extends PureComponent<IProps, IState> {
           <div className="p20">
             <BatchCreateAuth
               onSuccess={(authData) => {
-                createShowAuth(authData).then((res) => {
-                  if (res.code !== "00000") return;
+                batchCreateAuth(authData).then((canIBatchCreate) => {
+                  if (!canIBatchCreate) return;
                   CloseModal(modalID);
                   this.getList();
+                  this.props.handleUpdateShowTree();
                 });
               }}
               onCancel={() => {

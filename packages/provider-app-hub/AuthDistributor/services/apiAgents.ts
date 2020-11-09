@@ -6,7 +6,8 @@ import {
   createShowAuth as createShowAuthApi,
   updateShowAuth as updateShowAuthApi,
   allowDeleteShowAuth as allowDeleteShowAuthApi,
-  deleteShowAuth as deleteShowAuthApi
+  deleteShowAuth as deleteShowAuthApi,
+  batchCreateAuth as batchCreateAuthApi
 } from './apis';
 import { API_CODE, MESSAGE } from '../constants';
 
@@ -98,6 +99,19 @@ export async function allowDeleteShowAuth(param) {
  */
 export async function deleteShowAuthItem({ id }) {
   const res = await deleteShowAuthApi([id]);
+  /** 接口有误则返回提示 */
+  if (res?.code !== API_CODE.SUCCESS) {
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
+    return false;
+  }
+  return true;
+}
+/**
+ * 删除权限展示树
+ * @param params 条件
+ */
+export async function batchCreateAuth(data) {
+  const res = await batchCreateAuthApi(data);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
