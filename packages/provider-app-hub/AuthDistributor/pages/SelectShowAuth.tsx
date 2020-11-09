@@ -17,10 +17,14 @@ interface IProps {
   searchParams: {[key: string]: any}
 }
 
-const SelectShowAuthParent = ({
+/**
+ * 权限展示组件
+ * @param param0
+ */
+const SelectShowAuth = ({
   onSuccess, onCancel, showAuthItems, searchParams
 }: IProps) => {
-  const [authParent, setAuthParent] = useState<IOnSuccessParams>({ id: '', name: '' });
+  const [showAuth, setShowAuth] = useState<IOnSuccessParams>({ id: '', name: '' });
   return (
     <>
       <div style={{ minHeight: 300 }}>
@@ -29,7 +33,7 @@ const SelectShowAuthParent = ({
           searchParams = {searchParams}
           showAuthItems = {showAuthItems}
           onSelect = {(selectedKeys, selectedNames) => {
-            setAuthParent({ id: selectedKeys[0], name: selectedNames[0] });
+            setShowAuth({ id: selectedKeys[0], name: selectedNames[0] });
           }}
           selectable = {true}
         />
@@ -37,7 +41,7 @@ const SelectShowAuthParent = ({
       <Space className="float-right">
         <Button
           type="primary" onClick={() => {
-            onSuccess(authParent);
+            onSuccess(showAuth);
           }}
         >
             确定
@@ -49,4 +53,4 @@ const SelectShowAuthParent = ({
     </>
   );
 };
-export default React.memo(SelectShowAuthParent);
+export default React.memo(SelectShowAuth);
