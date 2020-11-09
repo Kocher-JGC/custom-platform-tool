@@ -61,7 +61,7 @@ class AuthTree extends React.Component<IProps, IState> {
         checkedKeys: checkedKeysTmpl
       }, () => {
         /** 3.根据父级指示进行节点展开 */
-        this.getExpandedKeysByExpandType();
+        this.setExpandedKeysByExpandType();
       });
     });
     onRef && onRef(this);
@@ -71,17 +71,20 @@ class AuthTree extends React.Component<IProps, IState> {
    * 根据 props.expandType 计算 expandedKeys
    * 全部展开/展开回填数据所有上级
    */
-  getExpandedKeysByExpandType = () => {
+  setExpandedKeysByExpandType = () => {
     const { expandType } = this.props;
     const { allParentKeys, checkedKeys } = this.state;
+    let expandedKeys: React.Key[] = [];
     if (expandType === EXPAND_TYPE.EXPAND_ALL) {
-      return allParentKeys;
+      /** 全部展开 */
+      expandedKeys = allParentKeys;
     } if (expandType === EXPAND_TYPE.EXPAND_VALUES) {
-      return checkedKeys.reduce((arr, item) => {
+      /** 只展开选中数据 */
+      expandedKeys = checkedKeys.reduce((arr, item) => {
         return arr.concat(this.getAllParentKeysByKey(item));
       }, []);
     }
-    return [];
+    this.setState({ expandedKeys });
   }
 
   /**
@@ -151,7 +154,7 @@ class AuthTree extends React.Component<IProps, IState> {
       authList,
       allParentKeys
     }, () => {
-      this.getExpandedKeysByExpandType();
+      this.setExpandedKeysByExpandType();
     });
   }
 
