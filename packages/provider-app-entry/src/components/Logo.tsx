@@ -3,7 +3,7 @@ import React from 'react';
 
 export const Logo = ({
   app,
-  appName = '自定义工具 3.0',
+  appName = '自定义工具 3.0.111111',
   isEntryApp,
   ...props
 }) => {
