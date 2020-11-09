@@ -58,7 +58,7 @@ class AuthList extends PureComponent<IProps, IState> {
     const { authorities } = props;
     const param = {
       showAuthorityName: searchArea,
-      authorityCode: searchArea,
+      keyWord: searchArea,
       offset: pageOffset * pageSize,
       size: pageSize
     };
@@ -165,7 +165,11 @@ class AuthList extends PureComponent<IProps, IState> {
    * @param value
    */
   handleSearch = (value) => {
-
+    this.setState({
+      searchArea: value
+    }, () => {
+      this.getList();
+    });
   }
 
   /**
