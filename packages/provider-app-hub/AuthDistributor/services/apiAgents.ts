@@ -86,7 +86,8 @@ export async function allowDeleteShowAuth(param) {
     return { allowDelete: false, title: MESSAGE.ALLOW_DELETE_FAILED };
   }
   const allowDelete = res.result?.allowedDeleted;
-  const title = `${res.result?.errorMsg?.map((item) => item.msg).join('，')},`;
+  let title = `${res.result?.errorMsg?.map((item) => item.msg).join('，')}`;
+  title = title ? `${title}，` : '';
   return {
     allowDelete,
     title: allowDelete ? title + MESSAGE.MAY_I_DELETE : title + MESSAGE.NOT_ALLOW_DELETE

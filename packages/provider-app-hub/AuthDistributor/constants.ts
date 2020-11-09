@@ -91,7 +91,7 @@ export enum MORE_MENU_TYPE {
 export enum MESSAGE {
   ALLOW_DELETE_FAILED = '无法删除数据，请联系技术人员',
   NOT_ALLOW_DELETE = '不允许删除',
-  MAY_I_DELETE = '请确认是否删除',
+  MAY_I_DELETE = '请确认是否删除？',
   NO_RECORD_TO_BATCH_CREATE = '无选中数据，不进行快捷新增操作'
 }
 
