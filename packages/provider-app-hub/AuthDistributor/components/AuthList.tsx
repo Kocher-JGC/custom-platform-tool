@@ -43,21 +43,29 @@ class AuthList extends PureComponent<IProps, IState> {
     this.getList();
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.getList(nextProps);
+  }
+
   /**
    * 列表数据获取
    */
-  getList = () => {
+  getList = (props?: IProps) => {
     const {
       pageOffset, pageSize, searchArea
     } = this.state;
-    // const { authorities } = this.props;
-    getShowAuthorities({
-      // authorities,
+    props = props || this.props;
+    const { authorities } = props;
+    const param = {
       showAuthorityName: searchArea,
       authorityCode: searchArea,
       offset: pageOffset * pageSize,
       size: pageSize
-    }).then((res) => {
+    };
+    if (authorities?.length > 0) {
+      param.code = authorities.join(',');
+    }
+    getShowAuthorities(param).then((res) => {
       this.setState({
         list: res.data,
         total: res.total
