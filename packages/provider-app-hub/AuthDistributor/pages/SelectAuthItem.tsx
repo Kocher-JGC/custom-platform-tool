@@ -17,6 +17,10 @@ interface IProps {
   searchParams: {[key:string]: any}
 }
 
+/**
+ * 权限项选择组件
+ * @param param0
+ */
 const SelectAuthItem = ({
   onSuccess, onCancel, authItems, searchParams
 }: IProps) => {
