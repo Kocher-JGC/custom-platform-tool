@@ -2,6 +2,10 @@ import React from 'react';
 import AuthTree from './AuthTree';
 import { getShowAuthoritiesTree } from '../services/apiAgents';
 
+/**
+ * 权限展示树
+ * @param props
+ */
 const AuthShowTree = (props) => {
   return (
     <AuthTree

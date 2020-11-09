@@ -12,7 +12,7 @@ export interface ITableItem {
 export interface INode extends TreeNode{
   title: string | React.ReactElement
   name: string
-  key: string
+  key: React.Key
   uniqueId: React.Key
   value: string
   parentUniqueId: React.Key

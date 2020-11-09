@@ -2,6 +2,10 @@ import React from 'react';
 import AuthTree from './AuthTree';
 import { getAuthorityItemsTree } from '../services/apiAgents';
 
+/**
+ * 权限项树
+ * @param props
+ */
 const AuthItemTree = (props) => {
   return (
     <AuthTree
