@@ -451,7 +451,7 @@ class AuthTree extends React.Component<IProps, IState> {
     return (
       <div>
         <Input.Search
-          className="mb-4"
+          allowClear
           onSearch={(searchValue) => {
             this.setState({ searchValue }, () => {
               this.getList().then(() => {
@@ -462,7 +462,7 @@ class AuthTree extends React.Component<IProps, IState> {
             });
           }}
         />
-        <div style={{ height: 20 }}>
+        <div style={{ height: 20 }} className="mt-3">
           {
             expandedKeys.length > 0
               ? <CompressOutlined
