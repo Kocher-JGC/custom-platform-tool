@@ -13,9 +13,9 @@ export interface INode extends TreeNode{
   title: string | React.ReactElement
   name: string
   key: string
-  uniqueId: string
+  uniqueId: React.Key
   value: string
-  parentUniqueId: string
+  parentUniqueId: React.Key
   terminalType?: ITerminalType
   children?: INode[]
   attachment?: {
