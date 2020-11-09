@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { TERMINAL_TYPE_MENU } from '../constants';
-import SelectShowAuthParent from './SelectShowAuthParent';
+import SelectShowAuth from './SelectShowAuth';
 import SelectAuthItem from './SelectAuthItem';
 import { ITerminalType } from '../interface';
 
@@ -35,6 +35,10 @@ interface IProps {
   authData?: IAuthData
 }
 
+/**
+ * 自定义新增权限展示数据
+ * @param param0
+ */
 const CreateAuth = ({
   onSuccess, onCancel, authData
 }: IProps) => {
@@ -117,7 +121,7 @@ const CreateAuth = ({
               children: () => {
                 return (
                   <div className="p20 clearfix">
-                    <SelectShowAuthParent
+                    <SelectShowAuth
                       searchParams = {{ terminalType: form.getFieldValue('terminalType'), excludeTerminalData: true }}
                       showAuthItems={[form.getFieldValue('parentCode')]}
                       onSuccess = {({ id, name }) => {

@@ -26,6 +26,10 @@ interface IState {
   list: ITableItem[]
   total: number
 }
+/**
+ * 权限展示数据列表
+ * @param props
+ */
 class AuthList extends PureComponent<IProps, IState> {
   state = {
     pageOffset: 0,
@@ -39,6 +43,9 @@ class AuthList extends PureComponent<IProps, IState> {
     this.getList();
   }
 
+  /**
+   * 列表数据获取
+   */
   getList = () => {
     const {
       pageOffset, pageSize, searchArea
@@ -58,6 +65,9 @@ class AuthList extends PureComponent<IProps, IState> {
     });
   }
 
+  /**
+   * 展示列数据构造
+   */
   getColumns = (): ColumnType<ITableItem>[] => [
     ...TABLE_COLUMNS,
     {
@@ -83,6 +93,10 @@ class AuthList extends PureComponent<IProps, IState> {
     },
   ];
 
+  /**
+   * 编辑权限展示
+   * @param param0
+   */
   handleEdit = async ({ id }) => {
     const authData = await getShowAuthDetail({ id });
     const modalID = ShowModal({
@@ -111,6 +125,10 @@ class AuthList extends PureComponent<IProps, IState> {
     });
   }
 
+  /**
+   * 删除权限展示
+   * @param param0
+   */
   handleDelete = ({ id }) => {
     allowDeleteShowAuth({ id }).then(({ allowDelete, title }) => {
       if (!allowDelete) {
@@ -134,10 +152,17 @@ class AuthList extends PureComponent<IProps, IState> {
     });
   }
 
+  /**
+   * 支持搜索
+   * @param value
+   */
   handleSearch = (value) => {
 
   }
 
+  /**
+   * 创建权限展示
+   */
   handleCreateShowAuth = () => {
     const modalID = ShowModal({
       title: '创建权限展示树',
@@ -150,7 +175,9 @@ class AuthList extends PureComponent<IProps, IState> {
                 createShowAuth(authData).then((canICreate) => {
                   if (!canICreate) return;
                   CloseModal(modalID);
+                  /** 刷新列表 */
                   this.getList();
+                  /** 刷新外部权限展示树 */
                   this.props.handleUpdateShowTree();
                 });
               }}
@@ -165,6 +192,9 @@ class AuthList extends PureComponent<IProps, IState> {
     });
   }
 
+  /**
+   * 批量创建权限展示
+   */
   handleBatchCreateShowAuth = () => {
     const modalID = ShowModal({
       title: '生成权限展示树',
@@ -177,7 +207,9 @@ class AuthList extends PureComponent<IProps, IState> {
                 batchCreateAuth(authData).then((canIBatchCreate) => {
                   if (!canIBatchCreate) return;
                   CloseModal(modalID);
+                  /** 刷新列表 */
                   this.getList();
+                  /** 刷新外部权限展示树 */
                   this.props.handleUpdateShowTree();
                 });
               }}
@@ -195,23 +227,32 @@ class AuthList extends PureComponent<IProps, IState> {
 
   }
 
+  /**
+   * 操作列的操作
+   * @param param0
+   */
   handleMenuClick = ({ key }) => {
     if (key === MORE_MENU_TYPE.CREATEAUTHORITY) {
+      /** 自定义创建权限 */
       this.handleCreateShowAuth();
     } else if (key === MORE_MENU_TYPE.CREATEAUTHORITYSPEEDY) {
+      /** 批量创建权限 */
       this.handleBatchCreateShowAuth();
     }
   };
 
   columns = this.getColumns()
 
-  renderMenu = () => <Menu onClick={this.handleMenuClick}>
-    {
-      MORE_MENU.map((item) => <Menu.Item key={item.key} >
-        {item.title}
-      </Menu.Item>)
-    }
-  </Menu>;
+  /** 按钮下拉项渲染 */
+  renderMenu = () => (
+    <Menu onClick={this.handleMenuClick}>
+      {
+        MORE_MENU.map((item) => <Menu.Item key={item.key} >
+          {item.title}
+        </Menu.Item>)
+      }
+    </Menu>
+  );
 
   render() {
     const { list, total } = this.state;

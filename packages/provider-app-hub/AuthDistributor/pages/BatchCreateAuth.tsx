@@ -11,6 +11,10 @@ import {
 } from '../constants';
 import { INode } from '../interface';
 
+/**
+ * 批量新增权限展示数据
+ * @param props
+ */
 const BatchCreateAuth = (props) => {
   const {
     onSuccess, onCancel

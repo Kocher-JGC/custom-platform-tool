@@ -29,10 +29,13 @@ interface IState {
   checkedKeys: React.Key[]
 
   expandedKeys: React.Key[]
-  searchValue: React.Key
+  searchValue: string
 
 }
 
+/**
+ * 底层树
+ */
 class AuthTree extends React.Component<IProps, IState> {
   constructor(props) {
     super(props);
@@ -73,16 +76,20 @@ class AuthTree extends React.Component<IProps, IState> {
    */
   setExpandedKeysByExpandType = () => {
     const { expandType } = this.props;
-    const { allParentKeys, checkedKeys } = this.state;
+    const { allParentKeys, checkedKeys, originalAuthList } = this.state;
     let expandedKeys: React.Key[] = [];
     if (expandType === EXPAND_TYPE.EXPAND_ALL) {
       /** 全部展开 */
       expandedKeys = allParentKeys;
     } if (expandType === EXPAND_TYPE.EXPAND_VALUES) {
       /** 只展开选中数据 */
-      expandedKeys = checkedKeys.reduce((arr, item) => {
-        return arr.concat(this.getAllParentKeysByKey(item));
-      }, []);
+      const allKeys = originalAuthList.map((item) => item.uniqueId);
+      expandedKeys = checkedKeys
+        /** 避免有不存在的选中数据 */
+        .filter((item) => allKeys.includes(item))
+        .reduce((arr, item) => {
+          return arr.concat(this.getAllParentKeysByKey(item));
+        }, []);
     }
     this.setState({ expandedKeys });
   }
@@ -101,17 +108,25 @@ class AuthTree extends React.Component<IProps, IState> {
     return [];
   }
 
+  /**
+   * 更新树形数据，但保留原有选中和展开
+   */
   reloadWithKeysRetain = () => {
     this.getList().then(() => {
       const { originalAuthList, checkedKeys, expandedKeys } = this.state;
       const allKeys = originalAuthList.map((item) => item.uniqueId);
       this.setState({
+        /** 但需要对数据进行过滤，避免选中项中有已被删除的数据 */
         checkedKeys: checkedKeys.filter((item) => allKeys.includes(item)),
+        /** 但需要对数据进行过滤，避免展开项中有已被删除的数据 */
         expandedKeys: expandedKeys.filter((item) => allKeys.includes(item)),
       });
     });
   }
 
+  /**
+   * 更新树形数据，并清空原有选中和展开
+   */
   reload = () => {
     this.getList().then(() => {
       this.setState({
@@ -121,33 +136,45 @@ class AuthTree extends React.Component<IProps, IState> {
     });
   }
 
-  onBatchAdd = (list) => {
+  /**
+   * 批量新增节点数据
+   * @param list INode[]
+   */
+  onBatchAdd = (list: INode[]) => {
+    /** 去除子项数据，防止与转化后的数据重复 */
     list.forEach((node) => {
+      if (!node.children) return;
       node.children = null;
     });
     let { authMapByKey, authList, allParentKeys } = this.state;
+    /** 对节点数据做结构化转化 */
     const { tree, map, parentKeyList } = this.constructTree(list);
     authMapByKey = { ...authMapByKey, ...map };
     authList = authList.slice();
     allParentKeys = allParentKeys.filter((item) => !parentKeyList.includes(item)).concat(parentKeyList);
+    /** 将新增的数据节点挂到当前树中 */
     tree.forEach((item) => {
       const { parentUniqueId } = item;
+      /** 挂到对应上级节点中 */
       if (parentUniqueId in authMapByKey) {
         authMapByKey[parentUniqueId].children = authMapByKey[parentUniqueId].children || [];
         authMapByKey[parentUniqueId].children?.unshift(item);
         !allParentKeys.includes(parentUniqueId) && allParentKeys.push(parentUniqueId);
         return;
       }
-      // item.parentUniqueId = '';
+      /** 直接挂在最外层 */
       authList.unshift(item);
     });
+    /** 判断当前树节点有无能挂到新加的树节点中的 */
     const shoudeBeNullIndexList:number[] = [];
     authList.forEach((item, index) => {
       const { parentUniqueId, uniqueId } = item;
       if (!(parentUniqueId in authMapByKey)) return;
+      /** 发现原有最外层节点，其实是有上级的（且上级有数据的），则要把最外层节点干掉 */
       shoudeBeNullIndexList.push(index);
       !allParentKeys.includes(uniqueId) && allParentKeys.push(uniqueId);
     });
+    /** 由于直接在循环中干掉数据，会影响循环，需要在循环外进行数据清除 */
     authList = authList.filter((item, index) => !shoudeBeNullIndexList.includes(index));
     this.setState({
       authMapByKey,
@@ -159,13 +186,15 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   /**
-   * 渲染高亮（匹配搜索框）
+   * 渲染树节点中（匹配搜索框）的高亮文字
    * @param name 节点名称
    * @param value 用户搜素值
    */
   renderHighlightValue = (name: string): React.ReactElement => {
     const { searchValue } = this.state;
+    /** 如，以“爷”匹配“太爷爷1” */
     const nameSplit = name.split(searchValue);
+    /** 则 nameSplit 为 ["太", "", "", "1"] */
     const nameSplitLength = nameSplit.length;
     const title = searchValue && nameSplitLength > 0
       ? (
@@ -204,14 +233,17 @@ class AuthTree extends React.Component<IProps, IState> {
       nodeConfig: { columnImg, titleBeautifyBySearchValue },
       canIDeleteNode
     } = this.props;
+    /** 进行记录的字段数据转换 */
     for (const key in columnImg) {
       node[key] = get(node, columnImg[key]);
     }
     const { name } = node;
     let Title = (<span>{name}</span>);
+    /** 是否需要根据搜索高亮显示节点文字 */
     if (titleBeautifyBySearchValue) {
       Title = this.renderHighlightValue(name);
     }
+    /** 是否支持删除节点数据 */
     if (typeof canIDeleteNode === 'function' && canIDeleteNode(node)) {
       Title = (
         <span>
@@ -225,6 +257,7 @@ class AuthTree extends React.Component<IProps, IState> {
     }
     node.title = Title;
     node.key = node.uniqueId;
+    /** 支持父级对节点数据做处理 */
     typeof nodeBeautify === 'function' && nodeBeautify(node);
     return node;
   };
@@ -259,12 +292,14 @@ class AuthTree extends React.Component<IProps, IState> {
   };
 
   /**
-   * 获取权限数据
+   * 获取数据
    */
   getList = () => {
     return new Promise((resolve, reject) => {
       const { searchValue } = this.state;
+      /** 父级提供的数据获取方法 */
       this.props.onRequest(searchValue).then((res) => {
+        /** 进行数据转化 */
         const { tree, parentKeyList, map } = this.constructTree(res);
         this.setState({
           originalAuthList: res,
@@ -272,6 +307,7 @@ class AuthTree extends React.Component<IProps, IState> {
           authMapByKey: map,
           allParentKeys: parentKeyList,
         }, () => {
+          /** 接受数据赋入后进行后续操作 */
           resolve();
         });
       });
@@ -279,19 +315,27 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   /**
-   * 控制展开搜索
+   * 控制全部展开/收缩
    */
   onExpandAll = () => {
     const { expandedKeys, allParentKeys } = this.state;
+    /** 但凡存在展开项，就只能收缩 */
     this.setState({
       expandedKeys: expandedKeys.length > 0 ? [] : allParentKeys
     });
   };
 
+  /**
+   * 删除节点数据
+   * @param node
+   */
   onDeleteNode = (node) => {
     const { onDeleteNode } = this.props;
+    /** 获取当前节点对应的可删除的最顶层节点数据（可删除即，只有一个子项数据） */
     const { parentList, index } = this.findParentUntilNotOnlyOne(node);
+    /** 关联所有子项数据，支持提供给外部处理 */
     const relatedNodeList = this.getChildNodeList(parentList[index]);
+    /** 支持父级回调，能拿到所有待删除的节点数据 */
     if (typeof onDeleteNode === 'function') {
       onDeleteNode(relatedNodeList, relatedNodeList.map((item) => item.uniqueId));
     }
@@ -302,6 +346,11 @@ class AuthTree extends React.Component<IProps, IState> {
     });
   }
 
+  /**
+   * 获取节点下的所有节点数据
+   * @param node 指定节点
+   * @returns nodeList 子节点数据
+   */
   getChildNodeList = (node: INode): INode[] => {
     if (!node.children) {
       return [node];
@@ -311,33 +360,54 @@ class AuthTree extends React.Component<IProps, IState> {
     return [...list, node];
   }
 
+  /**
+   * 获取对应节点的（只有一个子级）的最顶层上级
+   * @param node
+   */
   findParentUntilNotOnlyOne = (node) => {
     const { authMapByKey, authList } = this.state;
-    const { parentUniqueId, uniqueId } = node;
+    const { parentUniqueId } = node;
     let parentList = authList;
     const { [parentUniqueId]: parentNode } = authMapByKey;
     if (parentNode) {
       parentList = parentNode.children || [];
+      /** 如果只有一个子级，就继续往上找 */
       if (parentList.length === 1) {
         return this.findParentUntilNotOnlyOne(parentNode);
       }
     }
+    /** 获取节点在所属列表数据中的索引 */
+    const index = this.getIndexInList(parentList, node);
+    return { parentList, index };
+  }
+
+  /**
+   * 获取节点在给定列表中的索引
+   * @param list INode[] 节点列表数据
+   * @param param1 INode 节点数据
+   */
+  getIndexInList = (list, { uniqueId }) => {
     let index = -1;
-    parentList.some((item, loopIndex) => {
+    list.some((item, loopIndex) => {
       if (item.uniqueId === uniqueId) {
         index = loopIndex;
         return true;
       }
       return false;
     });
-    return { parentList, index };
+    return index;
   }
 
+  /**
+   * 接受父级实时改动选中数据
+   * @param actionFn (node, uniqueId)=>void
+   */
   onUpdateCheckedNodes = (actionFn) => {
     if (typeof actionFn !== 'function') return;
     const {
       checkedKeys, originalAuthList, authList, authMapByKey
     } = this.state;
+    /** 提供给外部平铺开的节点数据 */
     const checkedNodes = originalAuthList.filter((item) => checkedKeys.includes(item.key));
     checkedNodes.forEach((item) => {
       actionFn(item, item.uniqueId);
@@ -350,7 +420,7 @@ class AuthTree extends React.Component<IProps, IState> {
   }
 
   /**
-   * 通知上级
+   * 通知父级选中数据
    */
   onAfterCheck = () => {
     const { checkedKeys, authMapByKey, originalAuthList } = this.state;
@@ -361,6 +431,10 @@ class AuthTree extends React.Component<IProps, IState> {
     onSelect && onSelect(checkedValues, checkedNames, checkedNodes);
   }
 
+  /**
+   * 由父级直接控制取消选中节点数据
+   * @param keys 待取消的节点唯一标识
+   */
   onCancelCheckedKeys = (keys) => {
     this.setState({
       checkedKeys: this.state.checkedKeys.filter((key) => !keys.includes(key))
