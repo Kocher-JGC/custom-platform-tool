@@ -71,9 +71,6 @@ const CreateAuth = ({
       <Form.Item
         name="authorityName"
         label="关联权限项"
-        rules={[
-          { required: true, message: "关联权限项必填" }
-        ]}
       >
         <Input
           className="cursor-pointer"
