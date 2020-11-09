@@ -12,7 +12,7 @@ const AuthShowTree = (props) => {
       width = {props.width}
       height = {props.height}
       onInitCheckedKeys = {(list, map, originalList) => {
-        const values = props.authItems || [];
+        const values = props.showAuthItems || [];
         if (values.length === 0) return [];
         return originalList.map((item) => item.value).filter((value) => values.includes(value));
       }}
