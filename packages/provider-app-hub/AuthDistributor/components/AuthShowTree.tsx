@@ -29,6 +29,8 @@ const AuthShowTree = (props) => {
         },
         titleBeautifyBySearchValue: true
       }}
+      onDeleteNode = {props.onDeleteNode}
+      canIDeleteNode = {props.canIDeleteNode}
     />
   );
 };
