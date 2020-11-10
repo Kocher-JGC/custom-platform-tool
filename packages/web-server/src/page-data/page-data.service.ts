@@ -452,7 +452,7 @@ export class PageDataService {
           break;
       }
     });
-    const extralSchema = this.genExtralSchema(extralData.tableMetaData, hasTable);
+    const extralSchema = this.genExtralSchema(extralData.tableMetaData?.[0], hasTable);
     console.log(hasTable, extralSchema);
 
     if (hasTable && extralSchema) {
@@ -673,7 +673,7 @@ export class PageDataService {
       // const tableMetaData = await this.getTableMetadata(dataSource, extralData);
 
       const actualMetadata = Array.isArray(tableMetaData) && this.genMetadataFromTableInfo(tableMetaData) || [];
-
+      extralData.tableMetaData = actualMetadata;
       /** 转换组件集合 */
       const actualComponentsCollection = this.transformWidgerData(componentsCollection, extralData);
 
