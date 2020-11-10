@@ -709,7 +709,7 @@ export class PageDataService {
       IUBDSLData.name = contentData.name;
       IUBDSLData.type = 'config';
       IUBDSLData.componentsCollection = actualComponentsCollection;
-      IUBDSLData.metadataCollection = tableMetaData;
+      IUBDSLData.metadataCollection = actualMetadata;
       IUBDSLData.schemas = actualSchema;
       IUBDSLData.actionsCollection = actualActions;
       IUBDSLData.flowCollection = actualFlowCollection;
@@ -731,7 +731,7 @@ export class PageDataService {
   }
 
   async getTableInfoFromRemote({ tableId, tableRefId, tableType }, { token, lessee, app }) {
-    const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}12`;
+    const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
     const resData = await axios
       .get(reqUrl, {
         headers: {
