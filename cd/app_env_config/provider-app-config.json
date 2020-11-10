@@ -1,5 +1,5 @@
 {
-  "nodeWebServerUrl": "http://192.168.14.181:5020",
+  "nodeWebServerUrl": "http://192.168.14.181:5100",
   "perviewAppUrl": "http://192.168.14.181:5020",
   "apiUrl": "http://192.168.14.181:6090",
   "prevNodeWebServerUrl": "192.168.14.181:5100",
