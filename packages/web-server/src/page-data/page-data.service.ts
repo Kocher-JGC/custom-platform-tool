@@ -6,6 +6,7 @@ import config from '../../config';
 
 const { mockToken } = config;
 
+
 const genUrl = (params: {lessee: string, app: string }) => {
   return `${config.platformApiUrl}/${params.lessee}/${params.app}`;
 };
