@@ -189,26 +189,30 @@ export class PageDataService {
 
   genMetadataFromTableInfo(tableInfos: any[]) {
     return tableInfos?.map((inff) => {
+      if (!inff) return false;
       const { columns: oldColumns, tableInfo } = inff;
-      const columns = oldColumns.map((info) => {
+      if (tableInfo && oldColumns) {
+        const columns = oldColumns.map((info) => {
+          return {
+            id: info.id,
+            name: info.name,
+            fieldCode: info.code,
+            fieldType: info.fieldType,
+            fieldSize: info.fieldSize,
+            dataType: info.dataType,
+            colDataType: info.dataType,
+            type: 'string',
+          };
+        }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
         return {
-          id: info.id,
-          name: info.name,
-          fieldCode: info.code,
-          fieldType: info.fieldType,
-          fieldSize: info.fieldSize,
-          dataType: info.dataType,
-          colDataType: info.dataType,
-          type: 'string',
+          ...tableInfo,
+          type: 'general',
+          moduleId: '', // 关联表Id
+          columns
         };
-      }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
-      return {
-        ...tableInfo,
-        type: 'general',
-        moduleId: '', // 关联表Id
-        columns
-      };
-    }) || [];
+      }
+      return false;
+    }).filter(v => v) || [];
   }
 
   transfromSchema(schema: any) {
@@ -672,7 +676,7 @@ export class PageDataService {
       /** 生成元数据 */
       // const tableMetaData = await this.getTableMetadata(dataSource, extralData);
 
-      // const actualMetadata = Array.isArray(tableMetaData) && this.genMetadataFromTableInfo(tableMetaData) || [];
+      const actualMetadata = Array.isArray(tableMetaData) && this.genMetadataFromTableInfo(tableMetaData) || [];
       // console.log('--------------- actualMetadata ---------------');
       // console.log(actualMetadata);
       
@@ -764,8 +768,8 @@ export class PageDataService {
     } 
     return {
       tableId, tableRefId, tableType,
-      reqUrl
-
+      reqUrl,
+      resData
     };
     
 
