@@ -731,7 +731,7 @@ export class PageDataService {
   }
 
   async getTableInfoFromRemote({ tableId, tableRefId, tableType }, { token, lessee, app }) {
-    const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
+    const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}12`;
     const resData = await axios
       .get(reqUrl, {
         headers: {
@@ -741,6 +741,7 @@ export class PageDataService {
     const data = resData?.data?.result;
     console.log('------------ Table Data -----------');
     console.log(data);
+    
     if (data) {
       const tableInfo = {
         id: data.id,
@@ -769,7 +770,7 @@ export class PageDataService {
     return {
       tableId, tableRefId, tableType,
       reqUrl,
-      resData: JSON.stringify(resData)
+      resData: JSON.stringify(resData.data)
     };
     
 
