@@ -842,7 +842,7 @@ export class PageDataService {
           tableMetaData = await this.getTableMetadata(dataSources, processCtx);
         }
   
-        return this.pageData2IUBDSL(data, tableMetaData);
+        return this.pageData2IUBDSL(data, { tableMetaData });
       }
     } catch(e) {
       console.error('error', e);
