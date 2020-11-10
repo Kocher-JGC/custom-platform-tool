@@ -55,7 +55,7 @@ export class ReleaseAppController {
           await generateAppConfig(folderName, { lesseeCode, applicationCode });
           
           // TODO 循环生成实现方式
-          const genPageFilesPromise = pageDataRes.map(pageData => this.genFileFromPageData(pageData, { folderName, token: mockToken, }));
+          const genPageFilesPromise = pageDataRes.map(pageData => this.genFileFromPageData(pageData, { folderName, token: mockToken, lessee: lesseeCode, app: applicationCode }));
           const result = await Promise.all(genPageFilesPromise);
           
           this.printGenFileRes(result, pageDataRes); // 打印结果
@@ -80,16 +80,20 @@ export class ReleaseAppController {
   }
 
 
-  async genFileFromPageData(pageData, { folderName, token }) {
+  async genFileFromPageData(pageData, { folderName, token, lessee, app }) {
     const {
       generatePageDataJSONFile,
     } = this.releaseAppService;
     const { id, dataSources } = pageData;
     let tableMetaData;
     if (Array.isArray(dataSources) && dataSources.length > 0) {
-      tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token });
+      
+      tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token, lessee, app });
+      console.log('--------------- push tableData ---------------');
+      console.log(tableMetaData);
+      
     }
-    const dsl = this.pageDataService.pageData2IUBDSL(pageData, { tableMetaData });
+    const dsl = await this.pageDataService.pageData2IUBDSL(pageData, { tableMetaData });
     const createJSONFileRes = await generatePageDataJSONFile(
       folderName,
       id,
