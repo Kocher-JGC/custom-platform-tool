@@ -705,7 +705,7 @@ export class PageDataService {
       IUBDSLData.name = contentData.name;
       IUBDSLData.type = 'config';
       IUBDSLData.componentsCollection = actualComponentsCollection;
-      IUBDSLData.metadataCollection = [];
+      IUBDSLData.metadataCollection = tableMetaData;
       IUBDSLData.schemas = actualSchema;
       IUBDSLData.actionsCollection = actualActions;
       IUBDSLData.flowCollection = actualFlowCollection;
