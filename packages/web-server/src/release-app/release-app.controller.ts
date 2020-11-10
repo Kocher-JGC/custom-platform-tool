@@ -86,13 +86,13 @@ export class ReleaseAppController {
     } = this.releaseAppService;
     const { id, dataSources } = pageData;
     let tableMetaData;
-    if (Array.isArray(dataSources) && dataSources.length > 0) {
+    // if (Array.isArray(dataSources) && dataSources.length > 0) {
       
-      tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token, lessee, app });
-      console.log('--------------- push tableData ---------------');
-      console.log(tableMetaData);
+    //   tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token, lessee, app });
+    //   console.log('--------------- push tableData ---------------');
+    //   console.log(tableMetaData);
       
-    }
+    // }
     const dsl = await this.pageDataService.pageData2IUBDSL(pageData, { tableMetaData });
     const createJSONFileRes = await generatePageDataJSONFile(
       folderName,

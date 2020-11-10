@@ -672,12 +672,12 @@ export class PageDataService {
       /** 生成元数据 */
       // const tableMetaData = await this.getTableMetadata(dataSource, extralData);
 
-      const actualMetadata = Array.isArray(tableMetaData) && this.genMetadataFromTableInfo(tableMetaData) || [];
-      console.log('--------------- actualMetadata ---------------');
-      console.log(actualMetadata);
+      // const actualMetadata = Array.isArray(tableMetaData) && this.genMetadataFromTableInfo(tableMetaData) || [];
+      // console.log('--------------- actualMetadata ---------------');
+      // console.log(actualMetadata);
       
       // eslint-disable-next-line prefer-destructuring
-      extralData.tableMetaData = actualMetadata[0];
+      // extralData.tableMetaData = actualMetadata[0];
       /** 转换组件集合 */
       const actualComponentsCollection = this.transformWidgerData(componentsCollection, extralData);
 
@@ -705,7 +705,7 @@ export class PageDataService {
       IUBDSLData.name = contentData.name;
       IUBDSLData.type = 'config';
       IUBDSLData.componentsCollection = actualComponentsCollection;
-      IUBDSLData.metadataCollection = actualMetadata;
+      IUBDSLData.metadataCollection = [];
       IUBDSLData.schemas = actualSchema;
       IUBDSLData.actionsCollection = actualActions;
       IUBDSLData.flowCollection = actualFlowCollection;
