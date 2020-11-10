@@ -769,7 +769,7 @@ export class PageDataService {
     return {
       tableId, tableRefId, tableType,
       reqUrl,
-      resData
+      resData: JSON.stringify(resData)
     };
     
 
