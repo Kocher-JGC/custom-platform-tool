@@ -762,7 +762,11 @@ export class PageDataService {
         columns: data.columns?.filter(info => !filterSysFiledKeys.includes(info.code))
       };
     } 
-    return {};
+    return {
+      tableId, tableRefId, tableType,
+      reqUrl
+
+    };
     
 
   }
