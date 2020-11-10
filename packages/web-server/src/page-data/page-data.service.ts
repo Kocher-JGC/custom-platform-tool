@@ -681,7 +681,7 @@ export class PageDataService {
       // console.log(actualMetadata);
       
       // eslint-disable-next-line prefer-destructuring
-      // extralData.tableMetaData = actualMetadata[0];
+      extralData.tableMetaData = actualMetadata[0];
       /** 转换组件集合 */
       const actualComponentsCollection = this.transformWidgerData(componentsCollection, extralData);
 
