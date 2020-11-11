@@ -20,8 +20,8 @@ const BatchCreateAuth = (props) => {
     onSuccess, onCancel
   } = props;
   const [terminalType, setTerminalType] = useState(TEMINAL_TYPE.BS);
-  const [AuthItemTreeRef, setAuthItemTreeRef] = useState<{reload?:()=>void}>({});
-  const [AuthShowTreeRef, setAuthShowTreeRef] = useState<{reload?:()=>void}>({});
+  const [AuthItemTreeRef, setAuthItemTreeRef] = useState<{reload?:()=>Promise<void>}>({});
+  const [AuthShowTreeRef, setAuthShowTreeRef] = useState<{reload?:()=>Promise<void>}>({});
   const [checkedNodes, setCheckedNodes] = useState<INode[]>([]);
   const onFinish = () => {
     if (checkedNodes.length === 0) {
@@ -44,8 +44,12 @@ const BatchCreateAuth = (props) => {
     onSuccess({ showAuthorityList });
   };
   useEffect(() => {
-    AuthItemTreeRef?.reload?.();
-    AuthShowTreeRef?.reload?.();
+    AuthItemTreeRef?.reload?.()?.then(() => {
+      AuthItemTreeRef?.setExpandedKeysByExpandType?.();
+    });
+    AuthShowTreeRef?.reload?.()?.then(() => {
+      AuthShowTreeRef?.setExpandedKeysByExpandType?.();
+    });
     setCheckedNodes([]);
   }, [terminalType]);
   const handleTransfer = () => {
