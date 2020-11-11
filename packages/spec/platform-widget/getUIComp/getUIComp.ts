@@ -1,4 +1,4 @@
-import { UnexpectedWidgetMeta } from "../interfaces";
+import { UnexpectedWidgetMeta } from "../core";
 
 /**
  * 获取 UI 组件的 HOC

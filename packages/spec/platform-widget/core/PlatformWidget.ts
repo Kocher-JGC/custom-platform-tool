@@ -1,6 +1,6 @@
 import { PropItemMeta } from '@engine/visual-editor/data-structure';
 import { mergeDeep } from '@infra/utils/tools';
-import { PlatformWidgetMeta } from '../interfaces';
+import { PlatformWidgetMeta } from ".";
 
 // export type PropItemRender = Pick<PropItemCompAccessSpec, 'render'>
 
