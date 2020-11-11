@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Request, Response } from "express";
 import { Controller, Get, Param, Query, Req, Res } from "@nestjs/common";
+import { pageData2IUBDSL } from "src/page-data/transform-data";
 import { PageDataService } from "../page-data/page-data.service";
 import { ReleaseAppService } from "./release-app.service";
 import config from '../../config';
@@ -55,7 +56,7 @@ export class ReleaseAppController {
           await generateAppConfig(folderName, { lesseeCode, applicationCode });
           
           // TODO 循环生成实现方式
-          const genPageFilesPromise = pageDataRes.map(pageData => this.genFileFromPageData(pageData, { folderName, token: mockToken, }));
+          const genPageFilesPromise = pageDataRes.map(pageData => this.genFileFromPageData(pageData, { folderName, token: mockToken, lessee: lesseeCode, app: applicationCode }));
           const result = await Promise.all(genPageFilesPromise);
           
           this.printGenFileRes(result, pageDataRes); // 打印结果
@@ -80,16 +81,12 @@ export class ReleaseAppController {
   }
 
 
-  async genFileFromPageData(pageData, { folderName, token }) {
+  async genFileFromPageData(pageData, { folderName, token, lessee, app }) {
     const {
       generatePageDataJSONFile,
     } = this.releaseAppService;
-    const { id, dataSources } = pageData;
-    let tableMetaData;
-    if (Array.isArray(dataSources) && dataSources.length > 0) {
-      tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token });
-    }
-    const dsl = this.pageDataService.pageData2IUBDSL(pageData, { tableMetaData });
+    const { id } = pageData;
+    const dsl = await pageData2IUBDSL(pageData, { token, lessee, app });
     const createJSONFileRes = await generatePageDataJSONFile(
       folderName,
       id,
