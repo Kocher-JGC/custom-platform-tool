@@ -14,9 +14,11 @@ export const getUICompHOC = <R>(UICompData, sufix = '') => {
 
   return (widgetType: string): R | UnexpectedWidgetMeta => {
     const WidgetConfig = getWidgetSpec(widgetType);
-    if (typeof WidgetConfig === 'function') {
-      return new WidgetConfig();
-    }
+    // console.log(WidgetConfig);
+    // if (typeof WidgetConfig === 'function') {
+    //   return new WidgetConfig();
+    // }
+    if (WidgetConfig) return WidgetConfig;
     return {
       unexpected: true
     };

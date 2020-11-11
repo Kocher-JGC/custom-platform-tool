@@ -1,16 +1,16 @@
 import React from 'react';
 import { GeneralTableComp } from '.';
-import { BusinessWidgetAccessSpec } from '../../interfaces';
+import { PlatformWidget, PlatformWidgetComp } from '../../core';
 
-export const NormalTable: BusinessWidgetAccessSpec = () => ({
+@PlatformWidget({
   name: 'NormalTable',
-
   editableProps: {
     columns: {
       type: 'array[{ key: string }]'
     }
   },
-
+})
+export class NormalTable implements PlatformWidgetComp {
   render(widgetState) {
     // console.log(widgetState);
 
@@ -18,4 +18,4 @@ export const NormalTable: BusinessWidgetAccessSpec = () => ({
       <GeneralTableComp {...widgetState} />
     );
   }
-});
+}

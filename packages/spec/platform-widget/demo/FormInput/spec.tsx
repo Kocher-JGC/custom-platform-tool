@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormInputComp } from '.';
-import { BusinessWidgetAccessSpec } from '../../interfaces';
+import { PlatformWidgetAccessSpec } from '../../interfaces';
 
-export class FormInputSpec implements BusinessWidgetAccessSpec {
+export class FormInputSpec implements PlatformWidgetAccessSpec {
   name = 'FormInput'
 
   render(widgetState) {

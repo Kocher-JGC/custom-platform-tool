@@ -1,16 +1,16 @@
 import React from 'react';
 import { FormButtonComp } from '.';
-import { BusinessWidgetAccessSpec } from '../../interfaces';
+import { PlatformWidget, PlatformWidgetComp } from '../../core';
 
-export const FormButton: BusinessWidgetAccessSpec = () => ({
+@PlatformWidget({
   name: 'FormButton',
-
   editableProps: {
     title: {
       type: 'string'
     },
   },
-
+})
+export class FormButton implements PlatformWidgetComp {
   render(widgetState) {
     const { title } = widgetState;
     return (
@@ -22,4 +22,4 @@ export const FormButton: BusinessWidgetAccessSpec = () => ({
       />
     );
   }
-});
+}
