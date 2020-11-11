@@ -65,8 +65,8 @@ export interface IUserModelState {
   member?: IMember;
   token?: string;
   refreshToken?: string;
-  lesseeCode?: string;
-  applicationCode?: string;
+  lessee?: string;
+  app?: string;
 }
 
 export interface IUserModel {
@@ -120,8 +120,8 @@ const UserModel: IUserModel = {
       };
     },
     setAppConfig(state, { payload }) {
-      store.set("lesseeCode", payload.lesseeCode);
-      store.set("applicationCode", payload.applicationCode);
+      store.set("lessee", payload.lesseeCode);
+      store.set("app", payload.applicationCode);
       return {
         ...state,
         ...payload || {},

@@ -170,6 +170,12 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                     text: '进入应用',
                     action: () => {
                       // console.log('object :>> ', 'object');
+                      console.log(getAppPreviewUrl({
+                        ...appLocation,
+                        app: accessName,
+                        mode: 'pro',
+                        appName: appShortNameEn
+                      }));
                       window.open(getAppPreviewUrl({
                         ...appLocation,
                         app: accessName,
