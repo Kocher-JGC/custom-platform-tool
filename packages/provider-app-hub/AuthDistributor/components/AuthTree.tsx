@@ -112,14 +112,16 @@ class AuthTree extends React.Component<IProps, IState> {
    * 更新树形数据，但保留原有选中和展开
    */
   reloadWithKeysRetain = () => {
-    this.getList().then(() => {
-      const { originalAuthList, checkedKeys, expandedKeys } = this.state;
-      const allKeys = originalAuthList.map((item) => item.uniqueId);
-      this.setState({
-        /** 但需要对数据进行过滤，避免选中项中有已被删除的数据 */
-        checkedKeys: checkedKeys.filter((item) => allKeys.includes(item)),
-        /** 但需要对数据进行过滤，避免展开项中有已被删除的数据 */
-        expandedKeys: expandedKeys.filter((item) => allKeys.includes(item)),
+    return new Promise((resolve, reject) => {
+      this.getList().then(() => {
+        const { originalAuthList, checkedKeys, expandedKeys } = this.state;
+        const allKeys = originalAuthList.map((item) => item.uniqueId);
+        this.setState({
+          /** 但需要对数据进行过滤，避免选中项中有已被删除的数据 */
+          checkedKeys: checkedKeys.filter((item) => allKeys.includes(item)),
+          /** 但需要对数据进行过滤，避免展开项中有已被删除的数据 */
+          expandedKeys: expandedKeys.filter((item) => allKeys.includes(item)),
+        }, resolve);
       });
     });
   }
@@ -128,11 +130,8 @@ class AuthTree extends React.Component<IProps, IState> {
    * 更新树形数据，并清空原有选中和展开
    */
   reload = () => {
-    this.getList().then(() => {
-      this.setState({
-        checkedKeys: [],
-        expandedKeys: [],
-      });
+    return new Promise((resolve, reject) => {
+      this.getList().then(resolve);
     });
   }
 
