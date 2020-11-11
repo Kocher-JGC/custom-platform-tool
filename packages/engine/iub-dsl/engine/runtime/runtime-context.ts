@@ -240,6 +240,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
         handle: () => ({ value: newState })
       });
     }
+
     if (dataSource) {
       const newDataSource = getPageState(runTimeCtxToBusiness.current, dataSource);
       list.push({

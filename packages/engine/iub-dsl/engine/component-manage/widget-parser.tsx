@@ -1,4 +1,4 @@
-import { AllComponentType } from "@iub-dsl/definition";
+import { AllWidgetType } from "@iub-dsl/definition";
 import { AllUI } from './UI-factory/types';
 import { RenderStructInfo, RenderCompInfo } from './component-store/types/renderStruct';
 
@@ -18,13 +18,13 @@ const widgetParseScheduler = (id: string, confItem, options): {
   renderStructInfo: RenderStructInfo[],
   renderCompInfo: RenderCompInfo
 } => {
-  const { compType } = confItem;
-  switch (compType) {
-    case AllComponentType.FormInput:
+  const { widgetRef } = confItem;
+  switch (widgetRef) {
+    case AllWidgetType.FormInput:
       return normalInputCompParser(id, confItem, options);
-    case AllComponentType.NormalButton:
+    case AllWidgetType.NormalButton:
       return normalButtonParser(id, confItem, options);
-    case AllComponentType.NormalTable:
+    case AllWidgetType.NormalTable:
       return normalTableParser(id, confItem, options);
     default:
       return {
@@ -45,11 +45,11 @@ const widgetParseScheduler = (id: string, confItem, options): {
 };
 
 const widgetParser = (conf, options?) => {
-  const allCompId = Object.keys(conf);
+  const allWidgetId = Object.keys(conf);
 
   const compParseRes: any = {};
   let confItem;
-  allCompId.forEach((id) => {
+  allWidgetId.forEach((id) => {
     confItem = conf[id];
     compParseRes[id] = widgetParseScheduler(id, confItem, options);
   });

@@ -95,6 +95,7 @@ const genBaseRenderStruct = (
       propContextHandle(propsParser(key, conf), ctx);
     }
   }, propsParseRes);
+  console.log(propsParseRes);
 
   if (Object.keys(propsParseRes.dynamicProps) || Object.keys(propsParseRes.staticProps) || requireRender) {
     const childrenStructInfo = [];

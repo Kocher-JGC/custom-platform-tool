@@ -1,7 +1,7 @@
 import { ElementBasic } from "@engine/layout-renderer/types";
 import {
-  Selector, TreeSelector, Table, Button, AllComponentType, FormInput
-} from "./components";
+  Selector, TreeSelector, Table, Button, AllWidgetType, FormInput
+} from "./widgets";
 import { CommonObjStruct } from "../public";
 import { WidgetEvents } from "../events";
 
@@ -9,7 +9,7 @@ export type ComponentType = Selector | FormInput | TreeSelector | Table | Button
 /**
  * 组件元素，行为载体
  */
-export interface ComponentElement extends ElementBasic {
+export interface widgetCollection extends ElementBasic {
   id: string;
   type: "component";
   /**
@@ -19,7 +19,7 @@ export interface ComponentElement extends ElementBasic {
   actions?: WidgetEvents;
 
   /** UI隔离的唯一标示 */
-  compType: AllComponentType; // TODO
+  compType: AllWidgetType; // TODO
   // schemasMapping: string;
 
   /** 静态的props或style */

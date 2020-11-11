@@ -12,7 +12,7 @@ import { isPageDatasoruceMeta } from "../../metadata-manage";
 
 /**
  * 将含有特殊标示的值进行转换转换值
- * @example @(schemas).dId1 将获取页面数据中dId1的值
+ * @example @(schema).dId1 将获取页面数据中dId1的值
  * @param value 需要被转换的值
  * @param ctx 上下文
  */

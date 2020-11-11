@@ -10,5 +10,3 @@ export interface CommonCondition {
   condition?: Condition;
   when?: WhenStruct;
 }
-
-export * from './condition';
