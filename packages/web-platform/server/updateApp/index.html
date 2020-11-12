@@ -87,6 +87,17 @@
   <script src="../public/axios.min.js"></script>
   <script>
     (function () {
+
+      function getQueryValue(queryName) {
+        var reg = new RegExp("(^|&)" + queryName + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+          return decodeURI(r[2]);
+        } else {
+          return null;
+        }
+      }
+      console.log("应用发布后端服务", `http://${getQueryValue("api")}/appManager/installApp`)
       document.querySelector('#upload1').addEventListener("change", function (e) {
         const [file] = document.querySelector('#upload1').files;
         if (file) {
@@ -120,7 +131,7 @@
           const formData = new FormData();
           formData.set("file", file);
           axios.request({
-            url: `http://192.168.14.140:7090/appManager/installApp`,
+            url: `http://${getQueryValue("api")}/appManager/installApp`,
             // url: `http://192.168.14.181:7090/appManager/installApp`,
             method: "POST",
             headers: {
@@ -139,8 +150,6 @@
           })
         }
       })
-
-
     })()
   </script>
 </body>
