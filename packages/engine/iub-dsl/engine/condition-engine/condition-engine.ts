@@ -16,12 +16,12 @@ const conditionExample: Condition = {
     },
     condId1: {
       operator: ConditionOperator.N_EMPTY,
-      exp1: '@(schemas).entity_25'
+      exp1: '@(schema).entity_25'
     },
     condId2: {
       operator: ConditionOperator.EQU,
-      exp1: '@(schemas).entity_26',
-      exp2: '@(schemas).entity_27'
+      exp1: '@(schema).entity_26',
+      exp2: '@(schema).entity_27'
     }
   },
   conditionControl: {

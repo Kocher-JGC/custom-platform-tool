@@ -1,20 +1,25 @@
-interface IProps {
-  [key: string]: string;
+export enum UsedConfKey {
+  passServerUrl = 'passServerUrl',
+  sassServerUrl = 'sassServerUrl',
+  pageServerUrl = 'pageServerUrl',
+  appUrl = 'appUrl',
 }
-class HOSTENV {
-  public env;
-
-  constructor(props?: IProps) {
-    this.env = props;
-  }
-
-  get() {
-    return this.env;
-  }
-
-  set(params) {
-    this.env = params;
-  }
+/** confJson的key */
+export enum ConfKey {
+  /** pass平台的URL */
+  passServerUrl = 'passServerUrl',
+  /** 预览时候sass服务的url */
+  previewSassServerUrl = 'previewSassServerUrl',
+  /** 预览时候页面服务的url */
+  previewPageServerUrl = 'previewPageServerUrl',
+  /** 预览时候应用的url */
+  previewAppUrl = 'previewAppUrl',
+  /** 发布时候sass的url */
+  publishSassServerUrl = 'publishSassServerUrl', //
+  /** 发布时候页面服务的url */
+  publishPageServerUrl = 'publishPageServerUrl', //
+  /** 发布时候应用的url */
+  publishAppUrl = 'publishAppUrl', //
 }
 
-export default new HOSTENV();
+export const usedConfKey = Object.keys(UsedConfKey);

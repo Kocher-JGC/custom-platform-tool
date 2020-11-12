@@ -33,9 +33,9 @@ export const getAppPreviewUrl = (options?: Options) => {
     pageID,
     app,
   } = options || {};
-  const appApiUrl = getAppConfig(mode === 'pro' ? 'prodAppApiUrl' : 'previewAppApiUrl');
-  const getPageApiUrl = getAppConfig(mode === 'pro' ? 'proNodeWebServerUrl' : 'prevNodeWebServerUrl');
-  const perviewAppUrl = getAppConfig('perviewAppUrl');
+  const sassServerUrl = getAppConfig(`${mode === 'pro' ? 'prod' : 'preview'}SassServerUrl`);
+  const pagePushServerUrl = getAppConfig(`${mode === 'pro' ? 'prod' : 'preview'}PagePushServerUrl`);
+  const appUrl = getAppConfig(`${mode === 'pro' ? 'prod' : 'preview'}AppUrl`);
   const queryUrl = toQueryString({
     mode,
     appName,
@@ -43,11 +43,11 @@ export const getAppPreviewUrl = (options?: Options) => {
     lessee: $R_P.urlManager.currLessee,
     app,
     t: $R_P.config.commonHeaders?.Authorization,
-    API: appApiUrl,
-    'NODE-WEB': getPageApiUrl,
+    sassServerUrl,
+    pagePushServerUrl,
     menuid: defaultPath ? `menuid=/${defaultPath}` : ''
   });
-  console.log(`${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`);
-  return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`;
-  // return `${perviewAppUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
+  console.log(`${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`);
+  return `${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`;
+  // return `${appUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
 };

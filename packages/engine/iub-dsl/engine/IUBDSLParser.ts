@@ -22,7 +22,7 @@ const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContex
 
 const extralAPBDSLCURDOfConfParser = (actionConf, actionConfParseRes, parseContext) => {
   const { changeStateToUse, getStateToUse } = actionConfParseRes;
-  getStateToUse.push("@(schemas).entity_25", "@(schemas).entity_26", "@(schemas).entity_28");
+  getStateToUse.push("@(schema).entity_25", "@(schema).entity_26", "@(schema).entity_28");
   return actionConfParseRes;
 };
 
@@ -80,7 +80,7 @@ const genIUBDSLParserCtx = (parseRes) => {
 const IUBDSLParser = ({ dsl }) => {
   const {
     actionsCollection, sysRtCxtInterface,
-    componentsCollection, schemas,
+    widgetCollection, schemas,
     metadataCollection, relationshipsCollection,
     layoutContent, pageID, name, type,
     flowCollection, openPageUrl, isSearch,
@@ -102,10 +102,10 @@ const IUBDSLParser = ({ dsl }) => {
   /** TODO: 有问题 */
   const parseContext = genIUBDSLParserCtx(parseRes);
 
-  const renderComponentKeys = Object.keys(componentsCollection);
+  const renderComponentKeys = Object.keys(widgetCollection);
 
   /** 数据源元数据解析和实体 */
-  const datasourceMetaEntity = metadataManage({ metadata: metadataCollection });
+  const datasourceMetaEntity = metadataManage({ metadata: metadataCollection.metadata });
 
   /** 页面模型解析 */
   const schemasParseRes = SchemasParser(schemas);
@@ -121,7 +121,7 @@ const IUBDSLParser = ({ dsl }) => {
   };
 
   /** 组件解析 TODO: propsMap有问题, 上下文没有对其进行干预 */
-  const componentParseRes = widgetParser(componentsCollection, {
+  const componentParseRes = widgetParser(widgetCollection, {
     parseContext,
     openPageUrl
   });
