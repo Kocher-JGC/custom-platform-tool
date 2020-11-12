@@ -47,7 +47,7 @@ export const getAppPreviewUrl = (options?: Options) => {
     pagePushServerUrl,
     menuid: defaultPath ? `menuid=/${defaultPath}` : ''
   });
-  console.log(`${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`);
+  // console.log(`${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`);
   return `${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`;
   // return `${appUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
 };

@@ -1,16 +1,19 @@
 import React from 'react';
 import { Input, Selector } from '@infra/ui';
-import { PropItemCompAccessSpec } from '@engine/visual-editor/data-structure';
+import { PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItem } from '../../core';
 
 /** 属性项编辑的组件属性 */
 const whichAttr = 'labelColor';
 
-export const TitleColorHelperSpec: PropItemCompAccessSpec = {
+@PropItem({
   id: 'prop_style_title_color',
   name: 'PropLabelColor',
   label: '标题颜色',
   whichAttr,
-  render: (ctx) => {
+})
+export class TitleColorHelperSpec {
+  render(ctx: PropItemRenderContext) {
     const { changeEntityState, editingWidgetState } = ctx;
     /** 取自身定义的 whichAttr */
     const _value = editingWidgetState[whichAttr];
@@ -26,4 +29,4 @@ export const TitleColorHelperSpec: PropItemCompAccessSpec = {
       </div>
     );
   }
-};
+}

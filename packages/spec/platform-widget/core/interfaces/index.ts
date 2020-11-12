@@ -1,2 +1,2 @@
-export * from './BusinessWidgetAccessSpec';
+export * from './PlatformWidgetAccessSpec';
 // export * from './PropItemCompAccessSpec';

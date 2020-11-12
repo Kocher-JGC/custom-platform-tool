@@ -1,17 +1,20 @@
 import React from 'react';
 import { PopModelSelector } from '@infra/ui';
-import { PropItemCompAccessSpec } from '@engine/visual-editor/data-structure';
+import { PropItemRenderContext } from '@engine/visual-editor/data-structure';
 import { ActionSettingPanel } from './ActionSettingPanel';
+import { PropItem } from '../../core';
 
 const whichAttr = 'actionRef';
 
-export const ActionHelperSpec: PropItemCompAccessSpec = {
+@PropItem({
   id: 'prop_action_config',
   name: 'PropActionConfig',
   label: '动作设置',
   whichAttr,
   useMeta: ['actions'],
-  render(ctx) {
+})
+export class ActionHelperSpec {
+  render(ctx: PropItemRenderContext) {
     const {
       takeMeta, genMetaRefID, changeEntityState, changeMetadata,
       editingWidgetState, businessPayload
@@ -59,4 +62,4 @@ export const ActionHelperSpec: PropItemCompAccessSpec = {
       </div>
     );
   }
-};
+}

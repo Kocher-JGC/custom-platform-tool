@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { Input, Selector } from '@infra/ui';
-import { PropItemCompAccessSpec } from '@engine/visual-editor/data-structure';
+import { Input } from '@infra/ui';
+import { PropItemCompAccessSpec, PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItem } from '../../core';
+import { TitleEditorComp } from './comp';
 
 /** 属性项编辑的组件属性 */
 const whichAttr = 'title';
 
-export const TitleHelperSpec: PropItemCompAccessSpec = {
+@PropItem({
   id: 'prop_title_value',
   name: 'PropTitle',
   label: '标题',
@@ -13,31 +15,11 @@ export const TitleHelperSpec: PropItemCompAccessSpec = {
   defaultValues: {
     title: '标题'
   },
-  render(ctx) {
-    const { changeEntityState, editingWidgetState, takeMeta } = ctx;
-    const { title, field } = editingWidgetState;
-    const selectedField = takeMeta({
-      metaAttr: 'schema',
-      metaRefID: field
-    });
-    useEffect(() => {
-      const nextTitle = selectedField?.column?.name;
-      if (!nextTitle) return;
-      changeEntityState({
-        attr: 'title',
-        value: nextTitle
-      });
-    }, [selectedField]);
+})
+export class TitleHelperSpec {
+  render(ctx: PropItemRenderContext) {
     return (
-      <div>
-        <Input
-          value={title || ''}
-          onChange={(value) => changeEntityState({
-            attr: 'title',
-            value
-          })}
-        />
-      </div>
+      <TitleEditorComp {...ctx} />
     );
   }
-};
+}

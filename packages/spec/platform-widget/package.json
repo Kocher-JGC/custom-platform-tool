@@ -5,6 +5,7 @@
   "author": "SANGET",
   "license": "MIT",
   "dependencies": {
-    "@ant-design/pro-table": "^2.9.7"
+    "@ant-design/pro-table": "^2.9.7",
+    "reflect-metadata": "^0.1.13"
   }
 }
