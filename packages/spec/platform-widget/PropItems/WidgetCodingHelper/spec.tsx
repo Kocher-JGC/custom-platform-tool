@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Label } from '@deer-ui/core/label';
-import { PropItemCompAccessSpec, PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItem } from '../../core';
 
 const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
   const {
@@ -40,16 +41,18 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
   );
 };
 
-/**
- * 组件的编码
- */
-export const WidgetCodingHelperSpec: PropItemCompAccessSpec = {
+@PropItem({
   id: 'prop_widget_coding',
-  name: 'PropWidgetCodeing',
+  name: 'PropWidgetCoding',
   label: '编码',
   whichAttr: ['field', 'widgetCode'],
   useMeta: ['schema'],
-  render: (ctx) => {
+})
+/**
+ * 组件的编码
+ */
+export class WidgetCodingHelperSpec {
+  render(ctx: PropItemRenderContext) {
     return <WidgetCodeComp {...ctx} />;
   }
-};
+}

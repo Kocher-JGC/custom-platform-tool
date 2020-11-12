@@ -1,5 +1,5 @@
 import React from 'react';
-import { PropItemCompAccessSpec, PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItemRender, PropItemRenderContext } from '@engine/visual-editor/data-structure';
 import { OptionsSelector } from './comp';
 import { PropItem } from '../../core';
 
@@ -11,7 +11,7 @@ import { PropItem } from '../../core';
   whichAttr: ['optDS'],
   useMeta: ['dataSource'],
 })
-export class DatasourceSelectotHelper {
+export class DatasourceSelectotHelper implements PropItemRender {
   constructor(meta) {
     // this.meta = meta
     console.log(meta);
