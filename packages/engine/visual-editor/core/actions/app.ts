@@ -4,14 +4,9 @@
  * 应用的 action，需要留有足够的扩展空间
  */
 
-import { BasePageData } from "../../data-structure";
+import { BasePageData, PageMetadata } from "../../data-structure";
 
 interface AppActionsContext {
-  widgetPanelData?
-  propItemGroupingData?
-  widgetMetaDataCollection?
-  propItemData?
-  pagePropsData?
   pageContent?: BasePageData
   payload?: any
   name?: string
@@ -65,11 +60,13 @@ export const CHANGE_METADATA = 'app/change-metadata';
 
 export interface ChangeMetadataOptions {
   /** 需要更改的 meta 的属性 */
-  metaAttr: string
+  metaAttr: keyof PageMetadata
   /** 更改 meta 后的数据 */
   data: unknown
-  /** 数据的引用 ID，如果不传，则创建一个新的 dataRefID */
-  dataRefID?: string
+  /** 数据的引用 ID，如果不传，则创建一个新的 metaID */
+  metaID?: string
+  /** 需要删除的 meta 的 ID */
+  rmMetaID?: string
 }
 
 export interface ChangeMetadataAction extends ChangeMetadataOptions {

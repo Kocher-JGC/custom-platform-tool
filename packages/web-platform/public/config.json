@@ -1,5 +1,9 @@
 {
-  "AUTH": "http://localhost:8000",
-  "NODE-WEB": "http://10.11.6.193:3000",
-  "API": "http://192.168.14.140:7091/hy/saas"
+  "passServerUrl": "http://192.168.14.181:6090",
+  "previewSassServerUrl": "http://192.168.14.181:7090",
+  "previewPageServerUrl": "http://localhost:3000",
+  "previewAppUrl": "http://localhost:8000",
+  "publishSassServerUrl": "http://192.168.14.181:7090",
+  "publishPageServerUrl": "http://192.168.14.181:5020",
+  "publishAppUrl": "http://192.168.14.181:5020"
 }

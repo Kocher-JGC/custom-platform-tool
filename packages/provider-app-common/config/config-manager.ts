@@ -13,7 +13,7 @@ type ConfigKey = keyof typeof AppConfig
  * 获取 app 配置
  * @param configKey
  */
-export const getAppConfig = (configKey: ConfigKey) => {
+export const getAppConfig = (configKey: string) => {
   return configKey ? AppConfig[configKey] : AppConfig;
 };
 

@@ -10,7 +10,7 @@ export const SCHEMAS_DEFAULT_KEY = 'SCHEMAS_KEY';
 export type SCHEMAS_DEFAULT_KEY_TYPE = 'SCHEMAS_KEY';
 
 /** 状态管理的AOP/util */
-const pageSchemasRegExp = /^@\(schemas\)\./;
+const pageSchemasRegExp = /^@\(schema\)\./;
 
 export const isPageState = (text: string) => pageSchemasRegExp.test(text);
 export const pickPageStateKeyWord = (text:string) => text.replace(pageSchemasRegExp, '') || text;

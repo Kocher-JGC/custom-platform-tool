@@ -46,7 +46,8 @@ const Login: React.FC<ILoginProps> = (props) => {
       type: 'login/login',
       payload: { ...values, clientType: CLIENT_TYPE.WEB },
     });
-    const { access_token, refresh_token } = res;
+    const { access_token, refresh_token } = res?.data || {};
+    // console.log('access_token', access_token);
     if (access_token) {
       dispatch({
         type: 'user/setCurrentUser',
@@ -75,7 +76,7 @@ const Login: React.FC<ILoginProps> = (props) => {
         return;
       }
     }
-    history.replace(redirect || '/?${queryLink');
+    history.replace(redirect || `/?${queryLink}`);
   };
 
   return (

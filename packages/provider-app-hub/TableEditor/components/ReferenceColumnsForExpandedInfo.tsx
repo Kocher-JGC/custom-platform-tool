@@ -4,7 +4,9 @@ import { FormInstance } from 'antd/lib/form';
 import { referenceEditableConfig } from './ColumnEditableConfigForExpandedInfo';
 import { IForeignKeyFromApi, ISELECTSMENU } from '../interface';
 import { RefTableCode as RefTableCodeTmpl, RefField as RefFieldTmpl, StrategyRenderer as StrategyRendererTmpl } from './CreateReference';
-import { FOREIGNKEYS_KEY, STRATEGY_OPTIONS } from '../constants';
+import {
+  FIELDTYPE, FOREIGNKEYS_KEY, STRATEGY_OPTIONS, COLUMNS_KEY
+} from '../constants';
 import { RenderText } from './FieldColumnsForExpandedInfo';
 import { getlabelByMenuList } from '../service';
 /** 判断控件是否可编辑 */
@@ -33,7 +35,7 @@ const FieldName: React.FC<IFieldName> = (props: IFieldName) => {
     const valueListUsed = list
       .filter((item, loopIndex) => loopIndex !== index)
       .map((item) => item[FOREIGNKEYS_KEY.FIELDCODE]);
-    return options.filter((item) => !valueListUsed.includes(item.key));
+    return options.filter((item) => !valueListUsed.includes(item.value));
   };
   const handleChange = (value, option) => {
     formRef.current?.setFieldsValue({ [FOREIGNKEYS_KEY.FIELDID]: option.key });
@@ -104,34 +106,36 @@ interface IRefField {
   record: IForeignKeyFromApi
   formRef: React.RefObject<FormInstance<any>>
   code: string
-  label: string
+  label: string,
+  filterFunc?: ({ item: ITableColumnFromApi, tableId: string }) => boolean;
 }
 const RefField: React.FC<IRefField> = (props: IRefField) => {
   const {
-    formRef, text, record, code, label
+    formRef, text, record, code, label, filterFunc
   } = props;
-  const value = formRef.current?.getFieldValue(code);
+  // const value = formRef.current?.getFieldValue(code);
 
-  return React.useMemo(() => {
-    return (<Form.Item
-      shouldUpdate
-      noStyle
-    >
-      {({ getFieldValue }) => {
-        const editable = isReferenceEditable(record, { getFieldValue }, code);
-        return editable ? (
-          <RefFieldTmpl
-            form={formRef.current}
-            label={label}
-            showLabel={false}
-            code = {code}
-          />
-        ) : (
-          <RenderText text={text}/>
-        );
-      }}
-    </Form.Item>);
-  }, [value, record.editable]);
+  // return React.useMemo(() => {
+  return (<Form.Item
+    shouldUpdate
+    noStyle
+  >
+    {({ getFieldValue }) => {
+      const editable = isReferenceEditable(record, { getFieldValue }, code);
+      return editable ? (
+        <RefFieldTmpl
+          form={formRef.current}
+          label={label}
+          showLabel={false}
+          code = {code}
+          filterFunc = {filterFunc}
+        />
+      ) : (
+        <RenderText text={text}/>
+      );
+    }}
+  </Form.Item>);
+  // }, [value, record.editable]);
 };
 
 const StrategyRenderer: React.FC<IRefField> = (props: IRefField) => {
@@ -165,7 +169,8 @@ const StrategyRenderer: React.FC<IRefField> = (props: IRefField) => {
 const getReferenceColumns = ({
   formRef,
   fieldOptions,
-  list
+  list,
+  tableId
 }) => {
   return [
     {
@@ -191,7 +196,20 @@ const getReferenceColumns = ({
       title: '字段编码',
       key: FOREIGNKEYS_KEY.FIELDCODE,
       dataIndex: FOREIGNKEYS_KEY.FIELDCODE,
-      width: 120
+      width: 120,
+      render: (text, record) => (
+        <Form.Item
+          shouldUpdate
+          noStyle
+        >
+          {({ getFieldValue }) => {
+            const { editable } = record;
+            return editable
+              ? getFieldValue(FOREIGNKEYS_KEY.FIELDCODE)
+              : text;
+          }}
+        </Form.Item>
+      )
     },
     {
       title: '关联表',
@@ -218,6 +236,12 @@ const getReferenceColumns = ({
           formRef = {formRef}
           label='关联字段'
           code = {FOREIGNKEYS_KEY.REFFIELDCODE}
+          filterFunc={({ item, tableId: tableIdLoop }) => {
+            const isText = item[COLUMNS_KEY.FIELDTYPE] === FIELDTYPE.TEXT;
+            const tableIdCodeLoop = `${tableIdLoop}.${item[COLUMNS_KEY.CODE]}`;
+            const tableIdCode = `${tableId}.${formRef.current?.getFieldValue(FOREIGNKEYS_KEY.FIELDCODE)}`;
+            return !isText && tableIdCodeLoop !== tableIdCode;
+          }}
         />
       )
     },
@@ -242,12 +266,14 @@ const getReferenceColumns = ({
 const getForeignKeyColumns = ({
   formRef,
   fieldOptions,
-  list
+  list,
+  tableId
 }) => {
   const columns = getReferenceColumns({
     formRef,
     fieldOptions,
-    list
+    list,
+    tableId
   });
   columns.push({
     title: '外键约束（删除时）',

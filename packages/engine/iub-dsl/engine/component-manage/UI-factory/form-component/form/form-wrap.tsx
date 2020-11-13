@@ -3,11 +3,11 @@ import { Form } from 'antd';
 import { FormProps } from 'antd/lib/form';
 import { AllUI } from '../../types';
 
-const fromWrapCompName = AllUI.BaseInput;
-const FromWrapFactory: React.FC<FormProps> = ({ children, ...props }) => {
+const fromWrapCompName = AllUI.FromWrap;
+const FromWrapFactory: React.FC<FormProps> = ({ children, isSearch, ...props }) => {
   return (
     <Form
-      layout="vertical"
+      layout={isSearch ? "inline" : "vertical"}
       {...props}
     >
       {children}

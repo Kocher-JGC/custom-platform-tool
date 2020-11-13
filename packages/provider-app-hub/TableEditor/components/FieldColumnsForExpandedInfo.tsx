@@ -5,7 +5,7 @@ import {
   Form, Input, Select, InputNumber
 } from 'antd';
 import { KeyOutlined } from '@ant-design/icons';
-import { ITableColumnInState, ITableColumnShowKey, ISELECTSMENU } from '../interface';
+import { ITableColumnInState, ITableColumnShowKey } from '../interface';
 import { fieldEditableConfig } from './ColumnEditableConfigForExpandedInfo';
 import {
   SPECIESCN, DATATYPE, COLUMNS_KEY, FIELDTYPE, FIELDTYPEMENU, FIELDSIZEREGULAR, DATATYPEMENU, DATATYPEMENUFORTEXT, VALUEBOOLEANMENU
@@ -13,12 +13,12 @@ import {
 import { getlabelByMenuList } from '../service';
 /** 判断控件是否可编辑 */
 const isFieldEditable = (
-  record: ITableColumnInState, formRef: {getFieldValue: (param:string)=>any}, dataIndex: ITableColumnShowKey
+  record: ITableColumnInState, formRef: {getFieldValue: (param:string)=>any}, dataIndex: ITableColumnShowKey, extra?: any
 ): boolean => {
   const canRowEdit = record?.editable;
   if (!canRowEdit) return false;
   /** 字段名称和字段编码恒可编辑 */
-  return fieldEditableConfig[dataIndex]?.(formRef, record) || false;
+  return fieldEditableConfig[dataIndex]?.(formRef, record, extra) || false;
 };
 interface IRenderTextProps {
   text: string
@@ -118,9 +118,12 @@ const Code: React.FC<ICommonFieldProps> = (props: ICommonFieldProps) => {
     </Form.Item>);
   }, [value, record.editable]);
 };
-const FieldType: React.FC<ICommonFieldProps> = React.memo((props: ICommonFieldProps) => {
+interface IDataType extends ICommonFieldProps{
+  referenceFields: string[]
+}
+const FieldType: React.FC<IDataType> = React.memo((props: IDataType) => {
   const {
-    formRef, text, record
+    formRef, text, record, referenceFields
   } = props;
   const handleChange = (value) => {
     /** 设置小数点默认值 */
@@ -135,7 +138,7 @@ const FieldType: React.FC<ICommonFieldProps> = React.memo((props: ICommonFieldPr
     noStyle
   >
     {({ getFieldValue }) => {
-      const editable = isFieldEditable(record, { getFieldValue }, COLUMNS_KEY.FIELDTYPE);
+      const editable = isFieldEditable(record, { getFieldValue }, COLUMNS_KEY.FIELDTYPE, { referenceFields });
       return editable ? (
         <Form.Item
           name={COLUMNS_KEY.FIELDTYPE}
@@ -157,16 +160,16 @@ const FieldType: React.FC<ICommonFieldProps> = React.memo((props: ICommonFieldPr
   </Form.Item>),
   [record.editable, formRef.current?.getFieldValue(COLUMNS_KEY.FIELDTYPE)]);
 });
-const DataType: React.FC<ICommonFieldProps> = React.memo((props: ICommonFieldProps) => {
+const DataType: React.FC<IDataType> = React.memo((props: IDataType) => {
   const {
-    record, text, formRef
+    record, text, formRef, referenceFields
   } = props;
   return React.useMemo(() => (<Form.Item
     noStyle
     shouldUpdate
   >
     {({ getFieldValue }) => {
-      const editable = isFieldEditable(record, { getFieldValue }, COLUMNS_KEY.DATATYPE);
+      const editable = isFieldEditable(record, { getFieldValue }, COLUMNS_KEY.DATATYPE, { referenceFields });
       const fieldType = getFieldValue('fieldType');
       const dataTypeMenu = DATATYPEMENU[fieldType];
       return editable ? (
@@ -295,7 +298,7 @@ const Dict: React.FC<IDict> = (props: IDict) => {
     const {
       [COLUMNS_KEY.DICTIONARYFOREIGN]: code
     } = formRef.current?.getFieldsValue([COLUMNS_KEY.DICTIONARYFOREIGNCN, COLUMNS_KEY.DICTIONARYFOREIGN]);
-    editDictioary(code.split(','), true);
+    editDictioary(code?.split(','), true);
     e?.stopPropagation();
   };
   return React.useMemo(() => {
@@ -308,7 +311,7 @@ const Dict: React.FC<IDict> = (props: IDict) => {
         return editable ? (
           <Form.Item name={COLUMNS_KEY.DICTIONARYFOREIGNCN}>
             <Input
-              className="pointer"
+              className="cursor-pointer"
               onClick={handleClick} readOnly
               title={formRef.current?.getFieldValue(COLUMNS_KEY.DICTIONARYFOREIGNCN)}
             />
@@ -342,7 +345,8 @@ const IconRenderer: React.FC<ICommonFieldProps> = (props: ICommonFieldProps) => 
 };
 const getFieldColumns = ({
   formRef,
-  editDictioary
+  editDictioary,
+  extra
 }) => {
   return [
     {
@@ -390,6 +394,7 @@ const getFieldColumns = ({
           text = {text}
           record = {record}
           formRef = {formRef}
+          referenceFields = {extra.referenceFields}
         />
       )
     },
@@ -403,6 +408,7 @@ const getFieldColumns = ({
           text = {text}
           record = {record}
           formRef = {formRef}
+          referenceFields = {extra.referenceFields}
         />
       )
     },

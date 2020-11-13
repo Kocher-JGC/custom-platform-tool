@@ -2,16 +2,7 @@ import {
   ConditionItemInfo, ConditionOperator,
   ConditionDescriptionInfo, ConditionList
 } from "@iub-dsl/definition";
-
-/** 规范化的条件信息 */
-export interface normalCondParam {
-  operator: ConditionOperator,
-  expsValue: ConditionDescriptionInfo[]
-}
-/** 规范化的条件列表信息 */
-export interface normalCondListParam {
-  [condId: string]: normalCondParam
-}
+import { normalCondParam, normalCondListParam } from "../types";
 
 /**
  * 规范化条件信息

@@ -3,37 +3,58 @@
  */
 import React from 'react';
 import produce from 'immer';
+import { nanoid } from 'nanoid';
+import union from 'lodash/union';
 import { Debounce } from '@mini-code/base-func';
+import { message } from 'antd';
 import {
   WidgetEntity, WidgetEntityState, PropItemMeta,
-  WidgetBindPropItemsType,
-  PropItemsCollection,
+  WidgetRelyPropItems,
   PropItemRefs,
   PropItemCompAccessSpec,
   EditAttr,
   NextEntityStateType,
   NextEntityState,
   PageMetadata,
+  PropItemRenderContext,
+  ChangeEntityState,
+  UICtx,
 } from '../../data-structure';
-import { takePropItemConfig } from './takePropItemConfig';
 import { entityStateMergeRule } from './entityStateMergeRule';
-import { PropItemRendererProps } from './types';
 import { GroupPanel, GroupPanelData } from '../GroupPanel';
 import { VEAppDispatcher } from '../../core';
+
+/** 从组件定义的属性项的元数据 */
+export type PropItemConfigFormWidgetMeta = PropItemCompAccessSpec | PropItemRefs
+
+/**
+ * 属性项的 map
+ */
+interface PropItemMetaMap {
+  [propID: string]: PropItemMeta
+}
 
 export type PropPanelData = GroupPanelData[]
 
 export type UpdateEntityStateOfEditor = (entityState: WidgetEntityState) => void
 export type InitEntityStateOfEditor = (entityState: WidgetEntityState) => void
 
+/**
+ * 属性项的渲染器标准接口
+ */
+export interface PropItemRendererProps {
+  propItemMeta: PropItemMeta
+  renderCtx: PropItemRenderContext
+}
+
 export interface PropertiesEditorProps {
   pageMetadata: PageMetadata
   /** 选中的 entity */
   propItemGroupingData: PropPanelData
   selectedEntity: WidgetEntity
-  propItemData: PropItemsCollection
+  getPropItem: (propItemID: string) => PropItemCompAccessSpec
   /** 组件绑定的属性项配置 */
-  widgetBindedPropItemsMeta: WidgetBindPropItemsType
+  widgetBindedPropItemsMeta: WidgetRelyPropItems
   /** 属性编辑器的配置，通过该配置生成有层级结构的属性编辑面板 */
   editorConfig?: any
   /** 默认的表单数据state */
@@ -45,17 +66,21 @@ export interface PropertiesEditorProps {
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
   /** 更改元数据 */
-  ChangeMetadata: VEAppDispatcher['ChangeMetadata']
+  changeMetadata: VEAppDispatcher['ChangeMetadata']
 }
 
 const debounce = new Debounce();
+
+function makeArray<T>(item: T | T[]): T[] {
+  return Array.isArray(item) ? item : [item];
+}
 
 /**
  * 包装默认值
  */
 const wrapDefaultValues = (propItemMeta: PropItemMeta): NextEntityState[] => {
   const { defaultValues, whichAttr } = propItemMeta;
-  const _defaultValues = whichAttr.map((attr) => ({
+  const _defaultValues = makeArray(whichAttr).map((attr) => ({
     attr,
     value: defaultValues ? defaultValues[attr] : null,
   }));
@@ -63,7 +88,8 @@ const wrapDefaultValues = (propItemMeta: PropItemMeta): NextEntityState[] => {
 };
 
 interface PropertiesEditorState {
-  entityState: WidgetEntityState
+  entityState: WidgetEntityState | null
+  ready: boolean
 }
 
 /**
@@ -73,53 +99,63 @@ class PropertiesEditor extends React.Component<
 PropertiesEditorProps, PropertiesEditorState
 > {
   state: PropertiesEditorState = {
-    entityState: {}
+    ready: false,
+    entityState: null
   }
 
-  /** 是否已经初始化过默认属性 */
-  hasDefaultEntityState = false
+  bindPropItemsMap: PropItemMetaMap | null = null
 
   constructor(props) {
     super(props);
     const { defaultEntityState } = props;
-    this.hasDefaultEntityState = !!defaultEntityState;
-    if (this.hasDefaultEntityState) {
+    if (defaultEntityState) {
       this.state.entityState = defaultEntityState;
     }
   }
 
-  componentDidMount() {
-    if (!this.hasDefaultEntityState) {
-      const {
-        initEntityState,
-      } = this.props;
+  componentDidMount = async () => {
+    // 1. 先等待 this.bindPropItemsMap 赋值完成
+    this.setupBindPropItemsMap().then(() => {
+      // 2. 设置 entity 的默认 state
+      const { entityState } = this.state;
+      let _defaultEntityState = entityState;
+      if (!_defaultEntityState) {
+        const {
+          initEntityState,
+        } = this.props;
 
-      const _defaultEntityState = this.getEntityDefaultState();
-      initEntityState(_defaultEntityState);
-
-      this.hasDefaultEntityState = true;
+        _defaultEntityState = this.getEntityDefaultState();
+        initEntityState(_defaultEntityState);
+      }
       this.setState({
-        entityState: _defaultEntityState
+        entityState: _defaultEntityState,
+        ready: true
       });
-    }
+    });
+  }
+
+  setupBindPropItemsMap = async () => {
+    this.bindPropItemsMap = await this.takeAllPropItemMetaFormWidget();
+    this.setState({
+      ready: true
+    });
   }
 
   /**
    * 设置组件实例状态的默认值
    */
   getEntityDefaultState = () => {
-    const bindPropItems = this.getPropItemMetadatas();
     let defaultWidgetState: WidgetEntityState = {};
+    const { bindPropItemsMap } = this;
 
-    Array.isArray(bindPropItems)
-    && bindPropItems.forEach((bindedPropConfig) => {
-      const propItemMeta = this.takePropItemMeta(bindedPropConfig);
+    for (const propID in bindPropItemsMap) {
+      const propItemMeta = bindPropItemsMap[propID];
 
       if (propItemMeta) {
         const _defaultValues = wrapDefaultValues(propItemMeta);
         defaultWidgetState = entityStateMergeRule(defaultWidgetState, _defaultValues);
       }
-    });
+    }
 
     return defaultWidgetState;
   }
@@ -131,7 +167,7 @@ PropertiesEditorProps, PropertiesEditorState
    */
   updateEntityStateForSelf = (nextValue: NextEntityStateType) => {
     this.setState(({ entityState }) => {
-      const _nextValue = Array.isArray(nextValue) ? nextValue : [nextValue];
+      const _nextValue = makeArray(nextValue);
       const nextState = entityStateMergeRule(entityState, _nextValue);
       return {
         entityState: nextState
@@ -140,18 +176,43 @@ PropertiesEditorProps, PropertiesEditorState
   }
 
   /**
-   * 获取属性项的元数据
+   * 将组件绑定的属性项转换成 PropItemMetaMap
    */
-  getPropItemMetadatas = () => {
+  takeAllPropItemMetaFormWidget = async (): Promise<PropItemMetaMap> => {
     const {
       widgetBindedPropItemsMeta,
+      getPropItem
     } = this.props;
     const { propItemRefs = [], rawPropItems = [] } = widgetBindedPropItemsMeta;
-    const bindPropItems = [
-      ...propItemRefs,
-      ...rawPropItems
-    ];
-    return bindPropItems;
+    const propItemMetaMap = {};
+
+    /**
+     * 将 propItemRefs 转换成 PropItemMeta
+     */
+    propItemRefs.forEach(async (refItem) => {
+      const { propID, editAttr, ...overrideOptions } = refItem;
+
+      // 获取属性项的接口
+      const propItemMetaFormInterface = await getPropItem(propID);
+
+      // 合并属性项 meta
+      const mergedPropItemMeta = produce(propItemMetaFormInterface, (draft) => {
+        if (editAttr) {
+          draft.whichAttr = union(makeArray(draft.whichAttr), editAttr);
+        }
+        Object.assign(draft, overrideOptions);
+        return draft;
+      });
+      propItemMetaMap[propID] = mergedPropItemMeta;
+    });
+    rawPropItems.forEach((item) => {
+      if (item) propItemMetaMap[item.id] = item;
+    });
+    return propItemMetaMap;
+  }
+
+  takePropItemMeta = (metaID: string) => {
+    return this.bindPropItemsMap?.[metaID];
   }
 
   /**
@@ -160,7 +221,7 @@ PropertiesEditorProps, PropertiesEditorState
    * @param propItemMeta
    */
   getPropItemValue = (entityState: WidgetEntityState, editAttr: EditAttr) => {
-    const _editAttr = Array.isArray(editAttr) ? [...editAttr] : [editAttr];
+    const _editAttr = makeArray(editAttr);
     const res = {};
     _editAttr.forEach((attr) => {
       res[attr] = entityState[attr];
@@ -168,93 +229,81 @@ PropertiesEditorProps, PropertiesEditorState
     return res;
   }
 
-  takePropItemMeta = (bindedPropConfig: PropItemRefs | PropItemCompAccessSpec) => {
-    const {
-      selectedEntity,
-      propItemData,
-    } = this.props;
-    if (!bindedPropConfig) return null;
-    /** 如果 bindedPropConfig 是 PropItemRefs */
-    const { defaultValues } = bindedPropConfig;
-    const propID = this.getPropItemID(bindedPropConfig);
+  changeEntityState: ChangeEntityState = (nextValue) => {
+    /** 更新自身的数据 */
+    this.updateEntityStateForSelf(nextValue);
 
-    /** 覆盖属性项的定义 */
-    const override = {
-      defaultValues
-    };
+    /** 延后更新整个应用的数据 */
+    debounce.exec(() => {
+      const { entityState } = this.state;
+      entityState && this.props.updateEntityState(entityState);
+    }, 100);
+  }
 
-    const propOriginConfigItem = propItemData[propID];
+  genMetaRefID = (metaAttr: string, len = 8) => {
+    const { selectedEntity } = this.props;
+    if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
+    const metaID = nanoid(len);
+    const prefix = metaAttr;
+    return `${prefix}.${selectedEntity.id}.${metaID}`;
+  }
 
-    /** 通过传入 entity 来提取 propItemMeta */
-    const propItemMeta = takePropItemConfig(propOriginConfigItem, override);
-    return propItemMeta;
+  UICtx: UICtx = {
+    utils: {
+      showMsg: (ctx) => {
+        const { msg, type } = ctx;
+        message[type](msg);
+      }
+    }
   }
 
   /**
-   * 1. 获取属性项编辑的属性的 key
-   * 2. 重要规则之一
+   * 获取 meta
    */
-  getEditingAttr = (propItemMeta: PropItemMeta, bindedPropConfig: PropItemRefs) => {
-    const { editAttr } = bindedPropConfig;
-    return editAttr || propItemMeta.whichAttr;
+  takeMeta = (options) => {
+    const { pageMetadata } = this.props;
+    const { metaAttr, metaRefID } = options;
+    return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
   }
 
   /**
-   * 判断是否存在 PropertiesConfig
+   * prop item 渲染器
+   * @param propItemID
+   * @param groupType
    */
-  hasPropertiesConfig = () => {
-    const {
-      widgetBindedPropItemsMeta,
-    } = this.props;
-    return widgetBindedPropItemsMeta && (!!widgetBindedPropItemsMeta.propItemRefs || !!widgetBindedPropItemsMeta.rawPropItems);
-  }
-
-  getPropItemID = (propItemMeta: PropItemRefs | PropItemMeta) => {
-    const { id, propID } = propItemMeta;
-    return id || propID;
-  }
-
-  bindPropItems = this.getPropItemMetadatas()
-
   propItemRendererSelf = (propItemID, groupType) => {
-    /** TODO: 优化性能 */
-    const currPropItemConfig = this.bindPropItems.find((item) => {
-      const propID = this.getPropItemID(item);
-      return propID === propItemID;
-    });
-    if (!currPropItemConfig) return null;
+    const { selectedEntity } = this.props;
+    const { entityState } = this.state;
+    const propItemMeta = this.takePropItemMeta(propItemID);
+
+    /** 如果组件没有绑定该属性项，则直接返回 */
+    if (!entityState || !propItemMeta) return null;
 
     const {
-      propItemRenderer, propItemData, widgetBindedPropItemsMeta, ChangeMetadata
+      propItemRenderer, changeMetadata
     } = this.props;
-    const bindedPropConfig = propItemData[propItemID];
-    const propItemMeta = this.takePropItemMeta(bindedPropConfig);
 
-    /** 如果没有绑定属性项，则直接返回 */
-    if (!propItemMeta) return null;
-
-    const editingAttr = this.getEditingAttr(propItemMeta, bindedPropConfig);
+    const editingAttr = propItemMeta.whichAttr;
 
     /** 将实例状态回填到属性项 */
-    const activeState = this.getPropItemValue(this.state.entityState, editingAttr);
+    const activeState = this.getPropItemValue(entityState, editingAttr);
     return (
       <div
-        key={propItemMeta.id}
+        key={propItemID}
       >
         {
           propItemRenderer({
-            propItemValue: activeState,
-            ChangeMetadata,
-            changeEntityState: (nextValue) => {
-              /** 更新自身的数据 */
-              this.updateEntityStateForSelf(nextValue);
-
-              /** 延后更新整个应用的数据 */
-              debounce.exec(() => {
-                this.props.updateEntityState(this.state.entityState);
-              }, 100);
-            },
-            propItemMeta
+            propItemMeta,
+            renderCtx: {
+              businessPayload: {},
+              editingWidgetState: activeState,
+              widgetEntity: selectedEntity,
+              genMetaRefID: this.genMetaRefID,
+              takeMeta: this.takeMeta,
+              UICtx: this.UICtx,
+              changeMetadata,
+              changeEntityState: this.changeEntityState,
+            }
           })
         }
       </div>
@@ -263,8 +312,9 @@ PropertiesEditorProps, PropertiesEditorState
 
   render() {
     const { propItemGroupingData } = this.props;
+    const { bindPropItemsMap } = this;
 
-    return (
+    return bindPropItemsMap ? (
       <div
         className="entity-prop-editor"
       >
@@ -273,7 +323,7 @@ PropertiesEditorProps, PropertiesEditorState
           itemRenderer={this.propItemRendererSelf}
         />
       </div>
-    );
+    ) : null;
   }
 }
 

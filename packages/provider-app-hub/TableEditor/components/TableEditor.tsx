@@ -1,16 +1,18 @@
 import React from 'react';
 import { FormInstance } from 'antd/lib/form';
 import { getUrlParams } from "@mini-code/request/url-resolve";
-import { Button, Tag, Tabs } from 'antd';
+import {
+  Button, Tag, Tabs, message as AntdMessage
+} from 'antd';
 import { Link } from "multiple-page-routing";
-import lodash from 'lodash';
+import findIndex from 'lodash/findIndex';
 import CreateModal from '@provider-app/dictionary-manager/components/CreateModal';
-import { getTableInfo, allowedDeleted, editTableInfo } from '../apiAgents';
+import { getTableInfo, allowDeleted, editTableInfo } from '../apiAgents';
 import {
   TABLE_TYPE, NOTIFICATION_TYPE, MESSAGES, BUTTON_TYPE, BUTTON_SIZE, COLUMNS_KEY, FIELDSIZEREGULAR, DATATYPE, REFERENCES_KEY, FOREIGNKEYS_KEY, SPECIES
 } from '../constants';
 import {
-  ITableInfoFromApi, ITableInfoInState, ISpecies, ITableColumnInState
+  ITableInfoFromApi, ITableInfoInState, ISpecies
 } from '../interface';
 import BasicInfoEditor from './BasicInfoEditor';
 import ExpandedInfoEditor from './ExpandedInfoEditor';
@@ -76,11 +78,11 @@ class TableEditor extends React.Component {
     fieldList: () => {
       const {
         NAME, CODE, FIELDTYPE, DATATYPE: DataType, FIELDSIZE, DECIMALSIZE,
-        REQUIRED, UNIQUE, DICTIONARYFOREIGN, PINYINCONVENT, REGULAR, SPECIES: species
+        REQUIRED, UNIQUE, DICTIONARYFOREIGN, DICTIONARYFOREIGNCN, PINYINCONVENT, REGULAR, SPECIES: species
       } = COLUMNS_KEY;
       const record = this.expandInfoFormRef.current?.getFieldsValue([
         NAME, CODE, FIELDTYPE, DataType, FIELDSIZE, DECIMALSIZE, REQUIRED,
-        UNIQUE, DICTIONARYFOREIGN, PINYINCONVENT, REGULAR, species
+        UNIQUE, DICTIONARYFOREIGN, DICTIONARYFOREIGNCN, PINYINCONVENT, REGULAR, species
       ]);
       return record;
     },
@@ -105,6 +107,10 @@ class TableEditor extends React.Component {
   }
 
   componentWillMount() {
+    this.initTableInfo();
+  }
+
+  initTableInfo = () => {
     const id = this.getTableId();
     getTableInfo(id).then((res) => {
       this.constructInfoFromRequest(res);
@@ -120,8 +126,8 @@ class TableEditor extends React.Component {
   constructFieldListFromRequest = (fieldList) => {
     return fieldList?.map((item) => {
       const {
-        tableName: dictionaryForeignCn,
-        fieldCode: dictionaryForeign
+        refTableName: dictionaryForeignCn,
+        refTableCode: dictionaryForeign
       } = item.dictionaryForeign || {};
       return {
         ...item, ...item.fieldProperty, dictionaryForeign, dictionaryForeignCn
@@ -137,6 +143,7 @@ class TableEditor extends React.Component {
     } = param || {};
     const mainTableName = auxTable?.parentTable?.name;
     const mainTableCode = auxTable?.parentTable?.code;
+    const relationType = auxTable?.relationType;
     const maxLevel = treeTable?.maxLevel;
     const newState = {
       basicInfo: {
@@ -148,7 +155,8 @@ class TableEditor extends React.Component {
         mainTableCode,
         mainTableName,
         maxLevel,
-        species
+        species,
+        relationType
       },
       relatedPages,
       fieldList: this.constructFieldListFromRequest(columns),
@@ -159,6 +167,17 @@ class TableEditor extends React.Component {
     };
     this.setState(newState);
     this.basicInfoFormRef?.current?.setFieldsValue({ ...newState.basicInfo });
+  }
+
+  constructBasicInfoForSave = () => {
+    const {
+      tableName: name,
+      relatedModuleId: moduleId,
+      maxLevel, relationType
+    } = this.basicInfoFormRef.current?.getFieldsValue();
+    return {
+      name, moduleId, maxLevel, relationType
+    };
   }
 
   constructFieldListForSave = (fieldList) => {
@@ -211,10 +230,10 @@ class TableEditor extends React.Component {
   constructForeignKeyListForSave = (foreignKeyList) => {
     return foreignKeyList?.map((item, index) => {
       const {
-        id, fieldCode, refTableCode, refFieldCode, refDisplayCode, deleteStrategy, updateStrategy
+        id, fieldCode, refTableCode, refFieldCode, refDisplayFieldCode, deleteStrategy, updateStrategy
       } = item;
       return {
-        id, fieldCode, refTableCode, refFieldCode, refDisplayCode, sequence: index + 1, deleteStrategy, updateStrategy
+        id, fieldCode, refTableCode, refFieldCode, refDisplayFieldCode, sequence: index + 1, deleteStrategy, updateStrategy
       };
     }) || [];
   }
@@ -224,12 +243,9 @@ class TableEditor extends React.Component {
     const {
       basicInfo: {
         tableId: id,
-        tableName: name,
         tableCode: code,
         tableType: type,
-        relatedModuleId: moduleId,
         mainTableCode,
-        maxLevel,
         species
       },
       fieldList,
@@ -238,12 +254,15 @@ class TableEditor extends React.Component {
       /** 外键字段列表 */
       foreignKeyList
     } = this.state;
+    const {
+      name, moduleId, maxLevel, relationType
+    } = this.constructBasicInfoForSave();
     const relatedTableInfo: {
       auxTable?: { mainTableCode:string},
       treeTable?: { maxLevel:number}
     } = {};
     if (type === TABLE_TYPE.AUX_TABLE) {
-      relatedTableInfo.auxTable = { mainTableCode };
+      relatedTableInfo.auxTable = { mainTableCode, relationType };
     }
     if (type === TABLE_TYPE.TREE) {
       relatedTableInfo.treeTable = { maxLevel };
@@ -266,9 +285,14 @@ class TableEditor extends React.Component {
   handleSave = async () => {
     try {
       await this.basicInfoFormRef.current?.validateFields();
-      await this.expandInfoFormRef.current?.validateFields();
-      const param = this.constructInfoForSave();
-      editTableInfo(param);
+      this.saveRow().then((canISaveExpandedInfo) => {
+        if (!canISaveExpandedInfo) return;
+        const param = this.constructInfoForSave();
+        editTableInfo(param).then((canISave) => {
+          if (!canISave) return;
+          this.initTableInfo();
+        });
+      });
     } catch (e) {
       return false;
     }
@@ -286,17 +310,69 @@ class TableEditor extends React.Component {
     return this.getIndexByRowKey(editingKeyInExpandedInfo);
   }
 
-  getIndexByRowKey = (rowKey) => {
+  getIndexByRowKey = (rowKey, area?:string) => {
     const { activeAreaInExpandedInfo } = this.state;
-    const index = lodash.findIndex(this.state[activeAreaInExpandedInfo], { id: rowKey });
+    const index = findIndex(this.state[area || activeAreaInExpandedInfo], { id: rowKey });
     return index;
   }
 
   /** 根据编辑行唯一标识和高亮区域感知编辑行索引 */
-  getRecordByRowKey=(rowKey) => {
+  getRecordByRowKey=(rowKey, area?:string) => {
     const { activeAreaInExpandedInfo } = this.state;
-    const index = this.getIndexByRowKey(rowKey);
-    return this.state[activeAreaInExpandedInfo][index];
+    const index = this.getIndexByRowKey(rowKey, area);
+    return this.state[area || activeAreaInExpandedInfo][index];
+  }
+
+  setReferenceEffect = (newRecord) => {
+    const {
+      [REFERENCES_KEY.FIELDID]: fieldId,
+      [REFERENCES_KEY.REFFIELDSIZE]: fieldSize,
+      [REFERENCES_KEY.REFFIELDTYPE]: fieldType,
+    } = newRecord;
+    const recordInFieldList = this.getRecordByRowKey(fieldId, 'fieldList');
+    if (!recordInFieldList.createdCustomed) return;
+    recordInFieldList[COLUMNS_KEY.FIELDSIZE] = fieldSize;
+    recordInFieldList[COLUMNS_KEY.FIELDTYPE] = fieldType;
+    this.setState({
+      fieldList: this.state.fieldList.slice()
+    });
+  }
+
+  setFieldEffect = (oldRecord, newRecord) => {
+    const {
+      [COLUMNS_KEY.ID]: id,
+    } = oldRecord;
+    const {
+      [COLUMNS_KEY.DATATYPE]: dataType,
+      [COLUMNS_KEY.CODE]: code
+    } = newRecord;
+    const map = {
+      [DATATYPE.FK]: 'foreignKeyList',
+      [DATATYPE.QUOTE]: 'referenceList'
+    };
+    const area = map[dataType];
+    if (!area) return;
+    const {
+      [area]: list
+    } = this.state;
+    const record = list?.filter((item) => item[REFERENCES_KEY.FIELDID] === id)[0];
+    if (!record) return;
+    record[REFERENCES_KEY.FIELDCODE] = code;
+    this.setState({
+      [area]: list.slice()
+    });
+  }
+
+  setEffect = ({ oldRecord, newRecord }) => {
+    const { activeAreaInExpandedInfo } = this.state;
+    switch (activeAreaInExpandedInfo) {
+      case 'referenceList':
+        this.setReferenceEffect(newRecord); break;
+      case 'foreignKeyList':
+        this.setReferenceEffect(newRecord); break;
+      case 'fieldList':
+        this.setFieldEffect(oldRecord, newRecord); break;
+    }
   }
 
   /** 行保存 */
@@ -307,6 +383,11 @@ class TableEditor extends React.Component {
       await this.expandInfoFormRef.current?.validateFields();
       const record = this.getRecordFromExpandForm[activeAreaInExpandedInfo]?.();
       const index = this.getIndexByEditingKey();
+      // debugger;
+      this.setEffect({
+        oldRecord: this.state[activeAreaInExpandedInfo][index],
+        newRecord: record
+      });
       this.setState((previousState) => {
         const newList = previousState[activeAreaInExpandedInfo].slice();
         newList[index] = { ...newList[index], ...record, editable: false };
@@ -366,8 +447,7 @@ class TableEditor extends React.Component {
     return record.id;
   }
 
-  filterFieldListForOptions = () => {
-    const { activeAreaInExpandedInfo, fieldList } = this.state;
+  filterFieldListForOptions = (fieldList, activeAreaInExpandedInfo) => {
     const dataTypeMap = {
       referenceList: DATATYPE.QUOTE,
       foreignKeyList: DATATYPE.FK
@@ -388,17 +468,17 @@ class TableEditor extends React.Component {
     const id = `${new Date().valueOf()}`;
     return {
       [COLUMNS_KEY.ID]: id,
-      [COLUMNS_KEY.NAME]: recordDefaultValue?.[COLUMNS_KEY.NAME] || '',
-      [COLUMNS_KEY.CODE]: recordDefaultValue?.[COLUMNS_KEY.CODE] || '',
-      [COLUMNS_KEY.FIELDTYPE]: recordDefaultValue?.[COLUMNS_KEY.FIELDTYPE] || 'STRING',
-      [COLUMNS_KEY.DATATYPE]: recordDefaultValue?.[COLUMNS_KEY.DATATYPE] || 'NORMAL',
-      [COLUMNS_KEY.FIELDSIZE]: recordDefaultValue?.[COLUMNS_KEY.FIELDSIZE] || FIELDSIZEREGULAR.STRING.DEFAULT,
-      [COLUMNS_KEY.REQUIRED]: recordDefaultValue?.[COLUMNS_KEY.REQUIRED] || false,
-      [COLUMNS_KEY.UNIQUE]: recordDefaultValue?.[COLUMNS_KEY.UNIQUE] || false,
-      [COLUMNS_KEY.DICTIONARYFOREIGN]: recordDefaultValue?.[COLUMNS_KEY.DICTIONARYFOREIGN] || '',
-      [COLUMNS_KEY.DICTIONARYFOREIGNCN]: recordDefaultValue?.[COLUMNS_KEY.DICTIONARYFOREIGNCN] || '',
-      [COLUMNS_KEY.PINYINCONVENT]: recordDefaultValue?.[COLUMNS_KEY.PINYINCONVENT] || false,
-      [COLUMNS_KEY.REGULAR]: recordDefaultValue?.[COLUMNS_KEY.REGULAR] || '',
+      [COLUMNS_KEY.NAME]: recordDefaultValue[COLUMNS_KEY.NAME] || '',
+      [COLUMNS_KEY.CODE]: recordDefaultValue[COLUMNS_KEY.CODE] || '',
+      [COLUMNS_KEY.FIELDTYPE]: recordDefaultValue[COLUMNS_KEY.FIELDTYPE] || 'STRING',
+      [COLUMNS_KEY.DATATYPE]: recordDefaultValue[COLUMNS_KEY.DATATYPE] || 'NORMAL',
+      [COLUMNS_KEY.FIELDSIZE]: COLUMNS_KEY.FIELDSIZE in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.FIELDSIZE] : FIELDSIZEREGULAR.STRING.DEFAULT,
+      [COLUMNS_KEY.REQUIRED]: COLUMNS_KEY.REQUIRED in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.REQUIRED] : false,
+      [COLUMNS_KEY.UNIQUE]: COLUMNS_KEY.UNIQUE in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.UNIQUE] : false,
+      [COLUMNS_KEY.DICTIONARYFOREIGN]: recordDefaultValue[COLUMNS_KEY.DICTIONARYFOREIGN] || '',
+      [COLUMNS_KEY.DICTIONARYFOREIGNCN]: recordDefaultValue[COLUMNS_KEY.DICTIONARYFOREIGNCN] || '',
+      [COLUMNS_KEY.PINYINCONVENT]: COLUMNS_KEY.PINYINCONVENT in recordDefaultValue ? recordDefaultValue[COLUMNS_KEY.PINYINCONVENT] : false,
+      [COLUMNS_KEY.REGULAR]: recordDefaultValue[COLUMNS_KEY.REGULAR] || '',
       [COLUMNS_KEY.SPECIES]: 'BIS',
       [COLUMNS_KEY.EDITABLE]: true,
       [COLUMNS_KEY.CREATEDCUSTOMED]: true
@@ -408,7 +488,7 @@ class TableEditor extends React.Component {
   /** 字段列表：新建字段 */
   createField = (recordDefaultValue) => {
     const record = this.getNewFieldRecord(recordDefaultValue);
-    this.createRow(record);
+    return this.createRow(record);
   }
 
   /** 字段列表：新建字典字段 */
@@ -461,6 +541,7 @@ class TableEditor extends React.Component {
       visibleModalCreateReference: false,
       referenceList: [
         {
+          [REFERENCES_KEY.ID]: `${new Date().valueOf()}`,
           [REFERENCES_KEY.FIELDID]: id,
           [REFERENCES_KEY.FIELDCODE]: fieldDefaultValue[REFERENCES_KEY.REFFIELDCODE],
           [REFERENCES_KEY.REFTABLECODE]: fieldDefaultValue[REFERENCES_KEY.REFTABLECODE],
@@ -557,8 +638,6 @@ class TableEditor extends React.Component {
 
   /** 字段列表：删除字段的相关提示内容 */
   deleteFieldConfirm = (title, selectedKey: string) => {
-    const { editingKeyInExpandedInfo, fieldList: fieldListInState } = this.state;
-    const { fieldList } = this.refs;
     deleteConfirm({
       title,
       onOk: () => {
@@ -578,15 +657,14 @@ class TableEditor extends React.Component {
       return;
     }
     /** 非用户自己创建的数据，需要走后台接口判断是否可删除 */
-    allowedDeleted({
+    allowDeleted({
       tableId: this.state.basicInfo.tableId,
       columnId: selectedRowKey
-    }).then((messageList) => {
-      if (messageList.length === 0) {
-        this.deleteFieldConfirm(title, selectedRowKey);
-      } else {
-        this.deleteFieldConfirm(messageList.split('，'), selectedRowKey);
+    }).then(({ allowedDeleted, msg }) => {
+      if (!allowedDeleted) {
+        return AntdMessage.warn(msg);
       }
+      return this.deleteFieldConfirm(msg, selectedRowKey);
     });
   }
 
@@ -598,8 +676,14 @@ class TableEditor extends React.Component {
   }
 
   deleteReference = (selectedRowKeys) => {
-    openNotification(NOTIFICATION_TYPE.WARNING, MESSAGES.DELETE_REFERENCE);
-    this.deleteRow(selectedRowKeys[0]);
+    const currentId = selectedRowKeys[0];
+    const { activeAreaInExpandedInfo } = this.state;
+    const { [activeAreaInExpandedInfo]: listInState } = this.state;
+    const { createdCustomed } = listInState.filter((item) => item.id === currentId)[0] || {};
+    if (!createdCustomed) {
+      openNotification(NOTIFICATION_TYPE.WARNING, MESSAGES.DELETE_REFERENCE);
+    }
+    this.deleteRow(currentId);
   }
 
   blurRowInReferenceList = () => {
@@ -616,26 +700,64 @@ class TableEditor extends React.Component {
     });
   }
 
+  getReferenceFields = (area) => {
+    return (this.state[area] || []).map((item) => item[FOREIGNKEYS_KEY.FIELDID]);
+  }
+
+  /**
+   * 根据字段列表获取map{[id]: code}
+   * 用于场景，配置人员用当前新建的字段配置引用字段时，更改字段名称（编码），在引用/外键列表中，字段名称（编码）会相应更新
+   */
+  getFieldMap = () => {
+    const { fieldList } = this.state;
+    const map = {};
+    fieldList.forEach((item) => {
+      const { [COLUMNS_KEY.CODE]: code, [COLUMNS_KEY.ID]: id } = item;
+      map[id] = code;
+    });
+    return map;
+  }
+
+  /**
+   * 更新引用/外键列表中的字段编码
+   * 用于场景，配置人员用当前新建的字段配置引用字段时，更改字段名称（编码），在引用/外键列表中，字段名称（编码）会相应更新
+   */
+  getReferenceListForFieldCode = (area) => {
+    const fieldMap = this.getFieldMap();
+    return (area || []).map((item) => {
+      const { [REFERENCES_KEY.FIELDID]: fieldId, ...extra } = item;
+      return { ...extra, [REFERENCES_KEY.FIELDID]: fieldId, [REFERENCES_KEY.FIELDCODE]: fieldMap[fieldId] };
+    });
+  }
+
+  getReferenceActionAreaRenderer = (selectedRowKeys) => {
+    const { editingKeyInExpandedInfo } = this.state;
+    return (
+      <>
+        <Button
+          className="mr-2"
+          type={BUTTON_TYPE.PRIMARY}
+          size={BUTTON_SIZE.SMALL}
+          disabled={editingKeyInExpandedInfo !== ''}
+          onClick={() => { this.createReference(); }}
+        >新增</Button>
+        <Button
+          className="mr-2"
+          type={BUTTON_TYPE.PRIMARY}
+          size={BUTTON_SIZE.SMALL}
+          disabled={selectedRowKeys.length === 0}
+          onClick={() => { this.deleteReference(selectedRowKeys); }}
+        >删除</Button>
+      </>
+    );
+  }
+
   render() {
     const {
       basicInfo, relatedPages, editingKeyInExpandedInfo, showSysFields, activeAreaInExpandedInfo,
       visibleModalChooseDict, dictIdsShowInModal, visibleModalCreateReference, visibleModalCreateForeignKey,
       fieldList, referenceList, foreignKeyList
     } = this.state;
-    const fieldColumns = getFieldColumns({
-      formRef: this.expandInfoFormRef,
-      editDictioary: this.createDict
-    });
-    const referenceColumns = getReferenceColumns({
-      formRef: this.expandInfoFormRef,
-      fieldOptions: this.filterFieldListForOptions(),
-      list: referenceList
-    });
-    const foreignKeyColumns = getForeignKeyColumns({
-      formRef: this.expandInfoFormRef,
-      fieldOptions: this.filterFieldListForOptions(),
-      list: foreignKeyList
-    });
     return (
       <>
         <BasicInfoEditor
@@ -736,7 +858,13 @@ class TableEditor extends React.Component {
               doubleClickRow={this.doubleClickRow}
               blurRow={this.blurRow}
               clickRow = {() => { this.saveRow(); }}
-              columns={fieldColumns}
+              columns={getFieldColumns({
+                formRef: this.expandInfoFormRef,
+                editDictioary: this.createDict,
+                extra: {
+                  referenceFields: [...this.getReferenceFields('referenceList'), ...this.getReferenceFields('foreignKeyList')],
+                }
+              })}
               dataSource={fieldList.filter((item) => {
                 return showSysFields || ![SPECIES.SYS, SPECIES.SYS_TMPL].includes(item.species);
               })}
@@ -749,31 +877,17 @@ class TableEditor extends React.Component {
                 ref="referenceList"
                 formRef={this.expandInfoFormRef}
                 title="引用字段管理"
-                actionAreaRenderer={(selectedRowKeys) => {
-                  return (
-                    <>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== ''}
-                        onClick={() => { this.createReference(); }}
-                      >新增</Button>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== '' || selectedRowKeys.length === 0}
-                        onClick={() => { this.deleteReference(selectedRowKeys); }}
-                      >删除</Button>
-                    </>
-                  );
-                }}
+                actionAreaRenderer={this.getReferenceActionAreaRenderer}
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
-                columns={referenceColumns}
-                dataSource={referenceList}
+                columns={getReferenceColumns({
+                  formRef: this.expandInfoFormRef,
+                  fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
+                  list: referenceList,
+                  tableId: basicInfo.tableId
+                })}
+                dataSource={this.getReferenceListForFieldCode(referenceList)}
               />) : null }
           </TabPane>
           <TabPane tab="外键设置" key="foreignKeyList">
@@ -783,31 +897,17 @@ class TableEditor extends React.Component {
                 ref="foreignKeyList"
                 formRef={this.expandInfoFormRef}
                 title="外键字段管理"
-                actionAreaRenderer={(selectedRowKeys) => {
-                  return (
-                    <>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== ''}
-                        onClick={() => { this.createReference(); }}
-                      >新增</Button>
-                      <Button
-                        className="mr-2"
-                        type={BUTTON_TYPE.PRIMARY}
-                        size={BUTTON_SIZE.SMALL}
-                        disabled={editingKeyInExpandedInfo !== '' || selectedRowKeys.length === 0}
-                        onClick={() => { this.deleteReference(selectedRowKeys); }}
-                      >删除</Button>
-                    </>
-                  );
-                }}
+                actionAreaRenderer={this.getReferenceActionAreaRenderer}
                 doubleClickRow={this.doubleClickRow}
                 blurRow={this.blurRowInReferenceList}
                 clickRow = {() => { this.saveRow(); }}
-                columns={foreignKeyColumns}
-                dataSource={foreignKeyList}
+                columns={getForeignKeyColumns({
+                  formRef: this.expandInfoFormRef,
+                  fieldOptions: this.filterFieldListForOptions(fieldList, activeAreaInExpandedInfo),
+                  list: foreignKeyList,
+                  tableId: basicInfo.tableId
+                })}
+                dataSource={this.getReferenceListForFieldCode(foreignKeyList)}
               />) : null }
           </TabPane>
         </Tabs>

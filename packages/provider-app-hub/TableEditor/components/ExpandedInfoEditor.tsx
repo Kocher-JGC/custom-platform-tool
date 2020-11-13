@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Form } from 'antd';
-import lodash from 'lodash';
+import without from 'lodash/without';
 import { ROW_SELECT_TYPE } from '../constants';
 
 class ExpandedInfoEditor extends React.Component {
@@ -16,7 +16,7 @@ class ExpandedInfoEditor extends React.Component {
     let { selectedRowKeys } = this.state;
     if (this.selectType === ROW_SELECT_TYPE.CHECKBOX) {
       selectedRowKeys = selectedRowKeys.includes(rowKey)
-        ? lodash.without(selectedRowKeys, rowKey)
+        ? without(selectedRowKeys, rowKey)
         : [...selectedRowKeys, rowKey];
     } else {
       selectedRowKeys = [rowKey];
@@ -64,7 +64,7 @@ class ExpandedInfoEditor extends React.Component {
                 selectedRowKeys,
                 hideSelectAll: true,
                 fixed: true
-              } : null}
+              } : undefined}
               onRow={(record, index) => {
                 return {
                   onBlur: (event) => { blurRow(record, index); },

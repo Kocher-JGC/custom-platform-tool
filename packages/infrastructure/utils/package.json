@@ -7,7 +7,8 @@
     "@types/uuid": "^8.3.0"
   },
   "dependencies": {
-    "@mini-code/request": "^1.0.1",
+    "@mini-code/request": "^1.0.5",
+    "nanoid": "^3.1.15",
     "axios": "^0.20.0",
     "uuid": "^8.3.0"
   }

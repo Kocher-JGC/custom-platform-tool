@@ -1,4 +1,5 @@
-import { APBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+import { notification } from 'antd';
 import { AxiosResponse } from 'axios';
 
 enum APBDSLResponeCode {
@@ -73,17 +74,40 @@ interface APBDSLRespone<T = any> {
   result: T
   timestamp: string
 }
-export const APBDSLrequest = <R = any>(reqParam) => {
+export const APBDSLrequest = <R = any>(url, reqParam) => {
   // const reqUrl = genUrl('UserInfo');
   // console.dir(reqParam, { depth: 3 });
-  return $A_R(APBDSLtestUrl, {
+  // $A_R.interceptors.response.use((response) => {
+  //   return response;
+  // }, (err) => { // 这里是返回状态码不为200时候的错误处理
+  //   console.log(err);
+
+  //   return Promise.reject(err);
+  // });
+  return $A_R(url, {
     method: 'POST',
-    data: reqParam
-  }).then(({ data }: AxiosResponse<APBDSLRespone<R | boolean>>) => {
-    if (data.code === APBDSLResponeCode.SA0000) {
-      return Promise.resolve(data.result);
+    data: reqParam,
+  }).then((response: AxiosResponse<APBDSLRespone<R | boolean>>) => {
+    console.log(response);
+
+    const { data, status } = response;
+    if (status === 200) {
+      if (data.code === APBDSLResponeCode.SA0000) {
+        return Promise.resolve(data.result);
+      }
+      notification.error({
+        message: '请求失败!',
+        description: APBDSLResponseMsg[data.code] || `失败了!${JSON.stringify(data)}`
+      });
     }
     return Promise.resolve(false);
+  }).catch((e) => {
+    console.log('e.response', e);
+    notification.error({
+      message: APBDSLResponseMsg[e.response?.data.code || e.response?.status],
+      description: e.response?.data.msg
+      // description: `${JSON.stringify(e)}`
+    });
   });
 };
 

@@ -6,6 +6,7 @@ import { LayoutRenderer } from '@engine/layout-renderer';
 
 import { pageManage } from '@consumer-app/web-platform/src/page-manage';
 
+import Modal from 'antd/lib/modal/Modal';
 import { widgetRenderer, genCompRenderFC } from './component-manage/component-store/render-component';
 import { getWidget } from './component-manage/UI-factory/all-UI';
 import { FromWrapFactory } from './component-manage/UI-factory';
@@ -13,49 +14,59 @@ import { createIUBStore } from './state-manage';
 import { renderStructInfoListRenderer } from './component-manage/component-store/render-widget-struct';
 
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
+import { effectRelationship as genEffectRelationship } from './relationship';
+import { RunTimeCtxToBusiness } from './runtime/types';
 
-const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) => {
+const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
   const {
     layoutContent, componentParseRes, getCompParseInfo,
     schemas, mappingEntity,
     renderComponentKeys,
-    schemasParseRes, pageID: pageId
+    schemasParseRes, pageID: pageId, businessCode, isSearch
   } = dslParseRes;
 
   /** 获取单例的页面管理 */
   const pageManageInstance = pageManage();
 
-  const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
-  const IUBStoreEntity = useIUBStore();
-  const {
-    getPageState, updatePageState, IUBPageStore
-  } = IUBStoreEntity;
+  /** 页面运行时上下文 */
+  const runTimeCtxToBusiness = useRef<RunTimeCtxToBusiness>({
+    pageStatus,
+    pageId,
+    pageMark: '',
+    action: {},
+    pageManage: pageManageInstance,
+    asyncDispatchOfIUBEngine: async (dispatchCtx) => false,
+    dispatchOfIUBEngine: (dispatchCtx) => false
+  });
 
-  const [runTimeLine, setRunTimeLine] = useState([]);
+  const effectRelationship = useMemo(() => genEffectRelationship(), []);
 
-  const runTimeCtxToBusiness = useRef<any>(() => ({ pageMark: '' }));
   /** 页面管理添加页面上下文 */
   useEffect(() => {
+    // ?? 是否初始化的是否就要添加页面上下文, 而不是页面挂载完成
     const { pageMark, removeFn } = pageManageInstance.addPageCtx({
       pageId,
       pageType: 'IUBPage',
       context: runTimeCtxToBusiness
     });
     runTimeCtxToBusiness.current.pageMark = pageMark;
-    /** 跨页面调用例子 */
-    // if (pageMark === "pageID_$_1") {
-    //   setInterval(() => {
-    //     const ctxx = pageManageInstance.getIUBPageCtx('pageID_$_0')[0];
-    //     console.log(ctxx.runtimeScheduler({}));
-    //   }, 1000);
-    // }
+    /** 页面正式挂载完成 */
+    hooks?.mounted?.({ pageMark, pageId, runTimeCtxToBusiness });
 
     return () => {
       removeFn();
+      hooks?.unmounted?.({ pageMark, pageId, runTimeCtxToBusiness });
+      effectRelationship.effectDispatch(runTimeCtxToBusiness.current, { pageIdOrMark: '' });
     };
   }, []);
 
-  // useTempCode(IUBStoreEntity);
+  const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
+  const IUBStoreEntity = useIUBStore();
+  const {
+    getPageState
+  } = IUBStoreEntity;
+
+  // const [runTimeLine, setRunTimeLine] = useState([]);
 
   const genCompRenderFCToUse = useMemo(() => {
     return genCompRenderFC(getWidget);
@@ -89,42 +100,53 @@ const IUBDSLRuntimeContainer = React.memo<{dslParseRes: any}>(({ dslParseRes }) 
     ]);
   });
 
-  const ctx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
-    pageManageInstance,
+  const defaultCtx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
     IUBStoreEntity,
-    runTimeLine,
-    setRunTimeLine,
     runTimeCtxToBusiness,
+    effectRelationship,
+    businessCode,
   }), [IUBStoreEntity]);
 
-  const extralProps = useMemo(() => ({ extral: '扩展props' }), []);
+  const extralProps = useMemo(() => ({ extral: '扩展props', isSearch }), []);
+
+  hooks?.beforeMount?.();
 
   return (
-    <DefaultCtx.Provider value={ctx}>
-      <FromWrapFactory>
-        <LayoutRenderer
-          layoutNode={actualRenderComponentList}
-          componentRenderer={({ layoutNodeItem }) => {
-            const { id: compId, Widget } = layoutNodeItem;
+    <DefaultCtx.Provider value={defaultCtx}>
+      <LayoutRenderer
+        layoutNode={actualRenderComponentList}
+        componentRenderer={({ layoutNodeItem }) => {
+          const { id: compId, Widget } = layoutNodeItem;
+          return <Widget key={compId} compId={compId} extralProps={extralProps}/>;
+        }}
+        RootRender={(child) => {
+          if (isSearch) {
+            const res: any[] = [];
+            const form: any[] = [];
+            let i;
+            child.forEach((Ch, ii) => {
+              if (Number(Ch.props.compId)) {
+                if (!i) i = ii;
+                form.push(Ch);
+              } else {
+                res.push(Ch);
+              }
+            });
 
-            return <Widget key={compId} {...extralProps}/>;
-          }}
-          RootRender={(child) => {
-            return (<div>
-              {child}
-            </div>);
-          }}
-        />
-      </FromWrapFactory>
-      <pre>
+            const FromWrap = <FromWrapFactory key={i} {...extralProps} >{form}</FromWrapFactory>;
+            res.splice(i, 0, FromWrap);
+
+            return res;
+          }
+          return <FromWrapFactory key={'ajklhgjh'} {...extralProps} >{child}</FromWrapFactory>;
+        }}
+      />
+      {/* <pre>
         {JSON.stringify(getPageState(), null, 2)}
-      </pre>
+      </pre> */}
     </DefaultCtx.Provider>
-  );
-}, (prev, next) => {
-  // console.log(prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID);
 
-  return prev?.dslParseRes?.pageID === next?.dslParseRes?.pageID;
-});
+  );
+};
 
 export default IUBDSLRuntimeContainer;

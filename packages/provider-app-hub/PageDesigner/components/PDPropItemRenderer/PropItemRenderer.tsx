@@ -1,55 +1,52 @@
 import React from 'react';
-import { PropItemRendererProps } from '@engine/visual-editor/components/PropertiesEditor/types';
-import { PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItemRendererProps } from '@engine/visual-editor/components/PropertiesEditor';
+import { getListOfDictionaryServices, getDictionaryListServices, getTableList } from '@provider-app/services';
 import { Unexpect } from '../WidgetRenderer';
 
 interface PDPropItemRendererProps extends PropItemRendererProps {
-  interDatasources
+  interDatasources: PD.Datasources
   pageMetadata
 }
+
+/**
+ * 提供给属性项的服务接口
+ */
+const servicesForPropItems: PD.PropItemRendererBusinessPayload['$services'] = {
+  dict: {
+    getDictList: getDictionaryListServices,
+    getDictWithSubItems: getListOfDictionaryServices
+  },
+  table: {
+    getTable: getTableList
+  }
+};
 
 /**
  * 属性项渲染器
  * 根据属性项的 type 选择对应的组件进行渲染
  */
 export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
-  interDatasources,
   propItemMeta,
-  propItemValue,
-  pageMetadata,
-  changeEntityState,
-  ChangeMetadata,
-  ...other
+  interDatasources,
+  renderCtx
 }) => {
-  const propItemRenderCtx: PropItemRenderContext = {
-    takeMeta: (options) => {
-      const { metaAttr, metaRefID } = options;
-      return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
-    },
-    genMetaRefID: (metaAttr) => {
-      if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
-      const meta = pageMetadata[metaAttr];
-      const metaID = meta ? String(Object.keys(pageMetadata[metaAttr]).length + 1) : '1';
-      const prefix = metaAttr;
-      return `${prefix}_${metaID}`;
-    },
-    changePageMeta: ChangeMetadata,
-    interDatasources,
-    changeEntityState,
-    widgetEntityState: propItemValue,
-  };
-
   const {
     label,
   } = propItemMeta;
 
-  // const propItemCompConfig = getPropItem(propItemCompType);
-
   let Com;
   if (!propItemMeta.render) {
+    console.log(propItemMeta);
     Com = <Unexpect />;
   } else {
-    Com = propItemMeta.render(propItemRenderCtx);
+    const propItemRenderContext = {
+      ...renderCtx,
+      businessPayload: {
+        interDatasources,
+        $services: servicesForPropItems
+      }
+    };
+    Com = propItemMeta.render(propItemRenderContext);
   }
   return (
     <div className="mb10">

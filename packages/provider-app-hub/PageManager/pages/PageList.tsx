@@ -119,7 +119,7 @@ const PageList: React.FC<IProps> = (props: IProps) => {
    * @param params 相关请求参数
    */
   const getData = async (params) => {
-    const { current, pageSize } = params;
+    const { current = 0, pageSize } = params;
     const tableParams = {
       ...params,
       offset: (current - 1) * pageSize || 0,
@@ -133,13 +133,13 @@ const PageList: React.FC<IProps> = (props: IProps) => {
       data: Array.isArray(data) ? data.reduce((a, b) => {
         a.push({
           ...b,
-          belongMenus: b.belongMenus.map((item) => item.menuName),
-          dataSources: b.dataSources.map((item) => item.datasourceName),
+          belongMenus: (b && Array.isArray(b.belongMenus) ? b.belongMenus.map((item) => item.menuName) : []).join(','),
+          dataSources: (b && Array.isArray(b.dataSources) ? b.dataSources.map((item) => item.datasourceName) : []).join(','),
         });
         return a;
       }, []) : [],
       success: true,
-      total: total || 0
+      total: Number(total) || 0
     });
   };
   /**
@@ -199,10 +199,8 @@ const PageList: React.FC<IProps> = (props: IProps) => {
         rowKey="id"
         scroll={{ x: 500 }}
         toolBarRender={renderToolBarRender}
-        pagination={{
-          hideOnSinglePage: true,
-          pageSizeOptions: PAGE_CONFIG.SIZE_OPTIONS,
-          pageSize: PAGE_CONFIG.SIZE
+        onRequestError={(error) => {
+          console.log("页面管理表格出错: ", error);
         }}
       />
     </>

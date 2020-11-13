@@ -1,19 +1,18 @@
 // export * from './metadata-mapping';
 import { DataSourceRelation } from "./metadata-relation";
-import { GeneralTableMapping } from "./metadata-mapping";
+import { MetadataDef } from "..";
 
-export * from './metadata-mapping';
+export * from './metadata';
 export * from './metadata-relation';
+export * from './table-metadata';
 
-export interface MetadataMappingCollection {
-  dataSource: {
-    [tableId: string]: GeneralTableMapping;
-  };
-  dataSourceRelation?: {
+export interface MetadataCollection {
+  metadata: MetadataDef[];
+  metadataRelation?: {
     [tableId: string]: {
-      [dataSourceRelationId: string]: DataSourceRelation
+      [metadataRelationId: string]: DataSourceRelation
     }
   };
 }
 
-export default MetadataMappingCollection;
+export default MetadataCollection;

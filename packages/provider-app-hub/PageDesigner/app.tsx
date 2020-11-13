@@ -4,19 +4,21 @@ import produce from 'immer';
 import { VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
 import { updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
+import pick from "lodash/pick";
 import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
-import { wrapPageData } from "./utils";
+import { wrapPageData, takeUsedWidgetIDs, genBusinessCode } from "./utils";
 import {
-  getFEDynamicData, getPageContentWithDatasource
+  getPageContentWithDatasource,
 } from "./services";
 
 import './style';
 // import { VisualEditorStore } from "@engine/visual-editor/core/store";
 /** 是否离线模式，用于在家办公调试 */
-const offlineMode = false;
+// const offlineMode = false;
+const offlineMode = true;
 
 interface VisualEditorAppProps extends VisualEditorState {
   dispatcher: VEDispatcher
@@ -56,13 +58,11 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { appContext, dispatcher, appLocation } = this.props;
     const { pageID, title } = appLocation;
     const { UpdateAppContext } = dispatcher;
-    const pageContent = this.getPageContent();
+    // const pageContent = this.getPageContent();
 
-    await updatePageService(
-      this.getPageInfo(),
-      pageContent,
-      this.wrapDataSourceDataForUpdate(addingDataFormRemote)
-    );
+    await this.updatePage({
+      datasources: addingDataFormRemote
+    });
     const {
       interDatasources
     } = await getPageContentWithDatasource(pageID);
@@ -96,14 +96,19 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    */
   getPageInfo = () => {
     const {
-      appLocation, appContext
+      flatLayoutItems
     } = this.props;
     const pageDataFormRemote = this.getCurrPageDataDetail();
-    const { pageID, title } = appLocation;
+    // const { pageID, title } = appLocation;
+    const submitData = pick(pageDataFormRemote, [
+      'id', 'type', 'moduleID', 'name', 'belongMenus',
+    ]);
+    const usedWidgets = takeUsedWidgetIDs(flatLayoutItems, pageDataFormRemote);
+    const businessCodes = genBusinessCode(flatLayoutItems, pageDataFormRemote);
     return {
-      id: pageID,
-      name: title,
-      type: pageDataFormRemote.type,
+      ...submitData,
+      usedWidgets,
+      businessCodes,
     };
   }
 
@@ -141,13 +146,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { InitApp } = dispatcher;
 
     /** 并发获取初始化数据 */
-    const [dynamicData, remotePageData] = await Promise.all([
-      getFEDynamicData(),
+    const [remotePageData] = await Promise.all([
       !offlineMode && getPageContentWithDatasource(pageID)
     ]);
 
     /** 准备初始化数据 */
-    const initData = produce(dynamicData, (draftInitData) => {
+    const initData = produce({}, (draftInitData) => {
       if (!offlineMode) {
         const {
           interDatasources, pageContent, pageDataRes
@@ -165,23 +169,31 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     InitApp(initData);
   }
 
-  /**
-   * 发布页面
-   */
-  onReleasePage = () => {
+  updatePage = (options = {}) => {
+    const {
+      datasources = this.getDatasources()
+    } = options;
     return new Promise((resolve, reject) => {
+      const interDatasources = datasources;
       const pageContent = this.getPageContent();
-      const interDatasources = this.getDatasources();
-      updatePageService(
-        this.getPageInfo(),
-        pageContent,
-        this.wrapDataSourceDataForUpdate(interDatasources)
-      ).then((res) => {
+      if (offlineMode) return resolve({});
+      updatePageService({
+        pageInfoForBN: this.getPageInfo(),
+        pageContentForFE: pageContent,
+        extendData: this.wrapDataSourceDataForUpdate(interDatasources),
+      }).then((res) => {
         resolve(res);
       }).catch((e) => {
         reject(e);
       });
     });
+  }
+
+  /**
+   * 发布页面
+   */
+  onReleasePage = () => {
+    return this.updatePage();
   }
 
   render() {
@@ -204,10 +216,21 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
-    return appContext.ready ? (
+    if (!appContext.ready) {
+      return (
+        <LoadingTip />
+      );
+    }
+
+    return (
       <div className="visual-app bg-white">
         <header className="app-header">
-          <ToolBar onReleasePage={this.onReleasePage} appLocation={appLocation} />
+          <ToolBar
+            pageMetadata={pageMetadata}
+            flatLayoutItems={flatLayoutItems}
+            onReleasePage={this.onReleasePage}
+            appLocation={appLocation}
+          />
         </header>
         <div
           className="app-content"
@@ -218,8 +241,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           >
             <WidgetPanel
               interDatasources={appContext?.payload?.interDatasources}
-              widgetPanelData={appContext.widgetPanelData}
-              widgetMetaDataCollection={appContext.widgetMetaDataCollection}
               onUpdatedDatasource={this.onUpdatedDatasource}
             />
           </div>
@@ -244,14 +265,10 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               activeEntity && (
                 <PropertiesEditor
                   key={activeEntityID}
-                  propItemData={appContext.propItemData}
                   pageMetadata={pageMetadata}
-                  ChangeMetadata={ChangeMetadata}
+                  changeMetadata={ChangeMetadata}
                   interDatasources={this.getDatasources()}
-                  // eslint-disable-next-line max-len
-                  widgetBindedPropItemsMeta={appContext?.widgetMetaDataCollection[activeEntity?._classID]?.bindPropItems}
                   selectedEntity={activeEntity}
-                  propItemGroupingData={appContext.propItemGroupingData}
                   defaultEntityState={activeEntity.propState}
                   initEntityState={(entityState) => InitEntityState(selectedInfo, entityState)}
                   updateEntityState={(entityState) => {
@@ -266,8 +283,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           </div>
         </div>
       </div>
-    ) : (
-      <LoadingTip />
     );
   }
 }

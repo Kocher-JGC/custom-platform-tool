@@ -1,4 +1,16 @@
 {
-  "apiUrl": "http://192.168.14.140:6090",
-  "perviewAppUrl": "http://localhost:8000"
+  "nodeWebServerUrl": "http://localhost:3000",
+  "perviewAppUrl": "http://localhost:8000",
+  "prevNodeWebServerUrl": "http://localhost:3000",
+  "proNodeWebServerUrl": "192.168.14.181:5020",
+  "previewAppApiUrl": "192.168.14.181:7090",
+  "prodAppApiUrl": "192.168.14.140:7090",
+  "": "",
+  "passServerUrl": "http://192.168.14.181:6090",
+  "previewSassServerUrl": "http://192.168.14.181:7090",
+  "previewPageServerUrl": "http://localhost:3000",
+  "previewAppUrl": "http://localhost:8000",
+  "publishSassServerUrl": "http://192.168.14.181:7090",
+  "publishPageServerUrl": "http://192.168.14.181:5020",
+  "publishAppUrl": "http://192.168.14.181:5020"
 }

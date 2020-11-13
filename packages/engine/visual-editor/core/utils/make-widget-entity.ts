@@ -1,18 +1,18 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
+import { nanoid } from 'nanoid';
 import {
   ENTITY_ID,
   increaseID,
 } from '@engine/visual-editor/utils';
 import {
-  WidgetMetadata, WidgetEntity, TempWidgetEntityType, TEMP_ENTITY_ID
+  EditableWidgetMeta, WidgetEntity, TempWidgetEntityType, TEMP_ENTITY_ID
 } from '../../data-structure';
 
 export type MakeWidgetEntity = (
-  widgetType: WidgetMetadata,
+  widgetType: EditableWidgetMeta,
   options?: {
-    idCount?: number
-    extendEntityID?: string
+    genIDLen?: number
     state?: string
   }
 ) => WidgetEntity
@@ -21,32 +21,22 @@ export type MakeWidgetEntity = (
  * 实例化 widgetType
  */
 export const makeWidgetEntity: MakeWidgetEntity = (
-  widgetType: WidgetMetadata,
+  widgetType: EditableWidgetMeta,
   options = {}
 ) => {
   const {
-    idCount = 0,
-    extendEntityID = '',
+    genIDLen = 8,
     state = 'active'
   } = options;
-  /** 外部可以通过 entityID 设置 widgetType id */
-  let { entityID = '' } = widgetType;
-  if (!entityID) {
-    /** 如果外部没有传入，则通过生成器生成 ID */
-    entityID = increaseID(idCount, ENTITY_ID);
-  } else {
-    entityID = extendEntityID;
-  }
+  const entityID = nanoid(genIDLen);
 
   /**
-   * 如果组件还没被实例化，则实例化组件类
-   *
-   * 下划线前缀为内部字段，用于表示已经实例化
+   * 1. 如果组件还没被实例化，则实例化组件类
+   * 2. 下划线前缀为内部字段，用于表示已经实例化
    */
   const entity = produce(widgetType, (draft) => {
-    Reflect.deleteProperty(draft, 'bindPropItems');
+    Reflect.deleteProperty(draft, 'propItemsRely');
     draft.id = entityID;
-    draft._classID = widgetType.id;
     draft._state = state;
   });
 

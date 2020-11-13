@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Input, Table, message, Button
 } from 'antd';
-import lodash from 'lodash';
+import without from 'lodash/without';
 import { getDictionaryList } from "../apiAgents";
 import { NOTIFICATION_TYPE } from '../constants';
 
@@ -56,6 +56,8 @@ class ChooseDict extends React.Component<IProps> {
     menu: []
   }
 
+  type = 'radio'
+
   /**
  * 用于实时的数据比对
  * @param arr
@@ -84,8 +86,6 @@ class ChooseDict extends React.Component<IProps> {
     const { searchName: name, offset, size } = this.state;
     /** 接口对应的offset是指记录偏移位置，不是页偏移量 */
     const res = await getDictionaryList({ name, offset: (offset - 1) * size, size });
-    console.log(res.data);
-    console.log(typeof (res.total - 0));
     /** 设置数据 */
     this.setState({
       menu: res?.data,
@@ -136,15 +136,19 @@ class ChooseDict extends React.Component<IProps> {
 
   handleRowClick = (selectedRowKeyTmpl: string) => {
     const { selectedRowKeys } = this.state;
-    if (!selectedRowKeys.includes(selectedRowKeyTmpl)) {
-      this.setState({
-        selectedRowKeys: [selectedRowKeyTmpl, ...selectedRowKeys]
-      });
-    } else {
-      this.setState({
-        selectedRowKeys: lodash.without(selectedRowKeys, selectedRowKeyTmpl)
-      });
+    if (this.type === 'checkbox') {
+      if (!selectedRowKeys.includes(selectedRowKeyTmpl)) {
+        this.setState({
+          selectedRowKeys: [selectedRowKeyTmpl, ...selectedRowKeys]
+        });
+      } else {
+        this.setState({
+          selectedRowKeys: without(selectedRowKeys, selectedRowKeyTmpl)
+        });
+      }
+      return;
     }
+    this.setState({ selectedRowKeys: [selectedRowKeyTmpl] });
   }
 
   handleSearch = (value) => {
@@ -186,7 +190,7 @@ class ChooseDict extends React.Component<IProps> {
         rowSelection={{
           selectedRowKeys,
           onChange: (this.handleRowSelect),
-          type: 'radio',
+          type: this.type,
         }}
       />
       <ModalFooter

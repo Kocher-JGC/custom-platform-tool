@@ -4,6 +4,8 @@ import { OmitExtral } from "../../../../types";
 interface InputPropsExtral {
   key: string;
   value: string | number;
+  defValue: string;
+  pageStatus: string;
   onChange: ((event: React.ChangeEvent<HTMLInputElement>) => void);
 }
 

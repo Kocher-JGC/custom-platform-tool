@@ -5,7 +5,8 @@
   "description": "自定义3.0",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
-    "build": "umi build",
+    "build": "umi build && npm run build:server",
+    "build:server": "cd ./server && yarn",
     "deploy": "npm run site && npm run gh-pages",
     "dev": "npm run start:dev",
     "docker-hub:build": "docker build  -f Dockerfile.hub -t  ant-design-pro ./",

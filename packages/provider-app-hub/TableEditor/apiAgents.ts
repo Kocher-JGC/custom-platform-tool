@@ -13,7 +13,7 @@ export async function getTableInfo(id:string) {
   const res = await getTableInfoApi(id);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
     return {};
   }
   return res?.result;
@@ -23,7 +23,7 @@ export async function getMenuListService(params) {
   const res = await getMenuListServiceApi(params);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETMENULIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETMENULIST_FAILED);
     return [];
   }
   return res?.result;
@@ -33,7 +33,7 @@ export async function getDictionaryList(params) {
   const res = await getDictionaryListApi(params);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETDICTIONARYLIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETDICTIONARYLIST_FAILED);
     return { data: [], total: 0 };
   }
   return res?.result;
@@ -43,24 +43,34 @@ export async function getTableList() {
   const res = await getTableListApi();
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLELIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLELIST_FAILED);
     return [];
   }
   return res?.result?.data;
 }
 
 /* 判断是否可删除 */
-export async function allowedDeleted(params) {
+export async function allowDeleted(params) {
   const res = await allowedDeletedApi(params);
   const { code, result } = res || {};
   if (code !== API_CODE.SUCCESS) {
-    /** 如果接口没有提供提示信息 */
-    if (result?.length === 0) {
-      return [MESSAGES.DELETEFIELD_FAILED];
-    }
-    return result;
+    return {
+      allowedDeleted: false,
+      msg: MESSAGES.DELETEFIELD_FAILED
+    };
   }
-  return [];
+  const { allowedDeleted, errorMsg } = result;
+  let msg: string;
+  if (errorMsg.length > 0) {
+    msg = errorMsg.map((item) => item.msg || '').join('，');
+  } else {
+    msg = allowedDeleted ? MESSAGES.MAY_I_DELETE
+      : MESSAGES.DELETEFIELD_FAILED;
+  }
+  return {
+    allowedDeleted,
+    msg
+  };
 }
 
 /** 保存表数据 */
@@ -68,7 +78,7 @@ export async function editTableInfo(data) {
   const res = await editTableInfoApi(data);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.EDITTABLEINFO_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.EDITTABLEINFO_FAILED);
     return false;
   }
   openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGES.EDITTABLEINFO_SUCCESS);

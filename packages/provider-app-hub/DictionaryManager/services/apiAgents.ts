@@ -7,7 +7,7 @@ import {
   delChildOfDictionaryServices as delChildOfDictionaryServicesApi,
   delDictionaryServices as delDictionaryServicesApi,
   editDictionary as editDictionaryApi,
-  postDictionary as postDictionaryApi,
+  addDictionary as addDictionaryApi,
   editChildOfDictionary as editChildOfDictionaryApi,
   moveChildOfDictionary as moveChildOfDictionaryApi
 } from './apis';
@@ -16,7 +16,7 @@ import { MESSAGE } from '../constants';
 export async function getDictionaryListServices(params) {
   const res = await getDictionaryListServicesApi(params);
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETDICTIONARYLIST_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETDICTIONARYLIST_FAILED);
     return { data: [], total: 0 };
   }
   return res?.result;
@@ -25,7 +25,7 @@ export async function getDictionaryListServices(params) {
 export async function getListOfDictionaryServices({ id }) {
   const res = await getListOfDictionaryServicesApi({ id });
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARY_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARY_FAILED);
     return [];
   }
   return res?.result?.items;
@@ -33,7 +33,7 @@ export async function getListOfDictionaryServices({ id }) {
 export async function getListOfDictionaryChildServices(param) {
   const res = await getListOfDictionaryChildServicesApi(param);
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARYCHILD_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.GETLISTOFDICTIONARYCHILD_FAILED);
     return [];
   }
   return res?.result;
@@ -63,7 +63,7 @@ export const delDictionaryServices = (dictionaryId) => {
       onOk: async () => {
         const res = await delDictionaryServicesApi(dictionaryId);
         if (res?.code !== API_CODE.SUCCESS) {
-          openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DELETEDICTIONARY_FAILED);
+          // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.DELETEDICTIONARY_FAILED);
           resolve(false);
           return;
         }
@@ -77,13 +77,14 @@ export const delDictionaryServices = (dictionaryId) => {
   });
 };
 
-export async function postDictionary(data) {
-  const res = await postDictionaryApi(data);
+export async function addDictionary(data) {
+  const res = await addDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADDDICTIONARY_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.ADDDICTIONARY_FAILED);
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.ADDDICTIONARY_SUCCESS);
   return true;
 }
 export async function editDictionary(data) {
@@ -93,23 +94,26 @@ export async function editDictionary(data) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || '字典修改失败');
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.EDITDICTIONARY_SUCCESS);
   return true;
 }
 export async function editChildOfDictionary(data) {
   const res = await editChildOfDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDITCHILDOFDICTIONARY_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.EDITCHILDOFDICTIONARY_FAILED);
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.EDITCHILDOFDICTIONARY_SUCCESS);
   return true;
 }
 export async function moveChildOfDictionary(data) {
   const res = await moveChildOfDictionaryApi(data);
 
   if (res?.code !== API_CODE.SUCCESS) {
-    openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.MOVECHILD_FAILED);
+    // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGE.MOVECHILD_FAILED);
     return false;
   }
+  openNotification(NOTIFICATION_TYPE.SUCCESS, MESSAGE.MOVECHILD_SUCCESS);
   return true;
 }

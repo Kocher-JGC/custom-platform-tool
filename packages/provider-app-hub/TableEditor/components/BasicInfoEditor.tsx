@@ -4,12 +4,15 @@ import {
 } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { contructTree } from '../service';
-import { TABLE_TYPE_OPTIONS, TABLE_TYPE, MENUS_TYPE } from '../constants';
+import {
+  TABLE_TYPE_OPTIONS, TABLE_TYPE, MENUS_TYPE, RELATION_OPTIONS
+} from '../constants';
 import { getMenuListService } from '../apiAgents';
 
 /** 归属模块 */
 interface IModuleTreeItem {
   initialValue: string
+  handleChange: (value: string)=>void
 }
 class ModuleTreeItem extends React.Component<IModuleTreeItem> {
   state = {
@@ -61,6 +64,10 @@ class ModuleTreeItem extends React.Component<IModuleTreeItem> {
     this.getMenusData(searchValue);
   }
 
+  handleChange = (value) => {
+    this.props.handleChange(value);
+  }
+
   render() {
     const { initialValue } = this.props;
     const { moduleList } = this.state;
@@ -69,12 +76,13 @@ class ModuleTreeItem extends React.Component<IModuleTreeItem> {
       style={{ width: '100%' }}
       allowClear
       defaultValue = { initialValue }
-      treeIcon={true}
+      treeIcon={false}
       filterTreeNode={false}
       treeData={moduleList}
       onSearch={this.handleSearch}
       virtual={true}
       onDropdownVisibleChange={this.handleDropdown}
+      onChange = {this.handleChange}
     />;
   }
 }
@@ -133,22 +141,47 @@ class BasicInfoEditor extends React.Component<BasicInfoEditorProps> {
           basicInfo.relatedModuleId ? (
             <Form.Item
               className = {this.getClassName()}
-              name="moduleId"
+              name="relatedModuleId"
               label="归属模块"
+              rules={[
+                { required: true, message: '归属模块不能为空' }
+              ]}
             >
-              <ModuleTreeItem initialValue={basicInfo.relatedModuleId}/>
+              <ModuleTreeItem
+                initialValue={basicInfo.relatedModuleId}
+                handleChange={(value) => {
+                  this.props.formRef.current?.setFieldsValue({
+                    relatedModuleId: value
+                  });
+                  this.props.formRef.current?.validateFields();
+                }}
+              />
             </Form.Item>
           ) : null
         }
         {
           basicInfo.tableType === TABLE_TYPE.AUX_TABLE ? (
-            <Form.Item
-              className = {this.getClassName()}
-              name="mainTableName"
-              label="主表名称"
-            >
-              <Input disabled />
-            </Form.Item>
+            <>
+              <Form.Item
+                className = {this.getClassName()}
+                name="mainTableName"
+                label="主表名称"
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                className = {this.getClassName()}
+                name="relationType"
+                label="关联关系"
+                rules={[
+                  { required: true, message: '数据表名称不能为空' }
+                ]}
+              >
+                <Select
+                  options={RELATION_OPTIONS}
+                />
+              </Form.Item>
+            </>
           ) : null
         }
 

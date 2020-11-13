@@ -13,7 +13,7 @@ export interface NavigateConfig {
   /** 路由参数 */
   params?: NavParams
   /** 路由类型 */
-  type: 'PUSH' | 'GO_BACK' | 'LINK' | 'POP' | 'ROOT'
+  type: 'PUSH' | 'GO_BACK' | 'LINK' | 'POP'
   /** 需要跳转的路由，废弃的，需要换成 path */
   route?: string
   /** pathname */
@@ -23,7 +23,7 @@ export interface NavigateConfig {
   /** 是否使用默认的 params，会在 url 中加入 */
   useDefaultParams?: boolean
   /** 设置 location 的 state */
-  state?: {}
+  state?: unknown
 }
 
 export const history = createBrowserHistory<any>();
@@ -118,9 +118,6 @@ export const onNavigate: OnNavigate = (config) => {
   switch (type) {
     case "PUSH":
       pushToHistory(`#/${wrapPushUrl(nextConfig)}`, stateForLocation);
-      break;
-    case "ROOT":
-      pushToHistory('/');
       break;
     case "LINK":
       break;

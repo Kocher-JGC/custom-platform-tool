@@ -1,16 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
 import {
-  get as LGet, set as LSet, defaultsDeep, cloneDeep
+  get as LGet, set as LSet
 } from 'lodash';
 import { CommonObjStruct } from '@iub-dsl/definition';
-import { SchemasAnalysisRes } from './analysis/i-analysis';
 import { useCacheState } from '../utils';
 import { isPageState, pickPageStateKeyWord } from './const';
-
-type GetParam = string | {
-  [str: string]: GetParam;
-} | GetParam[]
+import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from '../runtime/types';
+import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 
 // TODO
 const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
@@ -33,16 +30,38 @@ const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
   }, {});
 };
 
+const collectFieldMapping = (schemaInfo: any) => {
+  const { collectionType, fieldMapping, struct } = schemaInfo;
+  const res: string[] = [];
+  if (typeof collectionType === 'string' && Array.isArray(struct)) {
+    struct.forEach((item) => res.push(...collectFieldMapping(item)));
+  }
+  if (typeof fieldMapping === 'string') {
+    res.push(fieldMapping);
+  }
+
+  return res;
+};
+
 /** TODO: 跨页面问题 */
 export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   const { levelRelation, pathMapInfo, baseStruct } = analysisData;
+  const schemaMarkArr = Object.keys(pathMapInfo);
 
   const fullStruct = getFullInitStruct({ baseStruct, pathMapInfo });
-  return () => {
+
+  const getSchemaInfo = (schemaPath: string) => {
+    if (isPageState(schemaPath)) {
+      schemaPath = pickPageStateKeyWord(schemaPath);
+    }
+    return pathMapInfo[schemaPath];
+  };
+
+  return (): IUBStoreEntity => {
     const [IUBPageStore, setIUBPageStore] = useCacheState(fullStruct);
 
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
-    const getPageState = (strOrStruct?) => {
+    const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
       if (typeof strOrStruct === 'string') {
         if (isPageState(strOrStruct)) {
           return LGet(IUBPageStore, pickPageStateKeyWord(strOrStruct), '');
@@ -52,12 +71,12 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         return strOrStruct;
       }
       if (Array.isArray(strOrStruct)) {
-        return strOrStruct.map((newStruct) => getPageState(newStruct));
+        return strOrStruct.map((newStruct) => getPageState(ctx, newStruct));
       }
       if (typeof strOrStruct === 'object') {
         const structKeys = Object.keys(strOrStruct);
         return structKeys.reduce((result, key) => {
-          result[key] = getPageState(strOrStruct[key]);
+          result[key] = getPageState(ctx, strOrStruct[key]);
           return result;
         }, {});
       }
@@ -66,30 +85,71 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     const getWatchDeps = getPageState;
 
     const handleFn = useMemo(() => {
-      const targetUpdateState = (target, value) => {
+      const targetUpdateState = (ctx: RunTimeCtxToBusiness, target, value) => {
         target = pickPageStateKeyWord(target);
         setIUBPageStore({
           [target]: value
         });
       };
 
-      const updatePageState = (newState: CommonObjStruct) => {
+      const updatePageState = (ctx: RunTimeCtxToBusiness, newState: CommonObjStruct) => {
         setIUBPageStore(newState);
+      };
+
+      const updatePageStateFromMetaMapping = (ctx: RunTimeCtxToBusiness, fieldMappingValue: any) => {
+        const fieldMappingArr = Object.keys(fieldMappingValue);
+        const updateValue = {};
+        schemaMarkArr.forEach((mark) => {
+          const schemaInfo = pathMapInfo[mark];
+          const { fieldMapping } = schemaInfo;
+          const idx = fieldMappingArr.indexOf(fieldMapping);
+          if (idx > -1) {
+            updateValue[mark] = fieldMappingValue[fieldMappingArr[idx]];
+          }
+        });
+        setIUBPageStore(updateValue);
+        return updateValue;
+      };
+
+      const updatePageStateFromTableRecord = (ctx: RunTimeCtxToBusiness, tableRecord, metadata) => {
+        const { dispatchOfIUBEngine } = ctx;
+        const fieldMappingValue = dispatchOfIUBEngine({
+          dispatch: {
+            module: DispatchModuleName.metadata,
+            method: DispatchMethodNameOfMetadata.fieldDataMapToFieldMarkData,
+            params: [tableRecord, metadata]
+          }
+        });
+        return updatePageStateFromMetaMapping(ctx, fieldMappingValue);
+      };
+
+      const getSchemaMetadata = ({ dispatchOfIUBEngine }: RunTimeCtxToBusiness, schemaPath: string) => {
+        const schemaInfo = getSchemaInfo(schemaPath);
+        const fieldMapping = collectFieldMapping(schemaInfo);
+        return dispatchOfIUBEngine({
+          dispatch: {
+            module: DispatchModuleName.metadata,
+            method: DispatchMethodNameOfMetadata.getMetaFromMark,
+            params: [fieldMapping]
+          }
+        });
       };
 
       return {
         updatePageState,
-        isPageState,
+        isPageState: (ctx: RunTimeCtxToBusiness, param: string) => isPageState(param),
+        pickPageStateKeyWord: (ctx: RunTimeCtxToBusiness, param: string) => pickPageStateKeyWord(param),
         targetUpdateState,
-        pickPageStateKeyWord,
+        getSchemaMetadata,
+        updatePageStateFromTableRecord,
+        updatePageStateFromMetaMapping
       };
     }, []);
 
     return {
       getPageState,
       getWatchDeps,
-      ...handleFn,
-      IUBPageStore
+      ...handleFn
     };
   };
 };

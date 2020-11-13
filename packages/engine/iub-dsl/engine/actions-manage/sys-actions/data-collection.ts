@@ -1,17 +1,25 @@
 import {
-  DataCollection,
+  DataCollectionOptions,
   BaseCollectionStruct,
 } from "@iub-dsl/definition/actions";
-import { RuntimeSchedulerFnName } from "../../runtime";
+import {
+  DispatchModuleName,
+  DispatchMethodNameOfIUBStore,
+  DispatchMethodNameOfMetadata
+} from "../../runtime/types";
+import { ActionDoFn } from "../types";
 
-export const dataCollectionAction = (conf: DataCollection) => {
-  const { actionName, actionOptions: { collectionType, struct }, when } = conf;
+export const dataCollectionAction = (conf: DataCollectionOptions, baseActionInfo: any = {}): ActionDoFn => {
+  const { collectionType, struct } = conf;
   if (collectionType === 'structArray') {
-    return async ({ action, asyncRuntimeScheduler }) => {
-      return await asyncRuntimeScheduler({
-        actionName,
-        type: RuntimeSchedulerFnName.getPageState,
-        params: [struct]
+    return async ({ action, asyncDispatchOfIUBEngine }) => {
+      return await asyncDispatchOfIUBEngine({
+        actionInfo: baseActionInfo,
+        dispatch: {
+          module: DispatchModuleName.IUBStore,
+          method: DispatchMethodNameOfIUBStore.getPageState,
+          params: [struct]
+        }
       });
     };
   }
@@ -21,17 +29,20 @@ export const dataCollectionAction = (conf: DataCollection) => {
    * 2. 映射成元数据形式 field
    * 3. 固定映射 aliasField
    */
-  return async ({ action, asyncRuntimeScheduler, runtimeScheduler }) => {
-    const newStruct = genGetPagetStateStruct(struct, runtimeScheduler);
-    return await asyncRuntimeScheduler({
-      actionName,
-      type: RuntimeSchedulerFnName.getPageState,
-      params: [newStruct]
+  return async ({ action, asyncDispatchOfIUBEngine, dispatchOfIUBEngine }) => {
+    const newStruct = genGetPagetStateStruct(struct, dispatchOfIUBEngine);
+    return await asyncDispatchOfIUBEngine({
+      actionInfo: baseActionInfo,
+      dispatch: {
+        module: DispatchModuleName.IUBStore,
+        method: DispatchMethodNameOfIUBStore.getPageState,
+        params: [newStruct]
+      }
     });
   };
 };
 
-const genGetPagetStateStruct = (struct: (string | BaseCollectionStruct)[], runtimeScheduler) => {
+const genGetPagetStateStruct = (struct: (string | BaseCollectionStruct)[], dispatchOfIUBEngine) => {
   return struct.reduce(((result, sInfo: (string | BaseCollectionStruct)) => {
     if (typeof sInfo === 'string') {
       result[sInfo] = sInfo;
@@ -40,14 +51,17 @@ const genGetPagetStateStruct = (struct: (string | BaseCollectionStruct)[], runti
       if (collectField !== undefined) {
         /** TODO: aliasField和field 的优先级问题 */
         if (field !== undefined) {
-          const fieldCode = runtimeScheduler({
-            type: 'getFiledCode',
-            params: [field]
+          const fieldCode = dispatchOfIUBEngine({
+            dispatch: {
+              module: DispatchModuleName.metadata,
+              method: DispatchMethodNameOfMetadata.getFieldKeyInfo,
+              params: [field]
+            }
           });
           if (fieldCode) {
             result[fieldCode] = collectField;
           } else {
-            console.error('数据源映射转换失败!!');
+            console.error('数据源映射转换失败!!', fieldCode);
             result[field] = collectField;
           }
         } else if (aliasField !== undefined) {

@@ -1,6 +1,6 @@
 import { Effect, Reducer } from 'umi';
 
-import { queryUserInfo } from '@/services/user';
+import { queryUserInfo, queryAppConfig } from '@/services/user';
 import store from 'store';
 
 export interface IAccount {
@@ -65,6 +65,8 @@ export interface IUserModelState {
   member?: IMember;
   token?: string;
   refreshToken?: string;
+  lessee?: string;
+  app?: string;
 }
 
 export interface IUserModel {
@@ -72,9 +74,11 @@ export interface IUserModel {
   state: IUserModelState;
   effects: {
     fetchUserInfo: Effect;
+    fetchAppConfig: Effect;
   };
   reducers: {
     setCurrentUser: Reducer<IUserModelState>;
+    setAppConfig: Reducer<IUserModelState>;
   };
 }
 const inintState: IUserModelState = {
@@ -91,7 +95,14 @@ const UserModel: IUserModel = {
       const response = yield call(queryUserInfo);
       yield put({
         type: 'setCurrentUser',
-        payload: response.result,
+        payload: response?.data?.result || {},
+      });
+    },
+    * fetchAppConfig({ payload }, { call, put }) {
+      const response = yield call(queryAppConfig);
+      yield put({
+        type: 'setAppConfig',
+        payload: response || {},
       });
     },
   },
@@ -103,6 +114,14 @@ const UserModel: IUserModel = {
      * @param param1
      */
     setCurrentUser(state, { payload }) {
+      return {
+        ...state,
+        ...payload || {},
+      };
+    },
+    setAppConfig(state, { payload }) {
+      store.set("lessee", payload.lesseeCode);
+      store.set("app", payload.applicationCode);
       return {
         ...state,
         ...payload || {},

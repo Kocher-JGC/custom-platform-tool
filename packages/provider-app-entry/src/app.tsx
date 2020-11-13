@@ -12,8 +12,7 @@ import { Location } from 'history';
 import { Dashboard } from "@provider-app/dashboard/main";
 import Router, { getRouteName } from '@provider-app/config/router';
 import { LoadingTip } from "@provider-ui/loading-tip";
-import { VersionDisplayer } from 'version-helper';
-// import VersionInfo from './version.json';
+import { Version } from './components/Version';
 
 import {
   // Hall,
@@ -112,10 +111,13 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
     const { logging } = this.props;
   }
 
-  // handleHistoryChange = (activeRoute) => {
-  //   setReqUrlByApp(this.appLocation.state?.app);
-  //   // console.log(this.state.activeRoute);
-  // }
+  handleHistoryChange = (activeRoute) => {
+    const { appName: currAppName } = this.appLocation;
+    // console.log('object :>> ', activeRoute);
+    document.title = currAppName || '自定义工具 3.0';
+    // setReqUrlByApp(this.appLocation.state?.app);
+    // console.log(this.state.activeRoute);
+  }
 
   getRouteItem = (pathname) => Router[pathname]
 
@@ -225,7 +227,7 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
                 }
                 <UserStatusbar logout={logout} />
                 <div className="pr-2 text-gray-600">
-                  {/* <VersionDisplayer versionInfo={VersionInfo} $T={(val) => val} /> */}
+                  <Version />
                 </div>
               </header>
               <div id="provider_app_content">
@@ -236,6 +238,7 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
                         /** 设置 app 为空，因为还未选择 app */
                         $R_P.urlManager.setApp('');
                       }}
+                      appLocation={this.appLocation}
                       onSelectApp={({ app, appName }) => {
                         setReqUrlByApp(app);
                         setDefaultParams({

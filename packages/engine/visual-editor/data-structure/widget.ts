@@ -1,13 +1,5 @@
 /// //////////////// widget ///////////////////
-
 import { PropItemCompAccessSpec } from ".";
-
-/**
- * 基础组件类型
- */
-interface BasicWidgetType {
-  type: string
-}
 
 export type EditAttr = string | string[]
 
@@ -32,18 +24,26 @@ export interface PropItemRefs {
 /**
  * widget 绑定的属性
  */
-export interface WidgetBindPropItemsType {
+export interface WidgetRelyPropItems {
   /** 绑定的属性项 */
   propItemRefs?: PropItemRefs[]
   /** 原生属性配置 */
   rawPropItems?: PropItemCompAccessSpec[]
 }
 
+export interface VarAttrType {
+  /** 该属性变量的别名 */
+  alias: string
+  /** 该属性变量的别名 */
+  attr: string
+  type: 'string' | 'number'
+}
+
 /**
- * 编辑器中的元素类 element class
- * 用于存储组件的元数据信息
+ * 1. 可被编辑属性的组件的定义
+ * 2. 用于存储组件的元数据信息
  */
-export interface BasicWidgetClassType<C> {
+export interface EditableWidgetMeta {
   /** 组件类型 id */
   id: string
   /** 组件类面板的显示名 */
@@ -51,28 +51,17 @@ export interface BasicWidgetClassType<C> {
   /** 组件类面板的显示名 */
   desc?: string;
   /** 绑定可编辑的属性 */
-  bindPropItems: WidgetBindPropItemsType
-  /** 组件类型定义 widget definition */
-  widgetDef: C
-}
-
-export interface WidgetEditablePropMeta {
-  type: 'string' | 'number' | 'boolean' | 'any' | 'struct'
-}
-
-export interface WidgetEditableProps {
-  [propName: string]: WidgetEditablePropMeta
-}
-
-/**
- * 可拖动的组件的 class
- */
-export interface WidgetMetadata<C = BasicWidgetType> extends BasicWidgetClassType<C> {
-  id: string
-  /** 可以指定组件类被实例化时的 id */
-  entityID?: string
-  /** 可编辑的属性 */
-  editableProps: WidgetEditableProps
+  propItemsRely: WidgetRelyPropItems
+  /** 引用定义了的组件，对应组件的 name */
+  widgetRef: string
+  /** 可以提升为变量的属性的集合 */
+  varAttr?: VarAttrType[]
+  /**
+   * 自定义编辑器，规则：
+   * 1. 必须已经在开发项中开发
+   * 2. 通过字符串找到对应的自定义编辑器
+   */
+  propEditor?: string
 }
 
 /// //////////////// widget entity ///////////////////
@@ -80,7 +69,7 @@ export interface WidgetMetadata<C = BasicWidgetType> extends BasicWidgetClassTyp
 /**
  * 组件实例信息
  */
-export interface WidgetEntity extends WidgetMetadata {
+export interface WidgetEntity extends EditableWidgetMeta {
   /** 实例 id */
   id: string
   /** 子元素 */
@@ -90,8 +79,6 @@ export interface WidgetEntity extends WidgetMetadata {
   /** 实例化后的状态 */
   _state: string
   // _state: 'active' | 'disable'
-  /** 实例化后的 class id */
-  _classID: WidgetMetadata['id']
 }
 
 /**
