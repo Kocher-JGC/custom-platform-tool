@@ -1,8 +1,12 @@
-import { Modal, Form, Input } from 'antd';
+import {
+  Modal
+} from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import React, { useRef } from 'react';
-import { OpenModal } from '@iub-dsl/definition';
+import { OpenModalOptions } from '@iub-dsl/definition';
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
 import { queryPageData } from '@consumer-app/web-platform/src/services/page';
+import D from '@iub-dsl/demo/pd/2';
 import { ActionDoFn } from '../../types';
 
 enum ModalType {
@@ -14,12 +18,10 @@ enum ModalType {
   confirm = 'confirm'
 }
 
-export const openModal = (conf: OpenModal, baseActionInfo): ActionDoFn => {
+export const openModal = (conf: OpenModalOptions, baseActionInfo): ActionDoFn => {
   const {
-    actionOptions: {
-      type,
-      pageUrl
-    },
+    type,
+    pageUrl
   } = conf;
   return async ({ action, asyncDispatchOfIUBEngine }) => {
     const IUBRendererHooks = {
@@ -30,11 +32,15 @@ export const openModal = (conf: OpenModal, baseActionInfo): ActionDoFn => {
       try {
         const pageData = await queryPageData({ id: pageUrl });
         const m = Modal.confirm({
+          title: <div style={{ textAlign: 'right' }}><CloseOutlined onClick={() => {
+            m.destroy();
+          }}
+          /></div>,
           icon: false,
+          cancelButtonProps: { style: { display: 'none' } },
+          okButtonProps: { style: { display: 'none' } },
           content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} />
         });
-
-        console.log(m);
       } catch (e) {
         console.error(e);
       }

@@ -8,8 +8,8 @@ import { actionsCollectionParser } from "./actions-manage/actions-parser";
 import { flowParser } from './flow-engine';
 import { isPageState } from "./state-manage";
 import { eventPropsHandle } from "./event-manage";
-import { datasourceMetaHandle } from "./datasource-meta";
 import { actionsCollectConstor } from "./relationship/depend-collet/action-depend";
+import { metadataManage } from "./metadata-manage";
 
 const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContext) => {
   const { changeTarget } = actionConf;
@@ -22,7 +22,7 @@ const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContex
 
 const extralAPBDSLCURDOfConfParser = (actionConf, actionConfParseRes, parseContext) => {
   const { changeStateToUse, getStateToUse } = actionConfParseRes;
-  getStateToUse.push("@(schemas).entity_25", "@(schemas).entity_26", "@(schemas).entity_28");
+  getStateToUse.push("@(schema).entity_25", "@(schema).entity_26", "@(schema).entity_28");
   return actionConfParseRes;
 };
 
@@ -80,10 +80,11 @@ const genIUBDSLParserCtx = (parseRes) => {
 const IUBDSLParser = ({ dsl }) => {
   const {
     actionsCollection, sysRtCxtInterface,
-    componentsCollection, schemas,
+    widgetCollection, schemas,
     metadataCollection, relationshipsCollection,
     layoutContent, pageID, name, type,
-    flowCollection
+    flowCollection, openPageUrl, isSearch,
+    businessCode
   } = dsl as TypeOfIUBDSL;
 
   let parseRes: any = {
@@ -93,16 +94,18 @@ const IUBDSLParser = ({ dsl }) => {
     pageID,
     name,
     type,
-    schemas
+    schemas,
+    isSearch,
+    businessCode
   };
 
   /** TODO: 有问题 */
   const parseContext = genIUBDSLParserCtx(parseRes);
 
-  const renderComponentKeys = Object.keys(componentsCollection);
+  const renderComponentKeys = Object.keys(widgetCollection);
 
   /** 数据源元数据解析和实体 */
-  const datasourceMetaEntity = datasourceMetaHandle(metadataCollection as any);
+  const datasourceMetaEntity = metadataManage({ metadata: metadataCollection.metadata });
 
   /** 页面模型解析 */
   const schemasParseRes = SchemasParser(schemas);
@@ -118,8 +121,9 @@ const IUBDSLParser = ({ dsl }) => {
   };
 
   /** 组件解析 TODO: propsMap有问题, 上下文没有对其进行干预 */
-  const componentParseRes = widgetParser(componentsCollection, {
-    parseContext
+  const componentParseRes = widgetParser(widgetCollection, {
+    parseContext,
+    openPageUrl
   });
 
   const flowParseRes = flowParser(Object.assign(flowCollection, tableExtralFlow), { parseContext, parseRes });

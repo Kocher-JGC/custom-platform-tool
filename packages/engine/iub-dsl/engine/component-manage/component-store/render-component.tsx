@@ -19,21 +19,23 @@ const genCompRenderFC = (
 
   return ({ children, extralProps: actualExtralProps }) => {
     // TODO: dynamicProps 有undefined情况
-    const { useDynamicPropHandle, useRunTimeEventProps } = useContext(DefaultCtx);
-    const actualDynamicPros = useDynamicPropHandle?.(dynamicProps) || {};
+    const { useDynamicPropHandle, useRunTimeEventProps, pageStatus } = useContext(DefaultCtx);
+    const actualDynamicPros = useDynamicPropHandle?.(dynamicProps, info) || {};
 
-    const eventProps = useRunTimeEventProps?.(dynamicProps) || {};
+    const eventProps = useRunTimeEventProps?.(dynamicProps, info) || {};
 
     // ! 全局透传的extralProps一改全改:: 谨慎
     // const actualExtralProps = useMemo(() => {
     //   return extralProps;
     // }, [extralProps]);
-
     const renderedComp = useMemo(() => {
       // console.count(mark);
       return (
         <Comp
           key={mark}
+          compInfo={info}
+          pageStatus={pageStatus}
+          // compMark={mark}
           {...staticProps}
           {...actualDynamicPros}
           {...actualExtralProps}

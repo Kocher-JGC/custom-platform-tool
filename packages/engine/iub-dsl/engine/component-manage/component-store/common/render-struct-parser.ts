@@ -59,7 +59,8 @@ const genBaseRenderStruct = (
     originConf,
     renderCompInfo,
     renderStructInfo,
-    index
+    index,
+    widgetId
   } = genRenderStructContext;
 
   const {
@@ -86,12 +87,15 @@ const genBaseRenderStruct = (
     dynamicProps: {}
   };
 
+  // console.log(genRenderStructContext);
+
   genCompPropsMapList(usePropsKeys, {
     genPropsMap: (key: string, ctx) => {
       const conf = originConf[key]; // getConfFn
       propContextHandle(propsParser(key, conf), ctx);
     }
   }, propsParseRes);
+  console.log(propsParseRes);
 
   if (Object.keys(propsParseRes.dynamicProps) || Object.keys(propsParseRes.staticProps) || requireRender) {
     const childrenStructInfo = [];
@@ -106,6 +110,8 @@ const genBaseRenderStruct = (
     genRenderStructContext.renderStructInfo = childrenStructInfo;
     renderCompInfo[mark] = {
       ...propsParseRes,
+      widgetId,
+      originConf,
       mark,
       compTag
     };

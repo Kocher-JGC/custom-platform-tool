@@ -2,7 +2,7 @@
  * 属性项接入标准
  */
 
-import { PropItemMeta } from "./prop-item";
+import { PropItemMeta, PropItemRender } from "./prop-item";
 import { WidgetEntity } from "./widget";
 
 /**
@@ -15,7 +15,9 @@ export interface PropItemCompAccessSpecCtx {
 /**
  * 属性项的组件的接入标准
  */
-export type PropItemCompAccessSpec = PropItemMeta
+export interface PropItemCompAccessSpec extends PropItemMeta, PropItemRender {
+
+}
 // export type PropItemCompAccessSpec = (propItemCompAccessSpecCtx: PropItemCompAccessSpecCtx) => PropItemMeta
 
 /**

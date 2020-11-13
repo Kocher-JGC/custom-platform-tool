@@ -3,7 +3,7 @@ import { CommonCondition } from '@iub-dsl/definition/public/index';
  * CURD
  * @description 对应原型上的库表操作
 */
-import { DataCollection } from "..";
+import { DataCollectionOptions } from "..";
 
 export enum EnumCURD {
   TableInsert = 'TableInsert',
@@ -12,7 +12,7 @@ export enum EnumCURD {
   TableDelete = 'TableDelete',
 }
 
-type fieldMapping = DataCollection // | string
+type fieldMapping = DataCollectionOptions // | string
 
 interface BaseTableInfo {
   table: string;

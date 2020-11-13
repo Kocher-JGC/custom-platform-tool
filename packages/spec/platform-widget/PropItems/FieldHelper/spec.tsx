@@ -1,7 +1,8 @@
 import React from 'react';
-import { PropItemCompAccessSpec } from '@engine/visual-editor/data-structure';
+import { PropItemRenderContext } from '@engine/visual-editor/data-structure';
 import { PopModelSelector } from '@infra/ui';
 import { FieldSelector, SelectedField } from './comp';
+import { PropItem } from '../../core';
 
 const takeBindColumnInfo = (selectedField: SelectedField) => {
   const { column, tableInfo } = selectedField;
@@ -16,12 +17,30 @@ const metaAttr = 'schema';
 /**
  * 绑定数据列
  */
-export const FieldHelperSpec: PropItemCompAccessSpec = {
+@PropItem({
   id: 'prop_field',
   name: 'PropField',
   label: '列',
   whichAttr,
   useMeta: metaAttr,
+})
+export class FieldHelperSpec {
+  /**
+     * 检查该 column 是否已经被其他控件绑定
+     */
+  checkColumnIsBeUsed = (_selectedField: SelectedField, schema) => {
+    return new Promise((resolve, reject) => {
+      for (const sID in schema) {
+        const fieldCode = _selectedField.column?.fieldCode;
+        if (!fieldCode || sID.indexOf(fieldCode) !== -1) {
+          reject();
+          break;
+        }
+      }
+      resolve();
+    });
+  };
+
   render({
     businessPayload,
     editingWidgetState,
@@ -30,7 +49,7 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
     takeMeta,
     genMetaRefID,
     UICtx
-  }) {
+  }: PropItemRenderContext) {
     const { interDatasources } = businessPayload;
     const currMetaRefID = editingWidgetState[whichAttr];
     const selectedField = takeMeta({
@@ -41,22 +60,6 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
       metaAttr,
     }) as {
       [sID: string]: SelectedField
-    };
-
-    /**
-     * 检查该 column 是否已经被其他控件绑定
-     */
-    const checkColumnIsBeUsed = (_selectedField: SelectedField) => {
-      return new Promise((resolve, reject) => {
-        for (const sID in schema) {
-          const fieldCode = _selectedField.column?.fieldCode;
-          if (!fieldCode || sID.indexOf(fieldCode) !== -1) {
-            reject();
-            break;
-          }
-        }
-        resolve();
-      });
     };
 
     return (
@@ -73,7 +76,7 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
                   onSubmit={(_selectedField) => {
                     const fieldCode = _selectedField.column?.fieldCode;
                     const prevMetaRefID = currMetaRefID;
-                    checkColumnIsBeUsed(_selectedField)
+                    this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
                         const nextMetaRefID = genMetaRefID(`s.${fieldCode}`);
                         changeEntityState({
@@ -106,4 +109,4 @@ export const FieldHelperSpec: PropItemCompAccessSpec = {
       </PopModelSelector>
     );
   }
-};
+}

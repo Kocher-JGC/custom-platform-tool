@@ -25,13 +25,15 @@ export type DataCollectionActionType = 'dataCollection'
 
 interface ColletionStruct extends BasicActionConf {
   actionType: DataCollectionActionType;
-  actionOptions: {
-    /** 收集类型array/object */
-    collectionType: ComplexType;
-    /** 有结构就是完整得描述, 字符串默认收集 collectField */
-    struct: (BaseCollectionStruct | string)[];
-  }
+  actionOptions: DataCollectionOptions;
   actionOutput: FlowOutputOfObj
+}
+
+export interface DataCollectionOptions {
+  /** 收集类型array/object */
+  collectionType: ComplexType;
+  /** 有结构就是完整得描述, 字符串默认收集 collectField */
+  struct: (BaseCollectionStruct | string)[];
 }
 
 export type DataCollection = ColletionStruct

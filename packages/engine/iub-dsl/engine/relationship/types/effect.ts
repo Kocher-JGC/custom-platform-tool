@@ -1,4 +1,5 @@
 import { DependInfo } from './depend';
+import { RunTimeCtxToBusiness, DispatchCtxOfIUBEngine } from '../../runtime/types';
 
 /** TODO: 改善这些描述, 使其使用的时候可以知道, 如何写 */
 
@@ -34,6 +35,7 @@ interface EffectBaseInfo {
  */
 export interface ActionEffect extends EffectBaseInfo {
   actionId: string;
+  isImmed?: boolean;
   actionType?: string;
 }
 
@@ -64,4 +66,10 @@ export type APBDSLActionEffect =
 export interface ActionEffectCollection {
   [actionId: string]: APBDSLActionEffect
 
+}
+
+export interface EffectRelationshipEntity {
+  effectAnalysis: (ctx: RunTimeCtxToBusiness, dispatchCtx: DispatchCtxOfIUBEngine) => () => any;
+  effectDispatch: (ctx: RunTimeCtxToBusiness, options: any) => void;
+  effectReceiver: (ctx: RunTimeCtxToBusiness, effectCollect: any[]) => void;
 }

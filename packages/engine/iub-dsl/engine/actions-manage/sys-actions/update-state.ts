@@ -1,4 +1,4 @@
-import { UpdateState } from "@iub-dsl/definition/actions";
+import { UpdateStateOptions } from "@iub-dsl/definition/actions";
 import { ActionDoFn } from "../types";
 import { DispatchModuleName, DispatchMethodNameOfIUBStore } from "../../runtime/types";
 
@@ -9,13 +9,11 @@ import { DispatchModuleName, DispatchMethodNameOfIUBStore } from "../../runtime/
  * 1. 需要用到标准输入得, 不需要用到标准输入得
  * 2. 配置流程中的上下文的「流程引擎中识别」
  */
-export const updateStateAction = (conf: UpdateState, baseActionInfo): ActionDoFn => {
+export const updateStateAction = (conf: UpdateStateOptions, baseActionInfo): ActionDoFn => {
   // 更新状态动作的配置和定义
   const {
-    actionOptions: {
-      changeTarget,
-      changeMapping
-    },
+    changeTarget,
+    changeMapping
   } = conf;
   if (changeTarget) {
     return async ({ action, asyncDispatchOfIUBEngine }) => {
@@ -24,7 +22,7 @@ export const updateStateAction = (conf: UpdateState, baseActionInfo): ActionDoFn
         dispatch: {
           module: DispatchModuleName.IUBStore,
           method: DispatchMethodNameOfIUBStore.targetUpdateState,
-          params: [changeTarget, action.payload]
+          params: [changeTarget, action.payload],
         },
         actionInfo: action,
       });

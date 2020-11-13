@@ -33,7 +33,7 @@ export const normalInputCompName = AllUI.NormalInput;
  */
 export const NormalInputFactory: React.FC<NormalInputProps> = React.memo(
   ({
-    value, onChange, id = '', defValue, ...ohterProps
+    value, onChange, id = '', isSearch, defValue, pageStatus, ...ohterProps
   }) => {
     /** 下面三步确保props全部正确可用 */
     const allPropsKey = Object.keys(ohterProps);
@@ -58,7 +58,8 @@ export const NormalInputFactory: React.FC<NormalInputProps> = React.memo(
 
     return (
       <Input
-        style={{ width: 300 }}
+        style={{ width: 300, marginBottom: isSearch ? 10 : 0 }}
+        disabled={pageStatus === 'detailStatus'}
         // defaultValue={defValue}
         value={value}
         // value={normalInputVal}

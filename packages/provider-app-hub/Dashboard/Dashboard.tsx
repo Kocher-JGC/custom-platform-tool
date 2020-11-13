@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { message } from 'antd';
 import {
   BankOutlined, PieChartOutlined, GithubOutlined, PlusOutlined, MoreOutlined
 } from "@ant-design/icons";
@@ -7,7 +8,10 @@ import { DropdownWrapper } from "@deer-ui/core/dropdown-wrapper";
 import { Menus } from "@deer-ui/core/menu";
 import { GetApplication, DelApplication } from "@provider-app/services";
 import { ShowModal } from "@infra/ui";
+import { getAppPreviewUrl } from "@provider-app/config";
 import { CreateApp } from "./CreateApp";
+
+import { downloadBackEnd, downloadFrontEnd } from "./services/apis";
 
 import './dashboard.scss';
 
@@ -91,7 +95,7 @@ export interface DashboardProps {
  * 1. 设置默认的路由为 app
  */
 export const Dashboard: React.FC<DashboardProps> = (props) => {
-  const { didMount, onSelectApp } = props;
+  const { appLocation, didMount, onSelectApp } = props;
   const [appData, setAppData] = useState([]);
 
   const updateAppList = () => {
@@ -106,13 +110,13 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
   }, []);
 
   return (
-    <div className="container mx-auto mt20 dashboard">
+    <div className="container mx-auto my-8 dashboard">
       <div className="text-3xl px-2 py-10 font-bold">我的应用</div>
       <div className="flex flex-wrap">
         {
           appData && appData.map(((data, idx) => {
             const {
-              appShortNameEn, id, appCode, accessName
+              appShortNameEn, id, accessName
             } = data;
             return (
               <AppTile
@@ -153,7 +157,31 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                   {
                     text: '发布应用',
                     action: () => {
-                      console.log('object :>> ', 'object');
+                      const cur = new Date().getTime();
+                      downloadBackEnd(accessName, `${appShortNameEn}后端部署文件-${accessName}_${new Date().getTime()}`).catch((error) => {
+                        message.error(error.message);
+                      });
+                      downloadFrontEnd(accessName, `${appShortNameEn}前端部署文件-${accessName}_${cur}`, cur).catch((error) => {
+                        message.error(error.message);
+                      });
+                    }
+                  },
+                  {
+                    text: '进入应用',
+                    action: () => {
+                      // console.log('object :>> ', 'object');
+                      console.log(getAppPreviewUrl({
+                        ...appLocation,
+                        app: accessName,
+                        mode: 'pro',
+                        appName: appShortNameEn
+                      }));
+                      window.open(getAppPreviewUrl({
+                        ...appLocation,
+                        app: accessName,
+                        mode: 'pro',
+                        appName: appShortNameEn
+                      }));
                     }
                   }
                 ]}
@@ -170,7 +198,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
               children: ({ close }) => {
                 return (
                   <CreateApp
-                    onSuccess={(e) => {
+                    onSuccess={() => {
                       close();
                       updateAppList();
                     }}

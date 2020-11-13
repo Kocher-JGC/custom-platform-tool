@@ -4,10 +4,15 @@ export const TableMeta: EditableWidgetMeta = {
   id: 'widget-id-3',
   label: '表格',
   widgetRef: 'NormalTable',
-  propEditor: 'TableEditor',
+  // propEditor: 'TableEditor',
   propItemsRely: {
     propItemRefs: [
-      // { propID: 'PropLabelColor' },
+      {
+        propID: 'prop_datasource_selector',
+        defaultValues: {
+
+        }
+      },
       // { propID: 'prop_flex_config' },
     ]
   }

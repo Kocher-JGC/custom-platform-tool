@@ -5,4 +5,4 @@ export * from './TitleColorHelper';
 export * from './TitleHelper';
 export * from './ActionHelper';
 export * from './WidgetCodingHelper';
-export * from './OptionsSelectorHelper';
+export * from './DatasourceSelectorHelper';

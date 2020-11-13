@@ -45,7 +45,7 @@ export interface ActionParserRes {
 export interface BaseActionInfo {
   actionId: string;
   actionName: string;
-  actionType: AllActionType | 'APBDSLCURDAction';
+  actionType: AllActionType | string;
 }
 
 /**

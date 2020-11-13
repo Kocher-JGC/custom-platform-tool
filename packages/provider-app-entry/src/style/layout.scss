@@ -33,9 +33,10 @@ $provider-nav-tabbar-height: 38px;
 }
 
 #provider_app_content {
-  position: absolute;
+  position: fixed;
   top: $provider-header-height;
   right: 0;
   left: 0;
   bottom: 0;
+  overflow: auto;
 }

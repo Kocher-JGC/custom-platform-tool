@@ -27,7 +27,7 @@ class SecurityLayout extends React.PureComponent<SecurityLayoutProps, SecurityLa
   componentDidMount() {
     const { dispatch } = this.props;
     const { query } = history.location;
-    const { appName, t } = query;
+    const { appName, mode, t } = query;
     // @TODO 暂时这么写
     if (appName) {
       store.set("appName", appName);
@@ -41,15 +41,20 @@ class SecurityLayout extends React.PureComponent<SecurityLayoutProps, SecurityLa
     if (t) {
       store.set("providerAppToken", t);
     }
+    // if (!mode) {
+    //   dispatch({
+    //     type: 'user/fetchUserInfo',
+    //   });
+    // }
     this.setState({
       isReady: true,
     });
 
-    if (dispatch) {
-      dispatch({
-        type: 'user/fetchUserInfo',
-      });
-    }
+    // if (dispatch) {
+    //   dispatch({
+    //     type: 'user/fetchUserInfo',
+    //   });
+    // }
   }
 
   render() {

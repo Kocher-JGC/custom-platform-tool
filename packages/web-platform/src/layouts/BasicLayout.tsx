@@ -3,24 +3,25 @@ import ProLayout, {
   BasicLayoutProps as ProLayoutProps,
   Settings
 } from '@ant-design/pro-layout';
-import * as IconMap from "react-icons/all";
+import * as IconMap from "react-icons/bi";
 import React from 'react';
 import {
   Link, connect, Dispatch, history
 } from 'umi';
 import {
-  Spin, Layout, Menu
+  Spin, Layout, Menu, Button
 } from 'antd';
 import RightContent from '@/components/RightContent';
 import { ConnectState } from '@/models/connect';
 import { SiderMenuProps } from '@ant-design/pro-layout/lib/SiderMenu/SiderMenu';
 import MenuExtra from '@/components/MenuExtra';
 import TabsContainer from '@/components/TabsContainer';
-import { getQueryByParams } from '@/utils/utils';
+import { getQueryByParams, getPageQuery } from '@/utils/utils';
 import { ITabsItem } from "@/models/tabs";
 import { IMenuItem } from "@/models/menu";
 import { MODE_PREVIEW } from '@/constant';
 import Icon, { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import store from 'store';
 import styles from './styles.less';
 
 const { SubMenu } = Menu;
@@ -49,7 +50,11 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
   }
 
   async componentDidMount() {
+    const { lessee, app } = getPageQuery();
     this.setPreviewMenuAndTabs();
+    if (!lessee || !app) {
+      await this.getAppConfig();
+    }
     const res = await this.getMenu();
     this.setDefaultTabs(res.result || []);
     this.setDefaultOpenKeys();
@@ -163,6 +168,13 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
         });
       }
     }
+  }
+
+  getAppConfig = async () => {
+    const { dispatch } = this.props;
+    return dispatch({
+      type: "user/fetchAppConfig"
+    });
   }
 
   getMenu = async () => {
@@ -291,11 +303,13 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
     const {
       settings, menuData, activeKey
     } = this.props;
+    const pageMode = store.get('mode');
     const { openKeys, collapsed } = this.state;
     return (
       <Layout style={{ minHeight: "100%" }}>
         <Header className="header">
           <div className={styles.logo} >{settings.title || ""}</div>
+          <div style={{ textAlign: 'right', display: pageMode === 'pro' ? 'block' : 'none' }} ><Button href="/update-app" target="_blank" type="primary">应用安装/升级</Button></div>
         </Header>
         <Layout>
           <Sider width={200} className="site-layout-background" collapsed={collapsed} onCollapse={this.onCollapse} collapsible >

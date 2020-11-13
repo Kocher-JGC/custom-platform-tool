@@ -16,6 +16,9 @@ export const DataSourceSelector = ({
         onClick={(e) => {
           const modalID = ShowModal({
             title: '添加数据源',
+            type: 'side',
+            position: 'left',
+            width: 400,
             children: () => {
               return (
                 <DataSourceBinder

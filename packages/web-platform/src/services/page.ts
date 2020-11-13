@@ -1,5 +1,5 @@
 import store from 'store';
-import HOSTENV from '../utils/env';
+import { UsedConfKey } from '@/utils/env';
 
 /**
  * 获取页面数据
@@ -7,30 +7,30 @@ import HOSTENV from '../utils/env';
  */
 
 const filterRes = (res) => {
-  return res.data?.result || {};
-};
-
-/** 请求设计不合理,临时代码 */
-const prevParam = {
-  mode: 'prod',
-  lessee: 'hy',
-  app: 'iot'
+  if (res.data.code === "00000") {
+    return res.data?.result;
+  } if (res.status === 200) {
+    return res.data;
+  }
+  return {};
 };
 
 const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
-  prevParam.mode = params.mode || prevParam.mode;
-  prevParam.lessee = params.lessee || prevParam.lessee;
-  prevParam.app = params.app || prevParam.app;
+  params.lessee = params.lessee || store.get('lessee');
+  params.mode = params.mode || store.get('mode');
+  params.app = params.app || store.get('app');
   return {
-    ...prevParam,
+    ...params,
     id: params.id,
     t: store.get("providerAppToken")
   };
 };
 
 export const queryPageData = async (params: API.IPageDataParams) => {
-  const pageUrl = HOSTENV.get();
-  const res = await $A_R(`${pageUrl['NODE-WEB']}/node-web/page-data`, {
+  const pagePushServerUrl = store.get(UsedConfKey.pageServerUrl);
+  const isHttp = /http/.test(pagePushServerUrl);
+  console.log(`${(!isHttp ? 'http://' : '') + pagePushServerUrl}/node-web/page-data`);
+  const res = await $A_R(`${(!isHttp ? 'http://' : '') + pagePushServerUrl}/node-web/page-data`, {
     method: 'GET',
     params: mergeParam(params)
   });

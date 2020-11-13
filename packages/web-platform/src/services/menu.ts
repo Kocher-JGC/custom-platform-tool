@@ -1,12 +1,15 @@
-import { originGenUrl } from "@/utils/gen-url";
+import { originGenUrl, SYS_MENU_BUSINESSCODE } from "@/utils/gen-url";
 import { getPageQuery } from '@/utils/utils';
+import store from 'store';
 /**
  * 获取用户菜单
  * @param params
  */
 export async function queryMenuList(params: API.IMeunParams) {
-  const { app, lessee } = getPageQuery();
-  return $A_R(originGenUrl(lessee, app, "queryPerson"), {
+  let { lessee, app } = getPageQuery();
+  if (!lessee) lessee = store.get("lessee");
+  if (!app) app = store.get("app");
+  return $A_R(originGenUrl(lessee, app, SYS_MENU_BUSINESSCODE), {
     method: 'POST',
     data: {
       steps: [

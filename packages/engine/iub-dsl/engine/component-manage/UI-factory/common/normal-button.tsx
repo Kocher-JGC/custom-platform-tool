@@ -26,6 +26,7 @@ export const normalButtonCompName = AllUI.NormalButton;
 interface NormalButtonPropsExtral {
   key: string;
   text: string;
+  pageStatus: string;
 }
 
 export type NormalButtonProps = OmitExtral<ButtonProps, NormalButtonPropsExtral>
@@ -36,7 +37,7 @@ export type NormalButtonProps = OmitExtral<ButtonProps, NormalButtonPropsExtral>
  */
 export const NormalButtonFactory: React.FC<NormalButtonProps> = React.memo(
   ({
-    id, text, onClick, ...otherProps
+    id, text, onClick, pageStatus, isSearch, ...otherProps
   }) => {
     /** 下面三步确保props全部正确可用 */
     const allPropsKey = Object.keys(otherProps);
@@ -46,8 +47,9 @@ export const NormalButtonFactory: React.FC<NormalButtonProps> = React.memo(
     assertPropsKey(id || 'NormalButtonFactory', allPropsKey, canUsePropsKey);
 
     return (
-      <div style={{ margin: 5 }}>
+      <div style={{ margin: isSearch ? '5px 5px 10px 5px' : 5 }}>
         <Button
+          disabled={pageStatus === 'detailStatus'}
           type="primary"
           size='middle'
           onClick={(e) => onClick?.(e)}

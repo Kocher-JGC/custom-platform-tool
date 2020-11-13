@@ -13,7 +13,8 @@ export interface ProviderSubAppPropsScope extends ProviderAppContext {
 }
 
 interface AppConfig {
-  apiUrl: string
+  apiUrl: string,
+  nodeWebServerUrl: string,
 }
 
 declare global {

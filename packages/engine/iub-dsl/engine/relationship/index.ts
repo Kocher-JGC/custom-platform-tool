@@ -27,7 +27,7 @@
  *  3.1. 根据不同的类型, 确定如何使用
  *
  * depend「依赖」: 描述在json中哪里使用了什么
- * e.g: 在APBDSL的动作中, 在table 中使用了 test_user_k表 的元数据, 在struct[0].collectField 使用了@(schemas).entity_25
+ * e.g: 在APBDSL的动作中, 在table 中使用了 test_user_k表 的元数据, 在struct[0].collectField 使用了@(schema).entity_25
  * effectCollect「副作用收集/分析」: 动作的执行,会对XX数据造成XX影响
  * e.g: 在APBDSL的动作中, 对test_user_k表执行了insert操作, 导致了将会触发XXX副作用
  * effectAction 「副作用执行」

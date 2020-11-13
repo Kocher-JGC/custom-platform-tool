@@ -1,10 +1,11 @@
 import React from 'react';
 import { Button, ShowModal } from '@infra/ui';
-import { getPreviewUrl } from '@provider-app/config/getPreviewUrl';
+import { getAppPreviewUrl } from '@provider-app/config';
 
 import { previewAppService } from '@provider-app/services';
-import { EditButton } from "./PDPageMetadataEditor/EditButton";
 import { PageConfigContainer } from "./PDPageConfiguration";
+
+const isDevEnv = process.env.NODE_ENV === 'development';
 
 const ReleaseBtn = ({
   onReleasePage
@@ -38,7 +39,12 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   pageMetadata,
   appLocation
 }) => {
-  const previewUrl = getPreviewUrl(appLocation);
+  const previewUrl = getAppPreviewUrl({
+    ...appLocation,
+    defaultPath: 'preview',
+    mode: 'preview',
+    appName: appLocation.appName
+  });
   return (
     <div className="flex items-center px-2" style={{ height: '100%' }}>
       <span className="text-gray-500">新手教程制作中，敬请期待</span>
@@ -78,13 +84,11 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
           previewAppService(appLocation.app);
           // previewAppService('1319181529431285760');
           ShowModal({
-            title: `PC 预览 ${previewUrl}`,
+            title: `PC 预览 ${isDevEnv ? previewUrl : ''}`,
             modalType: 'side',
             position: 'bottom',
             maxHeightable: false,
             children: () => {
-              const previewUrl = getPreviewUrl(appLocation);
-              console.log(previewUrl);
               return (
                 <div style={{
                   height: '80vh'
@@ -108,7 +112,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
             title: 'Mobile 预览',
             width: 500,
             children: () => {
-              const previewUrl = getPreviewUrl(appLocation);
+              const previewUrl = getAppPreviewUrl(appLocation);
               return (
                 <div style={{
                   height: '70vh',

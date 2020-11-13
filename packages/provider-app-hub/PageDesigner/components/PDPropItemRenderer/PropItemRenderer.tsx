@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropItemRendererProps } from '@engine/visual-editor/components/PropertiesEditor';
-import { getListOfDictionaryServices, getDictionaryListServices } from '@provider-app/services';
+import { getListOfDictionaryServices, getDictionaryListServices, getTableList } from '@provider-app/services';
 import { Unexpect } from '../WidgetRenderer';
 
 interface PDPropItemRendererProps extends PropItemRendererProps {
@@ -17,7 +17,7 @@ const servicesForPropItems: PD.PropItemRendererBusinessPayload['$services'] = {
     getDictWithSubItems: getListOfDictionaryServices
   },
   table: {
-
+    getTable: getTableList
   }
 };
 
@@ -36,6 +36,7 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
 
   let Com;
   if (!propItemMeta.render) {
+    console.log(propItemMeta);
     Com = <Unexpect />;
   } else {
     const propItemRenderContext = {
