@@ -127,11 +127,6 @@ const IUBDSLParser = ({ dsl }) => {
   });
 
   const flowParseRes = flowParser(Object.assign(flowCollection, tableExtralFlow), { parseContext, parseRes });
-  // const { getFlowItemInfo } = flowParseRes;
-  // const { flowItemRun } = getFlowItemInfo('flow1');
-  // console.log(flowItemRun({
-  //   getFlowItemInfo
-  // })?.then());
 
   parseRes = {
     ...parseRes,

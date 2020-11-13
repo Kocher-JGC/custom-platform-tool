@@ -125,7 +125,6 @@ const genTableSelectFn = (actionConf: TableSelect): ActionDoFn => {
 const genTableDeleteFn = (actionConf: TableDelete): ActionDoFn => {
   const { table, condition } = actionConf;
   return async ({ action, asyncDispatchOfIUBEngine, dispatchOfIUBEngine }) => {
-    console.log(action);
     /** 临时 */
     const { payload: { schemasPatch, table: { gridData: { id } } }, } = action;
 

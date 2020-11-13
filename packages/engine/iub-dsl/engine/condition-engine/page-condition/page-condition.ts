@@ -12,7 +12,6 @@ const emptyHandle = ({ operator, expsValue }: normalCondParam) => {
 };
 
 const equHandle = ({ operator, expsValue }: normalCondParam) => {
-  console.log(expsValue);
   return expsValue[0] === expsValue[1];
 };
 
