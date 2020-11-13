@@ -6,18 +6,9 @@ import config from '../../config';
 
 const { mockToken } = config;
 
-const prevParam = {
-  mode: 'prod',
-  lessee: 'hy',
-  app: 'iot'
-};
 
-const baseUrl = 'http://192.168.14.181:6090';
-
-const genUrl = (params: any = {}) => {
-  prevParam.lessee = params.lessee || prevParam.lessee;
-  prevParam.app = params.app || prevParam.app;
-  return `${config.platformApiUrl}/${prevParam.lessee}/${prevParam.app}`;
+const genUrl = (params: {lessee: string, app: string }) => {
+  return `${config.platformApiUrl}/${params.lessee}/${params.app}`;
 };
 
 const flatLayoutNode = (layoutNode, parentID?) => {
@@ -196,27 +187,32 @@ export class PageDataService {
     return result;
   }
 
-  genMetadataFromTableInfo(onceTableInfo) {
-    // tableInfo: { id: '1320554257547665408', name: '用户表单', code: 'yonghubiaodan' }
-    const { columns: oldColumns, tableInfo } = onceTableInfo;
-    const columns = oldColumns.map((info) => {
-      return {
-        id: info.id,
-        name: info.name,
-        fieldCode: info.code,
-        fieldType: info.fieldType,
-        fieldSize: info.fieldSize,
-        dataType: info.dataType,
-        colDataType: info.dataType,
-        type: 'string',
-      };
-    }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
-    return {
-      ...tableInfo,
-      type: 'general',
-      moduleId: '', // 关联表Id
-      columns
-    };;
+  genMetadataFromTableInfo(tableInfos: any[]) {
+    return tableInfos?.map((inff) => {
+      if (!inff) return false;
+      const { columns: oldColumns, tableInfo } = inff;
+      if (tableInfo && oldColumns) {
+        const columns = oldColumns.map((info) => {
+          return {
+            id: info.id,
+            name: info.name,
+            fieldCode: info.code,
+            fieldType: info.fieldType,
+            fieldSize: info.fieldSize,
+            dataType: info.dataType,
+            colDataType: info.dataType,
+            type: 'string',
+          };
+        }).reduce((res, val) => ({ ...res, [val.id]: val }), {});
+        return {
+          ...tableInfo,
+          type: 'general',
+          moduleId: '', // 关联表Id
+          columns
+        };
+      }
+      return false;
+    }).filter(v => v) || [];
   }
 
   transfromSchema(schema: any) {
@@ -460,7 +456,7 @@ export class PageDataService {
           break;
       }
     });
-    const extralSchema = this.genExtralSchema(extralData.tableMetaData, hasTable);
+    const extralSchema = this.genExtralSchema(extralData?.tableMetaData, hasTable);
     console.log(hasTable, extralSchema);
 
     if (hasTable && extralSchema) {
@@ -621,30 +617,35 @@ export class PageDataService {
     return null;
   }
 
-  async getTableMetadata(dataSources, processCtx) {
-    if (dataSources[0] && dataSources[0].datasourceId) {
-      return await this.getTableInfoFromRemote(dataSources[0].datasourceId, processCtx);
-    }
-    return false;
-    // return {
-    //   tableInfo:  {
-    //     id: 'data.id',
-    //     name: 'data.name',
-    //     code: 'data.code'
-    //   },
-    //   columns: []
-    // };
-    //   const schemaPk = this.tableInfoToSchema(columns, tableInfo);
+  async getTableMetadata(dataSource: any, processCtx) {
+
+    if (Array.isArray(dataSource)) {
+      const r = dataSource.map((info) => {
+        return this.getTableInfoFromRemote({ tableId: info.datasourceId, tableRefId: info.id, tableType: info.datasourceType }, processCtx);
+      });
+      return Promise.all(r);
+    } 
+    // if (typeof dataSource === 'object') {
+      
+    //   const tableRefIdx = Object.keys(dataSource);
+    //   const r = tableRefIdx.map(tableRefId => {
+    //     const info = dataSource[tableRefId];
+  
+    //     return this.getTableInfoFromRemote({ tableId: info.tableInfo.id, tableRefId, tableType: info.type }, processCtx);
+    //   });
+    //   return Promise.all(r);
+    // }
+    return [];
   }
 
   /**
    * 页面数据转 IUB-DSL 数据
    * @param pageData
    */
-  pageData2IUBDSL(pageData, extralData) {
+  async pageData2IUBDSL(pageData, extralData: any = {}) {
     console.log(pageData, extralData);
 
-    const { pageContent, dataSources } = pageData;
+    const { pageContent } = pageData;
     const { tableMetaData } = extralData;
     let contentData;
     // console.dir(pageData);
@@ -666,17 +667,21 @@ export class PageDataService {
     };
     try {
       contentData = JSON.parse(pageContent);
-      const { content: pageLayoutContent, meta: { schema, actions } } = contentData;
+      console.dir(contentData);
+      
+      const { content: pageLayoutContent, meta: { schema, actions, dataSource } } = contentData;
 
       const { componentsCollection, layoutContentBody } = flatLayoutNode(pageLayoutContent);
 
       /** 生成元数据 */
+      // const tableMetaData = await this.getTableMetadata(dataSource, extralData);
 
-      const actualMetadata = tableMetaData && this.genMetadataFromTableInfo(tableMetaData) || {};
-      extralData.tableMetaData = actualMetadata;
-      // const actualMetadata = this.genMetadataFromOnceTable(actualSchema, dataSources[0]);
-      // const actualMetadata = dataSources.map((onceTableInfo) => this.genMetadataFromOnceTable(actualSchema, onceTableInfo));
-
+      const actualMetadata = Array.isArray(tableMetaData) && this.genMetadataFromTableInfo(tableMetaData) || [];
+      // console.log('--------------- actualMetadata ---------------');
+      // console.log(actualMetadata);
+      
+      // eslint-disable-next-line prefer-destructuring
+      extralData.tableMetaData = actualMetadata[0];
       /** 转换组件集合 */
       const actualComponentsCollection = this.transformWidgerData(componentsCollection, extralData);
 
@@ -704,7 +709,7 @@ export class PageDataService {
       IUBDSLData.name = contentData.name;
       IUBDSLData.type = 'config';
       IUBDSLData.componentsCollection = actualComponentsCollection;
-      IUBDSLData.metadataCollection = [actualMetadata];
+      IUBDSLData.metadataCollection = actualMetadata;
       IUBDSLData.schemas = actualSchema;
       IUBDSLData.actionsCollection = actualActions;
       IUBDSLData.flowCollection = actualFlowCollection;
@@ -725,8 +730,8 @@ export class PageDataService {
     return IUBDSLData;
   }
 
-  async getTableInfoFromRemote(tableId, { token }) {
-    const reqUrl = `${genUrl()}/data/v1/tables/${tableId}`;
+  async getTableInfoFromRemote({ tableId, tableRefId, tableType }, { token, lessee, app }) {
+    const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
     const resData = await axios
       .get(reqUrl, {
         headers: {
@@ -734,28 +739,41 @@ export class PageDataService {
         }
       });
     const data = resData?.data?.result;
-
-    const tableInfo = {
-      id: data.id,
-      name: data.name,
-      code: data.code
-    };
-    /**
-      create_user_id    '随便填个数字'
-      last_update_user_id    '随便填个数字'
-      sequence    '随便填个数字'
-      last_update_time    '随便填个年月日'
-      create_time    '随便填个年月日'
-      data_version    '随便填个字符串'
-      last_update_user_name '非必填'
-      create_user_name '非必填'
-    */
-    const filterSysFiledKeys = ['create_user_id', 'last_update_time', 'last_update_user_id', 'sequence', 'create_time', 'data_version', 'last_update_user_name', 'create_user_name'];
-
+    console.log('------------ Table Data -----------');
+    console.log(data);
+    
+    if (data) {
+      const tableInfo = {
+        id: data.id,
+        name: data.name,
+        code: data.code,
+        tableRefId,
+        tableType
+      };
+      /**
+        create_user_id    '随便填个数字'
+        last_update_user_id    '随便填个数字'
+        sequence    '随便填个数字'
+        last_update_time    '随便填个年月日'
+        create_time    '随便填个年月日'
+        data_version    '随便填个字符串'
+        last_update_user_name '非必填'
+        create_user_name '非必填'
+      */
+      const filterSysFiledKeys = ['create_user_id', 'last_update_time', 'last_update_user_id', 'sequence', 'create_time', 'data_version', 'last_update_user_name', 'create_user_name'];
+  
+      return {
+        tableInfo,
+        columns: data.columns?.filter(info => !filterSysFiledKeys.includes(info.code))
+      };
+    } 
     return {
-      tableInfo,
-      columns: data.columns?.filter(info => !filterSysFiledKeys.includes(info.code))
+      tableId, tableRefId, tableType,
+      reqUrl,
+      resData: JSON.stringify(resData.data)
     };
+    
+
   }
 
   /** 获取表格组件的cloumn */
@@ -801,7 +819,7 @@ export class PageDataService {
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
     console.log('reqUrl', reqUrl);
     const processCtx = {
-      token
+      token, lessee, app
     };
     try {
       const resData = await axios
@@ -818,11 +836,12 @@ export class PageDataService {
         let tableMetaData = null;
         console.log('resDataMsg', resData?.data);
         if (data) {
-          const { dataSources } = data;
+          const { dataSources, pageContent } = data;
+          const content = JSON.parse(pageContent);
+          console.log(content.meta.dataSource);
           tableMetaData = await this.getTableMetadata(dataSources, processCtx);
         }
-
-
+  
         return this.pageData2IUBDSL(data, { tableMetaData });
       }
     } catch(e) {
