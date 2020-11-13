@@ -33,21 +33,21 @@ export const getAppPreviewUrl = (options?: Options) => {
     pageID,
     app,
   } = options || {};
-  const sassServerUrl = getAppConfig(`${mode === 'pro' ? 'prod' : 'preview'}SassServerUrl`);
-  const pagePushServerUrl = getAppConfig(`${mode === 'pro' ? 'prod' : 'preview'}PagePushServerUrl`);
-  const appUrl = getAppConfig(`${mode === 'pro' ? 'prod' : 'preview'}AppUrl`);
-  const queryUrl = toQueryString({
+  const saasServerUrl = getAppConfig(`saasServerUrlForPreviewApp`);
+  const pageServerUrl = getAppConfig(`FEResourceServerUrl`);
+  const appEntryUrl = getAppConfig(`previewAppEntryUrl`);
+
+  const queryParamUrl = toQueryString({
     mode,
     appName,
     pageId: pageID,
     lessee: $R_P.urlManager.currLessee,
     app,
     t: $R_P.config.commonHeaders?.Authorization,
-    sassServerUrl,
-    pagePushServerUrl,
+    saasServerUrl,
+    pageServerUrl,
     menuid: defaultPath ? `menuid=/${defaultPath}` : ''
   });
-  // console.log(`${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`);
-  return `${appUrl}/#/${defaultPath ? 'page' : ''}?${queryUrl}`;
-  // return `${appUrl}/#/${defaultPath ? 'page' : ''}?${defaultPath ? `menuid=/${defaultPath}` : ''}&mode=${mode}&${pageID ? `pageId=${pageID}` : ''}&lessee=${$R_P.urlManager.currLessee}&app=${app}&appName=${appName}&t=${$R_P.config.commonHeaders?.Authorization}${appApiUrl ? `&API=${appApiUrl}` : ''}`;
+  // console.log(`${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`);
+  return `${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`;
 };

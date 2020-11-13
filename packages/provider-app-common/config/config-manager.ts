@@ -4,7 +4,7 @@
 
 const AppConfig = {
   apiUrl: '',
-  perviewAppUrl: ''
+  previewAppEntryUrl: ''
 };
 
 type ConfigKey = keyof typeof AppConfig

@@ -13,8 +13,9 @@ export interface ProviderSubAppPropsScope extends ProviderAppContext {
 }
 
 interface AppConfig {
-  apiUrl: string,
-  nodeWebServerUrl: string,
+  apiUrl: string
+  /** 前端资源服务 */
+  FEResourceServerUrl: string
 }
 
 declare global {

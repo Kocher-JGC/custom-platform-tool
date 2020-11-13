@@ -50,9 +50,9 @@ export async function DelApplication(appID) {
  */
 export async function previewAppService(appID: string) {
   const lessee = $R_P.urlManager.currLessee;
-  const appUrl = getAppConfig('passServerUrl');
+  const paasServerUrl = getAppConfig('paasServerUrl');
 
   return await $R_P.get({
-    url: `${appUrl}/paas/${lessee}/manage/v1/applications/preview/${appID}`,
+    url: `${paasServerUrl}/paas/${lessee}/manage/v1/applications/preview/${appID}`,
   });
 }

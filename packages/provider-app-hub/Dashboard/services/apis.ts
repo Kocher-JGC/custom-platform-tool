@@ -12,7 +12,7 @@ export async function downloadBackEnd(appAccessCode: string, fileName: string) {
 }
 
 export async function downloadFrontEnd(accessName: string, fileName: string, id: string | number) {
-  return fetch(`${window.$AppConfig.nodeWebServerUrl}/node-web/release-app/${$R_P.urlManager.currLessee}/${accessName}?releaseId=${id}`, {
+  return fetch(`${window.$AppConfig.FEResourceServerUrl}/node-web/release-app/${$R_P.urlManager.currLessee}/${accessName}?releaseId=${id}`, {
     method: "GET",
     headers: $R_P.config.commonHeaders,
   }).then((res) => res.blob().then((blob) => {

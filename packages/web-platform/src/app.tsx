@@ -1,7 +1,7 @@
 import { history } from 'umi';
 import store from 'store';
 import { initRequest } from './utils/request';
-import { usedConfKey, UsedConfKey } from './utils/env';
+import { usedConfKey } from './utils/env';
 
 const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase());
 
@@ -14,11 +14,7 @@ const genHostEnvConf = async () => {
   const modeKey = mode === 'preview' ? 'preview' : 'prod';
 
   return usedConfKey.reduce((res, key) => {
-    if (key === UsedConfKey.passServerUrl) {
-      res[key] = envConf[key];
-    } else {
-      res[key] = envConf[modeKey + firstUpperCase(key)];
-    }
+    res[key] = envConf[modeKey + firstUpperCase(key)];
     return res;
   }, {});
 };
@@ -36,8 +32,8 @@ const setHostEnv = async () => {
     }
   });
 
-  const sassServerUrl = store.get(UsedConfKey.sassServerUrl);
-  initRequest(sassServerUrl);
+  const saasServerUrl = store.get('saasServerUrl');
+  initRequest(saasServerUrl);
 };
 
 /**

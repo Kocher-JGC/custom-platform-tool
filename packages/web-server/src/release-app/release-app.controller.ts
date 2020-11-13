@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Request, Response } from "express";
 import { Controller, Get, Param, Query, Req, Res } from "@nestjs/common";
+import { pageData2IUBDSL } from "src/page-data/transform-data";
 import { PageDataService } from "../page-data/page-data.service";
 import { ReleaseAppService } from "./release-app.service";
 import config from '../../config';
@@ -84,16 +85,8 @@ export class ReleaseAppController {
     const {
       generatePageDataJSONFile,
     } = this.releaseAppService;
-    const { id, dataSources } = pageData;
-    let tableMetaData;
-    if (Array.isArray(dataSources) && dataSources.length > 0) {
-      
-      tableMetaData = await this.pageDataService.getTableMetadata(dataSources, { token, lessee, app });
-      console.log('--------------- push tableData ---------------');
-      console.log(tableMetaData);
-      
-    }
-    const dsl = await this.pageDataService.pageData2IUBDSL(pageData, { tableMetaData });
+    const { id } = pageData;
+    const dsl = await pageData2IUBDSL(pageData, { token, lessee, app });
     const createJSONFileRes = await generatePageDataJSONFile(
       folderName,
       id,
