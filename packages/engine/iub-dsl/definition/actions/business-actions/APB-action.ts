@@ -44,27 +44,27 @@ export enum ApbFunction {
 }
 
 /** APB 的条件标志符 */
-export enum ConditionSymbol {
-  OR = 'or',
-  AND = 'and'
-}
+// export enum ConditionSymbol {
+//   OR = 'or',
+//   AND = 'and'
+// }
 
-/** APB 的条件操作符 */
-export enum ConditionOperator {
-  EQU = 'equ', // =
-  N_EQU = 'not_equ', // <>
-  GERATER = 'gerater', // >
-  LESS = 'less', // <
-  GERATER_EQU = 'gerater_equ', // =>
-  LESS_EQU = 'less_equ', // <=
-  BETWEEN = 'between',
-  N_BETTWEEN = 'not_between',
-  LIKE = 'like',
-  N_LIKE = 'not_like',
-  IN = 'in',
-  N_IN = 'not_in',
-  EMPTY = 'empty',
-  N_EMPTY = 'not_empty',
-  S_WITH = 'start_with',
-  S_N_WITH = 'start_not_with'
-}
+// /** APB 的条件操作符 */
+// export enum ConditionOperator {
+//   EQU = 'equ', // =
+//   N_EQU = 'not_equ', // <>
+//   GERATER = 'gerater', // >
+//   LESS = 'less', // <
+//   GERATER_EQU = 'gerater_equ', // =>
+//   LESS_EQU = 'less_equ', // <=
+//   BETWEEN = 'between',
+//   N_BETTWEEN = 'not_between',
+//   LIKE = 'like',
+//   N_LIKE = 'not_like',
+//   IN = 'in',
+//   N_IN = 'not_in',
+//   EMPTY = 'empty',
+//   N_EMPTY = 'not_empty',
+//   S_WITH = 'start_with',
+//   S_N_WITH = 'start_not_with'
+// }
