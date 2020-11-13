@@ -1,14 +1,16 @@
 import React from 'react';
 import { DropdownSelectorComp } from '.';
-import { BusinessWidgetAccessSpec } from '../../interfaces';
+import { PlatformWidget, PlatformWidgetComp } from '../../core';
 
-export const DropdownSelector: BusinessWidgetAccessSpec = () => ({
+@PlatformWidget({
   name: 'DropdownSelector',
   editableProps: {},
+})
+export class DropdownSelector implements PlatformWidgetComp {
   render(widgetState) {
     // console.log(widgetState);
     return (
       <DropdownSelectorComp {...widgetState} />
     );
   }
-});
+}

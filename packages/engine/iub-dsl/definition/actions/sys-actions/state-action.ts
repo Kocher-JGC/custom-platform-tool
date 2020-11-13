@@ -5,11 +5,11 @@ const testStruct = {
   type: 'updateState',
   changeTarger: '@(dataCollection).collectId1', // schemas/dataCollect
   changeMapping: {
-    '@(metadataMapping).tableId1.filedId1': '@(schemas).dId0',
-    '@(metadataMapping).tableId1.filedId2': '@(schemas).dId1',
-    // '@(metadataMapping).tableId1.filedId3': '@(schemas).dId3', // TODO?
-    '@(metadataMapping).tableId1.filedId3': '@(schemas).dId3.sdId1',
-    '@(metadataMapping).tableId1.filedId4': '@(schemas).dId2',
+    '@(metadataMapping).tableId1.filedId1': '@(schema).dId0',
+    '@(metadataMapping).tableId1.filedId2': '@(schema).dId1',
+    // '@(metadataMapping).tableId1.filedId3': '@(schema).dId3', // TODO?
+    '@(metadataMapping).tableId1.filedId3': '@(schema).dId3.sdId1',
+    '@(metadataMapping).tableId1.filedId4': '@(schema).dId2',
   },
   when: [],
   conition: {},

@@ -36,6 +36,7 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
 
   let Com;
   if (!propItemMeta.render) {
+    console.log(propItemMeta);
     Com = <Unexpect />;
   } else {
     const propItemRenderContext = {

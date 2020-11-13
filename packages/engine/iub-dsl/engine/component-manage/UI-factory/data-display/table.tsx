@@ -71,7 +71,7 @@ const TableFactory = ({
   const context = useContext(DefaultCtx);
 
   const actualCoumns = useMemo(() => {
-    // @(schemas).1321031025329053696
+    // @(schema).1321031025329053696
     columns.push({
       render: (gridData: string, rowData, colKey: number) => {
         // rowKey 「dataIndex」 、 colData
@@ -159,6 +159,7 @@ const TableFactory = ({
    * 必要的断言
    */
   assertPropsKey(id, allPropsKey, canUsePropsKey);
+
   return (
     <NormalTable
       columns={actualCoumns}

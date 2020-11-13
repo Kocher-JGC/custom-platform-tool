@@ -4,15 +4,33 @@
 import React from 'react';
 import { Input } from 'antd';
 
-export const FormInputComp = ({
-  title,
-  compContext,
-  value,
-}) => {
+/**
+ * FormInput 必须的 props
+ */
+export interface FormInputCompProps {
+  title: string
+  /** 默认值 */
+  realVal: string
+  labelColor: string
+}
+
+export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
+  const {
+    title,
+    labelColor,
+    realVal,
+  } = props;
+
   return (
     <div>
-      {title}
-      <Input value={value} />
+      <div
+        style={{
+          color: labelColor
+        }}
+      >
+        {title}
+      </div>
+      <Input value={realVal} style={{ width: 300 }} />
     </div>
   );
 };

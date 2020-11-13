@@ -1,10 +1,9 @@
 import React from 'react';
 import { TextareaComp } from '.';
-import { BusinessWidgetAccessSpec } from '../../interfaces';
+import { PlatformWidget, PlatformWidgetComp } from '../../core';
 
-export const Textarea: BusinessWidgetAccessSpec = () => ({
+@PlatformWidget({
   name: 'Textarea',
-
   editableProps: {
     title: {
       type: 'string'
@@ -16,10 +15,11 @@ export const Textarea: BusinessWidgetAccessSpec = () => ({
       type: 'string'
     },
   },
-
+})
+export class Textarea implements PlatformWidgetComp {
   render(widgetState) {
     return (
       <TextareaComp {...widgetState} />
     );
   }
-});
+}

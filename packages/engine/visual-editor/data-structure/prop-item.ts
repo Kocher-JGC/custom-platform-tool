@@ -104,6 +104,9 @@ export interface PropItemMeta {
   readonly defaultValues?: {
     [whichAttr: string]: any
   }
+}
+
+export interface PropItemRender {
   /** 渲染属性项 */
   render(propItemRenderCtx: PropItemRenderContext): JSX.Element
 }

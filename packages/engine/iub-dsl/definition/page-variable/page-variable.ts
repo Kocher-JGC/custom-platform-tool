@@ -50,11 +50,11 @@ export interface PageVariableOfConf extends BasePageVaribale {
   valueType: 'structArray' | 'structObject'; // 传值的类型
   /** 值传递 「与:  数据收集关系差不多」 */
   valueMapping: { // 「仅能配置人员配置产生」
-    from: string; // 固定值, 表达式, 页面变量{@(schemas).dId1[#($index)].sdId2}
+    from: string; // 固定值, 表达式, 页面变量{@(schema).dId1[#($index)].sdId2}
     to: string; // @(pageVar).dId1
   }[]
   // valueMapping2?: {
-  //   '@(schemas).dId1[#($index)].sdId2': '@(refValue).id1'
+  //   '@(schema).dId1[#($index)].sdId2': '@(refValue).id1'
   // }
 }
 

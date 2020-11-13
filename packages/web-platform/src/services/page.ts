@@ -1,5 +1,5 @@
 import store from 'store';
-import HOSTENV from '../utils/env';
+import { UsedConfKey } from '@/utils/env';
 
 /**
  * 获取页面数据
@@ -27,11 +27,10 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
 };
 
 export const queryPageData = async (params: API.IPageDataParams) => {
-  const pageUrl = HOSTENV.get();
-  const url = store.get('NODE-WEB') || pageUrl['NODE-WEB'];
-  const isHttp = /http/.test(url);
-  console.log(`${(!isHttp ? 'http://' : '') + url}/node-web/page-data`);
-  const res = await $A_R(`${(!isHttp ? 'http://' : '') + url}/node-web/page-data`, {
+  const pagePushServerUrl = store.get(UsedConfKey.pageServerUrl);
+  const isHttp = /http/.test(pagePushServerUrl);
+  console.log(`${(!isHttp ? 'http://' : '') + pagePushServerUrl}/node-web/page-data`);
+  const res = await $A_R(`${(!isHttp ? 'http://' : '') + pagePushServerUrl}/node-web/page-data`, {
     method: 'GET',
     params: mergeParam(params)
   });

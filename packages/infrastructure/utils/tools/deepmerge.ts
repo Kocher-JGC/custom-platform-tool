@@ -9,7 +9,7 @@ export const isObject = (item) => {
  * @author 相杰
  * @important 基础算法，慎重修改
  *
- * deep copy
+ * 深 copy
  */
 export const mergeDeep = <T>(target: T, ...sources): T => {
   if (!sources.length) return target;

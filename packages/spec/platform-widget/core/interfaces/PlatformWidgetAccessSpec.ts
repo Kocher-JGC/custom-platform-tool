@@ -3,13 +3,19 @@ import { WidgetEditableProps, WidgetEntityState } from "@engine/visual-editor/da
 export type BusinessWidgetRender = (widgetState: WidgetEntityState) => JSX.Element
 
 /**
- * 基础的 UI 接入规范
+ * 平台组件 meta
  */
-export interface BusinessWidgetMeta {
+export interface PlatformWidgetMeta {
   /** 组件的名称 */
   name: string
   /** 可编辑的属性, TODO: 需要一套校验可编辑属性的规则的工具 */
   editableProps: WidgetEditableProps
+}
+
+/**
+ * 平台组件定义
+ */
+export interface PlatformWidgetComp {
   /** 挂载时的回调 */
   didMount?: () => void
   /** 被卸载时的回调 */
@@ -29,11 +35,11 @@ export interface UnexpectedWidgetMeta {
 /**
  * 业务组件的接入标准
  */
-export class BusinessWidgetAccessSpec implements BusinessWidgetMeta {
-  name!: BusinessWidgetMeta['name']
+export class PlatformWidgetAccessSpec implements PlatformWidgetMeta {
+  name!: PlatformWidgetMeta['name']
 
-  editableProps!: BusinessWidgetMeta['editableProps']
+  editableProps!: PlatformWidgetMeta['editableProps']
 
-  render!: BusinessWidgetMeta['render']
+  render!: PlatformWidgetMeta['render']
 }
-// export type BusinessWidgetAccessSpec = () => BusinessWidgetMeta
+// export type PlatformWidgetAccessSpec = () => PlatformWidgetMeta
