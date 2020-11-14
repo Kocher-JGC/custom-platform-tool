@@ -5,10 +5,9 @@ import PageDesignerApp from "@provider-app/page-designer/main";
 import TableEditor from "@provider-app/table-editor/app";
 import DictionaryManager from "@provider-app/dictionary-manager/app";
 import TableStructure from "@provider-app/table-structure/app";
-import ShowAuthority from "@provider-app/auth-distributor/app";
 
 import LesseeAuthority from "@provider-app/lessee-authority/app";
-import ShowAuthority from "@provider-app/show-distributor/app";
+import ShowAuthority from "@provider-app/auth-distributor/app";
 
 import PopupWindowSelector from "@provider-app/popup-window-selector/app";
 /// //////// 数据设计结束
