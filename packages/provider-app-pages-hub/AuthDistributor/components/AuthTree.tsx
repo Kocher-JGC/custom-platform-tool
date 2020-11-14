@@ -473,45 +473,34 @@ class AuthTree extends React.Component<IProps, IState> {
               />
           }
         </div>
-        {
-          authList.length > 0 ? (
-            <Tree
-              height = {height}
-              checkable = {checkable || false}
-              selectable = {selectable || false}
-              checkedKeys = {checkedKeys}
-              selectedKeys = {checkedKeys}
-              expandedKeys = {expandedKeys}
-              treeData={authList}
-              onCheck={(checkedKeysTmpl, {
-                checked
-              }) => {
-                checkedKeysTmpl = Array.isArray(checkedKeysTmpl) ? checkedKeysTmpl : checkedKeysTmpl.checked;
-                this.setState({
-                  checkedKeys: checkedKeysTmpl,
-                  expandedKeys: checked ? [...expandedKeys, ...checkedKeysTmpl] : expandedKeys
-                }, () => {
-                  this.onAfterCheck();
-                });
-              }}
-              onSelect={(selectedKeysTmpl) => {
-                this.setState({ checkedKeys: selectedKeysTmpl }, () => {
-                  this.onAfterCheck();
-                });
-              }}
-              onExpand = {(expandedKeysTmpl, { expanded, node }) => {
-                if (expanded) {
-                  this.setState({ expandedKeys: expandedKeysTmpl }); return;
-                }
-                const childKeys = this.getChildNodeList(node).map((item) => item.uniqueId);
-                this.setState({
-                  expandedKeys: expandedKeysTmpl.filter((item) => !(childKeys.includes(item)))
-                });
-              }}
-            />
-          ) : <div className="text-center">暂无数据</div>
-        }
-
+        <Tree
+          height = {height}
+          checkable = {checkable || false}
+          selectable = {selectable || false}
+          checkedKeys = {checkedKeys}
+          selectedKeys = {checkedKeys}
+          expandedKeys = {expandedKeys}
+          treeData={authList}
+          onCheck={(checkedKeysTmpl, {
+            checked
+          }) => {
+            checkedKeysTmpl = Array.isArray(checkedKeysTmpl) ? checkedKeysTmpl : checkedKeysTmpl.checked;
+            this.setState({
+              checkedKeys: checkedKeysTmpl,
+              expandedKeys: checked ? [...expandedKeys, ...checkedKeysTmpl] : expandedKeys
+            }, () => {
+              this.onAfterCheck();
+            });
+          }}
+          onSelect={(selectedKeysTmpl) => {
+            this.setState({ checkedKeys: selectedKeysTmpl }, () => {
+              this.onAfterCheck();
+            });
+          }}
+          onExpand = {(expandedKeysTmpl) => {
+            this.setState({ expandedKeys: expandedKeysTmpl });
+          }}
+        />
       </div>
     );
   }
