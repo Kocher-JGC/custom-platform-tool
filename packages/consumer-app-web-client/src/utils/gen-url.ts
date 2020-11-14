@@ -1,11 +1,12 @@
 import store from 'store';
 import { getPageQuery } from './utils';
+import { UrlConfKey } from './env';
 
 // const egUrl = 'http://192.168.14.140:7091/hy/saas/haoyun/erp/business/34562'
 export const SYS_MENU_BUSINESSCODE = '__system_get_app_menu__';
 
 export const originGenUrl = (lesseeCode, appCode, businessCode) => {
-  const baseUrl = store.get('saasServerUrl');
+  const baseUrl = store.get(UrlConfKey.saasServerUrl);
   const isHttp = /http/.test(baseUrl);
   return `${(!isHttp ? 'http://' : '') + baseUrl}/hy/saas/${lesseeCode}/${appCode}/business/${businessCode}`;
 };

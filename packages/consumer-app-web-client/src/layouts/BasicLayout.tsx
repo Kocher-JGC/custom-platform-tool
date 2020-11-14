@@ -50,11 +50,11 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
   }
 
   async componentDidMount() {
-    const { lessee, app } = getPageQuery();
+    // const { lessee, app } = getPageQuery();
     this.setPreviewMenuAndTabs();
-    if (!lessee || !app) {
-      await this.getAppConfig();
-    }
+    // if (!lessee || !app) {
+    //   await this.getAppConfig();
+    // }
     const res = await this.getMenu();
     this.setDefaultTabs(res.result || []);
     this.setDefaultOpenKeys();
@@ -170,12 +170,12 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
     }
   }
 
-  getAppConfig = async () => {
-    const { dispatch } = this.props;
-    return dispatch({
-      type: "user/fetchAppConfig"
-    });
-  }
+  // getAppConfig = async () => {
+  //   const { dispatch } = this.props;
+  //   return dispatch({
+  //     type: "user/fetchAppConfig"
+  //   });
+  // }
 
   getMenu = async () => {
     const { dispatch } = this.props;

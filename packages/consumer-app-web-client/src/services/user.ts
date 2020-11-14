@@ -69,7 +69,3 @@ export async function queryUserInfo() {
   };
   // return $A_R.post('http://localhost:8000/auth/user/info/cur');
 }
-
-export async function queryAppConfig() {
-  return await fetch(`/main.json?t=${new Date().getTime()}`).then((res) => res.json());
-}

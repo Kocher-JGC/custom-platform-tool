@@ -1,4 +1,5 @@
 import store from 'store';
+import { UrlConfKey } from '@/utils/env';
 
 /**
  * 获取页面数据
@@ -26,7 +27,7 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
 };
 
 export const queryPageData = async (params: API.IPageDataParams) => {
-  const pageServerUrl = store.get('pageServerUrl');
+  const pageServerUrl = store.get(UrlConfKey.pageServerUrlForApp);
   const isHttp = /http/.test(pageServerUrl);
   console.log(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`);
   const res = await $A_R(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`, {

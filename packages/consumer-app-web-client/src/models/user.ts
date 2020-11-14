@@ -1,6 +1,6 @@
 import { Effect, Reducer } from 'umi';
 
-import { queryUserInfo, queryAppConfig } from '@/services/user';
+import { queryUserInfo } from '@/services/user';
 import store from 'store';
 
 export interface IAccount {
@@ -74,7 +74,7 @@ export interface IUserModel {
   state: IUserModelState;
   effects: {
     fetchUserInfo: Effect;
-    fetchAppConfig: Effect;
+    // fetchAppConfig: Effect;
   };
   reducers: {
     setCurrentUser: Reducer<IUserModelState>;
@@ -98,13 +98,13 @@ const UserModel: IUserModel = {
         payload: response?.data?.result || {},
       });
     },
-    * fetchAppConfig({ payload }, { call, put }) {
-      const response = yield call(queryAppConfig);
-      yield put({
-        type: 'setAppConfig',
-        payload: response || {},
-      });
-    },
+    // * fetchAppConfig({ payload }, { call, put }) {
+      // const response = yield call(queryAppConfig);
+      // yield put({
+        // type: 'setAppConfig',
+        // payload: response || {},
+      // });
+    // },
   },
 
   reducers: {

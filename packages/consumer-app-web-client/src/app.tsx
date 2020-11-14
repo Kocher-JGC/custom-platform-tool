@@ -1,35 +1,24 @@
 import { history } from 'umi';
 import store from 'store';
 import { initRequest } from './utils/request';
-import { usedConfKey } from './utils/env';
+import { usedConfKeys, getUrlConf, getMainConf } from './utils/env';
 
 const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase());
 
 /**
- * 根据模式和envConf生成conf
- */
-const genHostEnvConf = async () => {
-  const envConf = await fetch(`/config.json?${new Date().getTime()}`).then((res) => res.json());
-  return envConf
-  // const mode = store.get('mode');
-  // const modeKey = mode === 'preview' ? 'preview' : 'prod';
-
-  // return usedConfKey.reduce((res, key) => {
-  //   res[key] = envConf[modeKey + firstUpperCase(key)];
-  //   return res;
-  // }, {});
-};
-
-/**
- * 当query没有对应配置获取配置文件的配置并写入
+ * 储存query或者conf.json配置
  */
 const setHostEnv = async () => {
-  const conf = await genHostEnvConf();
-  usedConfKey.forEach((key) => {
+  const urlConf = await getUrlConf();
+  const mainConf = await getMainConf();
+  usedConfKeys.forEach((key) => {
     const val = store.get(key);
     /** store没有该配置设置对应配置 */
     if (!val) {
-      store.set(key, conf[key]);
+      const newVal = urlConf[key] || mainConf[key]
+      if (newVal) {
+        store.set(key, newVal[key]);
+      }
     }
   });
 
@@ -43,24 +32,24 @@ const setHostEnv = async () => {
 const saveQueryParam = () => {
   const { query } = history.location;
   console.log(query);
-  Object.keys(query).forEach((q) => {
-    if (q === 't') {
-      store.set('token', query[q]);
+  const queryKeys = Object.keys(query)
+  if (queryKeys.length) {
+    // TODO: 不是个很保险的办法
+    if (queryKeys.includes('mode') && queryKeys.includes('pageServerUrl') && queryKeys.includes('saasServerUrl')) {
+      queryKeys.forEach((q) => {
+        if (q === 't') {
+          store.set('token', query[q]);
+        }
+        store.set(q, query[q]);
+      });
+    } else {
+      store.clearAll()
     }
-    store.set(q, query[q]);
-  });
-};
-
-export const dva = {
-  config: {
-    onError(err) {
-      err.preventDefault();
-    },
-  },
+  }
 };
 
 export async function render(oldRender) {
-  saveQueryParam();
-  await setHostEnv();
+  saveQueryParam(); // 储存URL上的配置
+  await setHostEnv(); // 设置conf的配置
   oldRender();
 }
