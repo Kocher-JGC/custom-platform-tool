@@ -29,7 +29,7 @@ export class ReleaseAppController {
    */
   @Get("/:lesseeCode/:applicationCode")
   async releaseApp(
-  @Req() req: Request,
+    @Req() req: Request,
     @Res() res: Response,
     @Param() { lesseeCode, applicationCode },
     @Query() { releaseId }
@@ -43,7 +43,7 @@ export class ReleaseAppController {
     } = this.releaseAppService;
     if (applicationCode) {
       let link = "";
-      const folderName = 'data';
+      const folderName = "data";
       const zipName = `${applicationCode}.zip`;
       try {
         const pageDataRes = await getPageDataFromProvider(
@@ -74,10 +74,14 @@ export class ReleaseAppController {
         // throw new Error(pageDataRes.msg || "没有页面可以发布");
         return res.status(404).json({ msg: "没有页面可以发布" });
       } catch (error) {
-        return res.status(500).json({ msg: error.message });
+        return res
+          .writeHead(500, { "Content-Type": "application/json" })
+          .json({ msg: `下载出错，${error.message}` });
       }
     } else {
-      return res.status(400).json({ msg: "需要参数 app" });
+      return res
+        .writeHead(500, { "Content-Type": "application/json" })
+        .json({ msg: "需要参数 app" });
     }
   }
 
