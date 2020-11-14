@@ -13,6 +13,6 @@ fetch(`/config.json?${Date.now()}`).then((res) => res.json()).then(async (config
    * 2. 设置请求平台服务的 api 地址
    */
   setAppConfig(config);
-  setPlatformApiUrl(config.passServerUrl);
+  setPlatformApiUrl(config.paasServerUrl);
   ReactDOM.render(<App />, document.querySelector("#Main"));
 });

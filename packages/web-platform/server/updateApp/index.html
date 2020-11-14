@@ -21,7 +21,8 @@
       display: none;
     }
 
-    .icon-check-wrap {
+    .icon-check-wrap,
+    .icon-close-wrap {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -30,6 +31,10 @@
       height: 54px;
       border-radius: 50%;
       border: 1px solid rgb(102, 102, 102);
+    }
+
+    .icon-close-wrap svg {
+      color: rgb(102, 102, 102);
     }
   </style>
 </head>
@@ -40,7 +45,7 @@
       <div>
         <div class="uk-card uk-card-default uk-card-body">
           <h3 class="uk-card-title">页面更新</h3>
-          <p>请上传由配置端导出的前端部署文件，压缩包名称不可修改</p>
+          <p>请上传由配置端导出的前端部署文件，压缩包名称和内容不可修改</p>
           <div class="js-upload" uk-form-custom>
             <input id="upload1" type="file">
             <button class="uk-button uk-button-primary" type="button" tabindex="-1">选择</button>
@@ -56,15 +61,22 @@
             </span>
             <span style="margin-top: 5px;" class="uk-text-success">安装成功</span>
           </div>
+          <div id="error-1" class="mask">
+            <span class="icon-close-wrap">
+              <span uk-icon="close"></span>
+            </span>
+            <span style="margin-top: 5px;" class="uk-text-danger">安装失败，请联系管理员</span>
+          </div>
         </div>
       </div>
       <div>
         <div class="uk-card uk-card-primary uk-card-body">
           <h3 class="uk-card-title">服务更新</h3>
-          <p>请上传由配置端导出的后端部署文件，压缩包名称不可修改</p>
+          <p>请上传由配置端导出的后端部署文件，压缩包名称和内容不可修改</p>
           <div class="js-upload" uk-form-custom>
             <input id="upload2" type="file">
-            <button class="uk-button uk-button-default" type="button" tabindex="-2" disabled>选择</button>
+            <button class="uk-button uk-button-default" style="background-color: #fff;color:#1e87f0;" type="button"
+              tabindex="-2" disabled>选择</button>
           </div>
           <progress id="js-progressbar-2" class="uk-progress" value="0" max="100" hidden></progress>
           <div id="loading-2" class="mask">
@@ -77,6 +89,13 @@
             </span>
             <span style="margin-top: 5px;" class="uk-text-success">安装成功</span>
           </div>
+          <div id="error-2" class="mask">
+            <span class="icon-close-wrap">
+              <span uk-icon="close"></span>
+            </span>
+            <span style="margin-top: 5px;" class="uk-text-danger">安装失败，错误码: <span class="error-code"
+                id="error-code-2"></span></span>
+          </div>
         </div>
       </div>
     </div>
@@ -87,10 +106,40 @@
   <script src="../public/axios.min.js"></script>
   <script>
     (function () {
+
+      function getQueryValue(queryName) {
+        const reg = new RegExp("(^|&)" + queryName + "=([^&]*)(&|$)", "i");
+        const r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+          return decodeURI(r[2]);
+        } else {
+          return null;
+        }
+      }
+
+      function toggleLoadingState(id, state) {
+        const target = document.querySelector(id);
+        if (!target) return;
+        document.querySelector(id).style.display = state ? 'flex' : 'none';
+      }
+
+      function showTip(id, errorCode) {
+        const target = document.querySelector(id);
+        if (!target) return;
+        if (errorCode && target && target.querySelector(".error-code")) {
+          target.querySelector(".error-code").innerHTML = errorCode;
+        }
+        target.style.display = 'flex';
+        setTimeout(function () {
+          target.style.display = 'none';
+        }, 2 * 1000)
+      }
+
+      console.log("应用发布后端服务", `http://${getQueryValue("api")}/appManager/installApp`)
       document.querySelector('#upload1').addEventListener("change", function (e) {
         const [file] = document.querySelector('#upload1').files;
         if (file) {
-          document.querySelector('#loading-1').style.display = 'flex';
+          toggleLoadingState('#loading-1', true);
           const formData = new FormData();
           formData.set("file", file);
           axios.request({
@@ -101,14 +150,20 @@
             },
             data: formData
           }).then((res) => {
-            console.log("前端", res);
+            console.log("前端成功", res);
             setTimeout(function () {
-              document.querySelector('#loading-1').style.display = 'none';
-              document.querySelector('#result-1').style.display = 'flex';
-              setTimeout(function () {
-                document.querySelector('#result-1').style.display = 'none';
-              }, 1 * 1000)
-            }, 2.5 * 1000)
+              showTip('#result-1');
+            }, 1.5 * 1000)
+          }).catch((error) => {
+            console.log("前端失败", error.response);
+            setTimeout(function () {
+              showTip('#error-1');
+            }, 1.5 * 1000)
+          }).finally(() => {
+            setTimeout(function () {
+              document.querySelector('#upload1').value = "";
+              toggleLoadingState('#loading-1', false);
+            }, 1.5 * 1000)
           })
         }
       })
@@ -116,31 +171,35 @@
       document.querySelector('#upload2').addEventListener("change", function (e) {
         const [file] = document.querySelector('#upload2').files;
         if (file) {
-          document.querySelector('#loading-2').style.display = 'flex';
+          toggleLoadingState('#loading-2', true)
           const formData = new FormData();
           formData.set("file", file);
+          formData.set("clean_app_business_tables", 1);
           axios.request({
-            url: `http://192.168.14.140:7090/appManager/installApp`,
-            // url: `http://192.168.14.181:7090/appManager/installApp`,
+            url: `http://${getQueryValue("api")}/appManager/installApp`,
             method: "POST",
             headers: {
               'Content-Type': 'multipart/form-data'
             },
             data: formData
           }).then((res) => {
-            console.log("后端", res);
+            console.log("后端成功", res);
             setTimeout(function () {
-              document.querySelector('#loading-2').style.display = 'none';
-              document.querySelector('#result-2').style.display = 'flex';
-              setTimeout(function () {
-                document.querySelector('#result-2').style.display = 'none';
-              }, 1 * 1000)
-            }, 2.5 * 1000)
+              showTip('#result-2');
+            }, 1.5 * 1000)
+          }).catch((error) => {
+            console.log("后端失败", error.response.data);
+            setTimeout(function () {
+              showTip('#error-2', error.response.data.code);
+            }, 1.5 * 1000)
+          }).finally(() => {
+            setTimeout(function () {
+              toggleLoadingState('#loading-2', false);
+              document.querySelector('#upload2').value = "";
+            }, 1.5 * 1000)
           })
         }
       })
-
-
     })()
   </script>
 </body>

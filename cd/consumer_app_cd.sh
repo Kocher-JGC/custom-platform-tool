@@ -1,5 +1,5 @@
 # 应用的名称
-app_name=reg.hydevops.com/custom-platform-v3-frontend/web-platform
+app_name=reg.hydevops.com/custom-platform-v3-frontend/consumer_app
 
 # 应用的别名
 app_alias=consumer_app

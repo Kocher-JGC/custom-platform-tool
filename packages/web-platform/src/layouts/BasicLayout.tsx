@@ -309,7 +309,7 @@ class BasicLayout extends React.PureComponent<IBasicLayoutProps, IBaseLayoutStat
       <Layout style={{ minHeight: "100%" }}>
         <Header className="header">
           <div className={styles.logo} >{settings.title || ""}</div>
-          <div style={{ textAlign: 'right', display: pageMode === 'pro' ? 'block' : 'none' }} ><Button href="/update-app" target="_blank" type="primary">应用安装/升级</Button></div>
+          <div style={{ textAlign: 'right', display: pageMode === 'pro' ? 'block' : 'none' }} ><Button href={`/update-app?api=${store.get("API")}`} target="_blank" type="primary">应用安装/升级</Button></div>
         </Header>
         <Layout>
           <Sider width={200} className="site-layout-background" collapsed={collapsed} onCollapse={this.onCollapse} collapsible >
