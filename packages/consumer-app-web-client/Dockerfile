@@ -6,7 +6,7 @@ RUN mkdir -p /tmp/web-platform-update/app/
 
 WORKDIR /tmp/web-platform-update
 
-COPY ./server ./
+COPY ../consumer-app-web-server ./
 
 COPY ./dist ./app
 
