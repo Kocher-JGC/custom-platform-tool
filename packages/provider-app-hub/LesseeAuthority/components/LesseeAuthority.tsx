@@ -95,12 +95,15 @@ const LesseeAuthority: React.FC<IProps> = (props: IProps, ref) => {
     }
   };
   const getData = async (params, sorter, filter) => {
-    const { current, pageSize } = params;
+    const { current, pageSize, name: keyword } = params;
     const LesseeAuthorityParmas = {
-      ...params,
+      // ...params,
       offset: (current - 1) * pageSize || 0,
       size: pageSize || 10,
-      code: moduleId
+      code: moduleId,
+      current,
+      pageSize,
+      keyword
     };
 
     // if (moduleId) {

@@ -43,7 +43,7 @@ export async function editLesseeAuthorityService(params, id) {
 
 export async function createLesseeAuthorityFastService(params) {
   return await $R_P.post({
-    url: '/auth/v1/authorities/',
+    url: '/auth/v1/authorities/batchSave',
     data: params,
   });
 }

@@ -2,6 +2,7 @@
 import React, {
   useState, useEffect, forwardRef, useImperativeHandle
 } from 'react';
+import produce from 'immer';
 import {
   Form, Input, Select, Tree, message, notification, Row, Col
 } from 'antd';
@@ -13,7 +14,7 @@ import {
   FromFooterBtn
 } from "./FormItem";
 import CreateMenu from './CreateMenu';
-import { createLesseeAuthorityFastService, queryMenusListService, getPageElementInTreeService } from '../service';
+import { createLesseeAuthorityFastService, findAuthorityInTreeService, getPageElementInTreeService } from '../service';
 import { ILesseeAuthority, ISELECTSMENU } from '../interface';
 
 import './index.less';
@@ -40,6 +41,17 @@ interface INode {
   key: string;
   id: string;
   pid: string;
+
+  disabled: boolean;
+}
+
+interface IAuthNode {
+  code: string;
+  name: string;
+  parentCode: string;
+
+  createType: string;
+
 }
 
 const layout = {
@@ -77,6 +89,9 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
   const [moduleId, setModuleId] = useState<number>(0);
   const [leftTreeData, setLeftTreeData] = useState<any[]>([]);
   const [rightTreeData, setRightTreeData] = useState<any[]>([]);
+  const [disableTreeData, setDisableTreeData] = useState<any[]>([]);
+  const [authFlatTreeData, setAuthFlatTreeData] = useState<any[]>([]);
+  const [pageFlatTreeData, setPageFlatTreeData] = useState<any[]>([]);
 
   const [expandedLeftKeys, setExpandedLeftKeys] = useState<string[]>(['0-0-0', '0-0-1']);
   const [checkedLeftKeys, setCheckedLeftKeys] = useState<string[]>(["1319197100449341440"]);
@@ -88,14 +103,14 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
   const [selectedRightKeys, setSelectedRightKeys] = useState<string[]>([]);
   const [autoExpandRightParent, setAutoExpandRightParent] = useState<boolean>(true);
 
-  const onLeftExpand = (expandedKeysA) => {
-    console.log('onLeftExpand', expandedKeysA);
-    // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-    // or, you can remove all expanded children keys.
-    setExpandedLeftKeys(expandedKeysA);
-    setExpandedRightKeys(expandedKeysA);
-    setAutoExpandLeftParent(false);
-  };
+  // const onLeftExpand = (expandedKeysA) => {
+  //   console.log('onLeftExpand', expandedKeysA);
+  //   // if not set autoExpandParent to false, if children expanded, parent can not collapse.
+  //   // or, you can remove all expanded children keys.
+  //   setExpandedLeftKeys(expandedKeysA);
+  //   // setExpandedRightKeys(expandedKeysA);
+  //   setAutoExpandLeftParent(false);
+  // };
 
   const onLeftCheck = (checkedKeysA) => {
     console.log('onLeftCheck', checkedKeysA);
@@ -106,7 +121,7 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
   const onLeftSelect = (selectedKeysA, info) => {
     console.log('onLeftSelect', info);
     setSelectedLeftKeys(selectedKeysA);
-    setSelectedRightKeys(selectedKeysA);
+    // setSelectedRightKeys(selectedKeysA);
   };
 
   const onRightExpand = (expandedKeysA) => {
@@ -127,7 +142,51 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
     setSelectedRightKeys(selectedKeysA);
   };
 
-  const constructTree = (data) => {
+  /** TODO: 每次都要重新生成树以及重新建立父子关系 */
+  const constructLeftTree = (data: any[]) => {
+    const idMap = {};
+    const jsonTree: INode[] = [];
+    /** TODO: PID必须为null才为顶级 */
+    const addExtralData = (node: INode) => ({
+      ...node,
+      title: node.name,
+      key: node.id,
+      children: []
+      // disabled： node.disabled,
+    });
+    /** 重新建立父子关系 */
+    const genChild = (node: INode) => {
+      const parent = idMap[node.pid];
+      if (parent) {
+        (parent.children || (parent.children = [])).push(node);
+      }
+    };
+    /** 重新生成树 */
+    const genTreeTopLevel = (node: INode) => {
+      /** TODO: PID必须为null才为顶级 */
+      if (node.pid === null) {
+        jsonTree.push(node);
+      }
+    };
+
+    /** 映射转换数据 */
+    data.forEach((node) => {
+      /** 添加额外数据， 重置children */
+      if (node) {
+        idMap[node.id] = addExtralData(node);
+      }
+    });
+
+    Object.keys(idMap).forEach((key) => {
+      const node: INode = idMap[key];
+      genChild(node);
+      genTreeTopLevel(node);
+    });
+
+    return jsonTree;
+  };
+  // 这是一份有问题的代码constructRightTree，在某些控件的父控件没有push的时候，会导致idMap[node.pid];没有值
+  const constructRightTree = (data) => {
     const idMap = {};
     const jsonTree: INode[] = [];
     data.forEach((node) => { node && (idMap[node.id] = node); });
@@ -137,6 +196,7 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
         node.title = node.name;
         // eslint-disable-next-line no-param-reassign
         node.key = node.id;
+
         const parent = idMap[node.pid];
         if (parent) {
           !parent.children && (parent.children = []);
@@ -149,25 +209,102 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
     return jsonTree;
   };
 
+  // const constructRightTree = (data) => {
+  //   const idMap = {};
+  //   const jsonTree: INode[] = [];
+  //   data.forEach((node) => { node && (idMap[node.id] = node); });
+  //   data.forEach((node: INode) => {
+  //     if (node) {
+  //       const tempNode = JSON.parse(JSON.stringify(node));
+  //       // eslint-disable-next-line no-param-reassign
+  //       tempNode.title = node.name;
+  //       // eslint-disable-next-line no-param-reassign
+  //       tempNode.key = node.id;
+
+  //       const parent = JSON.parse(JSON.stringify(idMap[node.pid]));
+  //       if (parent) {
+  //         !parent.children && (parent.children = []);
+  //         parent.children.push(tempNode);
+  //       } else {
+  //         jsonTree.push(tempNode);
+  //       }
+  //     }
+  //   });
+  //   return jsonTree;
+  // };
+
+  const getItem = (id):any => {
+    let res = null;
+    pageFlatTreeData.forEach((item) => {
+      if (item.id === id.toString()) {
+        res = item;
+      }
+    });
+    return res;
+  };
+  const getCodeAndParentCode = (tree) => {
+    const res: IAuthNode[] = [];
+    tree.forEach(((id) => {
+      const item = getItem(id);
+      res.push({
+        id, pid: item?.pid, name: item?.name, createType: 'FAST'
+      });
+    }));
+    return res;
+  };
+
   const getMenusListData = async () => {
-    const res = await queryMenusListService({
+    // const resModule = await queryMenusListService({
+    //   type: MENUS_TYPE.MODULE
+    // });
+
+    const resPage = await getPageElementInTreeService({
       type: MENUS_TYPE.MODULE
     });
+    setPageFlatTreeData(resPage?.result);
 
-    const tree = constructTree(res?.result || []);
-    setLeftTreeData(tree);
-    setRightTreeData(tree);
+    const resAuth = await findAuthorityInTreeService({
+      selectType: 0
+    });
+    setAuthFlatTreeData(resAuth?.result);
+
+    console.log(resPage?.result);
+    console.log(resAuth?.result);
+
+    const tempPageFlatTreeData: IAuthNode[] = [];
+    resPage?.result.forEach((pageItem) => {
+      const res = pageItem;
+      resAuth?.result.forEach((authItem) => {
+        if (pageItem.id === authItem.id) {
+          Object.assign(res, { disabled: true });
+        }
+      });
+      tempPageFlatTreeData.push(...res);
+    });
+
+    console.log(JSON.parse(JSON.stringify(tempPageFlatTreeData)));
+    // const a = produce(tempPageFlatTreeData, (d) => d);
+    const a = JSON.parse(JSON.stringify(tempPageFlatTreeData));
+    const b = JSON.parse(JSON.stringify(tempPageFlatTreeData));
+
+    const leftTree = constructRightTree(a || []);
+    console.log(leftTree);
+
+    setLeftTreeData(leftTree);
+
+    // const rightTree = constructRightTree(tempPageFlatTreeData || []);
+    const rightTree = constructRightTree(b || []);
+    console.log(rightTree);
+    setRightTreeData(rightTree);
   };
-  // useImperativeHandle(ref, () => ({
-  //   reload: () => getMenusListData()
-  // }));
+
   useEffect(() => {
     getMenusListData();
   }, []);
 
   const handleFinish = async (values) => {
-    const params = assemblyParams(values);
-    Object.assign(params, { createType: 'CUSTOM' });
+    const params = { authorityList: getCodeAndParentCode(checkedRightKeys) };
+
     const res = await createLesseeAuthorityFastService(params);
     if (res.code === "00000") {
       notification.success({
@@ -178,23 +315,6 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
     } else {
       message.error(res.msg);
     }
-  };
-  /**
-   * 创建表接口参数拼装
-   * @param values
-   */
-  const assemblyParams = (values) => {
-    const {
-      name, code, type, parentCode
-    } = values;
-    const params = {
-      name,
-      code,
-      type,
-      showTypeWithoutAuthority,
-      parentCode
-    };
-    return params;
   };
 
   const createModule = () => {
@@ -208,16 +328,16 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
   const handleFormCancel = () => {
     onCancel && onCancel();
   };
-
+  console.log(leftTreeData);
   return (
     <>
       <Row className="data-design-layout">
         <Col xs={12} sm={12} md={12} lg={12} xl={12} className="sider-menu-tree">
           <Tree
             checkable
-            onExpand={onLeftExpand}
-            expandedKeys={expandedLeftKeys}
-            autoExpandParent={autoExpandLeftParent}
+            // onExpand={onLeftExpand}
+            // expandedKeys={expandedLeftKeys}
+            // autoExpandParent={autoExpandLeftParent}
             onCheck={onLeftCheck}
             checkedKeys={checkedLeftKeys}
             onSelect={onLeftSelect}
@@ -233,9 +353,9 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
         <Col xs={12} sm={12} md={12} lg={12} xl={12} className="content-pro-table">
           <Tree
             checkable
-            onExpand={onRightExpand}
-            expandedKeys={expandedRightKeys}
-            autoExpandParent={autoExpandRightParent}
+            // onExpand={onRightExpand}
+            // expandedKeys={expandedRightKeys}
+            // autoExpandParent={autoExpandRightParent}
             onCheck={onRightCheck}
             checkedKeys={checkedRightKeys}
             onSelect={onRightSelect}
@@ -244,7 +364,7 @@ const CreateLesseeAuthorityFast: React.FC<IProps> = (props: IProps) => {
             defaultExpandAll={true}
             style={{ width: '100%' }}
             multiple={true}
-            treeData={leftTreeData}
+            treeData={rightTreeData}
           />
         </Col>
 
