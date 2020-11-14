@@ -28,8 +28,6 @@ const setHostEnv = async () => {
     }
   });
 
-  const saasServerUrl = store.get(UrlConfKey.saasServerUrl);
-  initRequest(saasServerUrl);
 };
 
 /**
@@ -41,7 +39,7 @@ const saveQueryParam = () => {
   const queryKeys = Object.keys(query)
   if (queryKeys.length) {
     // TODO: 不是个很保险的办法
-    if (queryKeys.includes('mode') && queryKeys.includes('pageServerUrl') && queryKeys.includes('saasServerUrl')) {
+    if (queryKeys.includes('mode') && queryKeys.includes(UrlConfKey.saasServerUrl) && queryKeys.includes(UrlConfKey.pageServerUrlForApp)) {
       queryKeys.forEach((q) => {
         if (q === 't') {
           store.set('token', query[q]);
@@ -56,6 +54,11 @@ const saveQueryParam = () => {
   return false
 };
 
+const initReq = () => {
+  const saasServerUrl = store.get(UrlConfKey.saasServerUrl);
+  initRequest(saasServerUrl);
+}
+
 /**
  * 预览: 
  * 1. url有值, 需不需要请求json?
@@ -68,5 +71,6 @@ export async function render(oldRender) {
   if (!shouldSave) { // 应用预览的时候url有值不需要获取json
     await setHostEnv(); // 设置conf的配置
   }
+  initReq()
   oldRender();
 }

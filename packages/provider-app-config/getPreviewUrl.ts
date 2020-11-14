@@ -34,7 +34,7 @@ export const getAppPreviewUrl = (options?: Options) => {
     app,
   } = options || {};
   const saasServerUrl = getAppConfig(`saasServerUrlForPreviewApp`);
-  const pageServerUrl = getAppConfig(`FEResourceServerUrl`);
+  const pageServerUrlForApp = getAppConfig(`FEResourceServerUrl`);
   const appEntryUrl = getAppConfig(`previewAppEntryUrl`);
 
   const queryParamUrl = toQueryString({
@@ -45,7 +45,7 @@ export const getAppPreviewUrl = (options?: Options) => {
     app,
     t: $R_P.config.commonHeaders?.Authorization,
     saasServerUrl,
-    pageServerUrl,
+    pageServerUrlForApp,
     menuid: defaultPath ? `menuid=/${defaultPath}` : ''
   });
   // console.log(`${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`);
