@@ -46,8 +46,9 @@ export class ReleaseAppController {
       let link = "";
       const folderName = `${applicationCode}_${releaseId}`;
       const zipName = `${applicationCode}_${releaseId}.zip`;
+      let pageDataRes;
       try {
-        const pageDataRes = await getPageDataFromProvider(
+        pageDataRes = await getPageDataFromProvider(
           { lesseeCode, applicationCode },
           headers.authorization
         );
@@ -66,9 +67,9 @@ export class ReleaseAppController {
           return res.download(link);
         }
         // throw new Error(pageDataRes.msg || "没有页面可以发布");
-        return res.status(404).json({ msg: "没有页面可以发布" });
+        return res.status(404).json({ msg: "没有页面可以发布", pageData: pageDataRes });
       } catch (error) {
-        return res.status(500).json({ msg: error.message });
+        return res.status(500).json({ msg: error.message, pageData: pageDataRes });
       }
     } else {
       return res.status(400).json({ msg: "需要参数 app" });
