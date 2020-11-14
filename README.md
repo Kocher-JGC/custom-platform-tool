@@ -49,14 +49,38 @@
 - `docs/` - 文档
 - `web-server` - 配置端 web 资源服务
 - `packages/` - 工作区
+  - `engine-*` `engine-` 开头的都是引擎相关的
+  - `provider-app-*` - `provider-app-` 前缀的都是配置端相关的
+  - `consumer-app-*` - `consumer-app-` 前缀的都是应用端相关的
+  - `infra-*` - 基础设施支持
+  - `ui-*` - 通用 UI 组件
+  - `platform-access-*` - 平台接入
+  - `*-hub` - 以 `hub` 结尾的都是嵌套工作区
+  - `_*` - 以下划线`_`开头的是与工程没有直接关系的周边内容
+- `.eslintignore` - eslint 中`需忽略的项`配置
+- `.eslintrc` - eslint 配置
+- `.gitignore` - git 中`需忽略的项`配置
+- `jest.config.js` - jest 配置
+- `lerna.json` - lerna 配置
+- `package.json` - 工程 package json 配置
+- `README.md` - 工程总说明文档
+- `tsconfig.json` - typescript 的配置
+
+<!-- 
+- `__test__/` - 测试目录，可以放在任意目录
+- `.bak/` - 备份文件
+- `.template` 应用参考模版
+- `.vscode/` - 编辑器配置
+- `dist/` - 打包构建后的文件存放目录
+- `docs/` - 文档
+- `web-server` - 配置端 web 资源服务
+- `packages/` - 工作区
   - `spec` - 接入标准
     - `BusinessComponent` - 业务组件接入标准，在配置端和应用端都使用的组件
   - `provider-app-entry/` - 生产工具入口
-  - `provider-app-hub/` - 生产工具 app 集合
-    - `[App]` 根据实际需要开发的 app
+  - `provider-app-pages-hub/` - 生产工具页面集合
+    - `[Page]` 根据实际需要开发的 app
   - `consumer-app/` - "消费" 生成工具的产出的 app
-    - `web-client/` - web 客户端实现
-    - `web-server/` - web 服务端实现
   - `iub-dsl/` - 生产工具和消费 app 之间的约定数据结构的定义，根据 IUB-DSL 模型的 interface 实现
     - `core/` - IUB-DSL 核心定义
     - `parser/` - IUB-DSL 解析器集合
@@ -81,7 +105,7 @@
 - `lerna.json` - lerna 配置
 - `package.json` - 工程 package json 配置
 - `README.md` - 工程总说明文档
-- `tsconfig.json` - typescript 的配置
+- `tsconfig.json` - typescript 的配置 -->
 
 ---
 
