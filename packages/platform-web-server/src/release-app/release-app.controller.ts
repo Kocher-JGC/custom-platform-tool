@@ -34,7 +34,6 @@ export class ReleaseAppController {
     @Param() { lesseeCode, applicationCode },
     @Query() { releaseId }
   ) {
-    console.log(666);
     const { headers } = req;
     const {
       getPageDataFromProvider,
