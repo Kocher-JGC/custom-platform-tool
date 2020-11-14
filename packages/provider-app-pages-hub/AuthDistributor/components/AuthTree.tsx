@@ -499,8 +499,14 @@ class AuthTree extends React.Component<IProps, IState> {
                   this.onAfterCheck();
                 });
               }}
-              onExpand = {(expandedKeysTmpl) => {
-                this.setState({ expandedKeys: expandedKeysTmpl });
+              onExpand = {(expandedKeysTmpl, { expanded, node }) => {
+                if (expanded) {
+                  this.setState({ expandedKeys: expandedKeysTmpl }); return;
+                }
+                const childKeys = this.getChildNodeList(node).map((item) => item.uniqueId);
+                this.setState({
+                  expandedKeys: expandedKeysTmpl.filter((item) => !(childKeys.includes(item)))
+                });
               }}
             />
           ) : <div className="text-center">暂无数据</div>
