@@ -45,7 +45,7 @@ export class ReleaseAppController {
     if (applicationCode) {
       let link = "";
       const folderName = "data";
-      const zipName = `${applicationCode}.zip`;
+      const zipName = `${releaseId}.zip`;
 
       try {
         step += 1;

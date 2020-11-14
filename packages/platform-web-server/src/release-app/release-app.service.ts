@@ -38,13 +38,16 @@ export class ReleaseAppService {
   generatePageDataFolder(folderName: string, releaseId: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       if (!folderName || !releaseId) reject(new Error("文件夹名称错误"));
-      fs.ensureDir(path.join(config.pageDataStorePath, releaseId, "/page", folderName), (err) => {
-        if (err) {
-          reject(err);
-          return;
+      fs.ensureDir(
+        path.join(__dirname, config.pageDataStorePath, releaseId, "page", folderName),
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(true);
         }
-        resolve(true);
-      });
+      );
     });
   }
 
@@ -65,7 +68,7 @@ export class ReleaseAppService {
       const { lesseeCode, applicationCode } = appConfig;
       if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
       fs.writeFile(
-        path.join(config.pageDataStorePath, releaseId, "/page", `main.json`),
+        path.join(__dirname, config.pageDataStorePath, releaseId, "page", `main.json`),
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
@@ -95,7 +98,7 @@ export class ReleaseAppService {
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       fs.writeFile(
-        path.join(config.pageDataStorePath, releaseId, "/page", folderName, `${pageId}.json`),
+        path.join(__dirname, config.pageDataStorePath, releaseId, "page", folderName, `${pageId}.json`),
         pageContent,
         (err) => {
           if (err) {
@@ -123,12 +126,12 @@ export class ReleaseAppService {
     releaseId: string
   ): Promise<string> {
     await runExec(
-      `cd ${path.join(config.pageDataStorePath, releaseId)} && tar -zcvf ${path.join(
-        config.pageDataStorePath,
+      `cd ${path.join(__dirname, config.pageDataStorePath, releaseId)} && tar -zcvf ${path.join(
+        __dirname, config.pageDataStorePath,
         zipName
-      )} page && cd ${config.pageDataStorePath} && rm -rf ${releaseId}`
+      )} page && cd ${path.join(__dirname, config.pageDataStorePath)} && rm -rf ${releaseId}`
     );
-    return path.join(config.pageDataStorePath, zipName);
+    return path.join(__dirname, config.pageDataStorePath, zipName);
   }
 
   /**
