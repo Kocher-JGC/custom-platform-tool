@@ -8,6 +8,9 @@ const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
 
+const platformApiUrl = "http://192.168.14.181:6090/paas";
+const pageDataStorePath = "zip";
+
 /**
  * 子进程运行 shell 方法
  */
@@ -39,7 +42,7 @@ export class ReleaseAppService {
     return new Promise((resolve, reject) => {
       if (!folderName || !releaseId) reject(new Error("文件夹名称错误"));
       fs.ensureDir(
-        path.join(__dirname, config.pageDataStorePath, releaseId, "page", folderName),
+        path.join(__dirname, pageDataStorePath, releaseId, "page", folderName),
         (err) => {
           if (err) {
             reject(err);
@@ -68,7 +71,7 @@ export class ReleaseAppService {
       const { lesseeCode, applicationCode } = appConfig;
       if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
       fs.writeFile(
-        path.join(__dirname, config.pageDataStorePath, releaseId, "page", `main.json`),
+        path.join(__dirname, pageDataStorePath, releaseId, "page", `main.json`),
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
@@ -98,7 +101,7 @@ export class ReleaseAppService {
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       fs.writeFile(
-        path.join(__dirname, config.pageDataStorePath, releaseId, "page", folderName, `${pageId}.json`),
+        path.join(__dirname, pageDataStorePath, releaseId, "page", folderName, `${pageId}.json`),
         pageContent,
         (err) => {
           if (err) {
@@ -126,12 +129,13 @@ export class ReleaseAppService {
     releaseId: string
   ): Promise<string> {
     await runExec(
-      `cd ${path.join(__dirname, config.pageDataStorePath, releaseId)} && tar -zcvf ${path.join(
-        __dirname, config.pageDataStorePath,
+      `cd ${path.join(__dirname, pageDataStorePath, releaseId)} && tar -zcvf ${path.join(
+        __dirname,
+        pageDataStorePath,
         zipName
-      )} page && cd ${path.join(__dirname, config.pageDataStorePath)} && rm -rf ${releaseId}`
+      )} page && cd ${path.join(__dirname, pageDataStorePath)} && rm -rf ${releaseId}`
     );
-    return path.join(__dirname, config.pageDataStorePath, zipName);
+    return path.join(__dirname, pageDataStorePath, zipName);
   }
 
   /**
@@ -143,7 +147,7 @@ export class ReleaseAppService {
    */
   async getPageDataFromProvider({ lesseeCode, applicationCode }, authorization) {
     const resData = await axios.get(
-      `${config.platformApiUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      `${platformApiUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {
