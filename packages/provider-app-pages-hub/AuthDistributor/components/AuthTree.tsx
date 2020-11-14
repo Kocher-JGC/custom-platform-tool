@@ -473,34 +473,39 @@ class AuthTree extends React.Component<IProps, IState> {
               />
           }
         </div>
-        <Tree
-          height = {height}
-          checkable = {checkable || false}
-          selectable = {selectable || false}
-          checkedKeys = {checkedKeys}
-          selectedKeys = {checkedKeys}
-          expandedKeys = {expandedKeys}
-          treeData={authList}
-          onCheck={(checkedKeysTmpl, {
-            checked
-          }) => {
-            checkedKeysTmpl = Array.isArray(checkedKeysTmpl) ? checkedKeysTmpl : checkedKeysTmpl.checked;
-            this.setState({
-              checkedKeys: checkedKeysTmpl,
-              expandedKeys: checked ? [...expandedKeys, ...checkedKeysTmpl] : expandedKeys
-            }, () => {
-              this.onAfterCheck();
-            });
-          }}
-          onSelect={(selectedKeysTmpl) => {
-            this.setState({ checkedKeys: selectedKeysTmpl }, () => {
-              this.onAfterCheck();
-            });
-          }}
-          onExpand = {(expandedKeysTmpl) => {
-            this.setState({ expandedKeys: expandedKeysTmpl });
-          }}
-        />
+        {
+          authList.length > 0 ? (
+            <Tree
+              height = {height}
+              checkable = {checkable || false}
+              selectable = {selectable || false}
+              checkedKeys = {checkedKeys}
+              selectedKeys = {checkedKeys}
+              expandedKeys = {expandedKeys}
+              treeData={authList}
+              onCheck={(checkedKeysTmpl, {
+                checked
+              }) => {
+                checkedKeysTmpl = Array.isArray(checkedKeysTmpl) ? checkedKeysTmpl : checkedKeysTmpl.checked;
+                this.setState({
+                  checkedKeys: checkedKeysTmpl,
+                  expandedKeys: checked ? [...expandedKeys, ...checkedKeysTmpl] : expandedKeys
+                }, () => {
+                  this.onAfterCheck();
+                });
+              }}
+              onSelect={(selectedKeysTmpl) => {
+                this.setState({ checkedKeys: selectedKeysTmpl }, () => {
+                  this.onAfterCheck();
+                });
+              }}
+              onExpand = {(expandedKeysTmpl) => {
+                this.setState({ expandedKeys: expandedKeysTmpl });
+              }}
+            />
+          ) : <div className="text-center">暂无数据</div>
+        }
+
       </div>
     );
   }
