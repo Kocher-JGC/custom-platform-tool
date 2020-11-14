@@ -35,10 +35,10 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  generatePageDataFolder(folderName: string): Promise<boolean> {
+  generatePageDataFolder(folderName: string, releaseId: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      if (!folderName) reject(new Error("文件夹名称错误"));
-      fs.ensureDir(path.join(config.pageDataStoreDirectory, folderName, "/page"), (err) => {
+      if (!folderName || !releaseId) reject(new Error("文件夹名称错误"));
+      fs.ensureDir(path.join(config.pageDataStorePath, releaseId, "/page", folderName), (err) => {
         if (err) {
           reject(err);
           return;
@@ -58,13 +58,14 @@ export class ReleaseAppService {
    */
   generateAppConfig(
     folderName: string,
-    appConfig: { lesseeCode: string; applicationCode: string }
+    appConfig: { lesseeCode: string; applicationCode: string },
+    releaseId: string
   ) {
     return new Promise((resolve, reject) => {
       const { lesseeCode, applicationCode } = appConfig;
       if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
       fs.writeFile(
-        path.join(config.pageDataStoreDirectory, folderName, `main.json`),
+        path.join(config.pageDataStorePath, releaseId, "/page", `main.json`),
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
@@ -88,12 +89,13 @@ export class ReleaseAppService {
    */
   generatePageDataJSONFile(
     folderName: string,
+    releaseId: string,
     pageId: string,
     pageContent: string
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       fs.writeFile(
-        path.join(config.pageDataStoreDirectory, folderName, "/page", `${pageId}.json`),
+        path.join(config.pageDataStorePath, releaseId, "/page", folderName, `${pageId}.json`),
         pageContent,
         (err) => {
           if (err) {
@@ -115,13 +117,18 @@ export class ReleaseAppService {
    * @returns {Promise<boolean>}
    * @memberof ReleaseAppService
    */
-  async generatePageDataJSONZip(folderName: string, zipName: string): Promise<string> {
+  async generatePageDataJSONZip(
+    folderName: string,
+    zipName: string,
+    releaseId: string
+  ): Promise<string> {
     await runExec(
-      `cd ${path.join(config.pageDataStoreDirectory)} && tar -zcvf ${zipName} ${path.join(
-        folderName
-      )} && rm -rf ${path.join(folderName)}`
+      `cd ${path.join(config.pageDataStorePath, releaseId)} && tar -zcvf ${path.join(
+        config.pageDataStorePath,
+        zipName
+      )} page && cd ${config.pageDataStorePath} && rm -rf ${releaseId}`
     );
-    return path.join(config.pageDataStoreDirectory, zipName);
+    return path.join(config.pageDataStorePath, zipName);
   }
 
   /**
@@ -136,7 +143,7 @@ export class ReleaseAppService {
       `${config.platformApiUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }
     );
-    if(resData?.data?.code !== "00000"){
+    if (resData?.data?.code !== "00000") {
       throw new Error(resData?.data?.msg);
     }
     return resData?.data?.result || [];

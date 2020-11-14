@@ -175,8 +175,10 @@
           const formData = new FormData();
           formData.set("file", file);
           formData.set("clean_app_business_tables", 1);
+          const url = getQueryValue("api");
+          const isHttp = /http/.test(url);
           axios.request({
-            url: `http://${getQueryValue("api")}/appManager/installApp`,
+            url: `${!isHttp ? `http://${url}` : url}/appManager/installApp`,
             method: "POST",
             headers: {
               'Content-Type': 'multipart/form-data'

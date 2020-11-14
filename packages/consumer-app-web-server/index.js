@@ -1,73 +1,69 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const express = require('express');
-const path = require('path');
-const multer = require('multer');
-const { access, ensureDir, readJson } = require('fs-extra');
-const { exec } = require('child_process');
-const cors = require('cors');
-const config = require('./config.json');
+const express = require("express");
+const path = require("path");
+const multer = require("multer");
+const { access, ensureDir, readJson } = require("fs-extra");
+const cors = require("cors");
+const {
+  checkFolder,
+  createFolder,
+  unzip,
+  getZipName,
+  getAppConfig,
+  generateApp,
+  removeFolder
+} = require("./utils");
+const config = require("./config.json");
 
 const app = express();
 const { uploadFolder, projectFolder } = config;
 app.use(cors());
-app.use(express.static(path.join(__dirname, '/app')));
-app.use('/update-app', express.static(path.join(__dirname, '/updateApp')));
-app.use('/public', express.static(path.join(__dirname, '/public')));
-
-const checkFolders = (name, cb) => {
-  access(name, (err) => {
-    err
-      ? ensureDir(projectFolder, (err1) => {
-        err1 ? cb(err1) : cb(null);
-      })
-      : cb(null);
-  });
-};
+app.use(express.static(path.join(__dirname, "/app")));
+app.use("/update-app", express.static(path.join(__dirname, "/updateApp")));
+app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    access(uploadFolder, (err) => {
-      err
-        ? ensureDir(uploadFolder, (err1) => {
-          err1 ? cb(err1) : cb(null, uploadFolder);
-        })
-        : cb(null, uploadFolder);
+    const folder = getZipName(file.originalname);
+    const p = path.join(__dirname, uploadFolder, folder);
+    console.log("上传路径", p);
+    access(p, (error) => {
+      if (error) {
+        console.log("没有上传路径");
+        ensureDir(p, (err1) => {
+          err1 ? cb(err1) : cb(null, p);
+        });
+      } else {
+        console.log("存在上传路径");
+        cb(null, p);
+      }
     });
   },
   filename(req, file, cb) {
-    const tmp = file.originalname.split("-");
-    if (!tmp[1]) {
-      cb(new Error("压缩包名称异常"));
-    } else {
-      cb(null, tmp[1]);
-    }
-  },
+    cb(null, file.originalname);
+  }
 });
 
 const upload = multer({
   storage,
   fileFilter(req, file, cb) {
-    if (file.originalname.toLowerCase().indexOf('zip') !== -1) {
+    if (file.originalname.toLowerCase().indexOf("zip") !== -1) {
       cb(null, true);
     } else {
-      cb(new Error('请上传正确的压缩包格式 zip'));
+      cb(new Error("请上传正确的压缩包格式 zip"));
     }
-  },
-}).single('file');
+  }
+}).single("file");
 
-const returnError = (err) => ({
-  result: null,
-  code: '10000',
-  msg: err.toString(),
-});
-
-app.get('/node-web/page-data', (req, res) => {
+app.get("/node-web/page-data", (req, res) => {
   const { id } = req.query;
-  readJson(path.join(__dirname, '/app', '/page', `/${id}.json`), (err, json) => {
+  const appCode = req.query.app;
+  readJson(path.join(__dirname, projectFolder, appCode, "data", `${id}.json`), (err, json) => {
     if (err) {
+      console.log("获取页面文件失败", err);
       res.json({
-        err: err.toString(),
-        code: '10000'
+        err: "获取页面文件失败",
+        code: "10000"
       });
     } else {
       res.json(json);
@@ -75,39 +71,146 @@ app.get('/node-web/page-data', (req, res) => {
   });
 });
 
-app.post('/upload', (req, res) => {
+app.post("/upload", (req, res) => {
   upload(req, res, (uploadErr) => {
     if (uploadErr) {
-      res.json(returnError(uploadErr));
+      console.log("上传出错", uploadErr);
+      res.json({ msg: "上传出错" });
     } else {
       const { file } = req;
-      checkFolders(projectFolder, (checkErr) => {
-        if (checkErr) {
-          res.json(returnError(checkErr));
-        } else {
-          const tmp1 = file.originalname.split("-");
-          const tmp2 = tmp1[1].split('.');
-          const folder = tmp2[0];
-          exec(
-            `cd ${uploadFolder} && tar -zxvf ${tmp1[1]} && rm -rf ${projectFolder}/page && rm -rf ${projectFolder}/main.json && mv -f ${folder}/* ${projectFolder}`,
-            (unzipError) => {
-              if (unzipError) {
-                res.json(returnError(unzipError));
-              } else {
-                res.json({
-                  result: null,
-                  code: '00000',
-                  msg: '更新成功',
+      const folder = getZipName(file.originalname);
+
+      // 不存在项目目录就创建
+      checkFolder(path.join(__dirname, projectFolder)).then((has) => {
+        if (has) {
+          console.log("存在项目路径");
+          // 将上传文件解压
+          unzip(file.originalname, folder)
+            .then(() => {
+              getAppConfig(file.originalname, folder)
+                .then((appConfig) => {
+                  if (appConfig && appConfig.applicationCode) {
+                    // 检查项目内 app 文件夹是否存在
+                    const appPath = path.join(__dirname, projectFolder, appConfig.applicationCode);
+                    checkFolder(appPath).then((hasApp) => {
+                      if (hasApp) {
+                        // 如果存在，先删除，再创建
+                        removeFolder(appPath)
+                          .then(() => {
+                            generateApp(appPath, folder)
+                              .then(() => {
+                                res.json({ code: "00000", msg: "安装成功" });
+                              })
+                              .catch(() => {
+                                res.json({ code: "10000", msg: "生成 app 目录失败" });
+                              });
+                          })
+                          .catch(() => {
+                            // 删除 app 目录失败
+                            res.json({ code: "10000", msg: "删除 app 目录失败" });
+                          });
+                      } else {
+                        // 没有直接创建和移动
+                        generateApp(appPath, folder)
+                          .then(() => {
+                            res.json({ code: "00000", msg: "安装成功" });
+                          })
+                          .catch(() => {
+                            res.json({ code: "10000", msg: "生成 app 目录失败" });
+                          });
+                      }
+                    });
+                  } else {
+                    // 压缩包内容异常
+                    res.json({ code: "10000", msg: "压缩包配置文件异常" });
+                  }
+                })
+                .catch(() => {
+                  // 压缩包异常
+                  res.json({ code: "10000", msg: "压缩包缺少配置文件" });
                 });
-              }
-            }
-          );
+            })
+            .catch((error) => {
+              console.log("解压文件失败", error);
+              res.json({ msg: "解压文件失败" });
+            });
+          // res.json({ code: "00000", msg: 2 });
+          // 获取应用配置
+        } else {
+          console.log("没有项目路径");
+          createFolder(path.join(__dirname, projectFolder))
+            .then(() => {
+              // 将上传文件解压
+              unzip(file.originalname, folder)
+                .then(() => {
+                  getAppConfig(file.originalname, folder)
+                    .then((appConfig) => {
+                      if (appConfig && appConfig.applicationCode) {
+                        // 检查项目内 app 文件夹是否存在
+                        const appPath = path.join(
+                          __dirname,
+                          projectFolder,
+                          appConfig.applicationCode
+                        );
+                        checkFolder(appPath).then((hasApp) => {
+                          if (hasApp) {
+                            // 如果存在，先删除，再创建
+                            removeFolder(appPath)
+                              .then(() => {
+                                generateApp(appPath, folder)
+                                  .then(() => {
+                                    res.json({ code: "00000", msg: "安装成功" });
+                                  })
+                                  .catch(() => {
+                                    res.json({ code: "10000", msg: "生成 app 目录失败" });
+                                  });
+                              })
+                              .catch(() => {
+                                // 删除 app 目录失败
+                                res.json({ code: "10000", msg: "删除 app 目录失败" });
+                              });
+                          } else {
+                            // 没有直接创建和移动
+                            generateApp(appPath, folder)
+                              .then(() => {
+                                res.json({ code: "00000", msg: "安装成功" });
+                              })
+                              .catch(() => {
+                                res.json({ code: "10000", msg: "生成 app 目录失败" });
+                              });
+                          }
+                        });
+                      } else {
+                        // 压缩包内容异常
+                        res.json({ code: "10000", msg: "压缩包配置文件异常" });
+                      }
+                    })
+                    .catch(() => {
+                      // 压缩包异常
+                      res.json({ code: "10000", msg: "压缩包缺少配置文件" });
+                    });
+                })
+                .catch((error) => {
+                  console.log("解压文件失败", error);
+                  res.json({ msg: "解压文件失败" });
+                });
+            })
+            .catch((error) => {
+              console.log("创建目录失败", error);
+              res.json({ code: "10000" });
+            });
         }
       });
+      // 将上传文件解压
+      // 获取应用配置
+      // 准备应用配置文件夹（置为空）
     }
   });
 });
 
+// TODO 代码优化
+// 删除压缩包
+
 app.listen(config.port, () => {
-  console.log('启动应用端更新服务成功');
+  console.log("启动应用端更新服务成功");
 });

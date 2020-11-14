@@ -157,7 +157,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                   {
                     text: '导出应用',
                     action: () => {
-                      const cur = new Date().getTime();
+                      const cur = `${accessName}_${new Date().getTime()}`;
                       downloadBackEnd(accessName, `${appShortNameEn}后端部署文件-${accessName}_${new Date().getTime()}`).catch((error) => {
                         message.error("后端部署文件下载失败");
                       });
