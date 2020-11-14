@@ -10,13 +10,14 @@ const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase(
  */
 const genHostEnvConf = async () => {
   const envConf = await fetch(`/config.json?${new Date().getTime()}`).then((res) => res.json());
-  const mode = store.get('mode');
-  const modeKey = mode === 'preview' ? 'preview' : 'prod';
+  return envConf
+  // const mode = store.get('mode');
+  // const modeKey = mode === 'preview' ? 'preview' : 'prod';
 
-  return usedConfKey.reduce((res, key) => {
-    res[key] = envConf[modeKey + firstUpperCase(key)];
-    return res;
-  }, {});
+  // return usedConfKey.reduce((res, key) => {
+  //   res[key] = envConf[modeKey + firstUpperCase(key)];
+  //   return res;
+  // }, {});
 };
 
 /**

@@ -1,7 +1,3 @@
-export enum UsedConfKey {
-  saasServerUrl = 'saasServerUrl',
-  pageServerUrl = 'pageServerUrl',
-}
 /** confJson的key */
 export enum ConfKey {
   /** 预览时候sass服务的url */
@@ -10,4 +6,4 @@ export enum ConfKey {
   previewPageServerUrl = 'previewPageServerUrl',
 }
 
-export const usedConfKey = Object.keys(UsedConfKey);
+export const usedConfKey = Object.keys(ConfKey);
