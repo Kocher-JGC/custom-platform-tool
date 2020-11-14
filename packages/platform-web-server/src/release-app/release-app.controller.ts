@@ -41,19 +41,25 @@ export class ReleaseAppController {
       generateAppConfig,
       generatePageDataJSONZip
     } = this.releaseAppService;
+    let step = 0;
     if (applicationCode) {
       let link = "";
       const folderName = "data";
       const zipName = `${applicationCode}.zip`;
+
       try {
+        step += 1;
         const pageDataRes = await getPageDataFromProvider(
           { lesseeCode, applicationCode },
           headers.authorization
         );
+        step += 1;
         if (Array.isArray(pageDataRes) && pageDataRes.length > 0) {
+          step += 1;
           await generatePageDataFolder(folderName, releaseId);
+          step += 1;
           await generateAppConfig(folderName, { lesseeCode, applicationCode }, releaseId);
-
+          step += 1;
           // TODO 循环生成实现方式
           const genPageFilesPromise = pageDataRes.map((pageData) =>
             this.genFileFromPageData(pageData, {
@@ -64,24 +70,22 @@ export class ReleaseAppController {
               app: applicationCode
             })
           );
+          step += 1;
           const result = await Promise.all(genPageFilesPromise);
-
+          step += 1;
           this.printGenFileRes(result, pageDataRes); // 打印结果
-
+          step += 1;
           link = await generatePageDataJSONZip(folderName, zipName, releaseId);
+          step += 1;
           return res.download(link);
         }
         // throw new Error(pageDataRes.msg || "没有页面可以发布");
-        return res.status(404).json({ msg: "没有页面可以发布" });
+        return res.status(404).json({ msg: "没有页面可以发布" + step });
       } catch (error) {
-        return res
-          .writeHead(500, { "Content-Type": "application/json" })
-          .json({ msg: `下载出错，${error.message}` });
+        return res.status(500).json({ msg: error.message + step });
       }
     } else {
-      return res
-        .writeHead(500, { "Content-Type": "application/json" })
-        .json({ msg: "需要参数 app" });
+      return res.status(400).json({ msg: "需要参数 app" + step });
     }
   }
 
