@@ -74,7 +74,6 @@ export interface IUserModel {
   state: IUserModelState;
   effects: {
     fetchUserInfo: Effect;
-    // fetchAppConfig: Effect;
   };
   reducers: {
     setCurrentUser: Reducer<IUserModelState>;
@@ -98,13 +97,6 @@ const UserModel: IUserModel = {
         payload: response?.data?.result || {},
       });
     },
-    // * fetchAppConfig({ payload }, { call, put }) {
-      // const response = yield call(queryAppConfig);
-      // yield put({
-        // type: 'setAppConfig',
-        // payload: response || {},
-      // });
-    // },
   },
 
   reducers: {
