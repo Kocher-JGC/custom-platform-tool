@@ -257,7 +257,10 @@ class AuthTree extends React.Component<IProps, IState> {
         <span>
           {Title}
           <CloseCircleOutlined
-            onClick={() => { this.onDeleteNode(node); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              this.onDeleteNode(node);
+            }}
             className="ml-2"
           />
         </span>
@@ -349,9 +352,11 @@ class AuthTree extends React.Component<IProps, IState> {
       onDeleteNode(relatedNodeList, relatedNodeList.map((item) => item.uniqueId));
     }
     parentList.splice(index, 1);
-    const { authList } = this.state;
+    const { authList, originalAuthList } = this.state;
+    const relatedKeyList = relatedNodeList.map((item) => item.uniqueId);
     this.setState({
-      authList: authList.slice()
+      authList: authList.slice(),
+      originalAuthList: originalAuthList.filter((item) => !relatedKeyList.includes(item.uniqueId))
     });
   }
 
