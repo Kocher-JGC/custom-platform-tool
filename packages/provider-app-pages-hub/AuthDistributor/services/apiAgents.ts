@@ -35,7 +35,7 @@ export async function getShowAuthoritiesTree(param) {
 
 /** 查询权限项，树 */
 export async function getAuthorityItemsTree(param) {
-  const res = await getAuthorityItemsTreeApi({ ...param, selectType: 0 });
+  const res = await getAuthorityItemsTreeApi(param);
   /** 接口有误则返回提示 */
   if (res?.code !== API_CODE.SUCCESS) {
     // openNotification(NOTIFICATION_TYPE.ERROR, res?.msg || MESSAGES.GETTABLEINFO_FAILED);
