@@ -81,8 +81,8 @@ export interface IUserModel {
   };
 }
 const inintState: IUserModelState = {
-  token: store.get("token"),
-  refreshToken: store.get("token"),
+  token: store.get("app/token"),
+  refreshToken: store.get("app/token"),
 };
 const UserModel: IUserModel = {
   namespace: 'user',
@@ -112,8 +112,8 @@ const UserModel: IUserModel = {
       };
     },
     setAppConfig(state, { payload }) {
-      store.set("lessee", payload.lesseeCode);
-      store.set("app", payload.applicationCode);
+      store.set("app/lessee", payload.lesseeCode);
+      store.set("app/code", payload.applicationCode);
       return {
         ...state,
         ...payload || {},

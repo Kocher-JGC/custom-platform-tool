@@ -1,6 +1,6 @@
 module.exports = {
   extends: [
-    'airbnb-base',
+    // 'airbnb-base',
     'prettier'
   ],
   root: true,
@@ -9,11 +9,11 @@ module.exports = {
     jest: true,
   },
   rules: {
-    "@typescript-eslint/indent": ["error", 2],
+    // "@typescript-eslint/indent": ["error", 2],
     // "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/explicit-member-accessibility": 0,
-    "@typescript-eslint/explicit-module-boundary-types": 0,
-    "@typescript-eslint/no-empty-function": 0,
+    // "@typescript-eslint/explicit-member-accessibility": 0,
+    // "@typescript-eslint/explicit-module-boundary-types": 0,
+    // "@typescript-eslint/no-empty-function": 0,
     indent: ["error", 2, {
       SwitchCase: 1
     }],
@@ -46,12 +46,12 @@ module.exports = {
     "import/no-unresolved": 0,
     "max-classes-per-file": 0,
     "object-curly-spacing": ["error", "always"],
-    'import/no-extraneous-dependencies': [
-      1,
-      { devDependencies: ['**/*spec.ts'] },
-    ],
+    // 'import/no-extraneous-dependencies': [
+    //   1,
+    //   { devDependencies: ['**/*spec.ts'] },
+    // ],
     'no-useless-constructor': 'off',
-    '@typescript-eslint/no-useless-constructor': 'error',
+    // '@typescript-eslint/no-useless-constructor': 'error',
   },
   settings: {
     "import/resolver": {

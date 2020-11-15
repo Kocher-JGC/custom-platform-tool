@@ -19,7 +19,7 @@ const updateColorWeak: (colorWeak: boolean) => void = (colorWeak) => {
 
 const SettingModel: ISettingModel = {
   namespace: 'settings',
-  state: Object.assign({}, defaultSettings, { title: store.get("appName") }),
+  state: Object.assign({}, defaultSettings, { title: store.get("app/name") }),
   reducers: {
     changeSetting(state = defaultSettings, { payload }) {
       const { colorWeak, contentWidth } = payload;

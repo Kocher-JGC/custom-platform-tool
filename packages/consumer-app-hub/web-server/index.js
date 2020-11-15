@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
@@ -25,7 +24,7 @@ app.use(cors());
 setStaticResource(app);
 
 // app.use(express.static(path.join(__dirname, "/web-client")));
-// app.use("/update-app", express.static(path.join(__dirname, "/updateApp")));
+// app.use("/app-installation", express.static(path.join(__dirname, "/updateApp")));
 // app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const storage = multer.diskStorage({

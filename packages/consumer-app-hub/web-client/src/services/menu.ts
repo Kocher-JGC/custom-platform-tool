@@ -7,8 +7,8 @@ import store from 'store';
  */
 export async function queryMenuList(params: API.IMeunParams) {
   let { lessee, app } = getPageQuery();
-  if (!lessee) lessee = store.get("lessee");
-  if (!app) app = store.get("app");
+  if (!lessee) lessee = store.get("app/lessee");
+  if (!app) app = store.get("app/code");
   return $A_R(originGenUrl(lessee, app, SYS_MENU_BUSINESSCODE), {
     method: 'POST',
     data: {

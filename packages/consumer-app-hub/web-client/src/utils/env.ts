@@ -9,9 +9,9 @@ export enum UrlConfKey {
 /**
  * 获取/public/conf.json配置
  */
-export const getUrlConf = async () => {
+export const getAppEnvConfig = async () => {
   const envConf = await fetch(`/config.json?${new Date().getTime()}`).then((res) => res.json());
-  return envConf
+  return envConf;
 };
 
 
@@ -32,4 +32,4 @@ export async function getMainConf(currentApp: string) {
 }
 
 /** 所有配置的key */
-export const usedConfKeys = [...Object.keys(UrlConfKey), ...Object.keys(MainConfKey)]
+export const usedConfKeys = [...Object.keys(UrlConfKey), ...Object.keys(MainConfKey)];

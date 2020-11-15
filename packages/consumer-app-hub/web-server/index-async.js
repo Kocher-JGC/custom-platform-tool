@@ -19,7 +19,7 @@ const app = express();
 const { uploadFolder, projectFolder } = config;
 app.use(cors());
 app.use(express.static(path.join(__dirname, "/app")));
-app.use("/update-app", express.static(path.join(__dirname, "/updateApp")));
+app.use("/app-installation", express.static(path.join(__dirname, "/updateApp")));
 app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const storage = multer.diskStorage({

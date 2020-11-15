@@ -30,7 +30,7 @@ class SecurityLayout extends React.PureComponent<SecurityLayoutProps, SecurityLa
     const { appName, mode, t } = query;
     // @TODO 暂时这么写
     if (appName) {
-      store.set("appName", appName);
+      store.set("app/name", appName);
       dispatch({
         type: 'settings/changeSetting',
         payload: {
@@ -39,7 +39,7 @@ class SecurityLayout extends React.PureComponent<SecurityLayoutProps, SecurityLa
       });
     }
     if (t) {
-      store.set("providerAppToken", t);
+      store.set("app/providerAppToken", t);
     }
     // if (!mode) {
     //   dispatch({

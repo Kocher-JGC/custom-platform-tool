@@ -56,7 +56,7 @@ export const initRequest = (baseURL) => {
     // errorHandler, // 默认错误处理
     // credentials: 'same-origin', // 默认请求是否带上cookie
     headers: {
-      Authorization: `${store.get("token")}`
+      Authorization: `${store.get("app/token")}`
     },
   });
 

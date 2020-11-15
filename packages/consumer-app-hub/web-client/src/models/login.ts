@@ -82,9 +82,9 @@ const Model: ILoginModel = {
     setLoginInfo(state: ILoginModelState = initState, { payload }): ILoginModelState {
       const { access_token, refresh_token } = payload?.data || {};
       const { t: providerAppToken } = getPageQuery();
-      store.set("token", access_token);
-      store.set("refreshToken", refresh_token);
-      store.set("providerAppToken", providerAppToken);
+      store.set("app/token", access_token);
+      store.set("app/refreshToken", refresh_token);
+      store.set("app/providerAppToken", providerAppToken);
       return {
         ...state,
         ...payload,

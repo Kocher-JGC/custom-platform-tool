@@ -16,13 +16,13 @@ const filterRes = (res) => {
 };
 
 const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
-  params.lessee = params.lessee || store.get('lessee');
-  params.mode = params.mode || store.get('mode');
-  params.app = params.app || store.get('app');
+  params.lessee = params.lessee || store.get('app/lessee');
+  params.mode = params.mode || store.get('app/mode');
+  params.app = params.app || store.get('app/code');
   return {
     ...params,
     id: params.id,
-    t: store.get("providerAppToken")
+    t: store.get("app/providerAppToken")
   };
 };
 
