@@ -81,7 +81,7 @@ class AuthTree extends React.Component<IProps, IState> {
     if (expandType === EXPAND_TYPE.EXPAND_ALL) {
       /** 全部展开 */
       expandedKeys = allParentKeys;
-    } if (expandType === EXPAND_TYPE.EXPAND_VALUES) {
+    } else if (expandType === EXPAND_TYPE.EXPAND_VALUES) {
       /** 只展开选中数据 */
       const allKeys = originalAuthList.map((item) => item.uniqueId);
       expandedKeys = checkedKeys
