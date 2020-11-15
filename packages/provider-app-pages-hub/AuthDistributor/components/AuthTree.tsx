@@ -142,13 +142,15 @@ class AuthTree extends React.Component<IProps, IState> {
    * 批量新增节点数据
    * @param list INode[]
    */
-  onBatchAdd = (list: INode[]) => {
+  onBatchAdd = (list: INode[], parentNode) => {
     /** 去除子项数据，防止与转化后的数据重复 */
     list.forEach((node) => {
       if (!node.children) return;
       node.children = null;
     });
-    let { authMapByKey, authList, allParentKeys } = this.state;
+    let {
+      authMapByKey, authList, allParentKeys, originalAuthList
+    } = this.state;
     /** 对节点数据做结构化转化 */
     const { tree, map, parentKeyList } = this.constructTree(list);
     authMapByKey = { ...authMapByKey, ...map };
@@ -157,15 +159,17 @@ class AuthTree extends React.Component<IProps, IState> {
     /** 将新增的数据节点挂到当前树中 */
     tree.forEach((item) => {
       const { parentUniqueId } = item;
-      /** 挂到对应上级节点中 */
-      if (parentUniqueId in authMapByKey) {
-        authMapByKey[parentUniqueId].children = authMapByKey[parentUniqueId].children || [];
-        authMapByKey[parentUniqueId].children?.unshift(item);
-        !allParentKeys.includes(parentUniqueId) && allParentKeys.push(parentUniqueId);
-        return;
+      const parentNodeLoop = parentNode || (
+        parentUniqueId && parentUniqueId in authMapByKey ? authMapByKey[parentUniqueId] : null
+      );
+      if ([undefined, null].includes(parentNodeLoop)) {
+        /** 直接挂在最外层 */
+        authList.unshift(item); return;
       }
-      /** 直接挂在最外层 */
-      authList.unshift(item);
+      item.parentUniqueId = parentNodeLoop.uniqueId;
+      parentNodeLoop.children = parentNodeLoop.children || [];
+      parentNodeLoop.children?.unshift(item);
+      !allParentKeys.includes(item.parentUniqueId) && allParentKeys.push(item.parentUniqueId);
     });
     /** 判断当前树节点有无能挂到新加的树节点中的 */
     const shoudeBeNullIndexList:number[] = [];
@@ -181,7 +185,8 @@ class AuthTree extends React.Component<IProps, IState> {
     this.setState({
       authMapByKey,
       authList,
-      allParentKeys
+      allParentKeys,
+      originalAuthList: [...originalAuthList, ...list]
     }, () => {
       this.setExpandedKeysByExpandType();
     });
@@ -246,7 +251,8 @@ class AuthTree extends React.Component<IProps, IState> {
       Title = this.renderHighlightValue(name);
     }
     /** 是否支持删除节点数据 */
-    if (typeof canIDeleteNode === 'function' && canIDeleteNode(node)) {
+    const canBeDeleted = typeof canIDeleteNode === 'function' && canIDeleteNode(node);
+    if (canBeDeleted) {
       Title = (
         <span>
           {Title}
@@ -257,6 +263,7 @@ class AuthTree extends React.Component<IProps, IState> {
         </span>
       );
     }
+    node.canBeDeleted = canBeDeleted;
     node.title = Title;
     node.key = node.uniqueId;
     /** 支持父级对节点数据做处理 */
@@ -346,6 +353,19 @@ class AuthTree extends React.Component<IProps, IState> {
     this.setState({
       authList: authList.slice()
     });
+  }
+
+  /**
+   * 由外部获取数据
+   * @param node
+   */
+  onGetData = () => {
+    const { authList, authMapByKey, originalAuthList } = this.state;
+    return {
+      list: authList,
+      mapByKey: authMapByKey,
+      originalList: originalAuthList
+    };
   }
 
   /**

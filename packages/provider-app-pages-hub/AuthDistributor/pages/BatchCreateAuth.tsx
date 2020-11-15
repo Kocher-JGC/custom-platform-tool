@@ -22,20 +22,23 @@ const BatchCreateAuth = (props) => {
   const [terminalType, setTerminalType] = useState(TEMINAL_TYPE.BS);
   const [AuthItemTreeRef, setAuthItemTreeRef] = useState<{reload?:()=>Promise<void>}>({});
   const [AuthShowTreeRef, setAuthShowTreeRef] = useState<{reload?:()=>Promise<void>}>({});
-  const [checkedNodes, setCheckedNodes] = useState<INode[]>([]);
+  const [checkedAuthItems, setCheckedAuthItem] = useState<INode[]>([]);
+  const [checkedShowAuths, setCheckedShowAuths] = useState<INode>();
   const onFinish = () => {
-    if (checkedNodes.length === 0) {
+    const originalList = AuthShowTreeRef?.onGetData()?.originalList || [];
+    const showAuthSaving = originalList.filter((item) => item.canBeDeleted);
+    if (showAuthSaving.length === 0) {
       message.warn(MESSAGE.NO_RECORD_TO_BATCH_CREATE);
       return;
     }
-    const checkedKeys = checkedNodes.map((item) => item.uniqueId);
-    checkedNodes.forEach((item) => {
+    const checkedKeys = originalList.map((item) => item.uniqueId);
+    showAuthSaving.forEach((item) => {
       const { parentUniqueId } = item;
       if (parentUniqueId && !checkedKeys.includes(parentUniqueId)) {
         item.parentUniqueId = '';
       }
     });
-    const showAuthorityList = checkedNodes
+    const showAuthorityList = showAuthSaving
       .map((item) => {
         return {
           name: item.name, code: item.uniqueId, parentCode: item.parentUniqueId, authorityId: item.attachment?.authorityId, terminalType
@@ -44,31 +47,27 @@ const BatchCreateAuth = (props) => {
     onSuccess({ showAuthorityList });
   };
   useEffect(() => {
-    AuthItemTreeRef?.reload?.()?.then(() => {
-      AuthItemTreeRef?.setExpandedKeysByExpandType?.();
-    });
-    AuthShowTreeRef?.reload?.()?.then(() => {
-      AuthShowTreeRef?.setExpandedKeysByExpandType?.();
-    });
-    setCheckedNodes([]);
+    AuthItemTreeRef?.reload?.();
+    AuthShowTreeRef?.reload?.();
+    setCheckedAuthItem([]);
   }, [terminalType]);
   const handleTransfer = () => {
-    if (checkedNodes.length === 0) return;
-    const checkedNodesTmpl = JSON.parse(JSON.stringify(checkedNodes));
-    checkedNodes.forEach((item) => item.disabled = true);
-    AuthShowTreeRef?.onBatchAdd?.(checkedNodesTmpl);
+    if (checkedAuthItems.length === 0) return;
+    const checkedAuthItemsTmpl = JSON.parse(JSON.stringify(checkedAuthItems));
+    checkedAuthItems.forEach((item) => item.disabled = true);
+    AuthShowTreeRef?.onBatchAdd?.(checkedAuthItemsTmpl, checkedShowAuths);
     AuthItemTreeRef?.onUpdateCheckedNodes?.((node) => {
       node.disabled = true;
-    });
+      });
   };
   const handleDelteShowItem = (nodes, keys) => {
     AuthItemTreeRef?.onUpdateCheckedNodes?.((node, key) => {
       if (keys.includes(key)) {
-        node.disabled = false;
+      node.disabled = false;
       }
-    });
+      });
     AuthItemTreeRef?.onCancelCheckedKeys?.(keys);
-    setCheckedNodes(checkedNodes.filter((item) => !keys.includes(item.uniqueId)));
+    setCheckedAuthItem(checkedAuthItems.filter((item) => !keys.includes(item.uniqueId)));
   };
   return (
     <>
@@ -83,7 +82,7 @@ const BatchCreateAuth = (props) => {
             searchParams = {{ terminalType }}
             onSelect = {(selectedKeys, selectedNames, selectedNodes) => {
               selectedNodes = selectedNodes.filter((item) => !item.attachment?.binding);
-              setCheckedNodes(selectedNodes);
+              setCheckedAuthItem(selectedNodes);
             }}
             checked
             checkable = {true}
@@ -98,6 +97,7 @@ const BatchCreateAuth = (props) => {
         </div>
         <div className="show-auth-tree flex-1 rounded border-solid border border-gray-400 p-3" style={{ height: 300 }}>
           <AuthShowTree
+            selectable = {true}
             onRef = {(AuthShowTreeRefTmpl) => {
               setAuthShowTreeRef(AuthShowTreeRefTmpl);
             }}
@@ -105,11 +105,11 @@ const BatchCreateAuth = (props) => {
             height={220}
             searchParams = {{ terminalType, excludeTerminalData: true }}
             onSelect = {(selectedKeys, selectedNames, selectedNodes) => {
-            // setAuthParent({ id: selectedKeys[0], name: selectedNames[0] });
+              setCheckedShowAuths(selectedNodes[0]);
             }}
             onDeleteNode = {handleDelteShowItem}
             canIDeleteNode = {(node) => {
-              return node.attachment?.authorityId;
+              return node.attachment?.authorityId != undefined;
             }}
           />
         </div>

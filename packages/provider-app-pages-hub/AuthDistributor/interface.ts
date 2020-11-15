@@ -22,6 +22,7 @@ export interface INode extends TreeNode{
     binding?: boolean
     authorityId?: string
   }
+  canBeDeleted?: boolean
 }
 
 export interface INodeConfig {
