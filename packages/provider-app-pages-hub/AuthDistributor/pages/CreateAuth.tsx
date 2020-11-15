@@ -61,7 +61,7 @@ const CreateAuth = ({
       <Form.Item
         name="name" label="权限树名称" rules={[
           { required: true, message: "权限树名称必填" },
-          { pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]+$/, message: '支持30个字符内的中文、英文、数字' }
+          { pattern: /^[a-zA-Z0-9\u4e00-\u9fa5]{1,30}$/, message: '支持30个字符内的中文、英文、数字' }
         ]}
       >
         <Input
