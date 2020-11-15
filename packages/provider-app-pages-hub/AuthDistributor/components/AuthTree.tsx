@@ -54,20 +54,10 @@ class AuthTree extends React.Component<IProps, IState> {
    * 组件初始化
    */
   componentDidMount() {
-    const { onRef, onInitCheckedKeys } = this.props;
-    /** 1.请求回树形数据，进行结构化转化 */
-    this.getList().then(() => {
-      const { authList, authMapByKey, originalAuthList } = this.state;
-      /** 2.根据父级指示初始化选中节点； */
-      const checkedKeysTmpl = onInitCheckedKeys && onInitCheckedKeys(authList, authMapByKey, originalAuthList) || [];
-      this.setState({
-        checkedKeys: checkedKeysTmpl
-      }, () => {
-        /** 3.根据父级指示进行节点展开 */
-        this.setExpandedKeysByExpandType();
-      });
+    const { onRef } = this.props;
+    this.reload().then(() => {
+      onRef && onRef(this);
     });
-    onRef && onRef(this);
   }
 
   /**
@@ -130,12 +120,20 @@ class AuthTree extends React.Component<IProps, IState> {
    * 更新树形数据，并清空原有选中和展开
    */
   reload = () => {
+    const { onInitCheckedKeys } = this.props;
     return new Promise((resolve, reject) => {
-      this.setState({
-        checkedKeys: [],
-        expandedKeys: []
-      }, () => {
-        this.getList().then(resolve);
+      /** 1.请求回树形数据，进行结构化转化 */
+      this.getList().then(() => {
+        const { authList, authMapByKey, originalAuthList } = this.state;
+        /** 2.根据父级指示初始化选中节点； */
+        const checkedKeysTmpl = onInitCheckedKeys && onInitCheckedKeys(authList, authMapByKey, originalAuthList) || [];
+        this.setState({
+          checkedKeys: checkedKeysTmpl
+        }, () => {
+        /** 3.根据父级指示进行节点展开 */
+          this.setExpandedKeysByExpandType();
+          resolve();
+        });
       });
     });
   }
