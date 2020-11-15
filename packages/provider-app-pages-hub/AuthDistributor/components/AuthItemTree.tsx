@@ -34,10 +34,14 @@ const AuthItemTree = (props) => {
         return node;
       }}
       onInitCheckedKeys = {(list, map, originalList) => {
-        const checkedKeys:string[] = originalList.filter((node) => node.attachment?.binding).map((item) => item.key);
+        const checkedKeys:React.ReactText[] = originalList.filter((node) => node.attachment?.binding).map((item) => item.key);
         const values = props.authItems || [];
         if (values.length === 0) return checkedKeys;
-        return [...originalList.filter((node) => values.includes(node.value)).map((item) => item.key), ...checkedKeys];
+        const keysForValues = originalList.filter((node) => values.includes(node.value)).map((item) => item.key);
+        if (props.checkable) {
+          return [...keysForValues, ...checkedKeys];
+        }
+        return keysForValues;
       }}
     />
   );
