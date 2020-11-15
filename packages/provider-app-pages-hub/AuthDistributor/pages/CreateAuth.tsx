@@ -57,7 +57,7 @@ const CreateAuth = ({
       form={form}
       name="control-hooks"
     >
-      <Form.Item name="id" className="hidden"></Form.Item>
+      <Form.Item name="id" className="hidden"><Input/></Form.Item>
       <Form.Item
         name="name" label="权限树名称" rules={[
           { required: true, message: "权限树名称必填" },
@@ -71,7 +71,7 @@ const CreateAuth = ({
           }}
         />
       </Form.Item>
-      <Form.Item name="authorityId" className="hidden"></Form.Item>
+      <Form.Item name="authorityId" className="hidden"><Input/></Form.Item>
       <Form.Item
         name="authorityName"
         label="关联权限项"
@@ -108,7 +108,7 @@ const CreateAuth = ({
           }}
         />
       </Form.Item>
-      <Form.Item name="parentCode" className="hidden"></Form.Item>
+      <Form.Item name="parentCode" className="hidden"><Input/></Form.Item>
       <Form.Item name="parentName" label="上级">
         <Input
           className="cursor-pointer"
