@@ -310,4 +310,4 @@ class AuthList extends PureComponent<IProps, IState> {
     );
   }
 }
-export default AuthList;
+export default React.memo(AuthList);
