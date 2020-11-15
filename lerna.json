@@ -1,10 +1,8 @@
 {
   "packages": [
-    "packages/consumer-app-*/",
     "packages/provider-app-*/",
     "packages/engine-*/",
     "packages/infra-*/",
-    "packages/platform-access-*/",
     "packages/ui-*/",
     "packages/*-hub/*"
   ],

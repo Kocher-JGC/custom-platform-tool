@@ -15,12 +15,18 @@ const {
 } = require("./utils");
 const config = require("./config.json");
 
+// require('./utils/setup-consumer-app-web-client')
+const setStaticResource = require('./utils/setStaticResource')
+
 const app = express();
 const { uploadFolder, projectFolder } = config;
 app.use(cors());
-app.use(express.static(path.join(__dirname, "/app")));
-app.use("/update-app", express.static(path.join(__dirname, "/updateApp")));
-app.use("/public", express.static(path.join(__dirname, "/public")));
+
+setStaticResource(app);
+
+// app.use(express.static(path.join(__dirname, "/web-client")));
+// app.use("/update-app", express.static(path.join(__dirname, "/updateApp")));
+// app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -162,12 +168,12 @@ app.post("/upload", (req, res) => {
                                     res.json({ code: "00000", msg: "安装成功" });
                                   })
                                   .catch(() => {
-                                    res.json({ code: "10000", msg: "生成 app 目录失败" });
+                                    res.json({ code: "10000", msg: `"生成 ${projectFolder} 目录失败"` });
                                   });
                               })
                               .catch(() => {
                                 // 删除 app 目录失败
-                                res.json({ code: "10000", msg: "删除 app 目录失败" });
+                                res.json({ code: "10000", msg: `"删除 ${projectFolder} 目录失败"` });
                               });
                           } else {
                             // 没有直接创建和移动
@@ -176,7 +182,7 @@ app.post("/upload", (req, res) => {
                                 res.json({ code: "00000", msg: "安装成功" });
                               })
                               .catch(() => {
-                                res.json({ code: "10000", msg: "生成 app 目录失败" });
+                                res.json({ code: "10000", msg: `"生成 ${projectFolder} 目录失败"` });
                               });
                           }
                         });

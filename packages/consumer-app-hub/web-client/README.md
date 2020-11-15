@@ -35,12 +35,12 @@ docker ps -a
 查看启动的 docker 内的目录结构，58775251d0e8 是容器 ID，通过从上一个命令获取
 
 ``` shell
-docker exec 58775251d0e8 ls /usr/src/web-platform-update/app/
+docker exec 58775251d0e8 ls /usr/src/consumer-app/app/
 ```
 
 ### 1.3 上传页面
 
-启动 docker 后，直接访问（localhost:3000）但菜单还无法访问，需要上传步骤 1.1 得到的压缩包，如果在在本机启动是通过 postman 访问 localhost:3000/upload 上传压缩包，此操作会把 压缩包内的 main.json (应用配置信息)和 page 文件夹（包含所有页面文件）解压到应用端打包文件位置（/usr/src/web-platform-update/app）
+启动 docker 后，直接访问（localhost:3000）但菜单还无法访问，需要上传步骤 1.1 得到的压缩包，如果在在本机启动是通过 postman 访问 localhost:3000/upload 上传压缩包，此操作会把 压缩包内的 main.json (应用配置信息)和 page 文件夹（包含所有页面文件）解压到应用端打包文件位置（/usr/src/consumer-app/app）
 
 ## 2.已知问题
 

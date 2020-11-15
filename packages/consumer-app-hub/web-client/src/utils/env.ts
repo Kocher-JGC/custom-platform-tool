@@ -23,8 +23,8 @@ export enum MainConfKey {
 /**
  * 获取应用安装时候main.json配置信息
  */
-export async function getMainConf() {
-  const mainConf =  await fetch(`/main.json?t=${new Date().getTime()}`).then((res) => res.json());
+export async function getMainConf(currentApp: string) {
+  const mainConf =  await fetch(`${currentApp}/main.json?t=${new Date().getTime()}`).then((res) => res.json());
   return {
     app: mainConf.applicationCode,
     lessee: mainConf.lesseeCode

@@ -42,7 +42,7 @@ export default defineConfig({
     memo.module
       .rule('js')
       .test(/\.(js|mjs|jsx|ts|tsx)$/)
-      .include.add(join(__dirname, '..', '..', '..', 'packages')).end()
+      .include.add(join(__dirname, '..', '..', '..', '..', 'packages')).end()
       .exclude.add(/node_modules/).end()
       .use('babel-loader');
     return memo;

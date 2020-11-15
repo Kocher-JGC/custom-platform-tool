@@ -13,9 +13,9 @@ const setHostEnv = async () => {
   // TODO: 临时做法, 如果报错就安装应用
   let mainConf = {}
   try {
-    mainConf = await getMainConf();
+    mainConf = await getMainConf(urlConf.currentApp);
   } catch(e) {
-    window.location.href = `/update-app?api=${store.get(UrlConfKey.saasServerUrl)}`
+    // window.location.href = `/update-app?api=${store.get(UrlConfKey.saasServerUrl)}`
   }
   usedConfKeys.forEach((key) => {
     const val = store.get(key);
