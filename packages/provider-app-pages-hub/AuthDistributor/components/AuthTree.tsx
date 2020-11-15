@@ -102,7 +102,7 @@ class AuthTree extends React.Component<IProps, IState> {
   getAllParentKeysByKey = (key) => {
     const { authMapByKey } = this.state;
     const { parentUniqueId } = authMapByKey[key] || {};
-    if (parentUniqueId) {
+    if (parentUniqueId && parentUniqueId in authMapByKey) {
       return [parentUniqueId, ...this.getAllParentKeysByKey(parentUniqueId)];
     }
     return [];
