@@ -131,7 +131,12 @@ class AuthTree extends React.Component<IProps, IState> {
    */
   reload = () => {
     return new Promise((resolve, reject) => {
-      this.getList().then(resolve);
+      this.setState({
+        checkedKeys: [],
+        expandedKeys: []
+      }, () => {
+        this.getList().then(resolve);
+      });
     });
   }
 
