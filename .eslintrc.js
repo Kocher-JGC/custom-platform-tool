@@ -1,6 +1,5 @@
-{
+module.exports = {
   "extends": [
-    "airbnb-base",
     "plugin:@typescript-eslint/recommended",
     "react-app"
   ],
@@ -62,7 +61,7 @@
         "extensions": [".js", ".jsx", ".ts", ".tsx"],
         "moduleDirectory": [
           "node_modules",
-          "./packages"
+          "packages/*"
         ]
       }
     },
@@ -70,4 +69,4 @@
       "./packages"
     ]
   }
-}
+};
