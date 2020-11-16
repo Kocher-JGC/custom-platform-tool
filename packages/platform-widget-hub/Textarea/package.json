@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/form-textarea",
+  "description": "多行文本框",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

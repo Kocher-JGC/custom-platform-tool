@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget-custom-editor/table-editor",
+  "description": "自定义编辑器 -- 表格编辑器",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

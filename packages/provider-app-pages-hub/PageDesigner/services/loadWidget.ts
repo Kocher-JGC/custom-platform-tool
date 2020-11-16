@@ -4,7 +4,7 @@ import {
   getPagePropItems, getPropItemData,
   getPropItemGroupingData,
   getCustomEditor,
-} from "@spec/platform-widget/mock-data";
+} from "@platform-widget-access/loader";
 
 let widgetMetaDataCollection: WidgetTypeMetadataCollection;
 getWidgetMetadata().then((res) => {

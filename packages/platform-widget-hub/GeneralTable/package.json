@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/general-table",
+  "description": "通用表格",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

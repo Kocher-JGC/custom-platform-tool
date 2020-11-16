@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/form-button",
+  "description": "表单按钮",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
