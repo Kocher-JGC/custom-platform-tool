@@ -4,7 +4,6 @@
   "private": true,
   "description": "自定义 3.0 前端工程",
   "workspaces": [
-    "packages/consumer-app-*/",
     "packages/provider-app-*/",
     "packages/engine-*/",
     "packages/infra-*/",
@@ -14,7 +13,7 @@
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap",
     "start:all": "lerna run --parallel --stream start",
-    "start:consumer-app": "yarn && cd ./packages/consumer-app-web-client && npm run dev",
+    "start:consumer-app": "yarn && sh ./scripts/start-consumer-app.sh",
     "start:provider-app": "yarn && cd ./packages/provider-app-entry && npm start",
     "start:platform-web-server": "sh ./scripts/start-platform-web-server.sh",
     "build:all": "sh ./scripts/build-all.sh",
@@ -62,7 +61,7 @@
     "lerna": "^3.21.0",
     "prettier": "^2.0.5",
     "ts-jest": "26.1.4",
-    "typescript": "^4.0.3"
+    "typescript": "4.0.3"
   },
   "husky": {
     "hooks": {

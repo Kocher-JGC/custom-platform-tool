@@ -13,7 +13,7 @@
       {
         "name": "consumer_app",
         "buildCmd": "yarn build:consumer-app",
-        "dockerfilePath": "./packages/consumer-app-web-client"
+        "dockerfilePath": "./packages/consumer-app-hub"
       },
       {
         "name": "node_web_server",

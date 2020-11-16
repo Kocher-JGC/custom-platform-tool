@@ -1,5 +1,5 @@
 {
-  "pageServerUrlForApp": "http://192.168.14.181:5020",
   "saasServerUrl": "http://192.168.14.181:7090",
+  "pageServerUrlForApp": "http://localhost:3000",
   "currentApp": "zxx"
 }
