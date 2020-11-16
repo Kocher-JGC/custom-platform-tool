@@ -14,7 +14,7 @@ export interface WidgetEditablePropMeta {
 export type MetaAttr = keyof PageMetadata
 
 export interface WidgetEditableProps {
-  title: WidgetEditablePropMeta
+  // title: WidgetEditablePropMeta
   [propName: string]: WidgetEditablePropMeta
 }
 

@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/dropdown-selector",
+  "description": "下拉组件",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

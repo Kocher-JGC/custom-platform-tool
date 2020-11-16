@@ -4,6 +4,7 @@
     "packages/engine-*/",
     "packages/infra-*/",
     "packages/ui-*/",
+    "packages/platform-widget-access-*/",
     "packages/*-hub/*"
   ],
   "version": "independent",

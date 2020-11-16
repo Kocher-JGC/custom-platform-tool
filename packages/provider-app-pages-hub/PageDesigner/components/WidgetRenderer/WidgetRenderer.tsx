@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 import { WidgetRendererProps } from '@engine/visual-editor/spec';
-import { getWidget } from '@spec/platform-widget';
+import { getWidget } from '@platform-widget-access/loader';
 import { Unexpect } from './Unexpect';
 // import ContainerWrapperCom from './ContainerWrapperCom';
 
