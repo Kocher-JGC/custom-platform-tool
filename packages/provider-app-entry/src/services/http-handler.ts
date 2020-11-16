@@ -26,8 +26,8 @@ let baseReqUrl = '';
 /**
  * 设置请求平台服务的 api 地址
  */
-export const setPlatformApiUrl = (platformApiUrl: string) => {
-  baseReqUrl = resolveUrl(platformApiUrl, urlPrefix);
+export const setPlatformApiUrl = (paasServerUrl: string) => {
+  baseReqUrl = resolveUrl(paasServerUrl, urlPrefix);
   $R.setConfig({
     baseUrl: baseReqUrl
   });

@@ -1,6 +1,6 @@
 import config from '../../../config';
 export const genUrl = (params: {lessee: string, app: string }) => {
-  return `${config.platformApiUrl}/${params.lessee}/${params.app}`;
+  return `${config.paasServerUrl}/${params.lessee}/${params.app}`;
 };
 
 export const pickObjFromKeyArr = (obj, keyArr: string[]) => {
