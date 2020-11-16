@@ -2,7 +2,7 @@ import { history } from 'umi';
 import store from 'store';
 import { initRequest } from './utils/request';
 import { usedConfKeys, getAppEnvConfig, getMainConf, UrlConfKey } from './utils/env';
-import { checkEnvConfig } from './utils/check-env-config';
+import { checkEnvConfig, showFetchMainJsonError } from './utils/check-env-config';
 
 const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase());
 
@@ -19,6 +19,7 @@ const setHostEnv = async () => {
   try {
     mainConf = await getMainConf(appEnvConfig.currentApp);
   } catch(e) {
+    showFetchMainJsonError();
     // window.location.href = `/app-installation?api=${store.get(UrlConfKey.saasServerUrl)}`
   }
 

@@ -58,3 +58,20 @@ export const checkEnvConfig = (appEnvConfig) => {
   }
   return true;
 };
+
+export const showFetchMainJsonError = () => {
+  Modal.error({
+    title: '获取主配置失败！',
+    content: (
+      <div>
+        <List
+          dataSource={[
+            `1. 请先安装应用`,
+          ]}
+          renderItem={item => <List.Item>{item}</List.Item>}
+          footer={'如果经过上述排查后仍然无法解决此错误，请联系 IT。'}
+        />
+      </div>
+    )
+  });
+};
