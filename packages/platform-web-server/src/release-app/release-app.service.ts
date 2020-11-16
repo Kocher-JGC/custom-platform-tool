@@ -7,9 +7,7 @@ import config from "../../config";
 const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
-
-const platformApiUrl = "http://192.168.14.181:6090/paas";
-const pageDataStorePath = "zip";
+const { platformApiUrl, pageDataStorePath } = config;
 
 /**
  * 子进程运行 shell 方法
