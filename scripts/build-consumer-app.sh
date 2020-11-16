@@ -7,7 +7,7 @@ source_dir=$pwd/packages/consumer-app-hub
 cd $source_dir/web-server
 echo "进入 web-server 构建"
 npm i
-ls node_modules
+# ls node_modules
 
 # 构建所有项目
 cd $source_dir/web-client
