@@ -12,9 +12,9 @@ import { checkEnvConfig, showFetchMainJsonError } from './utils/check-env-config
 const setHostEnv = async () => {
   const appEnvConfig = await getAppEnvConfig();
   // TODO: 临时做法, 如果报错就安装应用
-  // const mainConf = {};
 
-  const isPass = checkEnvConfig(appEnvConfig);
+  const mainConf = await getMainConf(appEnvConfig.currentApp);
+  const isPass = checkEnvConfig(appEnvConfig, mainConf);
 
   // try {
   //   mainConf = await getMainConf(appEnvConfig.currentApp);
@@ -29,7 +29,8 @@ const setHostEnv = async () => {
    */
 
   if(isPass){
-    store.set('currentApp', appEnvConfig.currentApp);
+    store.set('app/code', appEnvConfig.currentApp);
+    store.set('app/lessee', mainConf.lessee);
     store.set('saasServerUrl', appEnvConfig.saasServerUrl);
     store.set('pageServerUrlForApp', appEnvConfig.pageServerUrlForApp);
   }
@@ -61,6 +62,10 @@ const saveQueryParam = () => {
       queryKeys.forEach((q) => {
         if (q === 't') {
           store.set('app/token', query[q]);
+        } else if (q === 'app') {
+          store.set('app/code', query[q]);
+        } else if (q === 'lessee') {
+          store.set('app/lessee', query[q]);
         } else {
           store.set(q, query[q]);
         }
