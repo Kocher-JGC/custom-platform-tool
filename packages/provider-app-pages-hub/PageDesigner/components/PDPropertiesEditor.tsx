@@ -1,6 +1,8 @@
 import React from 'react';
 import Editor, { PropertiesEditorProps } from '@engine/visual-editor/components/PropertiesEditor';
 import { PropItemRenderer } from './PDPropItemRenderer';
+import { UICtx } from '@platform-widget-access/spec';
+import { message } from 'antd';
 import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } from '../services';
 
 interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer' | 'widgetBindedPropItemsMeta'> {
@@ -18,6 +20,18 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     propItemGroupingData: {},
     widgetMeta: {},
     propItemData: {}
+  }
+
+  /**
+   * 由页面设计器提供给属性项使用的 UI 上下文
+   */
+  UICtx: UICtx = {
+    utils: {
+      showMsg: (ctx) => {
+        const { msg, type } = ctx;
+        message[type](msg);
+      }
+    }
   }
 
   componentDidMount = async () => {
@@ -44,7 +58,6 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   }
 
   propItemRenderer = (props) => {
-    // console.log('props :>> ', props);
     const {
       changeMetadata,
       interDatasources,
@@ -53,6 +66,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     return (
       <PropItemRenderer
         {...props}
+        UICtx={this.UICtx}
         pageMetadata={pageMetadata}
         changeMetadata={changeMetadata}
         interDatasources={interDatasources}

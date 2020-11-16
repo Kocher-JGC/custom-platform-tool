@@ -52,11 +52,6 @@ export type GenMetaRefID = (
   perfix: string
 ) => string
 
-export interface UICtx {
-  utils: {
-    showMsg: (ctx: { msg: string, type: 'success' | 'error' }) => void
-  }
-}
 
 export interface PropItemRenderContext {
   /** 业务数据 */
@@ -73,7 +68,6 @@ export interface PropItemRenderContext {
   takeMeta: TakeMeta
   /** 生成 meta 引用的 ID */
   genMetaRefID: GenMetaRefID
-  UICtx: UICtx
 }
 
 /**
