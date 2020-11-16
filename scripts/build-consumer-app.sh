@@ -6,7 +6,7 @@ source_dir=$pwd/packages/consumer-app-hub
 # 构建 web 服务
 cd $source_dir/web-server
 echo "进入 web-server 构建"
-ls
+ls node_modules
 yarn
 
 # 构建所有项目
