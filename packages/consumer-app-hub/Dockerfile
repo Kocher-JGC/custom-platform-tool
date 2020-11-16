@@ -12,4 +12,4 @@ COPY ./web-client/dist ./web-client
 
 EXPOSE 5020
 
-CMD npm run start
+CMD npm run serve

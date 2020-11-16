@@ -6,7 +6,8 @@
   "author": "vale",
   "license": "MIT",
   "scripts": {
-    "start": "NODE_ENV=test nodemon ."
+    "start": "NODE_ENV=test nodemon .",
+    "serve": "node ."
   },
   "dependencies": {
     "express": "^4.17.1",
