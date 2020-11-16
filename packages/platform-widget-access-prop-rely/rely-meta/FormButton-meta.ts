@@ -1,6 +1,6 @@
-import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
+import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
-export const FormButtonMeta: EditableWidgetMeta = {
+export const FormButtonMeta = CreateWidgetPropItemRely({
   id: 'widget-form-button',
   widgetRef: 'FormButton',
   label: '动作按钮',
@@ -10,4 +10,4 @@ export const FormButtonMeta: EditableWidgetMeta = {
       { propID: 'prop_action_config', editAttr: ['actions'] },
     ]
   }
-};
+});

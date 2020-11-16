@@ -1,6 +1,6 @@
-import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
+import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
-export const DropdownSelectorMeta: EditableWidgetMeta = {
+export const DropdownSelectorMeta = CreateWidgetPropItemRely({
   id: 'widget-id-5',
   label: '下拉选择器',
   widgetRef: 'DropdownSelector',
@@ -19,4 +19,4 @@ export const DropdownSelectorMeta: EditableWidgetMeta = {
       // { propID: 'prop_flex_config' },
     ]
   }
-};
+});

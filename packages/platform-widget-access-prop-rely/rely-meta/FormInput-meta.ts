@@ -1,6 +1,6 @@
-import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
+import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
-export const FormInputMeta: EditableWidgetMeta = {
+export const FormInputMeta = CreateWidgetPropItemRely({
   id: 'widget-id-1',
   label: '文本框',
   widgetRef: 'FormInput',
@@ -28,4 +28,4 @@ export const FormInputMeta: EditableWidgetMeta = {
       { propID: 'prop_field', editAttr: ['field'] },
     ]
   }
-};
+});

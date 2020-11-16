@@ -1,6 +1,6 @@
-import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
+import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
-export const TableMeta: EditableWidgetMeta = {
+export const TableMeta = CreateWidgetPropItemRely({
   id: 'widget-id-3',
   label: '表格',
   widgetRef: 'NormalTable',
@@ -16,4 +16,4 @@ export const TableMeta: EditableWidgetMeta = {
       // { propID: 'prop_flex_config' },
     ]
   }
-};
+});

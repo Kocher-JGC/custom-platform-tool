@@ -1,6 +1,6 @@
-import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
+import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
-export const TextareaMeta: EditableWidgetMeta = {
+export const TextareaMeta = CreateWidgetPropItemRely({
   id: 'widget-id-11',
   label: '多行文本框',
   widgetRef: 'Textarea',
@@ -27,4 +27,4 @@ export const TextareaMeta: EditableWidgetMeta = {
       { propID: 'prop_field', editAttr: ['field'] },
     ]
   }
-};
+});
