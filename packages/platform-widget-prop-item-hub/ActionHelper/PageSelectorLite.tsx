@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table } from 'antd';
-import { getPageListServices } from '@provider-app/page-manager/services/apis';
+import { getPageListServices } from '@provider-app/services';
 
 export const PageSelectorLite = ({
   defaultSelectItem,

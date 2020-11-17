@@ -1,15 +1,17 @@
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { ComponentPanelProps } from '@engine/visual-editor/components/WidgetPanel';
 import DragItemComp from '@engine/visual-editor/spec/DragItemComp';
 import { DragableItemTypes } from '@engine/visual-editor/spec';
 import { Tab, Tabs } from '@infra/ui';
 import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/components/GroupPanel';
 import { LoadingTip } from '@provider-ui/loading-tip';
-import { DataSourceDragItem, DataSourceSelector } from './PDDataSource';
-import { useWidgetMeta, useWidgetPanelData } from '../utils';
+import { PageMetadata } from '@engine/visual-editor/data-structure';
+import { DataSourceDragItem } from '../PDDataSource';
+import { useWidgetMeta, useWidgetPanelData } from '../../utils';
+import { DataSourceTitle } from './DataSourceTitle';
 
 export interface PageDesignerComponentPanelProps {
-  interDatasources
+  pageMetadata: PageMetadata
   onUpdatedDatasource
   getDragItemConfig?: ComponentPanelProps['getDragItemConfig']
 }
@@ -55,7 +57,7 @@ const itemRendererFac = (
  */
 const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
   getDragItemConfig,
-  interDatasources,
+  pageMetadata,
   onUpdatedDatasource,
   // widgetPanelData,
   ...other
@@ -67,6 +69,8 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
     );
   }
   const { title: compPanelTitle, type: groupType, ...otherPanelConfig } = widgetPanelData;
+  // const interDatasources = [];
+  const interDatasources = Object.values(pageMetadata?.dataSource);
 
   return (
     <div className="component-panel-container">
@@ -85,7 +89,7 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
           />
         </Tab>
         <Tab label={(
-          <DataSourceSelector
+          <DataSourceTitle
             interDatasources={interDatasources}
             onAddDataSource={(addData) => {
               // return console.log(addData);

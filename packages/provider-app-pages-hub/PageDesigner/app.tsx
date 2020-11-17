@@ -1,20 +1,23 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
 import produce from 'immer';
-import { VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
-import { updatePageService } from "@provider-app/services";
+import { ChangeMetadataAction, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
+import { getPageDetailService, updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
+import { nanoid } from 'nanoid';
 import pick from "lodash/pick";
 import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
-import { wrapPageData, takeUsedWidgetIDs, genBusinessCode } from "./utils";
-import {
-  getPageContentWithDatasource,
-} from "./services";
+import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote } from "./utils";
+// import {
+//   getPageContentWithDatasource,
+// } from "./services";
+import PDUICtx from './utils/ui-ctx';
 
 import './style';
+import { takeDatasources } from "./services/datasource";
 // import { VisualEditorStore } from "@engine/visual-editor/core/store";
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
@@ -35,19 +38,39 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   /**
-   * 包装更新页面的数据源的数据结构
-   * @param dataSourcesFormRemote
+   * 生成 meta 引用 ID
    */
-  wrapDataSourceDataForUpdate = (dataSourcesFormRemote) => {
-    const dataSourcesItems = dataSourcesFormRemote.map((tableData) => {
-      return {
-        datasourceId: tableData.id,
-        datasourceType: tableData.type
-      };
-    });
-    return {
-      dataSources: dataSourcesItems
-    };
+
+  genMetaRefID = (
+    metaAttr: ChangeMetadataAction['metaAttr'], 
+    options?: {
+      len?: number
+    }
+  ) => {
+    const { selectedInfo } = this.props;
+    const { len = 8 } = options || {};
+    const { id: activeEntityID } = selectedInfo;
+    if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
+    const metaID = nanoid(len);
+    const prefix = metaAttr;
+    return `${prefix}.${activeEntityID}.${metaID}`;
+  }
+
+  genDatasourceMetaID = (idx: number) => {
+    const { pageMetadata } = this.props;
+    const dsLen = pageMetadata.dataSource ? Object.keys(pageMetadata.dataSource).length : 0;
+    const idxPref = idx === 0 ? 0 : idx || dsLen + 1;
+    const metaID = nanoid(8);
+    return `${idxPref}.ds.${metaID}`;
+  }
+
+  /**
+   * 获取 meta
+   */
+  takeMeta = (options) => {
+    const { pageMetadata } = this.props;
+    const { metaAttr, metaRefID } = options;
+    return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
   }
 
   /**
@@ -57,20 +80,34 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   onUpdatedDatasource = async (addingDataFormRemote) => {
     const { appContext, dispatcher, appLocation } = this.props;
     const { pageID, title } = appLocation;
-    const { UpdateAppContext } = dispatcher;
+    const { UpdateAppContext, ChangeMetadata } = dispatcher;
     // const pageContent = this.getPageContent();
+    // ChangeMetadata({
+    //   metaAttr: 'dataSource',
 
-    await this.updatePage({
-      datasources: addingDataFormRemote
+    // })
+
+    // await this.updatePage({
+    //   datasources: addingDataFormRemote
+    // });
+    // const {
+    //   interDatasources
+    // } = await getPageContentWithDatasource(pageID);
+    const interDatasources = await takeDatasources(addingDataFormRemote);
+    const nextDSState = {};
+    interDatasources.forEach((dsItem, idx) => {
+      nextDSState[this.genDatasourceMetaID(idx)] = dsItem;
     });
-    const {
-      interDatasources
-    } = await getPageContentWithDatasource(pageID);
-    UpdateAppContext({
-      payload: {
-        interDatasources
-      }
+    ChangeMetadata({
+      metaAttr: 'dataSource',
+      data: nextDSState,
+      replace: true
     });
+    // UpdateAppContext({
+    //   payload: {
+    //     interDatasources
+    //   }
+    // });
   }
 
   /**
@@ -96,7 +133,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    */
   getPageInfo = () => {
     const {
-      flatLayoutItems
+      flatLayoutItems, pageMetadata
     } = this.props;
     const pageDataFormRemote = this.getCurrPageDataDetail();
     // const { pageID, title } = appLocation;
@@ -105,10 +142,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     ]);
     const usedWidgets = takeUsedWidgetIDs(flatLayoutItems, pageDataFormRemote);
     const businessCodes = genBusinessCode(flatLayoutItems, pageDataFormRemote);
+    const dataSources = takeDatasourcesForRemote(pageMetadata.dataSource);
     return {
       ...submitData,
       usedWidgets,
       businessCodes,
+      dataSources,
     };
   }
 
@@ -146,21 +185,19 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { InitApp } = dispatcher;
 
     /** 并发获取初始化数据 */
-    const [remotePageData] = await Promise.all([
-      !offlineMode && getPageContentWithDatasource(pageID)
+    const [pageDataRes] = await Promise.all([
+      !offlineMode && getPageDetailService(pageID)
     ]);
 
     /** 准备初始化数据 */
     const initData = produce({}, (draftInitData) => {
       if (!offlineMode) {
         const {
-          interDatasources, pageContent, pageDataRes
-        } = remotePageData;
+          pageContent
+        } = pageDataRes;
         draftInitData.pageContent = pageContent;
         draftInitData.payload = {
           pageDataRes,
-          // 填入 interDatasources
-          interDatasources,
         };
       }
       return draftInitData;
@@ -170,17 +207,17 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   updatePage = (options = {}) => {
-    const {
-      datasources = this.getDatasources()
-    } = options;
+    // const {
+    //   datasources = this.getDatasources()
+    // } = options;
     return new Promise((resolve, reject) => {
-      const interDatasources = datasources;
+      // const interDatasources = datasources;
       const pageContent = this.getPageContent();
       if (offlineMode) return resolve({});
       updatePageService({
         pageInfoForBN: this.getPageInfo(),
         pageContentForFE: pageContent,
-        extendData: this.wrapDataSourceDataForUpdate(interDatasources),
+        // extendData: this.wrapDataSourceDataForUpdate(interDatasources),
       }).then((res) => {
         resolve(res);
       }).catch((e) => {
@@ -195,6 +232,11 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   onReleasePage = () => {
     return this.updatePage();
   }
+
+  /**
+   * 由页面设计器提供给属性项使用的 UI 上下文
+   */
+  UICtx = PDUICtx
 
   render() {
     const {
@@ -240,7 +282,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
             className="comp-panel"
           >
             <WidgetPanel
-              interDatasources={appContext?.payload?.interDatasources}
+              pageMetadata={pageMetadata}
               onUpdatedDatasource={this.onUpdatedDatasource}
             />
           </div>
@@ -265,6 +307,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               activeEntity && (
                 <PropertiesEditor
                   key={activeEntityID}
+                  UICtx={this.UICtx}
+                  genMetaRefID={this.genMetaRefID}
+                  takeMeta={this.takeMeta}
                   pageMetadata={pageMetadata}
                   changeMetadata={ChangeMetadata}
                   interDatasources={this.getDatasources()}

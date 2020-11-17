@@ -16,14 +16,17 @@ export class ActionHelperSpec {
   render(ctx: PropItemRenderContext) {
     const {
       takeMeta, genMetaRefID, changeEntityState, changeMetadata,
-      editingWidgetState, businessPayload
+      editingWidgetState
     } = ctx;
-    const { interDatasources } = businessPayload;
     const metaRefID = editingWidgetState[whichAttr];
     const actionConfig = metaRefID ? takeMeta({
       metaAttr: 'actions',
       metaRefID
     }) : undefined;
+    const datasource = takeMeta({
+      metaAttr: 'dataSource',
+    });
+    const interDatasources = Object.values(datasource);
 
     return (
       <div>

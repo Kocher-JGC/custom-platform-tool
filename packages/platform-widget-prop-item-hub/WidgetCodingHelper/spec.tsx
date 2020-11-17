@@ -4,7 +4,7 @@ import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
 
 const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
   const {
-    changeEntityState, editingWidgetState, widgetEntity, takeMeta, businessPayload
+    changeEntityState, editingWidgetState, widgetEntity, takeMeta
   } = props;
   const { id, widgetRef } = widgetEntity;
   const { widgetCode, field } = editingWidgetState;

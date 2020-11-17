@@ -63,10 +63,16 @@ export interface ChangeMetadataOptions {
   metaAttr: keyof PageMetadata
   /** 更改 meta 后的数据 */
   data: unknown
+  /** 更改 meta 后的数据 */
+  datas?: {
+    [dataID: string]: unknown
+  }
   /** 数据的引用 ID，如果不传，则创建一个新的 metaID */
   metaID?: string
   /** 需要删除的 meta 的 ID */
   rmMetaID?: string
+  /** 是否直接替换整个 meta */
+  replace?: boolean
 }
 
 export interface ChangeMetadataAction extends ChangeMetadataOptions {

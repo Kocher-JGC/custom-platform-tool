@@ -1,6 +1,6 @@
 import React from 'react';
-import { OptionsSelector } from './comp';
 import { PropItem, PropItemRender, PropItemRenderContext } from '@platform-widget-access/spec';
+import { OptionsSelector } from './comp';
 
 @PropItem({
   id: 'prop_datasource_selector',
@@ -13,7 +13,7 @@ import { PropItem, PropItemRender, PropItemRenderContext } from '@platform-widge
 export class DatasourceSelectotHelper implements PropItemRender {
   constructor(meta) {
     // this.meta = meta
-    console.log(meta);
+    // console.log(meta);
   }
 
   getA() {

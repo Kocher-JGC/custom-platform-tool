@@ -6,7 +6,6 @@ import produce from 'immer';
 import { nanoid } from 'nanoid';
 import union from 'lodash/union';
 import { Debounce } from '@mini-code/base-func';
-import { message } from 'antd';
 import {
   WidgetEntity, WidgetEntityState, PropItemMeta,
   WidgetRelyPropItems,
@@ -18,7 +17,6 @@ import {
   PageMetadata,
   PropItemRenderContext,
   ChangeEntityState,
-  UICtx,
 } from '../../data-structure';
 import { entityStateMergeRule } from './entityStateMergeRule';
 import { GroupPanel, GroupPanelData } from '../GroupPanel';
@@ -248,15 +246,6 @@ PropertiesEditorProps, PropertiesEditorState
     return `${prefix}.${selectedEntity.id}.${metaID}`;
   }
 
-  UICtx: UICtx = {
-    utils: {
-      showMsg: (ctx) => {
-        const { msg, type } = ctx;
-        message[type](msg);
-      }
-    }
-  }
-
   /**
    * 获取 meta
    */
@@ -298,9 +287,8 @@ PropertiesEditorProps, PropertiesEditorState
               businessPayload: {},
               editingWidgetState: activeState,
               widgetEntity: selectedEntity,
-              genMetaRefID: this.genMetaRefID,
-              takeMeta: this.takeMeta,
-              UICtx: this.UICtx,
+              // genMetaRefID: this.genMetaRefID,
+              // takeMeta: this.takeMeta,
               changeMetadata,
               changeEntityState: this.changeEntityState,
             }

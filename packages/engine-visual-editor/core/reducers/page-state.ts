@@ -80,8 +80,13 @@ export function pageMetadataReducer(
     case CHANGE_METADATA:
       return produce(state, (draft) => {
         const {
-          data, metaAttr, metaID, rmMetaID
+          data, metaAttr, metaID, rmMetaID, replace
         } = action;
+        /** 如果是 replace 模式，则直接替换整个 meta */
+        if(replace) {
+          draft[metaAttr] = data;
+          return draft;
+        }
         if (!draft[metaAttr]) {
           console.error('尝试修改了不存在的 meta，请检查代码');
           draft[metaAttr] = {};
