@@ -53,6 +53,7 @@ export type GenMetaRefID = (
 ) => string
 
 
+/** TODO: 完善属性项渲染器上下文的存放 */
 export interface PropItemRenderContext {
   /** 业务数据 */
   businessPayload: PD.PropItemRendererBusinessPayload

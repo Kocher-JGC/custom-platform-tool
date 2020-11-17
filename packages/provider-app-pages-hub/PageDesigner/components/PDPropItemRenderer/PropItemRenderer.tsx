@@ -31,7 +31,8 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
   UICtx,
   genMetaRefID,
   takeMeta,
-  renderCtx
+  ...other,
+  // renderCtx
 }) => {
   const {
     label,
@@ -43,7 +44,8 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
     Com = <Unexpect />;
   } else {
     const propItemRenderContext = {
-      ...renderCtx,
+      // ...renderCtx,
+      ...other,
       UICtx,
       genMetaRefID,
       takeMeta,

@@ -15,12 +15,11 @@ import {
   NextEntityStateType,
   NextEntityState,
   PageMetadata,
-  PropItemRenderContext,
   ChangeEntityState,
 } from '../../data-structure';
 import { entityStateMergeRule } from './entityStateMergeRule';
 import { GroupPanel, GroupPanelData } from '../GroupPanel';
-import { VEAppDispatcher } from '../../core';
+// import { VEAppDispatcher } from '../../core';
 
 /** 从组件定义的属性项的元数据 */
 export type PropItemConfigFormWidgetMeta = PropItemCompAccessSpec | PropItemRefs
@@ -42,7 +41,9 @@ export type InitEntityStateOfEditor = (entityState: WidgetEntityState) => void
  */
 export interface PropItemRendererProps {
   propItemMeta: PropItemMeta
-  renderCtx: PropItemRenderContext
+  changeEntityState: (nextState) => void
+  /** 编辑中的所有属性 */
+  editingWidgetState: any
 }
 
 export interface PropertiesEditorProps {
@@ -64,7 +65,7 @@ export interface PropertiesEditorProps {
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
   /** 更改元数据 */
-  changeMetadata: VEAppDispatcher['ChangeMetadata']
+  // changeMetadata: VEAppDispatcher['ChangeMetadata']
 }
 
 const debounce = new Debounce();
@@ -269,7 +270,8 @@ PropertiesEditorProps, PropertiesEditorState
     if (!entityState || !propItemMeta) return null;
 
     const {
-      propItemRenderer, changeMetadata
+      propItemRenderer, 
+      // changeMetadata
     } = this.props;
 
     const editingAttr = propItemMeta.whichAttr;
@@ -283,15 +285,16 @@ PropertiesEditorProps, PropertiesEditorState
         {
           propItemRenderer({
             propItemMeta,
-            renderCtx: {
-              businessPayload: {},
-              editingWidgetState: activeState,
-              widgetEntity: selectedEntity,
-              // genMetaRefID: this.genMetaRefID,
-              // takeMeta: this.takeMeta,
-              changeMetadata,
-              changeEntityState: this.changeEntityState,
-            }
+            changeEntityState: this.changeEntityState,
+            editingWidgetState: activeState,
+            // renderCtx: {
+            // businessPayload: {},
+            // editingWidgetState: activeState,
+            // widgetEntity: selectedEntity,
+            // genMetaRefID: this.genMetaRefID,
+            // takeMeta: this.takeMeta,
+            // changeMetadata,
+            // }
           })
         }
       </div>

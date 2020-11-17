@@ -9,7 +9,7 @@ interface SubmitItem {
 
 interface DataSourceBinderProps {
   onSubmit: (submitItems: SubmitItem[]) => void
-  bindedDataSources: any[]
+  bindedDataSources: ({id: string})[]
 }
 
 interface TableList {
@@ -122,7 +122,7 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
       <Button
         onClick={(e) => {
           const submitData = getItem(list, selectedRowKeys);
-          // console.log(submitData);
+          console.log(submitData);
           onSubmit(submitData);
         }}
       >

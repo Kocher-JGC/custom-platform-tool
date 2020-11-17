@@ -15,9 +15,9 @@ export const DataSourceDragItem: React.FC<DataSourceDragItemProps> = ({
     <div className="data-source-drag-items">
       {
         Array.isArray(interDatasources) && interDatasources.map((datasourceItem) => {
-          const { name: dName, columns } = datasourceItem;
+          const { name: dName, columns, id } = datasourceItem;
           return (
-            <div className="group p-2" key={dName}>
+            <div className="group p-2" key={id}>
               <div className="title font-bold text-md">{dName}</div>
               <div className="list p-2">
                 {

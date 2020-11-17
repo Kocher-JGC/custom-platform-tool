@@ -1,13 +1,17 @@
 import React from 'react';
-import Editor, { PropertiesEditorProps } from '@engine/visual-editor/components/PropertiesEditor';
+import Editor, { 
+// PropertiesEditorProps
+} from '@engine/visual-editor/components/PropertiesEditor';
 import { PropItemRenderer } from './PDPropItemRenderer';
 import { PlatformUICtx } from '@platform-widget-access/spec';
 import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } from '../services';
+import { PDUICtx } from '../utils';
 
-interface PropsEditorProps extends Omit<PropertiesEditorProps, 'propItemRenderer' | 'widgetBindedPropItemsMeta'> {
+// TODO: 完善属性检查
+interface PropsEditorProps {
   interDatasources: PD.Datasources
   customConfig?: any
-  UICtx: PlatformUICtx
+  // UICtx: PlatformUICtx
   genMetaRefID
   takeMeta
 }
@@ -47,19 +51,28 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     return this.state.propItemData[propItemID];
   }
 
-  propItemRenderer = (props) => {
+  propItemRenderer = ({
+    propItemMeta,
+    changeEntityState,
+    editingWidgetState
+  }) => {
+    // console.log(changeEntityState);
     const {
       changeMetadata,
       interDatasources,
       pageMetadata,
-      UICtx,
       genMetaRefID,
+      selectedEntity,
       takeMeta,
     } = this.props;
     return (
       <PropItemRenderer
-        {...props}
-        UICtx={UICtx}
+        // {...props}
+        editingWidgetState={editingWidgetState}
+        widgetEntity={selectedEntity}
+        propItemMeta={propItemMeta}
+        changeEntityState={changeEntityState}
+        UICtx={PDUICtx}
         takeMeta={takeMeta}
         genMetaRefID={genMetaRefID}
         pageMetadata={pageMetadata}

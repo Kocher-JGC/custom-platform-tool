@@ -1,7 +1,6 @@
 import React from 'react';
-import { CloseModal, ShowModal } from '@infra/ui';
 import { PlusOutlined } from '@ant-design/icons';
-import { DataSourceSelector } from "../PDDataSource";
+import { PDUICtx } from '../../utils';
 
 export const DataSourceTitle = ({
   onAddDataSource,
@@ -14,22 +13,14 @@ export const DataSourceTitle = ({
       </span>
       <PlusOutlined
         onClick={(e) => {
-          const modalID = ShowModal({
-            title: '添加数据源',
-            type: 'side',
+          const closeModal = PDUICtx.openDatasourceSelector({
+            defaultSelected: interDatasources,
+            modalType: 'side',
+            type: 'TABLE',
             position: 'left',
-            width: 400,
-            children: () => {
-              return (
-                <DataSourceSelector
-                  bindedDataSources={interDatasources}
-                  onSubmit={(submitData) => {
-                    console.log(submitData);
-                    onAddDataSource(submitData);
-                    CloseModal(modalID);
-                  }}
-                />
-              );
+            onSubmit: (submitData) => {
+              onAddDataSource(submitData);
+              closeModal();
             }
           });
         }}
