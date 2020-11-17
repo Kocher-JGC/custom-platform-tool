@@ -1,93 +1,54 @@
 import React from 'react';
 import { Table, Select, Input } from 'antd';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { CloseModal, ShowModal } from "@infra/ui";
-import { nanoid } from 'nanoid';
-import { ActionConfigOpenPage } from './ActionConfigOpenPage';
-import { ActionConfigDisplayControl } from './ActionConfigDisplayControl';
-import { ActionConfigSubmitData } from './ActionConfigSubmitData';
+import pick from 'lodash/pick';
 
 export class PageActionSelector extends React.Component {
   state = {
-    dataSource: []
+    dataSource: [{}]
   }
-
 
   componentDidMount(){
     this.setState({
       dataSource: this.initDataSource()
     });
   }
-
-  initActions = () => {
-    const { actions } = this.props.pageMetadata;
-    if(!actions || Object.keys(actions).length === 0){
-      const id = this.getActionId(0);
-      return {
-        [id]: { id }
-      };
-    }
-    return actions;
-  }
   initDataSource = () => {
-    const actions  = this.initActions();
-    const list = [];
-    for(const key in actions){
-      const index = this.getIndexByActionId(key);
-      list.push({ index, data: actions[key] });
-    }
-    return list.sort((a,b)=>a.index<b.index).map(item=>item.data);
+    return [{ id: `${new Date().valueOf()}` }];
   }
-
-  getIndexByActionId = (actionId) => {
-    return (actionId || '').split('.')[1]-0;
+  onGetAllEvents = () => {
+    return this.state.dataSource;
   }
-
-  getActionId = (index) => {
-    return `action.${index}.${nanoid(8)}`;
-  }
-
-  getTypeList = () => {
+  getActionList = () => {
     return [
-      { label: '打开链接', value: 'openPage', key: 'openPage' },
-      { label: '刷新控件（未实现）', value: 'refreshControl', key: 'refreshControl' },
+      { label: '打开链接', value: 'openLink', key: 'openLink' },
+      { label: '刷新控件', value: 'refreshControl', key: 'refreshControl' },
       { label: '赋值给控件', value: 'setControlData', key: 'setControlData' },
-      { label: '数据提交', value: 'submitData', key: 'submitData' },
+      { label: '库表操作', value: 'operateData', key: 'operateData' },
       { label: '显示隐藏', value: 'displayControl', key: 'displayControl' },
       { label: '刷新页面', value: 'refreshPage', key: 'refreshPage' },
       { label: '关闭页面', value: 'closePage', key: 'closePage' },
-      { label: '整表读取', value: 'readFormData', key: 'readFormData' },
-      { label: '整表回写', value: 'writeFormData', key: 'writeFormData' },
     ];
   };
 
   getActionConfig = (action) => {
     const config = {
-      openPage: {
-        ModalContent: ActionConfigOpenPage,
-        width: 500
+      openLink: {
+        ModalContent: <></>,
       },
       refreshPage: {
         readOnly: true
       },
       closePage: {
         readOnly: true
-      }, 
-      displayControl: {
-        width: 500,
-        ModalContent: ActionConfigDisplayControl
-      },
-      submitData: {
-        width: 900,
-        ModalContent: ActionConfigSubmitData
       }
     };
     return action && config[action] || {};
   }
   handlePlus = (index) => {
     const dataSource = this.state.dataSource.slice();
-    dataSource.splice(index+1, 0, { id: this.getActionId(index+1) });
-    console.log(dataSource);
+    dataSource.splice(index+1, 0, { id: `${new Date().valueOf()}` });
     this.setState({
       dataSource 
     });
@@ -121,25 +82,25 @@ export class PageActionSelector extends React.Component {
       dataSource
     });
   }
+  handleGetValue = (index, fields)=>{
+    const dataSource = this.state.dataSource.slice();
+    return pick(dataSource[index], fields);
+  }
 
-  perfectConfigInModal = ({ width, ModalContent }, actionConfig) => {
+  getPerfectConfig = (action, actionConfig, ModalContent) => {
     return new Promise((resolve, reject) => {
       const modalID = ShowModal({
-        title: '配置动作',
-        width: width || 700,
+        title: '配置事件',
+        width: 700,
         children: () => {
           return (
-            <div className="p-5">
+            <div className="p-2">
               <ModalContent
-                config = {actionConfig}
-                onSuccess={(config, configCn) => {
-                  resolve({ config, configCn });
+                onSuccess={(item) => {
                   CloseModal(modalID);
+                  // proTableReload();
+                  // goEdit(item);
                 }}
-                onCancel={()=>{
-                  CloseModal(modalID);
-                }}
-                {...this.props}
               />
             </div>
           );
@@ -148,21 +109,19 @@ export class PageActionSelector extends React.Component {
     });
   }
 
-  handlePerfectActionConfig = (index, record, config) => {
+  handlePerfectActionConfig = (index, record, ModalContent) => {
     const {
       action,
       [action]: actionConfig
     } = record;
-    this.perfectConfigInModal(config, actionConfig ).then(({ config, configCn })=>{
+    this.getPerfectConfig(action, actionConfig, ModalContent).then((newActionConfig)=>{
       this.handleSetValue(index, {
-        [action]: config,
-        configCn
+        [action]: newActionConfig
       });
     });
   }
   render () {
     const { dataSource } = this.state;
-    console.log(this.props);
     return (
       <div className="page-event-selector">
         <Table
@@ -175,7 +134,7 @@ export class PageActionSelector extends React.Component {
               render: (_t, _r, index) => index+1
             },
             {
-              dataIndex: 'name',
+              dataIndex: 'actionName',
               width: 139,
               title: '动作名称',
               align: 'center',
@@ -185,7 +144,7 @@ export class PageActionSelector extends React.Component {
                     className="w-full"
                     onChange = {(value)=>{
                       this.handleSetValue(_i, {
-                        name: value,
+                        actionName: value,
                       });
                     }}
                   />
@@ -193,7 +152,7 @@ export class PageActionSelector extends React.Component {
               }
             },
             {
-              dataIndex: 'preTrigger',
+              dataIndex: 'validMethods',
               width: 139,
               title: '动作前校验',
               align: 'center',
@@ -206,7 +165,7 @@ export class PageActionSelector extends React.Component {
               }
             },
             {
-              dataIndex: 'type',
+              dataIndex: 'action',
               width: 136,
               title: '动作',
               align: 'center',
@@ -216,30 +175,29 @@ export class PageActionSelector extends React.Component {
                     className="w-full"
                     onChange={(value)=>{
                       this.handleSetValue(_i, {
-                        type: value,
-                        configCn: ''
+                        action: value,
+                        actionConfigCn: ''
                       });
                     }}
-                    value={_r.type}
-                    options={this.getTypeList()}
+                    value={_r.action}
+                    options={this.getActionList()}
                   />
                 );
               }
             },
             {
-              dataIndex: 'configCn',
+              dataIndex: 'actionConfigCn',
               width: 140,
               title: '动作配置',
               align: 'center',
               render: (_t, _r, _i)=>{
-                const { ModalContent, readOnly, width } = this.getActionConfig(_r.type);
+                const { ModalContent, readOnly } = this.getActionConfig(_r.action);
                 return (
                   <Input 
-                    value={_r.configCn}
+                    value={_r.actionConfigCn}
                     onClick={e=>{
-                      ModalContent && this.handlePerfectActionConfig(_i, _r, { ModalContent,width });
+                      ModalContent && this.handlePerfectActionConfig(_i, _r, ModalContent);
                     }}
-                    title={_r.configCn}
                     readOnly = {readOnly}
                     className={"w-full" + (ModalContent ? ' cursor-pointer' : '')}
                   />
@@ -272,7 +230,7 @@ export class PageActionSelector extends React.Component {
                       className="mr-2 cursor-pointer"
                     />
                     {dataSource.length > 1 ? (<MinusOutlined 
-                      onClick = {()=>{this.handleMinus(_i);}}
+                      onClick = {this.handleMinus}
                       className="mr-2 cursor-pointer"
                     />) : null }
                     {/* { _i !== 0 ? (<ArrowUpOutlined 
