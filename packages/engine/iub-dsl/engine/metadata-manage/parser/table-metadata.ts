@@ -1,6 +1,7 @@
-import { TABLE_PATH_SPLIT_MARK } from '../const';
+import { DEFAULT_CODE_MARK, TABLE_PATH_SPLIT_MARK } from "../const";
+
 import {
-  ColumnItem, ParseMetaDataCtx, TableInfo, TableMetadata
+  ColumnItem, ParseMetaDataCtx, TableMetadata, MetaDateParseRes
 } from '../types';
 
 const parseColumn = (column: ColumnItem) => {
@@ -20,19 +21,24 @@ const parseColumns = (c: ColumnItem[], ctx: ParseMetaDataCtx) => {
     columns = c;
   }
 
-  const { baseMark } = ctx;
+  const {
+    baseMark, baseCodeMark,
+    codeMarkMapIdMark, idMarkMapCodeMark
+  } = ctx;
 
-  const columnsIdMarks: string[] = [];
+  // const columnsIdMarks: string[] = [];
   let columnsList: { [mark: string]: ColumnItem } = {};
   let tablePKInfo: any;
 
-  let mark = '';
-
   for (let i = 0; i < columns.length; i++) {
     const columnInfo = columns[i];
-    mark = baseMark + columnInfo.id;
+    const mark = baseMark + columnInfo.id;
+    const codeMark = baseCodeMark + columnInfo[DEFAULT_CODE_MARK];
 
-    columnsIdMarks.push(mark);
+    // columnsIdMarks.push(mark);
+    codeMarkMapIdMark[codeMark] = mark;
+    idMarkMapCodeMark[mark] = codeMark;
+
     columnsList = {
       ...columnsList,
       [mark]: parseColumn(columnInfo)
@@ -43,38 +49,45 @@ const parseColumns = (c: ColumnItem[], ctx: ParseMetaDataCtx) => {
     }
   }
   return {
-    columnsIdMarks,
+    columnsIdMarks: Object.keys(idMarkMapCodeMark),
     columnsList,
     tablePKInfo
   };
 };
 
-export interface MetaDateParseRes {
-  allColumnsList: { [mark: string]: ColumnItem };
-  allColumnsIdMarks: string[]
-  tableList: { [tableId: string]: TableInfo }
-}
-
 const initialMetaDataParseRes = (): MetaDateParseRes => ({
+  allInterfaceList: {},
   allColumnsList: {},
-  tableList: {},
-  allColumnsIdMarks: []
+  codeMarkMapIdMark: {},
+  idMarkMapCodeMark: {},
+  // allColumnsIdMarks: [],
 });
 
 export const parseTableMetadata = (tableMetadatas: TableMetadata[]) => {
-  const tableIds: string[] = [];
+  // const tableIds: string[] = [];
   const metaDateParseRes = initialMetaDataParseRes();
-  const { allColumnsIdMarks, allColumnsList, tableList } = metaDateParseRes;
+  const {
+    allColumnsList, allInterfaceList,
+    codeMarkMapIdMark, idMarkMapCodeMark
+  } = metaDateParseRes;
 
   let baseMark = '';
+  let baseCodeMark = '';
   for (let i = 0; i < tableMetadatas.length; i++) {
     const tableInfo = tableMetadatas[i];
-    tableIds.push(tableInfo.id);
+    // tableIds.push(tableInfo.id);
+    /** 添加标志数据 */
     baseMark = tableInfo.id + TABLE_PATH_SPLIT_MARK;
+    baseCodeMark = tableInfo.code + TABLE_PATH_SPLIT_MARK;
+    codeMarkMapIdMark[tableInfo.code] = tableInfo.id;
+    idMarkMapCodeMark[tableInfo.id] = tableInfo.code;
+
     /** 列解析 */
-    const { columnsIdMarks, columnsList, tablePKInfo } = parseColumns(tableInfo.columns, { baseMark });
+    const { columnsIdMarks, columnsList, tablePKInfo } = parseColumns(tableInfo.columns, {
+      baseMark, baseCodeMark, codeMarkMapIdMark, idMarkMapCodeMark
+    });
     /** 添加表格信息 */
-    tableList[tableInfo.id] = {
+    allInterfaceList[tableInfo.id] = {
       ...tableInfo,
       PKInfo: tablePKInfo,
       columnsList,
@@ -82,7 +95,7 @@ export const parseTableMetadata = (tableMetadatas: TableMetadata[]) => {
     };
 
     /** 添加allColumnsIdMarks信息 */
-    allColumnsIdMarks.push(...columnsIdMarks);
+    // allColumnsIdMarks.push(...columnsIdMarks);
 
     /** 添加columns信息 */
     Object.assign(allColumnsList, columnsList);

@@ -10,6 +10,8 @@ import { isPageState } from "./state-manage";
 import { eventPropsHandle } from "./event-manage";
 import { actionsCollectConstor } from "./relationship/depend-collet/action-depend";
 import { metadataManage } from "./metadata-manage";
+import { createIUB } from "./state-manage/state";
+import { metadataParser } from "./metadata-manage/parser";
 
 const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContext) => {
   const { changeTarget } = actionConf;
@@ -109,9 +111,11 @@ const IUBDSLParser = ({ dsl }) => {
 
   /** 页面模型解析 */
   const schemasParseRes = SchemasParser(schemas);
+  /** 验证 */
+  // const metadataParseRes = metadataParser({ metadata: metadataCollection.metadata });
+  // createIUB(schemasParseRes, metadataParseRes);
   /** 每个动作解析成函数「流程将其连起来」 */
   const actionParseRes = actionsCollectionParser(Object.assign(actionsCollection, tableExtralAction), parseContext);
-
   parseRes = {
     ...parseRes,
     findEquMetadata: parseContext.findEquMetadata,

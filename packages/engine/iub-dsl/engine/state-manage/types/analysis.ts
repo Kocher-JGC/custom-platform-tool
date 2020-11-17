@@ -8,10 +8,11 @@ export interface SchemasAnalysisRes {
     // [str: string]: PathMapInfoItem,
     [str: string]: any,
   },
+  pathMapMetaId: { [str: string]: string; }
   levelRelation: {
     [str: string]: string[];
   },
-  baseStruct: CommonObjStruct
+  baseStruct: CommonObjStruct;
 }
 
 export interface SchemaItemAnalysisCtx<T extends SchemaItem = SchemaItem> {

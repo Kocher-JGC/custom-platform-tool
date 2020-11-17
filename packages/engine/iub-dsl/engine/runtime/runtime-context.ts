@@ -86,9 +86,6 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   } = runtimeCtx;
   const {
     getPageState,
-    // getWatchDeps,
-    // updatePageState, targetUpdateState,
-    // IUBPageStore, pickPageStateKeyWord
   } = IUBStoreEntity;
 
   const { effectAnalysis, effectDispatch } = effectRelationship;
@@ -218,6 +215,11 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
 
     return dispatchMethod(...params);
   };
+
+  /** 模糊调度, 一般仅用于求值 */
+  // const vagueDispatchOfIUBEngine = () => {
+
+  // };
 
   /**
    * @description 处理动态的props

@@ -38,7 +38,7 @@ export type ActionOutput = 'string' | 'boolean' | 'undefined' | 'number' | FlowO
 
 export interface FlowOutputOfObj {
   type: ComplexType;
-  struct: {from: string; to: string}[]
+  struct: {key: string; val: string}[]
 }
 
 export interface ActionCollection {
