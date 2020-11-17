@@ -3,7 +3,7 @@ interface UpdatePageParams {
   pageInfoForBN
   /** 前端维护的页面内容 */
   pageContentForFE
-  extendData
+  extendData?
 }
 
 /**
@@ -12,7 +12,7 @@ interface UpdatePageParams {
 export async function updatePageService({
   pageInfoForBN,
   pageContentForFE,
-  extendData
+  extendData = {}
 }: UpdatePageParams) {
   if (!pageInfoForBN) {
     return console.error('请传入 pageInfoForBN');

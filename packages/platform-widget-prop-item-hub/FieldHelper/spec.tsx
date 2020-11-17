@@ -41,7 +41,6 @@ export class FieldHelperSpec {
   };
 
   render({
-    businessPayload,
     editingWidgetState,
     changeEntityState,
     changeMetadata,
@@ -49,7 +48,6 @@ export class FieldHelperSpec {
     genMetaRefID,
     UICtx
   }: PropItemRenderContext) {
-    const { interDatasources } = businessPayload;
     const currMetaRefID = editingWidgetState[whichAttr];
     const selectedField = takeMeta({
       metaAttr,
@@ -60,6 +58,11 @@ export class FieldHelperSpec {
     }) as {
       [sID: string]: SelectedField
     };
+    const datasource = takeMeta({
+      metaAttr: 'dataSource',
+    });
+
+    const interDatasources = Object.values(datasource);
 
     return (
       <PopModelSelector

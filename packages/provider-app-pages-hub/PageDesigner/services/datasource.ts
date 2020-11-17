@@ -33,7 +33,7 @@ export const takeDatasourceField = (datasourceData): PD.Datasource => {
 export const dataSourceDetailWrapper = (dataSourcesFromRemote: any[] = []) => {
   const getDataPromise: Promise[] = [];
   dataSourcesFromRemote.forEach((dataS) => {
-    const p = getDataSourceDetail(dataS.datasourceId);
+    const p = getDataSourceDetail(dataS.id);
     getDataPromise.push(p);
   });
   return Promise.all([...getDataPromise]);

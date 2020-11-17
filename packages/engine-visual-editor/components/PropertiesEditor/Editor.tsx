@@ -287,8 +287,8 @@ PropertiesEditorProps, PropertiesEditorState
               businessPayload: {},
               editingWidgetState: activeState,
               widgetEntity: selectedEntity,
-              genMetaRefID: this.genMetaRefID,
-              takeMeta: this.takeMeta,
+              // genMetaRefID: this.genMetaRefID,
+              // takeMeta: this.takeMeta,
               changeMetadata,
               changeEntityState: this.changeEntityState,
             }

@@ -18,14 +18,15 @@ import { FormInputComp } from '.';
 })
 export class FormInput implements PlatformWidgetComp {
   constructor(widgetMeta) {
-    console.log(widgetMeta);
+    // console.log(widgetMeta);
   }
 
-  printA() {
+  private printA() {
     console.log('A');
   }
 
   render(widgetState: WidgetEntityState) {
+    console.log(widgetState);
     return (
       <FormInputComp {...widgetState} />
     );

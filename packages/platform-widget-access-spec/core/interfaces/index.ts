@@ -1,8 +1,3 @@
 export * from './PlatformWidgetAccessSpec';
+export * from './PlatformUICtx';
 // export * from './PropItemCompAccessSpec';
-
-export interface UICtx {
-  utils: {
-    showMsg: (ctx: { msg: string, type: 'success' | 'error' }) => void
-  }
-}

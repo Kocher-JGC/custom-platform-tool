@@ -1,13 +1,12 @@
 import React from 'react';
 import { PropItemRendererProps } from '@engine/visual-editor/components/PropertiesEditor';
 import { getListOfDictionaryServices, getDictionaryListServices, getTableList } from '@provider-app/services';
-import { UICtx } from '@platform-widget-access/spec';
+import { PlatformUICtx } from '@platform-widget-access/spec';
 import { Unexpect } from '../WidgetRenderer';
 
 interface PDPropItemRendererProps extends PropItemRendererProps {
-  interDatasources: PD.Datasources
   pageMetadata
-  UICtx: UICtx
+  UICtx: PlatformUICtx
 }
 
 /**
@@ -29,8 +28,9 @@ const servicesForPropItems: PD.PropItemRendererBusinessPayload['$services'] = {
  */
 export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
   propItemMeta,
-  interDatasources,
   UICtx,
+  genMetaRefID,
+  takeMeta,
   renderCtx
 }) => {
   const {
@@ -45,8 +45,9 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
     const propItemRenderContext = {
       ...renderCtx,
       UICtx,
+      genMetaRefID,
+      takeMeta,
       businessPayload: {
-        interDatasources,
         $services: servicesForPropItems
       }
     };

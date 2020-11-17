@@ -21,7 +21,7 @@ export const DataSourceDragItem: React.FC<DataSourceDragItemProps> = ({
               <div className="title font-bold text-md">{dName}</div>
               <div className="list p-2">
                 {
-                  columns.map((column) => {
+                  columns && columns.map((column) => {
                     const { name: colName, id } = column;
                     return (
                       <div className="col-item text-gray-600" key={id}>
