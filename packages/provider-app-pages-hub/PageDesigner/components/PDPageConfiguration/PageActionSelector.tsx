@@ -1,8 +1,10 @@
 import React from 'react';
 import { Table, Select, Input } from 'antd';
 import { PlusOutlined, MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { CloseModal, ShowModal } from "@infra/ui";
+import pick from 'lodash/pick';
 
-export class PageEventSelector extends React.Component {
+export class PageActionSelector extends React.Component {
   state = {
     dataSource: [{}]
   }
@@ -18,13 +20,6 @@ export class PageEventSelector extends React.Component {
   onGetAllEvents = () => {
     return this.state.dataSource;
   }
-  getEventCodeList = () => {
-    return [
-      { label: '加载时', value: 'loading', key: 'loading' },
-      { label: '刷新时', value: 'refresh', key: 'refresh' },
-      { label: '销毁时', value: 'destroy', key: 'destroy' },
-    ];
-  };
   getActionList = () => {
     return [
       { label: '打开链接', value: 'openLink', key: 'openLink' },
@@ -36,6 +31,21 @@ export class PageEventSelector extends React.Component {
       { label: '关闭页面', value: 'closePage', key: 'closePage' },
     ];
   };
+
+  getActionConfig = (action) => {
+    const config = {
+      openLink: {
+        ModalContent: <></>,
+      },
+      refreshPage: {
+        readOnly: true
+      },
+      closePage: {
+        readOnly: true
+      }
+    };
+    return action && config[action] || {};
+  }
   handlePlus = (index) => {
     const dataSource = this.state.dataSource.slice();
     dataSource.splice(index+1, 0, { id: `${new Date().valueOf()}` });
@@ -72,6 +82,44 @@ export class PageEventSelector extends React.Component {
       dataSource
     });
   }
+  handleGetValue = (index, fields)=>{
+    const dataSource = this.state.dataSource.slice();
+    return pick(dataSource[index], fields);
+  }
+
+  getPerfectConfig = (action, actionConfig, ModalContent) => {
+    return new Promise((resolve, reject) => {
+      const modalID = ShowModal({
+        title: '配置事件',
+        width: 700,
+        children: () => {
+          return (
+            <div className="p-2">
+              <ModalContent
+                onSuccess={(item) => {
+                  CloseModal(modalID);
+                  // proTableReload();
+                  // goEdit(item);
+                }}
+              />
+            </div>
+          );
+        }
+      });
+    });
+  }
+
+  handlePerfectActionConfig = (index, record, ModalContent) => {
+    const {
+      action,
+      [action]: actionConfig
+    } = record;
+    this.getPerfectConfig(action, actionConfig, ModalContent).then((newActionConfig)=>{
+      this.handleSetValue(index, {
+        [action]: newActionConfig
+      });
+    });
+  }
   render () {
     const { dataSource } = this.state;
     return (
@@ -81,33 +129,31 @@ export class PageEventSelector extends React.Component {
             {
               dataIndex: 'index',
               title: '序号',
-              width:80,
+              width:70,
               align: 'center',
               render: (_t, _r, index) => index+1
             },
             {
-              dataIndex: 'eventCode',
-              title: '事件',
-              width:120,
+              dataIndex: 'actionName',
+              width: 139,
+              title: '动作名称',
               align: 'center',
               render: (_t, _r, _i)=>{
                 return (
-                  <Select 
+                  <Input 
                     className="w-full"
-                    onChange={(value)=>{
+                    onChange = {(value)=>{
                       this.handleSetValue(_i, {
-                        eventCode: value
+                        actionName: value,
                       });
                     }}
-                    value={_r.eventCode}
-                    options={this.getEventCodeList()}
                   />
                 );
               }
             },
             {
               dataIndex: 'validMethods',
-              width: 250,
+              width: 139,
               title: '动作前校验',
               align: 'center',
               render: (_t, _r)=>{
@@ -120,7 +166,7 @@ export class PageEventSelector extends React.Component {
             },
             {
               dataIndex: 'action',
-              width: 150,
+              width: 136,
               title: '动作',
               align: 'center',
               render: (_t, _r, _i)=>{
@@ -129,7 +175,8 @@ export class PageEventSelector extends React.Component {
                     className="w-full"
                     onChange={(value)=>{
                       this.handleSetValue(_i, {
-                        action: value
+                        action: value,
+                        actionConfigCn: ''
                       });
                     }}
                     value={_r.action}
@@ -139,21 +186,27 @@ export class PageEventSelector extends React.Component {
               }
             },
             {
-              dataIndex: 'actionConfig',
-              width: 250,
+              dataIndex: 'actionConfigCn',
+              width: 140,
               title: '动作配置',
               align: 'center',
-              render: (_t, _r)=>{
+              render: (_t, _r, _i)=>{
+                const { ModalContent, readOnly } = this.getActionConfig(_r.action);
                 return (
                   <Input 
-                    className="w-full cursor-pointer"
+                    value={_r.actionConfigCn}
+                    onClick={e=>{
+                      ModalContent && this.handlePerfectActionConfig(_i, _r, ModalContent);
+                    }}
+                    readOnly = {readOnly}
+                    className={"w-full" + (ModalContent ? ' cursor-pointer' : '')}
                   />
                 );
               }
             },
             {
               dataIndex: 'condition',
-              width: 250,
+              width: 140,
               title: '条件',
               align: 'center',
               render: (_t, _r)=>{
@@ -166,7 +219,7 @@ export class PageEventSelector extends React.Component {
             },
             {
               dataIndex: 'actionArea',
-              width: 250,
+              width: 73,
               title: '操作',
               align: 'center',
               render: (_t, _r, _i)=>{
@@ -180,14 +233,14 @@ export class PageEventSelector extends React.Component {
                       onClick = {this.handleMinus}
                       className="mr-2 cursor-pointer"
                     />) : null }
-                    { _i !== 0 ? (<ArrowUpOutlined 
+                    {/* { _i !== 0 ? (<ArrowUpOutlined 
                       onClick = { () => {this.handleMoveUp(_i);}}
                       className="mr-2 cursor-pointer"
                     />) : null }
                     { _i !== dataSource.length - 1 ? ( <ArrowDownOutlined 
                       onClick = {() => {this.handleMoveDown(_i);}}
                       className="mr-2 cursor-pointer"
-                    />) : null }
+                    />) : null } */}
                   </>
                 );
               }
