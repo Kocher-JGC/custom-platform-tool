@@ -14,7 +14,7 @@ import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRem
 // import {
 //   getPageContentWithDatasource,
 // } from "./services";
-import PDUICtx from './utils/ui-ctx';
+import { PDUICtx } from './utils';
 
 import './style';
 import { takeDatasources } from "./services/datasource";

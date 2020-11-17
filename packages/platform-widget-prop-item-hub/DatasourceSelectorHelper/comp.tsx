@@ -34,8 +34,10 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     editingWidgetState,
     widgetEntity,
     businessPayload,
+    UICtx,
   } = props;
-  const { interDatasources, $services } = businessPayload;
+  console.log(UICtx);
+  const { $services } = businessPayload;
   // 选项数据源的引用
   const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
   const datasourceMeta = DSOptionsRef ? takeMeta({
