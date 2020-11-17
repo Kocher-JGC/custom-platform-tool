@@ -7,7 +7,7 @@ export const ToApp = ({
   return (
     <div
       onClick={(e) => {
-        // const preWindow = window.open(appUrl);
+        // const preWindow = window.open(paasServerUrl);
         // $R_P.post(`${defaultWebServerUrl}/preview-app`, {
         //   lessee: $R_P.urlManager.currLessee,
         //   app: $R_P.urlManager.currApp,

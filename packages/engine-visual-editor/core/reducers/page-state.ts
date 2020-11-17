@@ -1,0 +1,147 @@
+import produce from 'immer';
+import { mergeDeep } from '@infra/utils/tools';
+import {
+  INIT_APP, InitAppAction, DEL_ENTITY, DelEntityAction,
+  ADD_ENTITY, AddEntityAction, UPDATE_APP, UpdateAppAction, ChangeMetadataAction, CHANGE_METADATA
+} from "../actions";
+import { PageMetadata } from "../../data-structure";
+
+const DefaultPageMeta: PageMetadata = {
+  lastCompID: 0,
+  dataSource: {},
+  pageInterface: {},
+  linkpage: {},
+  schema: {},
+  actions: {},
+  varRely: {},
+};
+
+/**
+ * 删除 pageMetadata 的某项数据
+ * @param pageMetadata
+ * @param delID
+ */
+const delMetaData = (pageMetadata, delID) => {
+  if (!pageMetadata) return;
+  Object.keys(pageMetadata).forEach((metaID) => {
+    if (metaID.indexOf(delID) !== -1) {
+      Reflect.deleteProperty(pageMetadata, metaID);
+    }
+  });
+};
+
+/**
+ * 组件选择状态管理。如果组件未被实例化，则实例化后被选择
+ */
+export function pageMetadataReducer(
+  state: PageMetadata = DefaultPageMeta,
+  action: InitAppAction | AddEntityAction | ChangeMetadataAction | DelEntityAction
+) {
+  switch (action.type) {
+    case INIT_APP:
+      const {
+        pageContent
+      } = action;
+      return produce(pageContent, (draft) => (draft ? draft.meta : state));
+    case ADD_ENTITY:
+      return produce(state, (draft) => {
+        const { entity: { id, varAttr } } = action;
+        if (varAttr) {
+          // 设置变量
+          const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
+          draft.lastCompID += 1;
+          if (!draft.varRely) draft.varRely = {};
+          draft.varRely[id] = varAttrArr;
+        }
+        // varAttrArr.forEach((attr) => {
+        //   const varAttrID = `${id}.${attr}`;
+        //   draft.varAttr[varAttrID] = attr;
+        // });
+        return draft;
+      });
+    case DEL_ENTITY:
+      return produce(state, (draft) => {
+        const { idx, entity: delE } = action;
+        const { id: delID } = delE;
+
+        // 删除变量
+        delMetaData(draft.varRely, delID);
+
+        // 删除动作
+        delMetaData(draft.actions, delID);
+
+        // 删除数据源
+        delMetaData(draft.dataSource, delID);
+
+        // 删除 schema
+        delMetaData(draft.schema, delID);
+        return draft;
+      });
+    case CHANGE_METADATA:
+      return produce(state, (draft) => {
+        const {
+          data, metaAttr, metaID, rmMetaID, replace
+        } = action;
+        /** 如果是 replace 模式，则直接替换整个 meta */
+        if(replace) {
+          draft[metaAttr] = data;
+          return draft;
+        }
+        if (!draft[metaAttr]) {
+          console.error('尝试修改了不存在的 meta，请检查代码');
+          draft[metaAttr] = {};
+        }
+        if (metaID) {
+          draft[metaAttr][metaID] = data;
+        } else {
+          const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
+          Object.assign(draft[metaAttr], {
+            [newDataRefID]: data
+          });
+        }
+        if (rmMetaID && draft[metaAttr]) {
+          Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+        }
+        return draft;
+      });
+    default:
+      return state;
+  }
+}
+
+export interface AppContext {
+  /** App 是否做好准备 */
+  ready: boolean
+  /** 页面元数据 */
+  payload?: any
+}
+/**
+ * 整个应用的上下文数据
+ */
+export function appContextReducer(
+  state = {
+    ready: false
+  },
+  action: InitAppAction | UpdateAppAction
+): AppContext {
+  switch (action.type) {
+    case INIT_APP:
+      const {
+        payload,
+        name, id
+      } = action;
+      return {
+        ready: true,
+        payload,
+      };
+    case UPDATE_APP:
+      const { type, ...otherState } = action;
+      return produce(state, (draftState) => {
+        // Object.assign(draftState, otherState);
+        const nextStateVal = mergeDeep(draftState, otherState);
+        return nextStateVal;
+      });
+    default:
+      return state;
+  }
+}

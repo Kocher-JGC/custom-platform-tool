@@ -1,0 +1,11 @@
+{
+  "name": "@platform-widget-access/spec",
+  "description": "平台组件标准",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+    "@ant-design/pro-table": "^2.9.7",
+    "reflect-metadata": "^0.1.13"
+  }
+}

@@ -15,5 +15,5 @@ pwd=$PWD
 # cd "$pwd/packages/web-platform" && yarn build && mv ./dist/* "$pwd/dist/consumer-app"
 
 sh $pwd/scripts/build-provider-app.sh
-sh $pwd/scripts/build-web-platform.sh
-sh $pwd/scripts/build-web-server.sh
+sh $pwd/scripts/build-consumer-app.sh
+sh $pwd/scripts/build-platform-web-server.sh

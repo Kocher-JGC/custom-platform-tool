@@ -1,17 +1,11 @@
 {
   "packages": [
-    "packages/mock-data/*",
-    "packages/provider-app-entry/",
-    "packages/provider-app-common/*",
-    "packages/provider-app-hub/*",
-    "packages/provider-component/*",
-    "packages/engine/*",
-    "packages/engine/iub-dsl/*",
-    "packages/infrastructure/*",
-    "packages/consumer-app/*",
-    "packages/web-platform/",
-    "packages/spec/*",
-    "dev-packages/expression-editor/"
+    "packages/provider-app-*/",
+    "packages/engine-*/",
+    "packages/infra-*/",
+    "packages/ui-*/",
+    "packages/platform-widget-access-*/",
+    "packages/*-hub/*"
   ],
   "version": "independent",
   "npmClient": "yarn",

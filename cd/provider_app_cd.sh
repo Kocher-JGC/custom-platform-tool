@@ -1,5 +1,5 @@
 # 应用的名称
-app_name=reg.hydevops.com/custom-platform-v3-frontend/provider-app-entry
+app_name=reg.hydevops.com/custom-platform-v3-frontend/provider_app
 
 # 应用的别名
 app_alias=provider_app

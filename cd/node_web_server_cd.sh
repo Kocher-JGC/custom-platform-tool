@@ -1,5 +1,5 @@
 # 应用的名称
-app_name=reg.hydevops.com/custom-platform-v3-frontend/web-server
+app_name=reg.hydevops.com/custom-platform-v3-frontend/node_web_server
 
 # 应用的别名
 app_alias=node_web_server

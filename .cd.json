@@ -12,13 +12,13 @@
       },
       {
         "name": "consumer_app",
-        "buildCmd": "yarn build:web-platform",
-        "dockerfilePath": "./packages/web-platform"
+        "buildCmd": "yarn build:consumer-app",
+        "dockerfilePath": "./packages/consumer-app-hub"
       },
       {
         "name": "node_web_server",
-        "buildCmd": "yarn build:web-server",
-        "dockerfilePath": "./packages/web-server"
+        "buildCmd": "yarn build:platform-web-server",
+        "dockerfilePath": "./packages/platform-web-server"
       }
     ]
   }

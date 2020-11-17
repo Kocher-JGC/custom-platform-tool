@@ -1,1 +1,0 @@
-REACT_APP_API_URL=http://192.168.14.140:6090 REACT_APP_PREVIEW_APP_URL=http://192.168.14.140:11111 yarn start:provider-app
