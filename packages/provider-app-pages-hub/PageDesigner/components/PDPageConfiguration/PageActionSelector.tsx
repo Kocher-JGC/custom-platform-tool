@@ -1,9 +1,10 @@
-import React, { forwardRef, useState } from 'react';
+import React from 'react';
 import { Table, Select, Input } from 'antd';
-import { PlusOutlined, MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { nanoid } from 'nanoid';
 import { ActionConfigOpenPage } from './ActionConfigOpenPage';
+import { ActionConfigDisplayControl } from './ActionConfigDisplayControl';
 
 
 export class PageActionSelector extends React.Component {
@@ -71,6 +72,9 @@ export class PageActionSelector extends React.Component {
       },
       closePage: {
         readOnly: true
+      }, 
+      displayControl: {
+        ModalContent: ActionConfigDisplayControl
       }
     };
     return action && config[action] || {};
@@ -130,6 +134,7 @@ export class PageActionSelector extends React.Component {
                 onCancel={()=>{
                   CloseModal(modalID);
                 }}
+                {...this.props}
               />
             </div>
           );
