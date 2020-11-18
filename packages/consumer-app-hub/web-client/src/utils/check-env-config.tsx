@@ -1,8 +1,9 @@
 import React from 'react';
 import { Modal, List } from 'antd';
 
-export const checkEnvConfig = (appEnvConfig) => {
+export const checkEnvConfig = (appEnvConfig, mainConf) => {
   const { currentApp, pageServerUrlForApp, saasServerUrl } = appEnvConfig;
+  const { lessee } = mainConf;
   if(!currentApp) {
     Modal.error({
       title: '您的配置有误，有以下几种情况：',
@@ -47,6 +48,23 @@ export const checkEnvConfig = (appEnvConfig) => {
           <List
             dataSource={[
               `1. 缺少必要的配置 saasServerUrl`,
+            ]}
+            renderItem={item => <List.Item>{item}</List.Item>}
+            footer={'如果经过上述排查后仍然无法解决此错误，请联系 IT。'}
+          />
+        </div>
+      )
+    });
+    return false;
+  }
+  if(!lessee) {
+    Modal.error({
+      title: '您的配置有误，有以下几种情况：',
+      content: (
+        <div>
+          <List
+            dataSource={[
+              `1. 导出的应用配置中缺少租户信息 lessee`,
             ]}
             renderItem={item => <List.Item>{item}</List.Item>}
             footer={'如果经过上述排查后仍然无法解决此错误，请联系 IT。'}
