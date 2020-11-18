@@ -17,7 +17,8 @@ import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRem
 import { PDUICtx } from './utils';
 
 import './style';
-import { takeDatasources } from "./services/datasource";
+// import { takeDatasources, wrapInterDatasource } from "./services/datasource";
+import { GenMetaRefID } from "@engine/visual-editor/data-structure";
 // import { VisualEditorStore } from "@engine/visual-editor/core/store";
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
@@ -38,25 +39,40 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   /**
-   * 生成 meta 引用 ID
+   * 生成 meta 引用 ID，规则
+   * 1. [metaAttr].[widgetEntityID].[nanoID]
    */
 
-  genMetaRefID = (
+  genMetaRefID: GenMetaRefID = (
     metaAttr: ChangeMetadataAction['metaAttr'], 
-    options?: {
-      len?: number
-    }
+    options
   ) => {
-    const { selectedInfo } = this.props;
-    const { len = 8 } = options || {};
-    const { id: activeEntityID } = selectedInfo;
     if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
+    const { id: activeEntityID } = this.props.selectedInfo;
+    const { len = 8, extraInfo } = options || {};
     const metaID = nanoid(len);
-    const prefix = metaAttr;
-    return `${prefix}.${activeEntityID}.${metaID}`;
+    let prefix = '';
+    /**
+     * meta id 生成策略与规则
+     */
+    switch (metaAttr) {
+      case 'dataSource':
+        return this.genDatasourceMetaID();
+      case 'schema':
+        prefix = 'schema';
+        break;
+      case 'varRely':
+        prefix = 'var';
+        break;
+      case 'actions':
+        prefix = 'act';
+        break;
+      default:
+    }
+    return `${prefix}.${activeEntityID}${extraInfo ? `.${extraInfo}` : ''}.${metaID}`;
   }
 
-  genDatasourceMetaID = (idx: number) => {
+  genDatasourceMetaID = (idx?: number) => {
     const { pageMetadata } = this.props;
     const dsLen = pageMetadata.dataSource ? Object.keys(pageMetadata.dataSource).length : 0;
     const idxPref = idx === 0 ? 0 : idx || dsLen + 1;
@@ -77,9 +93,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    * 响应更新数据源的回调
    * TODO: 优化链路
    */
-  onUpdatedDatasource = async (addingDataFormRemote) => {
+  onUpdatedDatasource = async (interDatasources: PD.Datasources) => {
     const { appContext, dispatcher, appLocation } = this.props;
-    const { pageID, title } = appLocation;
+    // const { pageID, title } = appLocation;
     const { UpdateAppContext, ChangeMetadata } = dispatcher;
     // const pageContent = this.getPageContent();
     // ChangeMetadata({
@@ -88,12 +104,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     // })
 
     // await this.updatePage({
-    //   datasources: addingDataFormRemote
+    //   datasources: datasourceFormRemote
     // });
     // const {
     //   interDatasources
     // } = await getPageContentWithDatasource(pageID);
-    const interDatasources = await takeDatasources(addingDataFormRemote);
+    // const interDatasources = wrapInterDatasource(datasourceFormRemote);
+    // console.log(interDatasources);
     const nextDSState = {};
     interDatasources.forEach((dsItem, idx) => {
       nextDSState[this.genDatasourceMetaID(idx)] = dsItem;

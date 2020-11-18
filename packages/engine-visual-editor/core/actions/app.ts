@@ -63,7 +63,7 @@ export interface ChangeMetadataOptions {
   metaAttr: keyof PageMetadata
   /** 更改 meta 后的数据 */
   data: unknown
-  /** 更改 meta 后的数据 */
+  /** 批量更新数据 */
   datas?: {
     [dataID: string]: unknown
   }

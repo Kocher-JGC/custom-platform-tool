@@ -239,22 +239,22 @@ PropertiesEditorProps, PropertiesEditorState
     }, 100);
   }
 
-  genMetaRefID = (metaAttr: string, len = 8) => {
-    const { selectedEntity } = this.props;
-    if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
-    const metaID = nanoid(len);
-    const prefix = metaAttr;
-    return `${prefix}.${selectedEntity.id}.${metaID}`;
-  }
+  // genMetaRefID = (metaAttr: string, len = 8) => {
+  //   const { selectedEntity } = this.props;
+  //   if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
+  //   const metaID = nanoid(len);
+  //   const prefix = metaAttr;
+  //   return `${prefix}.${selectedEntity.id}.${metaID}`;
+  // }
 
   /**
    * 获取 meta
    */
-  takeMeta = (options) => {
-    const { pageMetadata } = this.props;
-    const { metaAttr, metaRefID } = options;
-    return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
-  }
+  // takeMeta = (options) => {
+  //   const { pageMetadata } = this.props;
+  //   const { metaAttr, metaRefID } = options;
+  //   return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
+  // }
 
   /**
    * prop item 渲染器

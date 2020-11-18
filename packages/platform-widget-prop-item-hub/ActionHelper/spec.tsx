@@ -42,7 +42,7 @@ export class ActionHelperSpec {
                   interDatasources={interDatasources}
                   defaultConfig={actionConfig}
                   onSubmit={(actionSetting) => {
-                    const nextMetaID = genMetaRefID(`a`);
+                    const nextMetaID = genMetaRefID('actions');
                     changeEntityState({
                       attr: whichAttr,
                       value: nextMetaID

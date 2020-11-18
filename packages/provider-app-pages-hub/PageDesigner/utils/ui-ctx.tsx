@@ -13,7 +13,7 @@ export const PDUICtx: PlatformUICtx = {
     }
   },
   openDatasourceSelector: (options) => {
-    const { defaultSelected, modalType, position, onSubmit } = options;
+    const { defaultSelected, modalType, position, type, onSubmit } = options;
     const ModalID = ShowModal({
       title: '数据源选择',
       type: modalType,
@@ -22,8 +22,9 @@ export const PDUICtx: PlatformUICtx = {
         return (
           <DataSourceSelector
             bindedDataSources={defaultSelected}
-            onSubmit={selectedItems => {
-              onSubmit(selectedItems, { close });
+            type={type}
+            onSubmit={(selectedItems, interDatasources) => {
+              onSubmit(selectedItems, { close, interDatasources });
             }}
           />
         );
