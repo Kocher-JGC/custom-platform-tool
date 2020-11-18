@@ -1,19 +1,22 @@
 import {
   MetaKeyFromTable, FieldKeyFromTable, GetTableMetaFieldKeyP,
-  GetMetaInfo, FieldDataMapToFieldMarkDataP
+  GetMetaInfo, FieldDataMapToFieldMarkDataP, MetaDateParseRes
 } from "../types";
+
 import {
-  metadataMetaMark, isPageDatasoruceMeta, pickDatasoruceMetaKeyWord, TABLE_PATH_SPLIT_MARK
+  metadataMetaMark, isPageDatasoruceMeta, pickDatasoruceMetaKeyWord,
+  TABLE_PATH_SPLIT_MARK, DEFAULT_CODE_MARK
 } from "../const";
 
-export const tableManage = ({ tableList, allColumnsList, allColumnsIdMarks }) => {
+
+export const tableManage = ({ allInterfaceList, allColumnsList }: MetaDateParseRes) => {
   /**
    * 获取某个表元数据
    * @param tableMark 表元数据标示
    * @returns TableInfo
    */
   const getTableMeta = (tableMark: string) => {
-    return tableList[tableMark] || false;
+    return allInterfaceList[tableMark] || false;
   };
   /**
    * 获取表元数据的某个关键字的信息
@@ -32,8 +35,8 @@ export const tableManage = ({ tableList, allColumnsList, allColumnsIdMarks }) =>
    * @returns ColumnItem columnsInfo
    */
   const getTableFieldInfo = (fieldMark: string) => {
-    if (allColumnsIdMarks.includes(fieldMark)) {
-      const columnsInfo = allColumnsList[fieldMark];
+    const columnsInfo = allColumnsList[fieldMark];
+    if (columnsInfo) {
       return columnsInfo;
     }
     console.error('未在表元数据中找到对应field对应的关键字!~~', fieldMark);
@@ -46,7 +49,7 @@ export const tableManage = ({ tableList, allColumnsList, allColumnsIdMarks }) =>
    * @param keywordKey 关键字key
    * @returns string
    */
-  const getTableFieldKeyInfo = (fieldMark: string, keywordKey: FieldKeyFromTable = 'fieldCode') => {
+  const getTableFieldKeyInfo = (fieldMark: string, keywordKey: FieldKeyFromTable = DEFAULT_CODE_MARK) => {
     const fieldInfo = getTableFieldInfo(fieldMark);
     return fieldInfo?.[keywordKey] || false;
   };
@@ -59,7 +62,7 @@ export const tableManage = ({ tableList, allColumnsList, allColumnsIdMarks }) =>
   const getTableMetaFieldKey = ({
     metaMark,
     metaOnlyMark = 'id',
-    fieldKey = 'fieldCode'
+    fieldKey = DEFAULT_CODE_MARK
   }: GetTableMetaFieldKeyP) => {
     let table;
     if (metaOnlyMark === 'id') {
@@ -82,7 +85,7 @@ export const tableManage = ({ tableList, allColumnsList, allColumnsIdMarks }) =>
    */
   const addMetaFromTable = (tableMark: string, metadata) => {
     if (!getTableMeta(tableMark)) {
-      tableList[tableMark] = metadata;
+      allInterfaceList[tableMark] = metadata;
       // TODO: 未完成
       // allColumnsList, allColumnsIdMarks
     }
@@ -96,7 +99,7 @@ export const tableManage = ({ tableList, allColumnsList, allColumnsIdMarks }) =>
    */
   const tableFieldDataMapToFieldMarkData = ({
     fieldData,
-    fieldKey = 'fieldCode',
+    fieldKey = DEFAULT_CODE_MARK,
     meta,
   }: FieldDataMapToFieldMarkDataP) => {
     const result = {};
