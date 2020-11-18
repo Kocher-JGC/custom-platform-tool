@@ -5,7 +5,7 @@ import {
   OpenModalActionType, OpenModal,
   OpenModalFromTableClickType, OpenModalFromTableClick
 } from "./sys-actions";
-import { APBDSLCURD, APBDSLCURDActionType } from './business-actions';
+import { APBDSLCURD, APBDSLCURDActionType, LinkageType, Linkage } from './business-actions';
 
 /**
  * @extends CommonCondition 控制动作能否执行的条件
@@ -20,7 +20,7 @@ export interface BasicActionConf extends CommonCondition {
   /** 不同动作的配置 */
   actionOptions: any;
   /** 单个动作的输出, TODO: 实际如何使用 */
-  actionOutput: ActionOutput;
+  actionOutput?: ActionOutput;
 }
 
 type SysActionType =
@@ -30,15 +30,19 @@ type SysActionType =
   OpenModalFromTableClickType;
 
 type BusinessActionType =
-  APBDSLCURDActionType
+  APBDSLCURDActionType |
+  LinkageType
 
 export type AllActionType = SysActionType | BusinessActionType
-export type ActionsDefinition = UpdateState | DataCollection | APBDSLCURD | OpenModal | OpenModalFromTableClick
+export type ActionsDefinition = 
+  UpdateState | DataCollection | APBDSLCURD |
+  OpenModal | OpenModalFromTableClick | Linkage
 export type ActionOutput = 'string' | 'boolean' | 'undefined' | 'number' | FlowOutputOfObj;
 
 export interface FlowOutputOfObj {
   type: ComplexType;
-  struct: {from: string; to: string}[]
+  struct: {key: string; val: string}[]
+  // struct: {from: string; to: string}[]
 }
 
 export interface ActionCollection {

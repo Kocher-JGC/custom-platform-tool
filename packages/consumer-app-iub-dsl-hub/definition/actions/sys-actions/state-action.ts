@@ -18,11 +18,15 @@ const testStruct = {
 export type UpdateStateActionType = 'updateState'
 /** 动作更新运行时状态、 控件赋值 */
 
+export interface ChangeMapping {
+  from: string; // 来源: 固定值, 表达式, 后端数据
+  target: string; // 目标: 页面变量的标示位
+}
+
+
 export interface UpdateStateOptions {
   /** 方式1: A To B 的映射 */
-  changeMapping?: {
-    [mapFrom: string]: string;
-  }
+  changeMapping?: ChangeMapping[]
   /** 方式2: 根据目标信息, 反向映射「如: schemas的描述/数据收集关系」 */
   changeTarget?: string;
 }
