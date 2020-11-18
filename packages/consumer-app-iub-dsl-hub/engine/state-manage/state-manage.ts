@@ -1,13 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
-import {
-  get as LGet, set as LSet
-} from 'lodash';
-import { CommonObjStruct } from '@iub-dsl/definition';
+import { get as LGet } from 'lodash';
+import { CommonObjStruct, ChangeMapping } from '@iub-dsl/definition';
 import { useCacheState } from '../utils';
 import { isPageState, pickPageStateKeyWord } from './const';
 import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from '../runtime/types';
 import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
+import { setOfSchemaPath } from './utils';
 
 // TODO
 const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
@@ -84,7 +83,18 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     };
     const getWatchDeps = getPageState;
 
+    /** 复杂数据的更新 */
+    const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: ChangeMapping[]) => {
+      const newState = IUBPageStore;
+      changeMaps.forEach(({ from, target }) => {
+        setOfSchemaPath(newState, target, from);
+      });
+      setIUBPageStore(newState);
+    };
+    
+
     const handleFn = useMemo(() => {
+      /** 单个数据的更新 */
       const targetUpdateState = (ctx: RunTimeCtxToBusiness, target, value) => {
         target = pickPageStateKeyWord(target);
         setIUBPageStore({
@@ -92,10 +102,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         });
       };
 
-      const updatePageState = (ctx: RunTimeCtxToBusiness, newState: CommonObjStruct) => {
-        setIUBPageStore(newState);
-      };
-
+      /** 元数据映射进行更新页面状态 @(metadata).dId: val */
       const updatePageStateFromMetaMapping = (ctx: RunTimeCtxToBusiness, fieldMappingValue: any) => {
         const fieldMappingArr = Object.keys(fieldMappingValue);
         const updateValue = {};
@@ -111,6 +118,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         return updateValue;
       };
 
+      /** 根据表元数据映射进行更新页面状态 name: val */
       const updatePageStateFromTableRecord = (ctx: RunTimeCtxToBusiness, tableRecord, metadata) => {
         const { dispatchOfIUBEngine } = ctx;
         const fieldMappingValue = dispatchOfIUBEngine({
@@ -123,6 +131,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
         return updatePageStateFromMetaMapping(ctx, fieldMappingValue);
       };
 
+      /** 将schema的唯一元数据信息 */
       const getSchemaMetadata = ({ dispatchOfIUBEngine }: RunTimeCtxToBusiness, schemaPath: string) => {
         const schemaInfo = getSchemaInfo(schemaPath);
         const fieldMapping = collectFieldMapping(schemaInfo);
@@ -136,7 +145,6 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       };
 
       return {
-        updatePageState,
         isPageState: (ctx: RunTimeCtxToBusiness, param: string) => isPageState(param),
         pickPageStateKeyWord: (ctx: RunTimeCtxToBusiness, param: string) => pickPageStateKeyWord(param),
         targetUpdateState,
@@ -149,6 +157,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     return {
       getPageState,
       getWatchDeps,
+      mappingUpdateState,
       ...handleFn
     };
   };
