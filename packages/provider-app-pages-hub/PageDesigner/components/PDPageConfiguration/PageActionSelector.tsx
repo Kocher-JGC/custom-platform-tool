@@ -2,8 +2,8 @@ import React, { forwardRef, useState } from 'react';
 import { Table, Select, Input } from 'antd';
 import { PlusOutlined, MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { CloseModal, ShowModal } from "@infra/ui";
-import pick from 'lodash/pick';
 import { nanoid } from 'nanoid';
+import { ActionConfigOpenPage } from './ActionConfigOpenPage';
 
 
 export class PageActionSelector extends React.Component {
@@ -63,7 +63,8 @@ export class PageActionSelector extends React.Component {
   getActionConfig = (action) => {
     const config = {
       openPage: {
-        ModalContent: <></>,
+        ModalContent: ActionConfigOpenPage,
+        width: 500
       },
       refreshPage: {
         readOnly: true
@@ -111,24 +112,23 @@ export class PageActionSelector extends React.Component {
       dataSource
     });
   }
-  handleGetValue = (index, fields)=>{
-    const dataSource = this.state.dataSource.slice();
-    return pick(dataSource[index], fields);
-  }
 
-  getPerfectConfig = (action, actionConfig, ModalContent) => {
+  perfectConfigInModal = ({ width, ModalContent }, actionConfig) => {
     return new Promise((resolve, reject) => {
       const modalID = ShowModal({
         title: '配置动作',
-        width: 700,
+        width: width || 700,
         children: () => {
           return (
-            <div className="p-2">
+            <div className="p-5">
               <ModalContent
-                onSuccess={(item) => {
+                config = {actionConfig}
+                onSuccess={(config, configCn) => {
+                  resolve({ config, configCn });
                   CloseModal(modalID);
-                  // proTableReload();
-                  // goEdit(item);
+                }}
+                onCancel={()=>{
+                  CloseModal(modalID);
                 }}
               />
             </div>
@@ -138,14 +138,15 @@ export class PageActionSelector extends React.Component {
     });
   }
 
-  handlePerfectActionConfig = (index, record, ModalContent) => {
+  handlePerfectActionConfig = (index, record, config) => {
     const {
       action,
       [action]: actionConfig
     } = record;
-    this.getPerfectConfig(action, actionConfig, ModalContent).then((newActionConfig)=>{
+    this.perfectConfigInModal(config, actionConfig ).then(({ config, configCn })=>{
       this.handleSetValue(index, {
-        [action]: newActionConfig
+        [action]: config,
+        configCn
       });
     });
   }
@@ -221,13 +222,14 @@ export class PageActionSelector extends React.Component {
               title: '动作配置',
               align: 'center',
               render: (_t, _r, _i)=>{
-                const { ModalContent, readOnly } = this.getActionConfig(_r.type);
+                const { ModalContent, readOnly, width } = this.getActionConfig(_r.type);
                 return (
                   <Input 
                     value={_r.configCn}
                     onClick={e=>{
-                      ModalContent && this.handlePerfectActionConfig(_i, _r, ModalContent);
+                      ModalContent && this.handlePerfectActionConfig(_i, _r, { ModalContent,width });
                     }}
+                    title={_r.configCn}
                     readOnly = {readOnly}
                     className={"w-full" + (ModalContent ? ' cursor-pointer' : '')}
                   />
