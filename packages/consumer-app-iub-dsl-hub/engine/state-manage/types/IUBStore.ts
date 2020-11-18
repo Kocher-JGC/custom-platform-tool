@@ -1,4 +1,4 @@
-import { CommonObjStruct } from "@iub-dsl/definition";
+import { CommonObjStruct, ChangeMapping } from "@iub-dsl/definition";
 import { RunTimeCtxToBusiness } from "../../runtime/types";
 
 export type GetStruct = string | {
@@ -8,7 +8,7 @@ export type GetStruct = string | {
 export type IUBStoreMethod = keyof IUBStoreEntity;
 
 export interface IUBStoreEntity {
-  updatePageState: (ctx: RunTimeCtxToBusiness, newState: CommonObjStruct) => void;
+  mappingUpdateState: (ctx: RunTimeCtxToBusiness, changeMaps: ChangeMapping[]) => void;
   isPageState: (ctx: RunTimeCtxToBusiness, param: string) => boolean;
   pickPageStateKeyWord: (ctx: RunTimeCtxToBusiness, param: string) => string;
   targetUpdateState: (ctx: RunTimeCtxToBusiness, target: any, value: any) => void;
