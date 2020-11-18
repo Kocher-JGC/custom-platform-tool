@@ -1,8 +1,8 @@
 import {
   ApbFunction, APBDSLCURDOptions, EnumCURD, NormalCURD,
-  TableInsert, TableUpdate, TableSelect, TableDelete, ConditionOperator
+  TableInsert, TableUpdate, TableSelect, TableDelete
 } from "@iub-dsl/definition/actions";
-import { Condition } from "@iub-dsl/definition";
+import { Condition, ConditionOperator } from "@iub-dsl/definition";
 import { dataCollectionAction } from "../sys-actions";
 import {
   getGenAPBDSLFunctionTransform, SelectParamOfAPBDSL, UpdateParamOfAPBDSL, DelParamOfAPBDSL

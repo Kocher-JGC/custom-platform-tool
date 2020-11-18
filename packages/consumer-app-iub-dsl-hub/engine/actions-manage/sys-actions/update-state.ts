@@ -15,9 +15,9 @@ export const updateStateAction = (conf: UpdateStateOptions, baseActionInfo): Act
     changeTarget,
     changeMapping
   } = conf;
+  /** 在Action接收payload直接点对点改变数据 */
   if (changeTarget) {
     return async ({ action, asyncDispatchOfIUBEngine }) => {
-      // action, 标准得事件执行上下文, param2 运行时上下文标准函数
       return await asyncDispatchOfIUBEngine({
         dispatch: {
           module: DispatchModuleName.IUBStore,
@@ -28,13 +28,40 @@ export const updateStateAction = (conf: UpdateStateOptions, baseActionInfo): Act
       });
     };
   }
+  /**
+   * 映射结构的改变
+   * from: 表达式, 固定值,
+   * target: 某个页面变量的标志位 「特殊(其他动作的职能): 如:联动 username将转成 @(schema).dId1」
+   * 问题: dId2[1]/sdId2, 层级的描述和转换, 放在哪?
+   */
   if (changeMapping) {
+    // {@(schema).did1: val}
     return async ({ action, asyncDispatchOfIUBEngine }) => {
+      // const A = {
+      //   did1: 1,
+      //   did2: 2,
+      //   'dataSource[1]/username': 3,
+      //   'department[2]/children[3]/deparmentName': 1,
+      // };
+      const actualChangeMapping = changeMapping.map(async ({ from: oldFrom, target }) => {
+        /** from的转换, 比如表达式的运算 */
+        const from = oldFrom;
+        // const from = await asyncDispatchOfIUBEngine({
+        //   /** 不确定的模块进行模糊调度来求值 */
+        //   dispatch: { // TODO: 未开发
+        //     module: DispatchModuleName.IUBStore,
+        //     method: DispatchMethodNameOfIUBStore.updatePageState,
+        //     params: [oldFrom],
+        //   }
+        // });
+
+        return { from, target };
+      });
       return await asyncDispatchOfIUBEngine({
         dispatch: {
           module: DispatchModuleName.IUBStore,
-          method: DispatchMethodNameOfIUBStore.targetUpdateState,
-          params: [changeMapping, action.payload],
+          method: DispatchMethodNameOfIUBStore.mappingUpdateState,
+          params: [actualChangeMapping],
         },
         actionInfo: action,
       });
