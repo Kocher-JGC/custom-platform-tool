@@ -51,7 +51,7 @@ export class PageActionSelector extends React.Component {
   getTypeList = () => {
     return [
       { label: '打开链接', value: 'openPage', key: 'openPage' },
-      { label: '刷新控件', value: 'refreshControl', key: 'refreshControl' },
+      { label: '刷新控件（未实现）', value: 'refreshControl', key: 'refreshControl' },
       { label: '赋值给控件', value: 'setControlData', key: 'setControlData' },
       { label: '库表操作', value: 'operateData', key: 'operateData' },
       { label: '显示隐藏', value: 'displayControl', key: 'displayControl' },
