@@ -260,7 +260,7 @@ export class PageActionSelector extends React.Component {
                       className="mr-2 cursor-pointer"
                     />
                     {dataSource.length > 1 ? (<MinusOutlined 
-                      onClick = {this.handleMinus}
+                      onClick = {()=>{this.handleMinus(_i);}}
                       className="mr-2 cursor-pointer"
                     />) : null }
                     {/* { _i !== 0 ? (<ArrowUpOutlined 
