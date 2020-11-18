@@ -7,9 +7,7 @@ import config from "../../config";
 const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
-
-const platformApiUrl = "http://192.168.14.181:6090/paas";
-const pageDataStorePath = "zip";
+const { paasServerUrl, pageDataStorePath } = config;
 
 /**
  * 子进程运行 shell 方法
@@ -147,7 +145,7 @@ export class ReleaseAppService {
    */
   async getPageDataFromProvider({ lesseeCode, applicationCode }, authorization) {
     const resData = await axios.get(
-      `${platformApiUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      `${paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {

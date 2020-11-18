@@ -4,7 +4,7 @@ import { initRequest } from './utils/request';
 import { usedConfKeys, getAppEnvConfig, getMainConf, UrlConfKey } from './utils/env';
 import { checkEnvConfig, showFetchMainJsonError } from './utils/check-env-config';
 
-const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase());
+// const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase());
 
 /**
  * 储存query或者conf.json配置
@@ -12,24 +12,29 @@ const firstUpperCase = (str: string) => str.replace(/^\S/, (s) => s.toUpperCase(
 const setHostEnv = async () => {
   const appEnvConfig = await getAppEnvConfig();
   // TODO: 临时做法, 如果报错就安装应用
-  let mainConf = {};
 
-  const isPass = checkEnvConfig(appEnvConfig);
+  const mainConf = await getMainConf(appEnvConfig.currentApp);
+  const isPass = checkEnvConfig(appEnvConfig, mainConf);
 
-  try {
-    mainConf = await getMainConf(appEnvConfig.currentApp);
-  } catch(e) {
-    showFetchMainJsonError();
-    // window.location.href = `/app-installation?api=${store.get(UrlConfKey.saasServerUrl)}`
-  }
+  // try {
+  //   mainConf = await getMainConf(appEnvConfig.currentApp);
+  // } catch(e) {
+  //   showFetchMainJsonError();
+  //   // window.location.href = `/app-installation?api=${store.get(UrlConfKey.saasServerUrl)}`
+  // }
 
   /**
    * ！！！这里采用明确的设置 store 的方式！！！
    * 不再采用隐式的赋值
    */
-  store.set('currentApp', appEnvConfig.currentApp);
-  store.set('saasServerUrl', appEnvConfig.saasServerUrl);
-  store.set('pageServerUrlForApp', appEnvConfig.pageServerUrlForApp);
+
+  if(isPass){
+    store.set('app/code', appEnvConfig.currentApp);
+    store.set('app/lessee', mainConf.lessee);
+    store.set('saasServerUrl', appEnvConfig.saasServerUrl);
+    store.set('pageServerUrlForApp', appEnvConfig.pageServerUrlForApp);
+  }
+
   // Object.keys(appEnvConfig).forEach((key) => {
   //   const val = store.get(key);
   //   /** store没有该配置设置对应配置 */
@@ -57,6 +62,10 @@ const saveQueryParam = () => {
       queryKeys.forEach((q) => {
         if (q === 't') {
           store.set('app/token', query[q]);
+        } else if (q === 'app') {
+          store.set('app/code', query[q]);
+        } else if (q === 'lessee') {
+          store.set('app/lessee', query[q]);
         } else {
           store.set(q, query[q]);
         }
@@ -75,9 +84,9 @@ const initReq = () => {
 };
 
 /**
- * A. 预览: 
+ * A. 预览:
  * 1.1 url有值, 需不需要请求json?
- * 
+ *
  * B. 发布:
  * 2.1 url无值, 需要请求json,
  * 2.2 但是第一次进入时, 无mian.json, 应该直接跳转至安装页面
