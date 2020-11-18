@@ -34,7 +34,7 @@ export const ActionConfigDisplayControl = ({
     const { showControl, hideControl } = data;
     const showControlCn = showControl.map(item=>getControlLabel(item)).join('，');
     const hideControlCn = hideControl.map(item=>getControlLabel(item)).join('，');
-    onSuccess(data, `显示：${showControlCn}，隐藏：${hideControlCn}`);
+    onSuccess(data, `显示：${showControlCn || '无'}，隐藏：${hideControlCn || '无'}`);
   };
 
   const getAllControlList = () => {
@@ -57,6 +57,17 @@ export const ActionConfigDisplayControl = ({
     setShowContorlList(allControlListTmpl);
     setHideContorlList(allControlListTmpl);
   }, []);
+
+  useEffect(() => {
+    const { showControl = [], hideControl = [] } = config || {};
+    setShowContorlList(filterControlList(hideControl));
+    setHideContorlList(filterControlList(showControl));
+    form.setFieldsValue({ showControl, hideControl });
+  }, [allControlList]);
+
+  const filterControlList = (values) => {
+    return allControlList.filter(item=>!values.includes(item.value));
+  };
 
   const onReset = () => {
     form.resetFields();
