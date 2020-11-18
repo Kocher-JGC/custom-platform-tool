@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table } from 'antd';
 import { Button } from '@infra/ui';
+import { getListOfDictionaryServices, getDictionaryListServices } from '@provider-app/services';
 
 interface SelectedRowInfo {
   id: string
@@ -12,9 +13,8 @@ interface DictSelectorProps extends PD.PropItemRendererBusinessPayload {
   defaultSelectedInfo?: SelectedRowInfo
 }
 
-const DictSubItems = ({
+export const DictSubItems = ({
   dictID,
-  getDictWithSubItems
 }) => {
   const [itemList, setItemList] = useState([{
     name: '',
@@ -22,7 +22,7 @@ const DictSubItems = ({
     id: 'none'
   }]);
   useEffect(() => {
-    getDictWithSubItems({ id: dictID }).then((res) => {
+    getListOfDictionaryServices({ id: dictID }).then((res) => {
       setItemList(res?.result?.items);
     });
   }, []);
@@ -61,7 +61,7 @@ export const DictSelector: React.FC<DictSelectorProps> = ({
   // console.log('$services :>> ', $services);
   const [dictList, setDictList] = useState([]);
   useEffect(() => {
-    $services.dict.getDictList()
+    getDictionaryListServices()
       .then(({ result }) => {
         const { data } = result;
         setDictList(data);

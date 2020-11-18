@@ -48,8 +48,15 @@ export interface TakeMetaOptions {
 export type TakeMeta = (options: TakeMetaOptions) => unknown
 
 export type GenMetaRefID = (
-  /** 前缀 */
-  perfix: string
+  /** 编辑的 meta 属性 */
+  metaAttr: MetaAttr,
+  /** 生成的 options */
+  options?: {
+    /** 生成的 metaID */
+    len?: number
+    /** 额外的 meta id 信息 */
+    extraInfo?: string
+  }
 ) => string
 
 

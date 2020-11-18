@@ -50,11 +50,11 @@ export class FieldHelperSpec {
   }: PropItemRenderContext) {
     const currMetaRefID = editingWidgetState[whichAttr];
     const selectedField = takeMeta({
-      metaAttr,
+      metaAttr: 'schema',
       metaRefID: currMetaRefID
     }) as SelectedField;
     const schema = takeMeta({
-      metaAttr,
+      metaAttr: 'schema',
     }) as {
       [sID: string]: SelectedField
     };
@@ -80,7 +80,7 @@ export class FieldHelperSpec {
                     const prevMetaRefID = currMetaRefID;
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
-                        const nextMetaRefID = genMetaRefID(`s.${fieldCode}`);
+                        const nextMetaRefID = genMetaRefID('schema', { extraInfo: fieldCode });
                         changeEntityState({
                           attr: whichAttr,
                           value: nextMetaRefID
