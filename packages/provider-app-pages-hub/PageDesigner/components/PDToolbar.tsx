@@ -18,7 +18,7 @@ const ReleaseBtn = ({
         setLoading(true);
         onReleasePage?.().finally(() => {
           setTimeout(() => setLoading(false), 800);
-        });
+          });
       }}
     >
       保存
@@ -30,14 +30,16 @@ interface ToolbarCustomProps {
   onReleasePage?: () => Promise<unknown>
   flatLayoutItems
   appLocation
-  pageMetadata
+  pageMetadata,
+  ChangeMetadata
 }
 
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   onReleasePage,
   flatLayoutItems,
   pageMetadata,
-  appLocation
+  appLocation,
+  ChangeMetadata
 }) => {
   const previewUrl = getAppPreviewUrl({
     ...appLocation,
@@ -68,6 +70,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                 <PageConfigContainer
                   pageMetadata={pageMetadata}
                   flatLayoutItems={flatLayoutItems}
+                  ChangeMetadata = {ChangeMetadata }
                 />
               );
             }

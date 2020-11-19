@@ -342,6 +342,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               flatLayoutItems={flatLayoutItems}
               onReleasePage={this.onReleasePage}
               appLocation={appLocation}
+              ChangeMetadata = {ChangeMetadata}
             />
           </header>
           <div
