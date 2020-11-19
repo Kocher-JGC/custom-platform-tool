@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Tabs, Tab, Button } from '@infra/ui';
 import { PageVariableSelector } from './PageVariableSelector';
 import { PageActionSelector } from './PageActionSelector';
@@ -9,6 +9,7 @@ export interface PageConfigContainerProps {
 }
 
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) => {
+  const actionSelectorRef = useRef();
   const handleOk = () => {
 
   };
@@ -19,7 +20,10 @@ export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) =
     <div className="page-config-container p-5 pt-0">
       <Tabs>
         <Tab label="页面动作">
-          <PageActionSelector {...props} />
+          <PageActionSelector 
+            ref = {actionSelectorRef}
+            {...props}
+          />
         </Tab>
         <Tab label="页面变量">
           <PageVariableSelector {...props} />
