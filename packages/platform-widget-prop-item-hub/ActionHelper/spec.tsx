@@ -15,8 +15,11 @@ const whichAttr = 'actionRef';
 export class ActionHelperSpec {
   render(ctx: PropItemRenderContext) {
     const {
-      takeMeta, genMetaRefID, changeEntityState, changeMetadata,
-      editingWidgetState
+      changeEntityState, 
+      editingWidgetState,
+      platformCtx: {
+        meta: { takeMeta, genMetaRefID, changePageMeta }
+      },
     } = ctx;
     const metaRefID = editingWidgetState[whichAttr];
     const actionConfig = metaRefID ? takeMeta({
@@ -47,7 +50,7 @@ export class ActionHelperSpec {
                       attr: whichAttr,
                       value: nextMetaID
                     });
-                    changeMetadata({
+                    changePageMeta({
                       data: actionSetting,
                       metaAttr: 'actions',
                       metaID: nextMetaID

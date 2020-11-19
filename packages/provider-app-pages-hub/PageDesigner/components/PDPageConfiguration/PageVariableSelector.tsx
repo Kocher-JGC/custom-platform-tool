@@ -7,30 +7,39 @@ export enum VarAttrTypeMap {
   datasource = '数据源',
 }
 
-const takeVariableData = (varRely, flatLayoutItems) => {
+const takeVariableData = (varRely, options) => {
+  const { flatLayoutItems } = options;
   const res = [];
-  for (const widgetID in varRely) {
-    if (Object.prototype.hasOwnProperty.call(varRely, widgetID)) {
-      const variableItems = varRely[widgetID];
-      const widgetEntity = flatLayoutItems[widgetID];
-      if (widgetEntity) {
-        const { propState } = widgetEntity;
-        variableItems.forEach((varItem) => {
-          const { alias, attr, type } = varItem;
-          const varCode = `${widgetID}.${attr}`;
-
-          // TODO: 这里取了特定的值，后续需要改进
-          const { widgetCode, title } = propState;
-
-          if (!propState) return;
-
-          res.push({
-            varCode: widgetCode,
-            varType: VarAttrTypeMap[type],
-            varDesc: `${title}.${alias}`,
-            id: varCode,
-          });
-        });
+  for (const varID in varRely) {
+    if (Object.prototype.hasOwnProperty.call(varRely, varID)) {
+      const variableItems = varRely[varID];
+      const { type: varType, widgetRef, varAttr } = variableItems;
+      /** 根据变量的类型决定取对应的引用数据的值 */
+      switch (varType) {
+        case 'widget':
+          const widgetEntity = flatLayoutItems[widgetRef];
+          if (widgetEntity) {
+            const { propState } = widgetEntity;
+            varAttr && varAttr.forEach((varItem) => {
+              const { alias, attr, type } = varItem;
+              const varCode = [widgetRef, attr].join('.');
+  
+              // TODO: 这里取了特定的值，后续需要改进
+              const { widgetCode, title } = propState;
+  
+              if (!propState) return;
+  
+              res.push({
+                varCode: widgetCode,
+                varType: VarAttrTypeMap[type],
+                varDesc: `${title}.${alias}`,
+                id: varCode,
+              });
+            });
+          }
+          break;
+        default:
+          break;
       }
     }
   }
@@ -71,7 +80,9 @@ export const PageVariableSelector = ({
           },
         ]}
         size="small"
-        dataSource={takeVariableData(varRely, flatLayoutItems)}
+        dataSource={takeVariableData(varRely, {
+          flatLayoutItems
+        })}
         rowKey="id"
       />
     </div>

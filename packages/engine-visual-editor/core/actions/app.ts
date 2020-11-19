@@ -82,7 +82,7 @@ export interface ChangeMetadataAction extends ChangeMetadataOptions {
 /**
  * 初始化应用数据
  */
-export const ChangeMetadata = (options: ChangeMetadataOptions): ChangeMetadataAction => {
+export const ChangePageMeta = (options: ChangeMetadataOptions): ChangeMetadataAction => {
   return {
     type: CHANGE_METADATA,
     ...options

@@ -1,30 +1,46 @@
 import React from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { PDUICtx } from '../../utils';
+import { PlatformCtx } from '../../platform-access';
+import { PlatformContext } from '../../utils';
 
-export const DataSourceTitle = ({
+interface DataSourceTitleProps {
+  interDatasources
+  onAddDataSource
+  platformCtx: PlatformCtx
+}
+
+export const DataSourceTitle: React.FC<DataSourceTitleProps> = ({
   onAddDataSource,
+  platformCtx,
   interDatasources
 }) => {
   return (
-    <div className="flex items-center">
-      <span>
-        数据源
-      </span>
-      <PlusOutlined
-        onClick={(e) => {
-          const closeModal = PDUICtx.openDatasourceSelector({
-            defaultSelected: interDatasources,
-            modalType: 'side',
-            type: 'TABLE',
-            position: 'left',
-            onSubmit: (submitData) => {
-              onAddDataSource(submitData);
-              closeModal();
-            }
-          });
-        }}
-      />
-    </div>
+    <PlatformContext.Consumer>
+      {
+        (platformCtx) => {
+          return (
+            <div className="flex items-center">
+              <span>
+                数据源
+              </span>
+              <PlusOutlined
+                onClick={(e) => {
+                  const closeModal = platformCtx.selector.openDatasourceSelector({
+                    defaultSelected: interDatasources,
+                    modalType: 'side',
+                    type: 'TABLE',
+                    position: 'left',
+                    onSubmit: (submitData) => {
+                      onAddDataSource(submitData);
+                      closeModal();
+                    }
+                  });
+                }}
+              />
+            </div>
+          );
+        }
+      }
+    </PlatformContext.Consumer>
   );
 };

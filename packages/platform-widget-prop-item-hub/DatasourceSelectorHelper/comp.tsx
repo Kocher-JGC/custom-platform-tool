@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Radio } from 'antd';
-import { PropItemRenderContext } from '@engine/visual-editor/data-structure';
+import { PropItemRenderContext } from '@platform-widget-access/spec';
 // import { PopModelSelector } from '@infra/ui';
 // import { DictSelector } from './DictSelector';
 // import { TableSelector } from './TableSelector';
@@ -27,16 +27,16 @@ interface OptionsSelectorProps extends PropItemRenderContext {
 export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   const {
     changeEntityState,
-    changeMetadata,
-    takeMeta,
-    genMetaRefID,
     whichAttr,
     editingWidgetState,
-    widgetEntity,
-    businessPayload,
-    UICtx,
+    platformCtx,
   } = props;
-  const { $services } = businessPayload;
+
+  const {
+    changePageMeta,
+    takeMeta,
+    genMetaRefID,
+  } = platformCtx.meta;
   // 选项数据源的引用
   const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
   const datasourceMeta = DSOptionsRef ? takeMeta({
@@ -48,24 +48,27 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   const dsBinder = dsType ? (
     <div 
       onClick={e => {
-        UICtx.openDatasourceSelector({
+        platformCtx.selector.openDatasourceSelector({
           defaultSelected: datasourceMeta ? [datasourceMeta] : [],
           modalType: 'side',
           position: 'right',
           single: true,
           type: dsType,
           onSubmit: (submitData, { close, interDatasources }) => {
-            const nextMetaID = genMetaRefID('dataSource');
+            const bindedDS = interDatasources[0];
+            const nextMetaID = genMetaRefID('dataSource', {
+              dsID: bindedDS.id
+            });
             changeEntityState({
               attr: whichAttr,
               value: nextMetaID
             });
-            changeMetadata({
+            changePageMeta({
               metaAttr: 'dataSource',
               metaID: nextMetaID,
               rmMetaID: DSOptionsRef,
               // 由于是单选的，所以只需要取 0
-              data: interDatasources[0]
+              data: bindedDS
               // metaID:
             });
             // console.log(submitData);
@@ -77,90 +80,6 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     >
       {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
     </div>
-    // <PopModelSelector
-    //   modelSetting={{
-    //     title: '选择数据源',
-    //     type: 'side',
-    //     position: 'right',
-    //     width: 400,
-    //     children: ({ close }) => {
-    //       const defaultSelectedInfo = datasourceMeta ? {
-    //         id: datasourceMeta?.tableInfo.id,
-    //         name: datasourceMeta?.tableInfo.name,
-    //       } : undefined;
-    //       switch (dsType) {
-    //         case 'dict':
-    //           return (
-    //             <DictSelector
-    //               {...businessPayload}
-    //               defaultSelectedInfo={defaultSelectedInfo}
-    //               onSubmit={(selectedRowInfo) => {
-    //                 const { id, name } = selectedRowInfo;
-    //                 const nextState: OptionsType = {
-    //                   type: dsType,
-    //                   tableInfo: {
-    //                     id,
-    //                     name,
-    //                     condition: null,
-    //                     defaultVal: null,
-    //                     sort: 'desc'
-    //                   }
-    //                 };
-    //                 const nextMetaID = genMetaRefID(`ds`);
-    //                 changeEntityState({
-    //                   attr: whichAttr,
-    //                   value: nextMetaID
-    //                 });
-    //                 changeMetadata({
-    //                   metaAttr: 'dataSource',
-    //                   metaID: nextMetaID,
-    //                   rmMetaID: DSOptionsRef,
-    //                   data: nextState
-    //                   // metaID:
-    //                 });
-    //                 close();
-    //               }}
-    //             />
-    //           );
-    //         case 'table':
-    //           return (
-    //             <TableSelector
-    //               {...businessPayload}
-    //               defaultSelectedInfo={defaultSelectedInfo}
-    //               onSubmit={(selectedRowInfo) => {
-    //                 const { id, name } = selectedRowInfo;
-    //                 const nextState: OptionsType = {
-    //                   type: dsType,
-    //                   tableInfo: {
-    //                     id,
-    //                     name,
-    //                     condition: null,
-    //                     defaultVal: null,
-    //                     sort: 'desc'
-    //                   }
-    //                 };
-    //                 const nextMetaID = genMetaRefID(`ds`);
-    //                 changeEntityState({
-    //                   attr: whichAttr,
-    //                   value: nextMetaID
-    //                 });
-    //                 changeMetadata({
-    //                   metaAttr: 'dataSource',
-    //                   metaID: nextMetaID,
-    //                   rmMetaID: DSOptionsRef,
-    //                   data: nextState
-    //                   // metaID:
-    //                 });
-    //                 close();
-    //               }}
-    //             />
-    //           );
-    //       }
-    //     }
-    //   }}
-    // >
-    //   {datasourceMeta ? takeTableInfo(datasourceMeta.tableInfo) : '点击绑定'}
-    // </PopModelSelector>
   ) : null;
 
   return (

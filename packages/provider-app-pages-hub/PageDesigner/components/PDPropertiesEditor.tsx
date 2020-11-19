@@ -1,19 +1,20 @@
 import React from 'react';
 import Editor, { 
-// PropertiesEditorProps
+  PropertiesEditorProps
 } from '@engine/visual-editor/components/PropertiesEditor';
 import { PropItemRenderer } from './PDPropItemRenderer';
-import { PlatformUICtx } from '@platform-widget-access/spec';
 import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } from '../services';
-import { PDUICtx } from '../utils';
+import { PlatformContext } from '../utils';
 
 // TODO: 完善属性检查
 interface PropsEditorProps {
   interDatasources: PD.Datasources
+  pageMetadata
   customConfig?: any
-  // UICtx: PlatformUICtx
-  genMetaRefID
-  takeMeta
+  selectedEntity
+  defaultEntityState: PropertiesEditorProps['defaultEntityState']
+  initEntityState: PropertiesEditorProps['initEntityState']
+  updateEntityState: PropertiesEditorProps['updateEntityState']
 }
 
 /**
@@ -58,35 +59,39 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   }) => {
     // console.log(changeEntityState);
     const {
-      changeMetadata,
       interDatasources,
       pageMetadata,
-      genMetaRefID,
       selectedEntity,
-      takeMeta,
     } = this.props;
     return (
-      <PropItemRenderer
-        // {...props}
-        editingWidgetState={editingWidgetState}
-        widgetEntity={selectedEntity}
-        propItemMeta={propItemMeta}
-        changeEntityState={changeEntityState}
-        UICtx={PDUICtx}
-        takeMeta={takeMeta}
-        genMetaRefID={genMetaRefID}
-        pageMetadata={pageMetadata}
-        changeMetadata={changeMetadata}
-        interDatasources={interDatasources}
-      />
+      <PlatformContext.Consumer>
+        {
+          (platformCtx) => {
+            return (
+              <PropItemRenderer
+                // {...props}
+                editingWidgetState={editingWidgetState}
+                widgetEntity={selectedEntity}
+                propItemMeta={propItemMeta}
+                changeEntityState={changeEntityState}
+                platformCtx={platformCtx}
+                pageMetadata={pageMetadata}
+                interDatasources={interDatasources}
+              />
+            );
+          }
+        }
+      </PlatformContext.Consumer>
     );
   }
 
   render() {
     const {
-      changeMetadata,
       interDatasources,
       pageMetadata,
+      initEntityState,
+      updateEntityState,
+      defaultEntityState,
       ...otherProps
     } = this.props;
     const { widgetMeta, propItemGroupingData, ready } = this.state;
@@ -94,12 +99,13 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     return ready ? (
       <div>
         <Editor
-          {...otherProps}
+          // {...otherProps}
           getPropItem={this.getPropItem}
+          defaultEntityState={defaultEntityState}
+          initEntityState={initEntityState}
+          updateEntityState={updateEntityState}
           propItemGroupingData={propItemGroupingData}
           widgetBindedPropItemsMeta={widgetBindedPropItemsMeta}
-          pageMetadata={pageMetadata}
-          changeMetadata={changeMetadata}
           propItemRenderer={this.propItemRenderer}
         />
       </div>

@@ -20,13 +20,13 @@ const metaAttr = 'schema';
   id: 'prop_field',
   name: 'PropField',
   label: '列',
-  whichAttr,
+  whichAttr: 'field',
   useMeta: metaAttr,
 })
 export class FieldHelperSpec {
   /**
-     * 检查该 column 是否已经被其他控件绑定
-     */
+   * 检查该 column 是否已经被其他控件绑定
+   */
   checkColumnIsBeUsed = (_selectedField: SelectedField, schema) => {
     return new Promise((resolve, reject) => {
       for (const sID in schema) {
@@ -43,21 +43,25 @@ export class FieldHelperSpec {
   render({
     editingWidgetState,
     changeEntityState,
-    changeMetadata,
-    takeMeta,
-    genMetaRefID,
-    UICtx
+    platformCtx
   }: PropItemRenderContext) {
-    const currMetaRefID = editingWidgetState[whichAttr];
+    const {
+      changePageMeta,
+      takeMeta,
+      genMetaRefID,
+    } = platformCtx.meta;
+    const currMetaRefID = editingWidgetState.field;
     const selectedField = takeMeta({
       metaAttr: 'schema',
       metaRefID: currMetaRefID
     }) as SelectedField;
+
     const schema = takeMeta({
       metaAttr: 'schema',
     }) as {
       [sID: string]: SelectedField
     };
+
     const datasource = takeMeta({
       metaAttr: 'dataSource',
     });
@@ -81,21 +85,24 @@ export class FieldHelperSpec {
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
                         const nextMetaRefID = genMetaRefID('schema', { extraInfo: fieldCode });
+
                         changeEntityState({
-                          attr: whichAttr,
+                          attr: 'field',
                           value: nextMetaRefID
                         });
-                        changeMetadata({
+
+                        changePageMeta({
                           data: _selectedField,
                           metaAttr,
                           metaID: nextMetaRefID,
                           // 将上一个 meta 删除
                           rmMetaID: prevMetaRefID
                         });
+
                         close();
                       })
                       .catch(() => {
-                        UICtx.utils.showMsg({
+                        platformCtx.ui.showMsg({
                           msg: '已被其他控件绑定',
                           type: 'error'
                         });

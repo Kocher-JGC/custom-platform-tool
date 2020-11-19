@@ -4,8 +4,9 @@ import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
 
 const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
   const {
-    changeEntityState, editingWidgetState, widgetEntity, takeMeta
+    changeEntityState, editingWidgetState, widgetEntity, platformCtx
   } = props;
+  const { takeMeta } = platformCtx.meta;
   const { id, widgetRef } = widgetEntity;
   const { widgetCode, field } = editingWidgetState;
   const schema = takeMeta({
@@ -28,10 +29,12 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
     } else {
       nextWidgetCode = widgetCode || `${widgetRef}.${lastCompID}`;
     }
-    changeEntityState({
-      attr: 'widgetCode',
-      value: nextWidgetCode
-    });
+    if(widgetCode !== nextWidgetCode) {
+      changeEntityState({
+        attr: 'widgetCode',
+        value: nextWidgetCode
+      });
+    }
   }, [schema]);
   return (
     <div>
