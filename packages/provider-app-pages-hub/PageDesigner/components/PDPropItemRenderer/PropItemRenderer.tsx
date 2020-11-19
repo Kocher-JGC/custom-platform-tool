@@ -5,6 +5,7 @@ import { PlatformCtx } from '../../platform-access';
 
 interface PDPropItemRendererProps extends PropItemRendererProps {
   pageMetadata
+  widgetEntity
   platformCtx: PlatformCtx
 }
 

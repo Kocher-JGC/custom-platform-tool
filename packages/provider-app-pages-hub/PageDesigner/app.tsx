@@ -13,7 +13,6 @@ import PropertiesEditor from './components/PDPropertiesEditor';
 import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext } from "./utils";
 
 import { GenMetaRefID } from "@engine/visual-editor/data-structure";
-import { PlatformCtx } from "./platform-access";
 
 import './style';
 
@@ -303,9 +302,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                 activeEntity && (
                   <PropertiesEditor
                     key={activeEntityID}
-                    genMetaRefID={this.genMetaRefID}
                     pageMetadata={pageMetadata}
-                    changePageMeta={ChangePageMeta}
                     interDatasources={this.getDatasources()}
                     selectedEntity={activeEntity}
                     defaultEntityState={activeEntity.propState}

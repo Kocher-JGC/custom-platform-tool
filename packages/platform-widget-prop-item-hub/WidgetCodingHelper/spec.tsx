@@ -29,10 +29,12 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
     } else {
       nextWidgetCode = widgetCode || `${widgetRef}.${lastCompID}`;
     }
-    changeEntityState({
-      attr: 'widgetCode',
-      value: nextWidgetCode
-    });
+    if(widgetCode !== nextWidgetCode) {
+      changeEntityState({
+        attr: 'widgetCode',
+        value: nextWidgetCode
+      });
+    }
   }, [schema]);
   return (
     <div>

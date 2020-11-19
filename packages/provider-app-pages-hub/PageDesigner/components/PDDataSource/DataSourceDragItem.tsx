@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Collapse } from 'antd';
+
+const { Panel } = Collapse;
 
 interface DataSourceDragItemProps {
   /** 内部的数据源格式 */
@@ -13,28 +16,27 @@ export const DataSourceDragItem: React.FC<DataSourceDragItemProps> = ({
 }) => {
   return (
     <div className="data-source-drag-items">
-      {
-        Array.isArray(interDatasources) && interDatasources.map((datasourceItem) => {
-          const { name: dName, columns, id } = datasourceItem;
-          return (
-            <div className="group p-2" key={id}>
-              <div className="title font-bold text-md">{dName}</div>
-              <div className="list p-2">
-                {
-                  columns && columns.map((column) => {
-                    const { name: colName, id } = column;
-                    return (
-                      <div className="col-item text-gray-600" key={id}>
-                        {colName}
-                      </div>
-                    );
-                  })
-                }
-              </div>
-            </div>
-          );
-        })
-      }
+      <Collapse ghost>
+        {
+          Array.isArray(interDatasources) && interDatasources.map((datasourceItem) => {
+            const { name: dName, columns, id } = datasourceItem;
+            return (
+              <Panel header={dName} key={id}>
+                <div className="group p-2">
+                  {
+                    columns && columns.map((column) => {
+                      const { name: colName, id } = column;
+                      return (
+                        <p key={id}>{colName}</p>
+                      );
+                    })
+                  }
+                </div>
+              </Panel>
+            );
+          })
+        }
+      </Collapse>
     </div>
   );
 };

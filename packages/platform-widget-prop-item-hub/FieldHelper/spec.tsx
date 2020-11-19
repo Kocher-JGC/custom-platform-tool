@@ -20,7 +20,7 @@ const metaAttr = 'schema';
   id: 'prop_field',
   name: 'PropField',
   label: '列',
-  whichAttr,
+  whichAttr: 'field',
   useMeta: metaAttr,
 })
 export class FieldHelperSpec {
@@ -50,16 +50,18 @@ export class FieldHelperSpec {
       takeMeta,
       genMetaRefID,
     } = platformCtx.meta;
-    const currMetaRefID = editingWidgetState[whichAttr];
+    const currMetaRefID = editingWidgetState.field;
     const selectedField = takeMeta({
       metaAttr: 'schema',
       metaRefID: currMetaRefID
     }) as SelectedField;
+
     const schema = takeMeta({
       metaAttr: 'schema',
     }) as {
       [sID: string]: SelectedField
     };
+
     const datasource = takeMeta({
       metaAttr: 'dataSource',
     });
@@ -83,10 +85,12 @@ export class FieldHelperSpec {
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
                         const nextMetaRefID = genMetaRefID('schema', { extraInfo: fieldCode });
+
                         changeEntityState({
-                          attr: whichAttr,
+                          attr: 'field',
                           value: nextMetaRefID
                         });
+
                         changePageMeta({
                           data: _selectedField,
                           metaAttr,
@@ -94,6 +98,7 @@ export class FieldHelperSpec {
                           // 将上一个 meta 删除
                           rmMetaID: prevMetaRefID
                         });
+
                         close();
                       })
                       .catch(() => {

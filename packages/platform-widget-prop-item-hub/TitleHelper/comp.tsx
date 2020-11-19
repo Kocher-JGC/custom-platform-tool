@@ -13,7 +13,7 @@ export const TitleEditorComp = ({
   });
   useEffect(() => {
     const nextTitle = selectedField?.column?.name;
-    if (!nextTitle) return;
+    if (!nextTitle || nextTitle === title) return;
     changeEntityState({
       attr: 'title',
       value: nextTitle
