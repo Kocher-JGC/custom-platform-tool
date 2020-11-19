@@ -48,7 +48,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   const dsBinder = dsType ? (
     <div 
       onClick={e => {
-        platformCtx.openDatasourceSelector({
+        platformCtx.selector.openDatasourceSelector({
           defaultSelected: datasourceMeta ? [datasourceMeta] : [],
           modalType: 'side',
           position: 'right',
