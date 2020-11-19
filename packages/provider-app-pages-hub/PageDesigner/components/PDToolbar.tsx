@@ -39,7 +39,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   flatLayoutItems,
   pageMetadata,
   appLocation,
-  ChangeMetadata
+  ChangePageMeta
 }) => {
   const previewUrl = getAppPreviewUrl({
     ...appLocation,
@@ -70,7 +70,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                 <PageConfigContainer
                   pageMetadata={pageMetadata}
                   flatLayoutItems={flatLayoutItems}
-                  ChangeMetadata = {ChangeMetadata }
+                  ChangePageMeta = {ChangePageMeta }
                 />
               );
             }

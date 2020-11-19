@@ -11,11 +11,7 @@ import { FormInstance } from 'antd/lib/form';
 export class PageActionSelector extends React.Component {
   state = {
     list: [],
-    listForPlus: [],
-    searchArea: {
-      name: '',
-      type: ''
-    },
+    listForShow: [],
     maxIndex: -1
   }
   listFormRef = React.createRef<FormInstance>();
@@ -164,21 +160,29 @@ export class PageActionSelector extends React.Component {
     return action && config[action] || {};
   }
   handlePlus = (index) => {
-    const listForPlus = this.state.listForPlus.slice();
-    const maxIndex = this.state.maxIndex + 1;
+    const { listForShow, list, maxIndex } = this.state;
+    const newItem = { id: this.getActionId(maxIndex+1), index: maxIndex+1 };
+    const newListForShow = [newItem, ...listForShow];
     this.setState({
-      listForPlus: [{ id: this.getActionId(maxIndex), index: maxIndex }, ...listForPlus],
-      maxIndex
+      listForShow: newListForShow,
+      list: [newItem, ...list],
+      maxIndex: maxIndex+1
     });
+    this.listFormRef.current?.setFieldsValue({list: newListForShow});
   }
 
   handleMinus = (id) => {
-    const { area, index } = this.getAreaAndIndexById(id);
-    const list = this.state[area].slice();
-    list.splice(index, 1);
+    const list = this.state.list.slice();
+    const indexInList = this.getIndexById(list, id);
+    list.splice(indexInList, 1);
+    const listForShow = this.state.listForShow.slice();
+    const indexInListForShow = this.getIndexById(listForShow, id);
+    listForShow.splice(indexInListForShow, 1);
     this.setState({
-      [area]: list 
+      list,
+      listForShow
     });
+    this.listFormRef.current?.setFieldsValue({list: listForShow});
   }
 
   handleMoveUp = (index) => {
@@ -194,29 +198,22 @@ export class PageActionSelector extends React.Component {
     this.handleMoveUp(index+1);
   }
 
-  getAreaAndIndexById = (id) => {
-    let area = [], index = -1;
-    const { list, listForPlus } = this.state;
+  getIndexById = (list, id) => {
+    let index = -1;
     list.forEach((item, loopIndex)=>{
       if(item.id === id){
-        area = 'list';
         index = loopIndex;
       }
     });
-    listForPlus.forEach((item, loopIndex)=>{
-      if(item.id === id){
-        area = 'listForPlus';
-        index = loopIndex;
-      }
-    });
-    return { area, index };
+    return index;
   }
   handleSetValue = (id, data) => {
-    const { area, index } = this.getAreaAndIndexById(id);
-    const { [area]: list } = this.state;
-    list[index] = { ...list[index], ...data };
+    const { list, listForShow } = this.state;
+    const index = this.getIndexById(list, id);
+    Object.assign(list[index], data);
     this.setState({
-      [area]: list
+      list: list.slice(),
+      listForShow: listForShow.slice(),
     });
   }
 
@@ -261,28 +258,24 @@ export class PageActionSelector extends React.Component {
 
   handleSearch = () => {
     const searchArea = this.searchFormRef.current?.getFieldsValue();
-    const { listForPlus, list } = this.state;
+    const listForShow = this.filterListAfterSearch(searchArea);
     this.setState({ 
-      list: [...listForPlus, ...list],
-      listForPlus: []
-    },()=>{
-      this.setState({ searchArea });
+      listForShow,
     });
+    this.listFormRef.current?.setFieldsValue({list: listForShow});
   }
   handleClear = () => {
     this.searchFormRef.current?.resetFields();
     this.handleSearch();
   }
-  filterListAfterSearch = () => {
-    const { listForPlus, list, searchArea: { name, type } } = this.state;
-    const listTmpl = [...listForPlus, ...list.filter(item=>{
+  filterListAfterSearch = ({ type, name }) => {
+    const { list } = this.state;
+    return list.filter(item=>{
       return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
-    })];
-    // this.listFormRef.current?.setFieldsValue({list: listTmpl});
-    return listTmpl;
+    });
   }
   render () {
-    const { searchArea } = this.state;
+    const { listForShow } = this.state;
     return (
       <div className="page-action-selector">
         <Form
@@ -333,7 +326,7 @@ export class PageActionSelector extends React.Component {
           <Table
             size="small"
             rowKey="id"
-            dataSource = {this.filterListAfterSearch(searchArea)}
+            dataSource = {listForShow}
             pagination={false}
             columns={[
               {
