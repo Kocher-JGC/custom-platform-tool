@@ -29,11 +29,13 @@ export type GenMetaRefID = (
   /** 生成的 options */
   options?: {
     /** 生成的 metaID */
-    len?: number
+    nanoIDLen?: number
     /** 额外的 meta id 信息 */
     extraInfo?: string
     /** 数据源的 ID，当 metaAttr = dataSource 时必填；TODO: 做 metaAttr = dataSource 时必填的检查 */
     dsID?: string
+    /** 是否与控件挂钩 */
+    relyWidget?: boolean
   }
 ) => string
 

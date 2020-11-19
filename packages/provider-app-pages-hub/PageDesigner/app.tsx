@@ -46,9 +46,11 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   ) => {
     if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
     const { id: activeEntityID } = this.props.selectedInfo;
-    const { len = 8, extraInfo, dsID } = options || {};
-    const metaID = nanoid(len);
+    const { nanoIDLen = 8, extraInfo, dsID, relyWidget } = options || {};
+    const nanoID = nanoIDLen ? nanoid(nanoIDLen) : '';
     let prefix = '';
+    /** 是否与控件挂钩 */
+    let _relyWidget = relyWidget;
     /**
      * meta id 生成策略与规则
      */
@@ -58,8 +60,10 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         return `ds.${dsID}`;
       case 'schema':
         prefix = 'schema';
+        _relyWidget = true;
         break;
       case 'varRely':
+        _relyWidget = true;
         prefix = 'var';
         break;
       case 'actions':
@@ -67,7 +71,14 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         break;
       default:
     }
-    return `${prefix}.${activeEntityID}${extraInfo ? `.${extraInfo}` : ''}.${metaID}`;
+    const idArr = [
+      prefix,
+      extraInfo,
+      _relyWidget ? activeEntityID : null,
+      nanoID
+    ].filter(i => !!i);
+    return idArr.join('.');
+    // return `${prefix}.${activeEntityID}${extraInfo ? `.${extraInfo}` : ''}${nanoID ? `.${nanoID}` : ''}`;
   }
 
   /**
@@ -224,6 +235,25 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   /**
+   * 添加控件变量的规则，响应添加
+   */
+  onAddEntity = (entity) => {
+    // console.log(entity);
+    const { dispatcher: { ChangePageMeta } } = this.props;
+    ChangePageMeta({
+      metaAttr: 'varRely',
+      data: {
+        type: 'widget',
+        widgetRef: entity.id,
+        varAttr: entity.varAttr
+      },
+      metaID: this.genMetaRefID('varRely', {
+        nanoIDLen: 0
+      })
+    });
+  }
+
+  /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
   platformCtx = createPlatformCtx({
@@ -246,9 +276,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     // console.log(props);
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
     const {
+      InitEntityState, UpdateEntityState,
       InitApp, UnmountApp, UpdateAppContext,
-      SelectEntity, InitEntityState, UpdateEntityState,
-      SetLayoutInfo, DelEntity, AddEntity, ChangePageMeta
+      SelectEntity, SetLayoutInfo, DelEntity, AddEntity, ChangePageMeta
     } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
@@ -289,6 +319,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                 selectedInfo={selectedInfo}
                 layoutNodeInfo={layoutInfo}
                 pageMetadata={pageMetadata}
+                onAddEntity={this.onAddEntity}
                 onStageClick={() => {
                 // SelectEntity(PageEntity);
                 }}

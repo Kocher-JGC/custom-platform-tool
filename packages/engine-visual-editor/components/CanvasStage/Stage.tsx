@@ -40,6 +40,8 @@ export interface CanvasStageProps extends VEDispatcher {
   selectedInfo: SelectEntityState
   /** 点击舞台的事件回调 */
   onStageClick?: () => void
+  /** 增加 entity 的回调 */
+  onAddEntity?: (entity, idx) => void
 }
 
 const debounceAddTempEntity = new Debounce();
@@ -80,8 +82,8 @@ class CanvasStage extends React.Component<CanvasStageProps> {
   dropDispatcher = (widgetType, dropCtx?: DnDContext) => {
     const {
       layoutNodeInfo,
-      pageMetadata,
-      AddEntity
+      AddEntity,
+      onAddEntity
     } = this.props;
     const { id: parentID = null, idx } = dropCtx || {};
     let _idx = idx;
@@ -108,6 +110,7 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       _entity = entity;
       // console.log('_entity :>> ', _entity);
       AddEntity(_entity, _idx);
+      onAddEntity?.(_entity, _idx);
     }
 
     this.lastMoveIdx = undefined;
@@ -126,7 +129,7 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       selectedInfo
     } = this.props;
     const { entity, idx, nestingInfo } = actionCtx;
-    /** 如果已经被选择，则不需要再出发事件了 */
+    /** 如果已经被选择，则不需要再触发事件 */
     if (nestingInfo.join('') === selectedInfo.nestingInfo.join('')) return;
     SelectEntity(entity, idx, nestingInfo);
   };
