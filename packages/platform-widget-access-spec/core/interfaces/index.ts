@@ -1,3 +1,4 @@
+export * from '@provider-app/page-designer/platform-access';
 export * from './PlatformWidgetAccessSpec';
-export * from './PlatformUICtx';
+// export * from './PlatformCtx';
 // export * from './PropItemCompAccessSpec';

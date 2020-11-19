@@ -7,7 +7,7 @@ import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/compon
 import { LoadingTip } from '@provider-ui/loading-tip';
 import { PageMetadata } from '@engine/visual-editor/data-structure';
 import { DataSourceDragItem } from '../PDDataSource';
-import { useWidgetMeta, useWidgetPanelData } from '../../utils';
+import { PlatformContext, useWidgetMeta, useWidgetPanelData } from '../../utils';
 import { DataSourceTitle } from './DataSourceTitle';
 
 export interface PageDesignerComponentPanelProps {

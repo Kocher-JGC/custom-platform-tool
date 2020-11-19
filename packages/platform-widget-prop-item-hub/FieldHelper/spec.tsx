@@ -25,8 +25,8 @@ const metaAttr = 'schema';
 })
 export class FieldHelperSpec {
   /**
-     * 检查该 column 是否已经被其他控件绑定
-     */
+   * 检查该 column 是否已经被其他控件绑定
+   */
   checkColumnIsBeUsed = (_selectedField: SelectedField, schema) => {
     return new Promise((resolve, reject) => {
       for (const sID in schema) {
@@ -43,11 +43,13 @@ export class FieldHelperSpec {
   render({
     editingWidgetState,
     changeEntityState,
-    changeMetadata,
-    takeMeta,
-    genMetaRefID,
-    UICtx
+    platformCtx
   }: PropItemRenderContext) {
+    const {
+      changePageMeta,
+      takeMeta,
+      genMetaRefID,
+    } = platformCtx.meta;
     const currMetaRefID = editingWidgetState[whichAttr];
     const selectedField = takeMeta({
       metaAttr: 'schema',
@@ -85,7 +87,7 @@ export class FieldHelperSpec {
                           attr: whichAttr,
                           value: nextMetaRefID
                         });
-                        changeMetadata({
+                        changePageMeta({
                           data: _selectedField,
                           metaAttr,
                           metaID: nextMetaRefID,
@@ -95,7 +97,7 @@ export class FieldHelperSpec {
                         close();
                       })
                       .catch(() => {
-                        UICtx.utils.showMsg({
+                        platformCtx.ui.showMsg({
                           msg: '已被其他控件绑定',
                           type: 'error'
                         });

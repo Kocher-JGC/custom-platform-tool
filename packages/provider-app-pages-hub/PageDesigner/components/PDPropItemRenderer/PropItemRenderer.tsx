@@ -1,26 +1,12 @@
 import React from 'react';
 import { PropItemRendererProps } from '@engine/visual-editor/components/PropertiesEditor';
-import { getListOfDictionaryServices, getDictionaryListServices, getTableList } from '@provider-app/services';
-import { PlatformUICtx } from '@platform-widget-access/spec';
 import { Unexpect } from '../WidgetRenderer';
+import { PlatformCtx } from '../../platform-access';
 
 interface PDPropItemRendererProps extends PropItemRendererProps {
   pageMetadata
-  UICtx: PlatformUICtx
+  platformCtx: PlatformCtx
 }
-
-/**
- * 提供给属性项的服务接口
- */
-const servicesForPropItems: PD.PropItemRendererBusinessPayload['$services'] = {
-  dict: {
-    getDictList: getDictionaryListServices,
-    getDictWithSubItems: getListOfDictionaryServices
-  },
-  table: {
-    getTable: getTableList
-  }
-};
 
 /**
  * 属性项渲染器
@@ -28,11 +14,11 @@ const servicesForPropItems: PD.PropItemRendererBusinessPayload['$services'] = {
  */
 export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
   propItemMeta,
-  UICtx,
-  genMetaRefID,
-  takeMeta,
-  ...other,
-  // renderCtx
+  platformCtx,
+  editingWidgetState,
+  pageMetadata,
+  widgetEntity,
+  changeEntityState,
 }) => {
   const {
     label,
@@ -44,14 +30,11 @@ export const PropItemRenderer: React.FC<PDPropItemRendererProps> = ({
     Com = <Unexpect />;
   } else {
     const propItemRenderContext = {
-      // ...renderCtx,
-      ...other,
-      UICtx,
-      genMetaRefID,
-      takeMeta,
-      businessPayload: {
-        $services: servicesForPropItems
-      }
+      changeEntityState,
+      widgetEntity,
+      platformCtx,
+      editingWidgetState,
+      pageMetadata,
     };
     Com = propItemMeta.render(propItemRenderContext);
   }

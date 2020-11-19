@@ -3,26 +3,19 @@
  */
 import React from 'react';
 import produce from 'immer';
-import { nanoid } from 'nanoid';
 import union from 'lodash/union';
 import { Debounce } from '@mini-code/base-func';
 import {
-  WidgetEntity, WidgetEntityState, PropItemMeta,
+  WidgetEntityState, PropItemMeta,
   WidgetRelyPropItems,
-  PropItemRefs,
-  PropItemCompAccessSpec,
   EditAttr,
   NextEntityStateType,
   NextEntityState,
-  PageMetadata,
   ChangeEntityState,
 } from '../../data-structure';
 import { entityStateMergeRule } from './entityStateMergeRule';
 import { GroupPanel, GroupPanelData } from '../GroupPanel';
-// import { VEAppDispatcher } from '../../core';
 
-/** 从组件定义的属性项的元数据 */
-export type PropItemConfigFormWidgetMeta = PropItemCompAccessSpec | PropItemRefs
 
 /**
  * 属性项的 map
@@ -47,15 +40,15 @@ export interface PropItemRendererProps {
 }
 
 export interface PropertiesEditorProps {
-  pageMetadata: PageMetadata
+  // pageMetadata: PageMetadata
   /** 选中的 entity */
   propItemGroupingData: PropPanelData
-  selectedEntity: WidgetEntity
-  getPropItem: (propItemID: string) => PropItemCompAccessSpec
+  // selectedEntity: WidgetEntity
+  getPropItem: (propItemID: string) => any
   /** 组件绑定的属性项配置 */
   widgetBindedPropItemsMeta: WidgetRelyPropItems
-  /** 属性编辑器的配置，通过该配置生成有层级结构的属性编辑面板 */
-  editorConfig?: any
+  // /** 属性编辑器的配置，通过该配置生成有层级结构的属性编辑面板 */
+  // editorConfig?: any
   /** 默认的表单数据state */
   defaultEntityState?: WidgetEntityState
   /** 保存属性 */
@@ -65,7 +58,7 @@ export interface PropertiesEditorProps {
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
   /** 更改元数据 */
-  // changeMetadata: VEAppDispatcher['ChangeMetadata']
+  // changePageMeta: VEAppDispatcher['ChangePageMeta']
 }
 
 const debounce = new Debounce();
@@ -182,7 +175,10 @@ PropertiesEditorProps, PropertiesEditorState
       widgetBindedPropItemsMeta,
       getPropItem
     } = this.props;
-    const { propItemRefs = [], rawPropItems = [] } = widgetBindedPropItemsMeta;
+    const { 
+      propItemRefs = [], 
+      // rawPropItems = []
+    } = widgetBindedPropItemsMeta;
     const propItemMetaMap = {};
 
     /**
@@ -204,9 +200,9 @@ PropertiesEditorProps, PropertiesEditorState
       });
       propItemMetaMap[propID] = mergedPropItemMeta;
     });
-    rawPropItems.forEach((item) => {
-      if (item) propItemMetaMap[item.id] = item;
-    });
+    // rawPropItems.forEach((item) => {
+    //   if (item) propItemMetaMap[item.id] = item;
+    // });
     return propItemMetaMap;
   }
 
@@ -262,7 +258,7 @@ PropertiesEditorProps, PropertiesEditorState
    * @param groupType
    */
   propItemRendererSelf = (propItemID, groupType) => {
-    const { selectedEntity } = this.props;
+    // const { selectedEntity } = this.props;
     const { entityState } = this.state;
     const propItemMeta = this.takePropItemMeta(propItemID);
 
@@ -271,7 +267,7 @@ PropertiesEditorProps, PropertiesEditorState
 
     const {
       propItemRenderer, 
-      // changeMetadata
+      // changePageMeta
     } = this.props;
 
     const editingAttr = propItemMeta.whichAttr;
@@ -293,7 +289,7 @@ PropertiesEditorProps, PropertiesEditorState
             // widgetEntity: selectedEntity,
             // genMetaRefID: this.genMetaRefID,
             // takeMeta: this.takeMeta,
-            // changeMetadata,
+            // changePageMeta,
             // }
           })
         }

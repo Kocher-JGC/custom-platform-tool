@@ -1,5 +1,5 @@
 /// //////////////// widget ///////////////////
-import { PropItemCompAccessSpec } from ".";
+// import { PropItemCompAccessSpec } from ".";
 
 export type EditAttr = string | string[]
 
@@ -28,7 +28,7 @@ export interface WidgetRelyPropItems {
   /** 绑定的属性项 */
   propItemRefs?: PropItemRefs[]
   /** 原生属性配置 */
-  rawPropItems?: PropItemCompAccessSpec[]
+  // rawPropItems?: PropItemCompAccessSpec[]
 }
 
 export interface VarAttrType {
@@ -98,4 +98,11 @@ export interface TempWidgetEntityType {
   id: string
   /** 标志性为临时实例 */
   _state: typeof TEMP_ENTITY_ID
+}
+
+/**
+ * 组件类集合
+ */
+export interface WidgetTypeMetadataCollection {
+  [id: string]: EditableWidgetMeta
 }

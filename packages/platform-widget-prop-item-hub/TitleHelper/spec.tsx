@@ -16,8 +16,9 @@ const whichAttr = 'title';
 })
 export class TitleHelperSpec {
   render(ctx: PropItemRenderContext) {
+    const { takeMeta } = ctx.platformCtx.meta;
     return (
-      <TitleEditorComp {...ctx} />
+      <TitleEditorComp {...ctx} takeMeta={takeMeta} />
     );
   }
 }

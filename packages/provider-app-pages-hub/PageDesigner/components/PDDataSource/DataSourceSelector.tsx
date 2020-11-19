@@ -142,6 +142,25 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
     total: paging.total,
     pageSize: paging.size,
   };
+  let expandableElem;
+  switch (type) {
+    case 'TABLE':
+      
+      break;
+    case 'DICT':
+      expandableElem = {
+        expandedRowRender: (record) => {
+          // console.log(record);
+          return (
+            <DictSubItems
+              dictID={record[rowKey]}
+            />
+          );
+        },
+        expandedRowKeys: selectedRowKeys,
+      };
+      break;
+  }
   return (
     <div className="data-source-binder p20">
       <Table
@@ -159,7 +178,7 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
         pagination={tablePaging}
         rowSelection={{
           selectedRowKeys,
-          type: single ? 'checkbox' : 'radio',
+          type: single ? 'radio' : 'checkbox',
           onChange: (rowKeys, rowItems) => {
             onSelectChange({
               keys: rowKeys,
@@ -167,17 +186,7 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
             });
           },
         }}
-        expandable={{
-          expandedRowRender: (record) => {
-            console.log(record);
-            return (
-              <DictSubItems
-                dictID={record[rowKey]}
-              />
-            );
-          },
-          expandedRowKeys: selectedRowKeys,
-        }}
+        expandable={expandableElem}
       />
       <Button
         onClick={(e) => {
