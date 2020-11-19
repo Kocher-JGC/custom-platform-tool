@@ -4,7 +4,7 @@ export const TableMeta = CreateWidgetPropItemRely({
   id: 'widget-id-3',
   label: '表格',
   widgetRef: 'NormalTable',
-  // propEditor: 'TableEditor',
+  propEditor: 'TableEditor',
   propItemsRely: {
     propItemRefs: [
       {

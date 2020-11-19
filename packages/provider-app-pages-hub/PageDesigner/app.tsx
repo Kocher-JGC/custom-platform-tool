@@ -10,16 +10,13 @@ import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
-import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote } from "./utils";
-// import {
-//   getPageContentWithDatasource,
-// } from "./services";
-import { PDUICtx } from './utils';
+import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext } from "./utils";
+
+import { GenMetaRefID } from "@engine/visual-editor/data-structure";
+import { PlatformCtx } from "./platform-access";
 
 import './style';
-// import { takeDatasources, wrapInterDatasource } from "./services/datasource";
-import { GenMetaRefID } from "@engine/visual-editor/data-structure";
-// import { VisualEditorStore } from "@engine/visual-editor/core/store";
+
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
 // const offlineMode = true;
@@ -29,6 +26,7 @@ interface VisualEditorAppProps extends VisualEditorState {
 }
 
 class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.ProviderSubAppProps> {
+
   componentDidMount = async () => {
     // 在顶层尝试捕获异常
     try {
@@ -44,12 +42,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    */
 
   genMetaRefID: GenMetaRefID = (
-    metaAttr: ChangeMetadataAction['metaAttr'], 
+    metaAttr, 
     options
   ) => {
     if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
     const { id: activeEntityID } = this.props.selectedInfo;
-    const { len = 8, extraInfo } = options || {};
+    const { len = 8, extraInfo, dsID } = options || {};
     const metaID = nanoid(len);
     let prefix = '';
     /**
@@ -57,7 +55,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
      */
     switch (metaAttr) {
       case 'dataSource':
-        return this.genDatasourceMetaID();
+        // return this.genDatasourceMetaID();
+        return `ds.${dsID}`;
       case 'schema':
         prefix = 'schema';
         break;
@@ -70,14 +69,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       default:
     }
     return `${prefix}.${activeEntityID}${extraInfo ? `.${extraInfo}` : ''}.${metaID}`;
-  }
-
-  genDatasourceMetaID = (idx?: number) => {
-    const { pageMetadata } = this.props;
-    const dsLen = pageMetadata.dataSource ? Object.keys(pageMetadata.dataSource).length : 0;
-    const idxPref = idx === 0 ? 0 : idx || dsLen + 1;
-    const metaID = nanoid(8);
-    return `${idxPref}.ds.${metaID}`;
   }
 
   /**
@@ -94,37 +85,20 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    * TODO: 优化链路
    */
   onUpdatedDatasource = async (interDatasources: PD.Datasources) => {
-    const { appContext, dispatcher, appLocation } = this.props;
-    // const { pageID, title } = appLocation;
-    const { UpdateAppContext, ChangeMetadata } = dispatcher;
-    // const pageContent = this.getPageContent();
-    // ChangeMetadata({
-    //   metaAttr: 'dataSource',
-
-    // })
-
-    // await this.updatePage({
-    //   datasources: datasourceFormRemote
-    // });
-    // const {
-    //   interDatasources
-    // } = await getPageContentWithDatasource(pageID);
-    // const interDatasources = wrapInterDatasource(datasourceFormRemote);
-    // console.log(interDatasources);
+    const { dispatcher } = this.props;
+    const { ChangePageMeta } = dispatcher;
     const nextDSState = {};
     interDatasources.forEach((dsItem, idx) => {
-      nextDSState[this.genDatasourceMetaID(idx)] = dsItem;
+      const dsRefID = this.genMetaRefID('dataSource', {
+        dsID: dsItem.id
+      });
+      nextDSState[dsRefID] = dsItem;
     });
-    ChangeMetadata({
+    ChangePageMeta({
       metaAttr: 'dataSource',
       data: nextDSState,
       replace: true
     });
-    // UpdateAppContext({
-    //   payload: {
-    //     interDatasources
-    //   }
-    // });
   }
 
   /**
@@ -251,9 +225,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   /**
-   * 由页面设计器提供给属性项使用的 UI 上下文
+   * 由页面设计器提供给属性项使用的平台上下文
    */
-  UICtx = PDUICtx
+  platformCtx = createPlatformCtx({
+    changePageMeta: this.props.dispatcher.ChangePageMeta,
+    genMetaRefID: this.genMetaRefID,
+    takeMeta: this.takeMeta,
+  });
 
   render() {
     const {
@@ -271,7 +249,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const {
       InitApp, UnmountApp, UpdateAppContext,
       SelectEntity, InitEntityState, UpdateEntityState,
-      SetLayoutInfo, DelEntity, AddEntity, ChangeMetadata
+      SetLayoutInfo, DelEntity, AddEntity, ChangePageMeta
     } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
@@ -282,69 +260,69 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     }
 
     return (
-      <div className="visual-app bg-white">
-        <header className="app-header">
-          <ToolBar
-            pageMetadata={pageMetadata}
-            flatLayoutItems={flatLayoutItems}
-            onReleasePage={this.onReleasePage}
-            appLocation={appLocation}
-          />
-        </header>
-        <div
-          className="app-content"
+      <PlatformContext.Provider value={this.platformCtx}>
+        <div className="visual-app bg-white">
+          <header className="app-header">
+            <ToolBar
+              pageMetadata={pageMetadata}
+              flatLayoutItems={flatLayoutItems}
+              onReleasePage={this.onReleasePage}
+              appLocation={appLocation}
+            />
+          </header>
+          <div
+            className="app-content"
           // style={{ top: 0 }}
-        >
-          <div
-            className="comp-panel"
           >
-            <WidgetPanel
-              pageMetadata={pageMetadata}
-              onUpdatedDatasource={this.onUpdatedDatasource}
-            />
-          </div>
-          <div
-            className="canvas-container"
-            style={{ height: '100%' }}
-          >
-            <CanvasStage
-              selectedInfo={selectedInfo}
-              layoutNodeInfo={layoutInfo}
-              pageMetadata={pageMetadata}
-              onStageClick={() => {
+            <div
+              className="comp-panel"
+            >
+              <WidgetPanel
+                pageMetadata={pageMetadata}
+                onUpdatedDatasource={this.onUpdatedDatasource}
+              />
+            </div>
+            <div
+              className="canvas-container"
+              style={{ height: '100%' }}
+            >
+              <CanvasStage
+                selectedInfo={selectedInfo}
+                layoutNodeInfo={layoutInfo}
+                pageMetadata={pageMetadata}
+                onStageClick={() => {
                 // SelectEntity(PageEntity);
-              }}
-              {...dispatcher}
-            />
-          </div>
-          <div
-            className="prop-panel"
-          >
-            {
-              activeEntity && (
-                <PropertiesEditor
-                  key={activeEntityID}
-                  UICtx={this.UICtx}
-                  genMetaRefID={this.genMetaRefID}
-                  takeMeta={this.takeMeta}
-                  pageMetadata={pageMetadata}
-                  changeMetadata={ChangeMetadata}
-                  interDatasources={this.getDatasources()}
-                  selectedEntity={activeEntity}
-                  defaultEntityState={activeEntity.propState}
-                  initEntityState={(entityState) => InitEntityState(selectedInfo, entityState)}
-                  updateEntityState={(entityState) => {
-                    UpdateEntityState({
-                      nestingInfo: selectedInfo.nestingInfo,
-                      entity: activeEntity
-                    }, entityState);
-                  }}
-                />
-              )
-            }
+                }}
+                {...dispatcher}
+              />
+            </div>
+            <div
+              className="prop-panel"
+            >
+              {
+                activeEntity && (
+                  <PropertiesEditor
+                    key={activeEntityID}
+                    genMetaRefID={this.genMetaRefID}
+                    pageMetadata={pageMetadata}
+                    changePageMeta={ChangePageMeta}
+                    interDatasources={this.getDatasources()}
+                    selectedEntity={activeEntity}
+                    defaultEntityState={activeEntity.propState}
+                    initEntityState={(entityState) => InitEntityState(selectedInfo, entityState)}
+                    updateEntityState={(entityState) => {
+                      UpdateEntityState({
+                        nestingInfo: selectedInfo.nestingInfo,
+                        entity: activeEntity
+                      }, entityState);
+                    }}
+                  />
+                )
+              }
+            </div>
           </div>
         </div>
-      </div>
+      </PlatformContext.Provider>
     );
   }
 }
