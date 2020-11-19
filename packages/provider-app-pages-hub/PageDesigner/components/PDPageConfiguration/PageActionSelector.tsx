@@ -5,7 +5,7 @@ import { CloseModal, ShowModal } from "@infra/ui";
 import { nanoid } from 'nanoid';
 import { ActionConfigOpenPage } from './ActionConfigOpenPage';
 import { ActionConfigDisplayControl } from './ActionConfigDisplayControl';
-
+import { ActionConfigSubmitData } from './ActionConfigSubmitData';
 
 export class PageActionSelector extends React.Component {
   state = {
@@ -17,8 +17,6 @@ export class PageActionSelector extends React.Component {
     this.setState({
       dataSource: this.initDataSource()
     });
-    const { onRef } = this.props;
-    onRef && onRef(this);
   }
 
   initActions = () => {
@@ -54,10 +52,12 @@ export class PageActionSelector extends React.Component {
       { label: '打开链接', value: 'openPage', key: 'openPage' },
       { label: '刷新控件（未实现）', value: 'refreshControl', key: 'refreshControl' },
       { label: '赋值给控件', value: 'setControlData', key: 'setControlData' },
-      { label: '库表操作', value: 'operateData', key: 'operateData' },
+      { label: '数据提交', value: 'submitData', key: 'submitData' },
       { label: '显示隐藏', value: 'displayControl', key: 'displayControl' },
       { label: '刷新页面', value: 'refreshPage', key: 'refreshPage' },
       { label: '关闭页面', value: 'closePage', key: 'closePage' },
+      { label: '整表读取', value: 'readFormData', key: 'readFormData' },
+      { label: '整表回写', value: 'writeFormData', key: 'writeFormData' },
     ];
   };
 
@@ -74,7 +74,12 @@ export class PageActionSelector extends React.Component {
         readOnly: true
       }, 
       displayControl: {
+        width: 500,
         ModalContent: ActionConfigDisplayControl
+      },
+      submitData: {
+        width: 900,
+        ModalContent: ActionConfigSubmitData
       }
     };
     return action && config[action] || {};
