@@ -350,7 +350,7 @@ export class PageActionSelector extends React.Component {
                         { 
                           validator: (_, value) => {
                             if(!value) return Promise.resolve();
-                            const listTmpl = this.listFormRef.current?.getFieldValue('list');
+                            const listTmpl = this.state.list;
                             const duplicate = listTmpl.some((item,index)=>item.name===value&&index!==_i);
                             if(duplicate){
                               return Promise.reject('动作名称重复');
@@ -424,9 +424,15 @@ export class PageActionSelector extends React.Component {
                   return ModalContent ? (
                     <Form.Item
                       name={['list', _i, 'configCn']}
-                      rules={[{
-                        required: true, message: '动作配置必填'
-                      }]}
+                      rules={[
+                        { 
+                          validator: (_, value) => {
+                            if(!ModalContent)return Promise.resolve();
+                            const { actionType } = _r;
+                            if(!_r[actionType]) return Promise.reject('需补充动作配置');
+                          } 
+                        }
+                      ]}
                     >
                       <Input 
                         value={_r.configCn}
