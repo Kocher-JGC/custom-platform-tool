@@ -1,11 +1,12 @@
 import { WidgetTypeMetadataCollection } from "@engine/visual-editor/data-structure";
-import { 
+import {
   FormInputMeta,
   FlexMeta,
   TableMeta,
   DropdownSelectorMeta,
   TextareaMeta,
   FormButtonMeta,
+  FormInputNumberMeta
 } from "@platform-widget-access/prop-item-rely";
 import { ApiMock } from "./api-mock";
 
@@ -16,6 +17,7 @@ const tempArr = [
   DropdownSelectorMeta,
   TextareaMeta,
   FormButtonMeta,
+  FormInputNumberMeta
 ];
 
 export const widgetMetadataCollection: WidgetTypeMetadataCollection = {
