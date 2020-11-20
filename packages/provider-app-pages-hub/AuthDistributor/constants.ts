@@ -43,6 +43,7 @@ export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '终端',
     dataIndex: 'terminalType',
+    key: 'terminalType',
     width: 180,
     render: (text) => {
       return TERMINAL_TYPE_MENU.reduce((a, b) => {
@@ -54,6 +55,7 @@ export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '最后修改时间',
     dataIndex: 'gmtModified',
+    key: 'gmtModified',
     width: 210,
     render: (date) => {
       return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
@@ -62,6 +64,7 @@ export const TABLE_COLUMNS: ColumnType<ITableItem>[] = [
   {
     title: '创建人',
     dataIndex: 'createdUserName',
+    key: 'createdUserName',
     width: 120
   }
 ];
@@ -90,4 +93,9 @@ export enum MESSAGE {
   NOT_ALLOW_DELETE = '不允许删除',
   MAY_I_DELETE = '请确认是否删除？',
   NO_RECORD_TO_BATCH_CREATE = '无选中数据，不进行快捷新增操作'
+}
+
+export enum EXPAND_TYPE {
+  EXPAND_ALL,
+  EXPAND_VALUES
 }
