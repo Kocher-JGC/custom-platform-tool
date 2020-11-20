@@ -7,6 +7,7 @@ export interface PageConfigContainerProps {
   flatLayoutItems
   pageMetadata
   ChangePageMeta
+  onClose
 }
 
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) => {
@@ -19,9 +20,10 @@ export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) =
       data: actions,
       replace: true
     });
+    handleCancel();
   };
   const handleCancel = () => {
-    
+    props.onClose && props.onClose();
   };
   return (
     <div className="page-config-container p-5 pt-0">
