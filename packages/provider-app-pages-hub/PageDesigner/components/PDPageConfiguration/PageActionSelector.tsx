@@ -27,9 +27,8 @@ export class PageActionSelector extends React.Component {
 
   constructActions = () => {
     const result = {};
-    this.state.list.forEach(item=>{
-      const { index, ...action } = item;
-      result[item.id] = action;
+    this.state.list.forEach((item,index)=>{
+      result[item.id] = { ...item, index };
     });
     return result;
   }
@@ -42,46 +41,6 @@ export class PageActionSelector extends React.Component {
         resolve(false);
       }
     });
-  }
-
-  canFilterList = () => {
-    return new Promise((resolve, reject)=>{
-      const hasEmptyOne = this.state.list.some(item=>{
-        return this.isItemEmpty(item);
-      });
-      if(hasEmptyOne){
-        Modal.confirm({
-          title: '确认是否去除空行？',
-          onOk: ()=>{
-            resolve(true);
-          },
-          onCancel: ()=>{
-            resolve(false);
-          }  
-        });
-      }else {
-        resolve(false);
-      }
-    });  
-  }
-  filterListWithoutEmptyOne = () => {
-      
-  }
-  validateItem = (item) => {
-    const validResult = {};
-    const { name, actionType, [actionType]: actionConfig } = item;
-
-    [{ key: 'name', value: name },{ key: actionType, value: actionType }].forEach(item=>{
-      validResult[item.key] = !!item.value;
-    });
-    if(!['refreshPage', 'closePage'].includes(actionType) && !actionConfig){
-      validResult.actionConfig = false;
-    }
-    return Object.values(validResult);
-  }
-
-  isItemEmpty = (item) => {
-    return !Object.values(item).some(item=>!!item);
   }
 
   componentDidMount(){
@@ -108,8 +67,8 @@ export class PageActionSelector extends React.Component {
     const actions  = this.initActions();
     const list = [];
     for(const key in actions){
-      const index = this.getIndexByActionId(key);
-      list.push({ index, data: actions[key] });
+      const { index, data } = actions[key];
+      list.push({ index, data });
     }
     return list.sort((a,b)=>a.index<b.index).map(item=>item.data);
   }
@@ -155,6 +114,12 @@ export class PageActionSelector extends React.Component {
       submitData: {
         width: 900,
         ModalContent: ActionConfigSubmitData
+      },
+      readFormData: {
+        readOnly: true
+      },
+      writeFormData: {
+        readOnly: true
       }
     };
     return action && config[action] || {};
@@ -208,13 +173,15 @@ export class PageActionSelector extends React.Component {
     return index;
   }
   handleSetValue = (id, data) => {
-    const { list, listForShow } = this.state;
+    const list = this.state.list.slice();
+    const listForShow = this.state.listForShow.slice();
     const index = this.getIndexById(list, id);
     Object.assign(list[index], data);
     this.setState({
-      list: list.slice(),
-      listForShow: listForShow.slice(),
+      list,
+      listForShow,
     });
+    this.listFormRef.current?.setFieldsValue({list: listForShow});
   }
 
   perfectConfigInModal = ({ width, ModalContent }, actionConfig) => {
@@ -402,10 +369,12 @@ export class PageActionSelector extends React.Component {
                       <Select 
                         className="w-full"
                         onChange={(value)=>{
-                          this.handleSetValue(_r.id, {
+                          const recordNeedReset = {
                             actionType: value,
                             configCn: ''
-                          });
+                          };
+                          _r.actionType && Object.assign(recordNeedReset, { [_r.actionType]: '' });
+                          this.handleSetValue(_r.id, recordNeedReset);
                         }}
                         value={_r.actionType}
                         options={this.getTypeList()}

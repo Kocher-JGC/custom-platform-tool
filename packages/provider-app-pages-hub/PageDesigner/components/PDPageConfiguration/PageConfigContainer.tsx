@@ -12,7 +12,7 @@ export interface PageConfigContainerProps {
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) => {
   const actionSelectorRef = useRef();
   const handleOk = async () => {
-    const { valid: actionValid, actions } = actionSelectorRef.current?.onSubmitData?.() || {};
+    const { valid: actionValid, actions } = await actionSelectorRef.current?.onSubmitData?.() || {};
     if([actionValid].includes('invalid')) return;
     props.ChangePageMeta({
       metaAttr: 'actions',
