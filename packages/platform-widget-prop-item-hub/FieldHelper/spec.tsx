@@ -84,19 +84,17 @@ export class FieldHelperSpec {
                     const prevMetaRefID = currMetaRefID;
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
-                        const nextMetaRefID = genMetaRefID('schema', { extraInfo: fieldCode });
+                        const nextMetaRefID = changePageMeta({
+                          data: _selectedField,
+                          metaAttr,
+                          metaID: currMetaRefID,
+                          // 将上一个 meta 删除
+                          rmMetaID: prevMetaRefID
+                        });
 
                         changeEntityState({
                           attr: 'field',
                           value: nextMetaRefID
-                        });
-
-                        changePageMeta({
-                          data: _selectedField,
-                          metaAttr,
-                          metaID: nextMetaRefID,
-                          // 将上一个 meta 删除
-                          rmMetaID: prevMetaRefID
                         });
 
                         close();

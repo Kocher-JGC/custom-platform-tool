@@ -61,8 +61,10 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     const {
       interDatasources,
       pageMetadata,
+      platformCtx,
       selectedEntity,
     } = this.props;
+    
     return (
       <PlatformContext.Consumer>
         {
@@ -87,12 +89,9 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
 
   render() {
     const {
-      interDatasources,
-      pageMetadata,
       initEntityState,
       updateEntityState,
       defaultEntityState,
-      ...otherProps
     } = this.props;
     const { widgetMeta, propItemGroupingData, ready } = this.state;
     const widgetBindedPropItemsMeta = widgetMeta.propItemsRely;

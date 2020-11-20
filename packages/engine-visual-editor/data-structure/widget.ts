@@ -1,6 +1,8 @@
 /// //////////////// widget ///////////////////
 // import { PropItemCompAccessSpec } from ".";
 
+import { VarAttrType } from "./page-metadata";
+
 export type EditAttr = string | string[]
 
 /**
@@ -29,14 +31,6 @@ export interface WidgetRelyPropItems {
   propItemRefs?: PropItemRefs[]
   /** 原生属性配置 */
   // rawPropItems?: PropItemCompAccessSpec[]
-}
-
-export interface VarAttrType {
-  /** 该属性变量的别名 */
-  alias: string
-  /** 该属性变量的别名 */
-  attr: string
-  type: 'string' | 'number'
 }
 
 /**

@@ -14,12 +14,15 @@ const DefaultPageMeta: PageMetadata = {
   schema: {},
   actions: {},
   varRely: {},
+  _rely: {}
 };
 
 /**
  * 删除 pageMetadata 的某项数据
  * @param pageMetadata
  * @param delID
+ * 
+ * TODO: 根据 _rely 依赖关系删除
  */
 const delMetaData = (pageMetadata, delID) => {
   if (!pageMetadata) return;
@@ -62,25 +65,25 @@ export function pageMetadataReducer(
     case DEL_ENTITY:
       return produce(state, (draft) => {
         const { idx, entity: delE } = action;
-        const { id: delID } = delE;
+        const { id: delEntityID } = delE;
 
         // 删除变量
-        delMetaData(draft.varRely, delID);
+        delMetaData(draft.varRely, delEntityID);
 
         // 删除动作
-        delMetaData(draft.actions, delID);
+        delMetaData(draft.actions, delEntityID);
 
         // 删除数据源
-        delMetaData(draft.dataSource, delID);
+        delMetaData(draft.dataSource, delEntityID);
 
         // 删除 schema
-        delMetaData(draft.schema, delID);
+        delMetaData(draft.schema, delEntityID);
         return draft;
       });
     case CHANGE_METADATA:
       return produce(state, (draft) => {
         const {
-          data, datas, metaAttr, metaID, rmMetaID, replace
+          data, datas, metaAttr, metaID, rmMetaID, replace, relyID
         } = action;
         /** 如果是 replace 模式，则直接替换整个 meta */
         if(replace) {
@@ -96,6 +99,11 @@ export function pageMetadataReducer(
         }
         if (metaID) {
           draft[metaAttr][metaID] = data;
+
+          /** 将依赖关系记录在 _rely 中 */
+          if(!draft._rely) draft._rely = {};
+          if(!draft._rely[metaID]) draft._rely[metaID] = [];
+          if(relyID) draft._rely[metaID].push(relyID);
         } else {
           const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
           Object.assign(draft[metaAttr], {

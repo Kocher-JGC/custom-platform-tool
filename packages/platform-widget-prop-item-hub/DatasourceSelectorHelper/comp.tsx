@@ -56,20 +56,17 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
           type: dsType,
           onSubmit: (submitData, { close, interDatasources }) => {
             const bindedDS = interDatasources[0];
-            const nextMetaID = genMetaRefID('dataSource', {
-              dsID: bindedDS.id
-            });
-            changeEntityState({
-              attr: whichAttr,
-              value: nextMetaID
-            });
-            changePageMeta({
+            const nextMetaID = changePageMeta({
               metaAttr: 'dataSource',
-              metaID: nextMetaID,
+              metaID: DSOptionsRef,
               rmMetaID: DSOptionsRef,
               // 由于是单选的，所以只需要取 0
               data: bindedDS
               // metaID:
+            });
+            changeEntityState({
+              attr: whichAttr,
+              value: nextMetaID
             });
             // console.log(submitData);
 
