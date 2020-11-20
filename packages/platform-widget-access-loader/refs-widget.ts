@@ -3,3 +3,4 @@ export * from '@platform-widget/form-button';
 export * from '@platform-widget/form-input';
 export * from '@platform-widget/general-table';
 export * from '@platform-widget/form-textarea';
+export * from '@platform-widget/form-input-number';

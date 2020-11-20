@@ -6,3 +6,6 @@ export * from '@platform-widget-prop-item/title-color-helper';
 export * from '@platform-widget-prop-item/title-helper';
 export * from '@platform-widget-prop-item/value-helper';
 export * from '@platform-widget-prop-item/widget-coding-helper';
+export * from '@platform-widget-prop-item/number-radixPoint-helper';
+export * from '@platform-widget-prop-item/number-min-helper';
+export * from '@platform-widget-prop-item/number-max-helper';

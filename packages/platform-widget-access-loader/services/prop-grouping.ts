@@ -21,6 +21,14 @@ export const propItemGroupingData: GroupPanelData[] = [
         items: [
         ]
       },
+      {
+        title: '数字属性',
+        items: [
+          'prop_number_max',
+          'prop_number_min',
+          'prop_number_radixPoint'
+        ]
+      },
     ]
   },
   {

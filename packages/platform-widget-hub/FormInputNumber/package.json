@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/form-input-number",
+  "description": "表单数字输入框",
+  "version": "0.0.1",
+  "author": "VALE",
+  "license": "MIT",
+  "dependencies": {
+  }
+}
