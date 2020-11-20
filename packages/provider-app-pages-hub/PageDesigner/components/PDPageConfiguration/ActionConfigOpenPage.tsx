@@ -25,10 +25,10 @@ interface IProps {
 }
 
 const OPEN_TYPE_MENU = [
-  { label: '当前页面', value: 'replaceCurrentPage', key: 'replaceCurrentPage' },
+  { label: '覆盖当前页面', value: 'replaceCurrentPage', key: 'replaceCurrentPage' },
   { label: '弹窗页面', value: 'openModal', key: 'openModal' },
-  { label: '新浏览器窗口页面', value: 'newTabInBrowser', key: 'newTabInBrowser' },
-  { label: '菜单跳转页面', value: 'newTabInApp', key: 'newTabInApp' },
+  { label: '新浏览器tab页', value: 'newTabInBrowser', key: 'newTabInBrowser' },
+  { label: '应用内页面跳转', value: 'newTabInApp', key: 'newTabInApp' },
 ];
 const PAGE_AREA_MENU = [
   { label: '配置页面', value: 'pageConfigured', key: 'pageConfigured' },
