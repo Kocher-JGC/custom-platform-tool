@@ -47,6 +47,7 @@ export class PageActionSelector extends React.Component {
     const list = this.initDataSource();
     this.setState({
       list,
+      listForShow: list,
       maxIndex: list.length > 0 ? list[list.length-1].index : this.state.maxIndex
     });
     this.listFormRef.current?.setFieldsValue({list});
@@ -67,7 +68,7 @@ export class PageActionSelector extends React.Component {
     const actions  = this.initActions();
     const list = [];
     for(const key in actions){
-      const { index, data } = actions[key];
+      const { index, ...data } = actions[key];
       list.push({ index, data });
     }
     return list.sort((a,b)=>a.index<b.index).map(item=>item.data);
