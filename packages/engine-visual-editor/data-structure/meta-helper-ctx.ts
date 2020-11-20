@@ -28,14 +28,8 @@ export type GenMetaRefID = (
   metaAttr: MetaAttr,
   /** 生成的 options */
   options?: {
-    /** 生成的 metaID */
-    nanoIDLen?: number
-    /** 额外的 meta id 信息 */
-    extraInfo?: string
-    /** 数据源的 ID，当 metaAttr = dataSource 时必填；TODO: 做 metaAttr = dataSource 时必填的检查 */
-    dsID?: string
-    /** 是否与控件挂钩 */
-    relyWidget?: boolean
+    /** 生成 id 的策略，将通过 . 分割传入的每一项策略 */
+    idStratrgy?: string | string[]
   }
 ) => string
 

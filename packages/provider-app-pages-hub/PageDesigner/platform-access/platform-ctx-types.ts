@@ -1,4 +1,4 @@
-import { ChangePageMeta } from "@engine/visual-editor/core";
+import { ChangeMetadataOptions } from "@engine/visual-editor/core";
 import { GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
 
 export interface OnDatasourceSelectorSubmitOptions {
@@ -36,8 +36,8 @@ export interface PlatformCtx {
     openDatasourceSelector: OpenDatasourceSelector
   }
   meta: {
-    /** 更改页面的 meta 数据 */
-    changePageMeta: typeof ChangePageMeta
+    /** 更改页面的 meta 数据，如果没有该数据，则返回新创建的 metaID */
+    changePageMeta: (options: ChangeMetadataOptions) => string
     /** 获取 meta */
     takeMeta: TakeMeta
     /** 生成 meta 引用的 ID */

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Table } from 'antd';
+import { PageMetadata } from '@engine/visual-editor/data-structure';
 
 export enum VarAttrTypeMap {
   string = '字符串',
@@ -7,16 +8,17 @@ export enum VarAttrTypeMap {
   datasource = '数据源',
 }
 
-const takeVariableData = (varRely, options) => {
+const takeVariableData = (varRely: PageMetadata['varRely'], options) => {
   const { flatLayoutItems } = options;
   const res = [];
   for (const varID in varRely) {
     if (Object.prototype.hasOwnProperty.call(varRely, varID)) {
       const variableItems = varRely[varID];
-      const { type: varType, widgetRef, varAttr } = variableItems;
+      const { type: varType } = variableItems;
       /** 根据变量的类型决定取对应的引用数据的值 */
       switch (varType) {
         case 'widget':
+          const { widgetRef, varAttr } = variableItems;
           const widgetEntity = flatLayoutItems[widgetRef];
           if (widgetEntity) {
             const { propState } = widgetEntity;

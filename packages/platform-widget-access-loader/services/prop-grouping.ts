@@ -44,16 +44,16 @@ export const propItemGroupingData: GroupPanelData[] = [
       },
     ]
   },
-  {
-    title: '页面属性',
-    itemsGroups: [
-      {
-        title: '基础控件',
-        items: [
-        ]
-      },
-    ]
-  },
+  // {
+  //   title: '页面属性',
+  //   itemsGroups: [
+  //     {
+  //       title: '基础控件',
+  //       items: [
+  //       ]
+  //     },
+  //   ]
+  // },
 ];
 
 export const getPropItemGroupingData = ApiMock(propItemGroupingData);

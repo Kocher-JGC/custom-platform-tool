@@ -63,6 +63,8 @@ export interface ChangeMetadataOptions {
   metaAttr: keyof PageMetadata
   /** 更改 meta 后的数据 */
   data: unknown
+  /** 依赖该 meta 的项的 id */
+  relyID?: string
   /** 批量更新数据 */
   datas?: {
     [dataID: string]: unknown
