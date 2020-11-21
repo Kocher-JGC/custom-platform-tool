@@ -14,3 +14,5 @@ export * from '@platform-widget-prop-item/note-info-helper';
 export * from '@platform-widget-prop-item/string-length-helper';
 export * from '@platform-widget-prop-item/data-type-helper';
 export * from '@platform-widget-prop-item/widget-type-helper';
+export * from '@platform-widget-prop-item/start-search-helper';
+export * from '@platform-widget-prop-item/dropdown-multiple-helper';

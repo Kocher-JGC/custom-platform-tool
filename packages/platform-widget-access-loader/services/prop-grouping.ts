@@ -19,6 +19,8 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_string_length',
           'prop_prompt_info',
           'prop_note_info',
+          'prop_start_search',
+          'prop_dropdown_multiple',
 
         ]
       },
