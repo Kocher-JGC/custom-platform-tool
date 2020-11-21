@@ -8,13 +8,14 @@ interface CreatePlatformCtxOptions {
   changePageMeta
   genMetaRefID
   takeMeta
+  changeWidgetType
 }
 
 /**
  * 平台提供给的上下文
  */
 export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx => {
-  const { changePageMeta, genMetaRefID, takeMeta } = ctx;
+  const { changePageMeta, genMetaRefID, takeMeta, changeWidgetType } = ctx;
   return {
     ui: {
       showMsg: (ctx) => {
@@ -26,6 +27,7 @@ export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx =>
       changePageMeta,
       genMetaRefID,
       takeMeta,
+      changeWidgetType,
     },
     selector: {
       openDatasourceSelector: (options) => {

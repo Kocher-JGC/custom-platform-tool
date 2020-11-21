@@ -156,6 +156,15 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
   }
 
+  changeWidgetType = (widgetType: string) => {
+    const { dispatcher: { ChangeWidgetType }, selectedInfo } = this.props;
+    const { nestingInfo, entity } = selectedInfo;
+    ChangeWidgetType({
+      nestingInfo,
+      entity
+    }, widgetType);
+  }
+
   /**
    * 响应更新数据源的回调
    * TODO: 优化链路
@@ -323,6 +332,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     changePageMeta: this.changePageMeta,
     genMetaRefID: this.genMetaRefID,
     takeMeta: this.takeMeta,
+    changeWidgetType: this.changeWidgetType,
   });
 
   render() {

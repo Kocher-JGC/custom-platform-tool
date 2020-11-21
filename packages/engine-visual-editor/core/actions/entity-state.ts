@@ -35,7 +35,7 @@ export type UpdateTargetEntity = {
 export const UPDATE_ENTITY_STATE = 'entityState/update';
 export interface UpdateEntityStateAction {
   type: typeof UPDATE_ENTITY_STATE
-  targetEntity: UpdateTargetEntity,
+  targetEntity: UpdateTargetEntity
   formState: WidgetEntityState
 }
 
@@ -50,5 +50,31 @@ export const UpdateEntityState = (
     type: UPDATE_ENTITY_STATE,
     targetEntity,
     formState
+  };
+};
+
+
+export const CHANGE_ENTITY_TYPE = 'entity/type/update';
+
+/**
+ * 更改 widget entity 的类型
+ */
+export interface ChangeEntityTypeAction {
+  type: typeof CHANGE_ENTITY_TYPE
+  targetEntity: UpdateTargetEntity
+  widgetType: string
+}
+
+/**
+ * 更新组件实例的状态
+ */
+export const ChangeWidgetType = (
+  targetEntity: UpdateTargetEntity,
+  widgetType: string
+): ChangeEntityTypeAction => {
+  return {
+    type: CHANGE_ENTITY_TYPE,
+    targetEntity,
+    widgetType
   };
 };
