@@ -258,6 +258,11 @@ export class PageActionSelector extends React.Component {
             <Select 
               placeholder="请选择动作类型"
               className="w-full"
+              allowClear
+              showSearch
+              filterOption={(value, option)=>{
+                return option.label.toLowerCase().includes(value.toLowerCase());
+              }}
               options={this.getTypeList()}
             />
           </Form.Item>
@@ -376,6 +381,11 @@ export class PageActionSelector extends React.Component {
                           };
                           _r.actionType && Object.assign(recordNeedReset, { [_r.actionType]: '' });
                           this.handleSetValue(_r.id, recordNeedReset);
+                        }}  
+                        allowClear
+                        showSearch                        
+                        filterOption={(value, option)=>{
+                          return option.label.toLowerCase().includes(value.toLowerCase());
                         }}
                         value={_r.actionType}
                         options={this.getTypeList()}
