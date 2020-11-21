@@ -16,6 +16,8 @@ export const DropdownSelectorMeta = CreateWidgetPropItemRely({
         },
       },
       { propID: 'prop_field' },
+      { propID: 'prop_dropdown_multiple' },
+      { propID: 'prop_start_search' },
       // { propID: 'prop_flex_config' },
     ]
   }
