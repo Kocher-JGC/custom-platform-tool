@@ -82,37 +82,40 @@ export function pageMetadataReducer(
       });
     case CHANGE_METADATA:
       return produce(state, (draft) => {
-        const {
-          data, datas, metaAttr, metaID, rmMetaID, replace, relyID
-        } = action;
-        /** 如果是 replace 模式，则直接替换整个 meta */
-        if(replace) {
-          draft[metaAttr] = data;
-          return draft;
-        }
-        if(datas) {
-          draft[metaAttr] = Object.assign({}, draft[metaAttr], datas);
-        }
-        if (!draft[metaAttr]) {
-          console.error('尝试修改了不存在的 meta，请检查代码');
-          draft[metaAttr] = {};
-        }
-        if (metaID) {
-          draft[metaAttr][metaID] = data;
-
-          /** 将依赖关系记录在 _rely 中 */
-          if(!draft._rely) draft._rely = {};
-          if(!draft._rely[metaID]) draft._rely[metaID] = [];
-          if(relyID) draft._rely[metaID].push(relyID);
-        } else {
-          const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
-          Object.assign(draft[metaAttr], {
-            [newDataRefID]: data
-          });
-        }
-        if (rmMetaID && draft[metaAttr]) {
-          Reflect.deleteProperty(draft[metaAttr], rmMetaID);
-        }
+        const { changeDatas } = action;
+        changeDatas.forEach((changeData) => {
+          const {
+            data, datas, metaAttr, metaID, rmMetaID, replace, relyID
+          } = changeData;
+          /** 如果是 replace 模式，则直接替换整个 meta */
+          if(replace) {
+            draft[metaAttr] = data;
+            return draft;
+          }
+          if(datas) {
+            draft[metaAttr] = Object.assign({}, draft[metaAttr], datas);
+          }
+          if (!draft[metaAttr]) {
+            console.error('尝试修改了不存在的 meta，请检查代码');
+            draft[metaAttr] = {};
+          }
+          if (metaID) {
+            draft[metaAttr][metaID] = data;
+  
+            /** 将依赖关系记录在 _rely 中 */
+            if(!draft._rely) draft._rely = {};
+            if(!draft._rely[metaID]) draft._rely[metaID] = [];
+            if(relyID) draft._rely[metaID].push(relyID);
+          } else {
+            const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
+            Object.assign(draft[metaAttr], {
+              [newDataRefID]: data
+            });
+          }
+          if (rmMetaID && draft[metaAttr]) {
+            Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+          }
+        });
         return draft;
       });
     default:

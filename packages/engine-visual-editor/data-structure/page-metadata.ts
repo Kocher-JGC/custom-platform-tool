@@ -42,8 +42,15 @@ export interface SchemaMeta {
   tableInfo
 }
 
+/**
+ * TODO: 完善数据类型
+ */
 export interface ActionsMeta {
 }
+
+export type VarMeta = WidgetVarRely | DSVarRely
+
+export type DSMeta = PD.Datasources
 
 /**
  * 页面的元数据
@@ -56,13 +63,13 @@ export interface PageMetadata {
   /** 联动 meta */
   linkpage: MetaStorage
   /** 记录数据源 */
-  dataSource: MetaStorage<PD.Datasources>
+  dataSource: MetaStorage<DSMeta>
   /** 用于存储页面的表单的数据模型 */
   schema: MetaStorage<SchemaMeta>
   /** 动作 meta */
   actions: MetaStorage<ActionsMeta>
   /** 变量 meta */
-  varRely: MetaStorage<WidgetVarRely | DSVarRely>
+  varRely: MetaStorage<VarMeta>
   /** meta 依赖收集器，用于记录每一条 meta 被依赖的情况 */
   _rely: {
     [metaID: string]: string[]

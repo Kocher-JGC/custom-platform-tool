@@ -37,6 +37,7 @@ export interface VEAppDispatcher {
 export interface VEEntityStateDispatcher {
   InitEntityState: typeof EntityStateActions['InitEntityState']
   UpdateEntityState: typeof EntityStateActions['UpdateEntityState']
+  ChangeWidgetType: typeof EntityStateActions['ChangeWidgetType']
 }
 
 /**
@@ -48,6 +49,7 @@ export interface VECanvasDispatcher {
   DelEntity: typeof CanvasActions['DelEntity']
   AddEntity: typeof CanvasActions['AddEntity']
   SelectEntity: typeof CanvasActions['SelectEntity']
+  ChangeEntity: typeof CanvasActions['SelectEntity']
 }
 
 export interface VEDispatcher extends VEAppDispatcher, VEEntityStateDispatcher, VECanvasDispatcher{}

@@ -12,7 +12,8 @@ import {
   InitEntityStateAction,
   INIT_ENTITY_STATE,
   INIT_APP,
-  InitAppAction
+  InitAppAction,
+  CHANGE_ENTITY_TYPE
 } from '../actions';
 import { getItemFromNestingItemsByBody } from '../utils';
 
@@ -26,6 +27,7 @@ export type LayoutInfoActionReducerAction =
   SortingEntityAction |
   UpdateEntityStateAction |
   InitEntityStateAction |
+  ChangeEntityTypeAction |
   InitAppAction
 
 /**
@@ -70,9 +72,9 @@ export const layoutInfoReducer = (
         ],
       });
     case INIT_ENTITY_STATE:
-      const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
-      const { nestingInfo: initIdx } = initSInfo;
       const nextStateInit = produce(state, (draftState) => {
+        const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
+        const { nestingInfo: initIdx } = initSInfo;
         const targetData = getItemFromNestingItemsByBody(draftState, initIdx);
         // eslint-disable-next-line no-param-reassign
         targetData.propState = defaultEntityState;
@@ -80,11 +82,19 @@ export const layoutInfoReducer = (
       });
       return nextStateInit;
     case UPDATE_ENTITY_STATE:
-      const { targetEntity: updateSInfo, formState } = action;
-      const { nestingInfo: updateIdx } = updateSInfo;
       return produce(state, (draftState) => {
+        const { targetEntity: updateSInfo, formState } = action;
+        const { nestingInfo: updateIdx } = updateSInfo;
         const targetData = getItemFromNestingItemsByBody(draftState, updateIdx);
         targetData.propState = formState;
+        return draftState;
+      });
+    case CHANGE_ENTITY_TYPE:
+      return produce(state, (draftState) => {
+        const { targetEntity: updateSInfo, widgetType } = action;
+        const { nestingInfo: updateIdx } = updateSInfo;
+        const targetData = getItemFromNestingItemsByBody(draftState, updateIdx);
+        targetData.widgetRef = widgetType;
         return draftState;
       });
     default:

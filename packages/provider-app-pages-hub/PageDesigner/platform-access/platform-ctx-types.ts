@@ -25,6 +25,8 @@ export interface OpenDatasourceSelectorOptions {
 
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 
+export type ChangeWidgetType = () => void
+
 /**
  * 平台提供的 UI 上下文
  */
@@ -42,5 +44,7 @@ export interface PlatformCtx {
     takeMeta: TakeMeta
     /** 生成 meta 引用的 ID */
     genMetaRefID: GenMetaRefID
+    /** 更改组件的类型 */
+    changeWidgetType: ChangeWidgetType
   }
 }

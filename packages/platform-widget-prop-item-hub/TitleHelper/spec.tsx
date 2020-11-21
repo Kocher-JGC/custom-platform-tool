@@ -16,9 +16,17 @@ const whichAttr = 'title';
 })
 export class TitleHelperSpec {
   render(ctx: PropItemRenderContext) {
-    const { takeMeta } = ctx.platformCtx.meta;
+    const { takeMeta, changeWidgetType } = ctx.platformCtx.meta;
     return (
-      <TitleEditorComp {...ctx} takeMeta={takeMeta} />
+      <>
+        {/* <div onClick={e => {
+          changeWidgetType('DropdownSelector');
+        }}
+        >
+        更改为下拉框类型
+        </div> */}
+        <TitleEditorComp {...ctx} takeMeta={takeMeta} />
+      </>
     );
   }
 }

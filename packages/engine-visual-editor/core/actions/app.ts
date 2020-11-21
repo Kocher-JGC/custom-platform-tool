@@ -4,7 +4,7 @@
  * 应用的 action，需要留有足够的扩展空间
  */
 
-import { BasePageData, PageMetadata } from "../../data-structure";
+import { ActionsMeta, BasePageData, DSMeta, SchemaMeta, VarMeta } from "../../data-structure";
 
 interface AppActionsContext {
   pageContent?: BasePageData
@@ -58,16 +58,16 @@ export const UnmountApp = (): UnmountAppAction => {
 
 export const CHANGE_METADATA = 'app/change-metadata';
 
-export interface ChangeMetadataOptions {
+export interface ChangeMetadataOptionBasic<D> {
   /** 需要更改的 meta 的属性 */
-  metaAttr: keyof PageMetadata
+  // metaAttr: keyof PageMetadata
   /** 更改 meta 后的数据 */
-  data: unknown
+  data: D
   /** 依赖该 meta 的项的 id */
   relyID?: string
   /** 批量更新数据 */
   datas?: {
-    [dataID: string]: unknown
+    [metaID: string]: D
   }
   /** 数据的引用 ID，如果不传，则创建一个新的 metaID */
   metaID?: string
@@ -77,16 +77,42 @@ export interface ChangeMetadataOptions {
   replace?: boolean
 }
 
-export interface ChangeMetadataAction extends ChangeMetadataOptions {
-  type: typeof CHANGE_METADATA
+export interface ChangeActionMetaOption extends ChangeMetadataOptionBasic<ActionsMeta> {
+  metaAttr: 'actions'
 }
+
+export interface ChangeDSMetaOption extends ChangeMetadataOptionBasic<DSMeta> {
+  metaAttr: 'dataSource'
+}
+
+export interface ChangeSchemaMetaOption extends ChangeMetadataOptionBasic<SchemaMeta> {
+  metaAttr: 'schema'
+}
+
+export interface ChangeVarMetaOption extends ChangeMetadataOptionBasic<VarMeta> {
+  metaAttr: 'varRely'
+}
+
+export type ChangeMetadataOption = ChangeActionMetaOption | 
+ChangeDSMetaOption | 
+ChangeVarMetaOption | 
+ChangeSchemaMetaOption
+
+export type ChangeMetadataOptions = ChangeMetadataOption | ChangeMetadataOption[]
+
+export type ChangeMetadataAction = {
+  type: typeof CHANGE_METADATA
+  changeDatas: ChangeMetadataOption[]
+}
+
 
 /**
  * 初始化应用数据
  */
 export const ChangePageMeta = (options: ChangeMetadataOptions): ChangeMetadataAction => {
+  const changeDatas = Array.isArray(options) ? options : [options];
   return {
     type: CHANGE_METADATA,
-    ...options
+    changeDatas
   };
 };
