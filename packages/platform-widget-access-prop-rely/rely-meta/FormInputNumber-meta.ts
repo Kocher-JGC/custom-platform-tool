@@ -30,6 +30,9 @@ export const FormInputNumberMeta = CreateWidgetPropItemRely({
       { propID: 'prop_number_max', editAttr: ['max'] },
       { propID: 'prop_number_min', editAttr: ['mix'] },
       { propID: 'prop_number_radixPoint', editAttr: ['radixPoint'] },
+      { propID: 'prop_check_fixed_rule', editAttr: ['checkFixedRule'] },
+      { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },
+      { propID: 'prop_check_tooltip', editAttr: ['checkTooltip'] },
       { propID: 'prop_field', editAttr: ['field'] }
     ]
   }

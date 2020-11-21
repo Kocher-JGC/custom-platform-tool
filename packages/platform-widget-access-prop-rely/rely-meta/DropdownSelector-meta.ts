@@ -18,6 +18,9 @@ export const DropdownSelectorMeta = CreateWidgetPropItemRely({
       { propID: 'prop_field' },
       { propID: 'prop_dropdown_multiple' },
       { propID: 'prop_start_search' },
+      { propID: 'prop_check_fixed_rule', editAttr: ['checkFixedRule'] },
+      { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },
+      { propID: 'prop_check_tooltip', editAttr: ['checkTooltip'] },
       // { propID: 'prop_flex_config' },
     ]
   }

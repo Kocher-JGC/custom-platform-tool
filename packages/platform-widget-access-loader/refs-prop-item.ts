@@ -16,3 +16,6 @@ export * from '@platform-widget-prop-item/data-type-helper';
 export * from '@platform-widget-prop-item/widget-type-helper';
 export * from '@platform-widget-prop-item/start-search-helper';
 export * from '@platform-widget-prop-item/dropdown-multiple-helper';
+export * from '@platform-widget-prop-item/check-custom-rules-helper';
+export * from '@platform-widget-prop-item/check-fixed-rule-helper';
+export * from '@platform-widget-prop-item/check-tooltip-helper';
