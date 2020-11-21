@@ -1,10 +1,11 @@
 import React from 'react';
-import { Table, Select, Input, Form, Modal, Button } from 'antd';
+import { Table, Select, Input, Form, Space, Button } from 'antd';
 import { PlusOutlined, MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { getTableList as getTableListAPI } from '@provider-app/table-editor/apis';
 import { nanoid } from 'nanoid';
 import { FormInstance } from 'antd/lib/form';
+import { ActionConfigSubmitDataChangeColumns } from './ActionConfigSubmitDataChangeColumns';
 
 const OPERATE_TYPE_MENU = [
   { label: '新增', key: 'insert', value: 'insert' },
@@ -22,18 +23,27 @@ export class ActionConfigSubmitData extends React.Component {
   listFormRef = React.createRef<FormInstance>();
   searchFormRef = React.createRef<FormInstance>();
 
-  onSubmitData = async () => {
+  handleFinish = async () => {
     const valid = await this.validateList();
-    return {
-      valid: valid ? 'valid': 'invalid',
-      actions: this.constructActions()
-    };
+    if(!valid) return;
+    
   }
-
+  handleCancel = () => {
+    
+  }
+  handleReset = () => {
+    this.setState({
+      list: [],
+      listForShow: [],
+      maxIndex: -1
+    }, ()=> {
+      this.listFormRef.current?.setFieldsValue({list: this.state.listForShow});
+    });
+  }
   constructActions = () => {
     const result = {};
-    this.state.list.forEach((item,index)=>{
-      result[item.id] = { ...item, index };
+    this.state.list.forEach((item,order)=>{
+      result[item.id] = { ...item, order };
     });
     return result;
   }
@@ -64,7 +74,7 @@ export class ActionConfigSubmitData extends React.Component {
         tableList: (res?.result?.data || []).map(item=>{
           return {
             label: item.name,
-            key: item.id, value: item.id
+            key: item.code, value: item.id
           };
         }) || []
       });
@@ -86,10 +96,10 @@ export class ActionConfigSubmitData extends React.Component {
     const actions  = this.initActions();
     const list = [];
     for(const key in actions){
-      const { index, ...data } = actions[key];
-      list.push({ index, data });
+      const { order, ...data } = actions[key];
+      list.push({ order, data });
     }
-    return list.sort((a,b)=>a.index<b.index).map(item=>item.data);
+    return list.sort((a,b)=>a.order<b.order).map(item=>item.data);
   }
 
   getActionId = (index) => {
@@ -174,6 +184,32 @@ export class ActionConfigSubmitData extends React.Component {
       return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
     });
   }
+  handleClickChangeColumns=(_r)=>{
+    const modalID = ShowModal({
+      title: '配置字段',
+      width: 600,
+      children: () => {
+        return (
+          <div className="p-5">
+            <ActionConfigSubmitDataChangeColumns
+              data = {{
+                tableId: _r.tableId,
+                tableCode: _r.tableCode,
+                changeColumns: _r.changeColumns
+              }}
+              onSuccess={(changeColumns) => {
+                this.handleSetValue(_r.id, { changeColumns });
+                CloseModal(modalID);
+              }}
+              onCancel={()=>{
+                CloseModal(modalID);
+              }}
+            />
+          </div>
+        );
+      }
+    });
+  }
   render () {
     const { listForShow, tableList } = this.state;
     return (
@@ -229,7 +265,10 @@ export class ActionConfigSubmitData extends React.Component {
             新增
           </Button>
         </Form>
-        <Form ref={this.listFormRef}>
+        <Form
+          ref={this.listFormRef}
+          onFinish={this.handleFinish}
+        >
           <Table
             size="small"
             rowKey="id"
@@ -248,7 +287,7 @@ export class ActionConfigSubmitData extends React.Component {
                 key: 'operateType',
                 title: '操作类型',
                 align: 'center',
-                width: 115,
+                width: 105,
                 render: (_t, _r, _i)=>{
                   return (
                     <Form.Item
@@ -289,8 +328,8 @@ export class ActionConfigSubmitData extends React.Component {
                         }}
                         className="w-full"
                         options = {tableList}
-                        onChange={(value)=>{
-                          this.handleSetValue(_r.id, { tableId: value });
+                        onChange={(value, option)=>{
+                          this.handleSetValue(_r.id, { tableId: value, tableCode: option.key, changeColumns: null, changeRange: null });
                         }}
                         value = {_r.tableId}
                       />
@@ -316,6 +355,7 @@ export class ActionConfigSubmitData extends React.Component {
                     >
                       <Input
                         className="cursor-pointer"
+                        onClick={()=>{this.handleClickChangeColumns(_r);}}
                       />
                     </Form.Item>
                   );
@@ -346,7 +386,7 @@ export class ActionConfigSubmitData extends React.Component {
               },
               {
                 dataIndex: 'actionArea',
-                width: 73,
+                width: 80,
                 title: '操作',
                 align: 'center',
                 render: (_t, _r, _i)=>{
@@ -378,7 +418,37 @@ export class ActionConfigSubmitData extends React.Component {
               }
             ]}
           />
+          <Form.Item style={{ marginBottom: 0, marginTop: '0.5rem' }}>
+            <Space className="float-right">
+              <Button htmlType="button" onClick={this.handleReset}>
+            清空
+              </Button>
+              <Button type="primary" htmlType="submit">
+            确定
+              </Button>
+              <Button htmlType="button" onClick={this.handleCancel}>
+            取消
+              </Button>
+            </Space>
+          </Form.Item>
         </Form>
+        {/* <div className="clear-both mt-2" style={{ height: '30px' }}>
+          <Button
+            className="float-right"
+            size="sm"
+            onClick={this.handleCancel}
+          >
+          取消
+          </Button>
+          <Button
+            className="float-right mr-2"
+            onClick={this.handleOk}
+            size="sm"
+            type="primary"
+          >
+          确定
+          </Button>
+        </div> */}
       </div>      
     );
   }

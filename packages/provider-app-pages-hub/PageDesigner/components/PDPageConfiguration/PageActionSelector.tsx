@@ -27,8 +27,8 @@ export class PageActionSelector extends React.Component {
 
   constructActions = () => {
     const result = {};
-    this.state.list.forEach((item,index)=>{
-      result[item.id] = { ...item, index };
+    this.state.list.forEach((item,order)=>{
+      result[item.id] = { ...item, order };
     });
     return result;
   }
@@ -68,10 +68,10 @@ export class PageActionSelector extends React.Component {
     const actions  = this.initActions();
     const list = [];
     for(const key in actions){
-      const { index, ...data } = actions[key];
-      list.push({ index, data });
+      const { order, ...data } = actions[key];
+      list.push({ order, data });
     }
-    return list.sort((a,b)=>a.index<b.index).map(item=>item.data);
+    return list.sort((a,b)=>a.order<b.order).map(item=>item.data);
   }
 
   getActionId = (index) => {
