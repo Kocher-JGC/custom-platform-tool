@@ -6,7 +6,8 @@ import {
   DropdownSelectorMeta,
   TextareaMeta,
   FormButtonMeta,
-  FormInputNumberMeta
+  FormInputNumberMeta,
+  FormTimeTickerMeta,
 } from "@platform-widget-access/prop-item-rely";
 import { ApiMock } from "./api-mock";
 
@@ -17,7 +18,8 @@ const tempArr = [
   DropdownSelectorMeta,
   TextareaMeta,
   FormButtonMeta,
-  FormInputNumberMeta
+  FormInputNumberMeta,
+  FormTimeTickerMeta
 ];
 
 export const widgetMetadataCollection: WidgetTypeMetadataCollection = {

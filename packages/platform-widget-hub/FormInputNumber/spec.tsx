@@ -34,7 +34,7 @@ import { FormInputNumberComp } from '.';
 export class FormInputNumber implements PlatformWidgetComp {
   // constructor(widgetMeta) {}
   render(widgetState) {
-    console.log(widgetState);
+    // console.log(widgetState);
     return (
       <FormInputNumberComp {...widgetState} />
     );
