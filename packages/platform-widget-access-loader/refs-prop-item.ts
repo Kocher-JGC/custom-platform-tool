@@ -9,3 +9,8 @@ export * from '@platform-widget-prop-item/widget-coding-helper';
 export * from '@platform-widget-prop-item/number-radixPoint-helper';
 export * from '@platform-widget-prop-item/number-min-helper';
 export * from '@platform-widget-prop-item/number-max-helper';
+export * from '@platform-widget-prop-item/prompt-info-helper';
+export * from '@platform-widget-prop-item/note-info-helper';
+export * from '@platform-widget-prop-item/string-length-helper';
+export * from '@platform-widget-prop-item/data-type-helper';
+export * from '@platform-widget-prop-item/widget-type-helper';

@@ -22,6 +22,7 @@ export const NumberMaxComp = ({
   }, [selectedField]);
   return (
     <InputNumber
+      style={{ width: "100%" }}
       value={max}
       onChange={(value) => changeEntityState({
         attr: 'max',
