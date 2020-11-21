@@ -91,35 +91,37 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { selectedInfo } = this.props;
     const { id: activeEntityID } = selectedInfo;
     const { metaAttr, metaID, data, relyID } = options;
-    let _metaID = metaID;
+    let _metaID;
     const { ChangePageMeta } = this.props.dispatcher;
 
-    let idStratrgy;
+    if(metaID) {
+      let idStratrgy;
 
-    /**
-     * 以下为生成对应的 meta 节点数据的 ID 的策略
-     */
-    switch (metaAttr) {
-      case 'dataSource':
-        idStratrgy = data.id;
-        break;
-      case 'schema':
-        /** 通过绑定 column field code 与组件 id 生成有标志性的 key */
-        idStratrgy = [data?.column?.fieldCode, activeEntityID];
-        break;
-      case 'varRely':
-        /** 通过绑定外部传入的 rely id 来确认与变量的依赖项的关系 */
-        idStratrgy = relyID;
-        break;
-      case 'actions':
-        const nanoID = nanoid(8);
-        /** 通过生成随机的 id 确保动作的唯一 */
-        idStratrgy = nanoID;
-        break;
-      default:
+      /**
+       * 以下为生成对应的 meta 节点数据的 ID 的策略
+       */
+      switch (metaAttr) {
+        case 'dataSource':
+          idStratrgy = data.id;
+          break;
+        case 'schema':
+          /** 通过绑定 column field code 与组件 id 生成有标志性的 key */
+          idStratrgy = [data?.column?.fieldCode, activeEntityID];
+          break;
+        case 'varRely':
+          /** 通过绑定外部传入的 rely id 来确认与变量的依赖项的关系 */
+          idStratrgy = relyID;
+          break;
+        case 'actions':
+          const nanoID = nanoid(8);
+          /** 通过生成随机的 id 确保动作的唯一 */
+          idStratrgy = nanoID;
+          break;
+        default:
+      }
+  
+      _metaID = this.genMetaRefID(metaAttr, { idStratrgy });
     }
-
-    _metaID = this.genMetaRefID(metaAttr, { idStratrgy });
 
     const nextOptions = Object.assign({}, options, {
       metaID: _metaID,
