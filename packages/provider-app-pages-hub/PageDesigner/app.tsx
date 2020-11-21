@@ -258,10 +258,16 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   completeData = () => {
+    const completeVarrely = (varRely) => {
+      const options = [];
+      if(!('var.pageName' in varRely)){
+
+      }
+    };
     const completeMeta = ()=>{
-      const { pageMetadata, appLocation } = this.props;
-      console.log(pageMetadata);
-      console.log(appLocation);
+      const { pageMetadata } = this.props;
+      const { varRely } = pageMetadata;
+      completeVarrely(varRely);
     };
     completeMeta();
   }
