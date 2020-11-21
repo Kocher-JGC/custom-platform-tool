@@ -14,6 +14,12 @@ import { FormInputNumberComp } from '.';
     min: {
       type: "number"
     },
+    noteInfo: {
+      type: "string"
+    },
+    promptInfo: {
+      type: "string"
+    },
     radixPoint: {
       type: "string"
     },

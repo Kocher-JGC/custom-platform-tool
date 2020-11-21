@@ -22,6 +22,7 @@ export const NumberMinComp = ({
   }, [selectedField]);
   return (
     <InputNumber
+      style={{ width: "100%" }}
       value={min}
       onChange={(value) => changeEntityState({
         attr: 'min',

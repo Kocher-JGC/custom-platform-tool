@@ -1,32 +1,30 @@
 import React, { useEffect } from 'react';
-// import { Input } from '@infra/ui';
 import { InputNumber } from 'antd';
 
-export const NumberRadixPointComp = ({
+export const StringLengthComp = ({
   changeEntityState,
   editingWidgetState,
   takeMeta
 }) => {
-  const { radixPoint, field } = editingWidgetState;
+  const { stringLength, field } = editingWidgetState;
   const selectedField = takeMeta({
     metaAttr: 'schema',
     metaRefID: field
   });
   useEffect(() => {
-    const nextRadixPoint = selectedField?.column?.name;
-    if (!nextRadixPoint) return;
+    const nextStringLength = selectedField?.column?.name;
+    if (!nextStringLength || nextStringLength === stringLength) return;
     changeEntityState({
-      attr: 'radixPoint',
-      value: nextRadixPoint
+      attr: 'stringLength',
+      value: nextStringLength
     });
   }, [selectedField]);
   return (
     <InputNumber
-      min={0}
-      value={radixPoint}
+      value={stringLength}
       style={{ width: "100%" }}
       onChange={(value) => changeEntityState({
-        attr: 'radixPoint',
+        attr: 'stringLength',
         value
       })}
     />

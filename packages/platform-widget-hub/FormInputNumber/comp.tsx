@@ -12,6 +12,8 @@ export interface FormInputNumberCompProps {
   max: number;
   min: number;
   radixPoint: string;
+  noteInfo: string;
+  promptInfo: string;
   /** 默认值 */
   realVal: number,
   labelColor: string

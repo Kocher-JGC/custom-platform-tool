@@ -22,6 +22,11 @@ export const FormInputNumberMeta = CreateWidgetPropItemRely({
           title: '数字框'
         },
       },
+      { propID: 'prop_widget_type', editAttr: ['widgetType'] },
+      { propID: 'prop_data_type', editAttr: ['dataType'] },
+      { propID: 'prop_string_length', editAttr: ['stringLength'] },
+      { propID: 'prop_prompt_info', editAttr: ['promptInfo'] },
+      { propID: 'prop_note_info', editAttr: ['noteInfo'] },
       { propID: 'prop_number_max', editAttr: ['max'] },
       { propID: 'prop_number_min', editAttr: ['mix'] },
       { propID: 'prop_number_radixPoint', editAttr: ['radixPoint'] }
