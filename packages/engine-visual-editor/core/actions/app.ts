@@ -4,7 +4,7 @@
  * 应用的 action，需要留有足够的扩展空间
  */
 
-import { ActionsMeta, BasePageData, DSMeta, PageMetadata, SchemaMeta, VarMeta } from "../../data-structure";
+import { ActionsMeta, BasePageData, DSMeta, SchemaMeta, VarMeta } from "../../data-structure";
 
 interface AppActionsContext {
   pageContent?: BasePageData
@@ -58,7 +58,7 @@ export const UnmountApp = (): UnmountAppAction => {
 
 export const CHANGE_METADATA = 'app/change-metadata';
 
-export interface ChangeMetadataOptionsBasic<D> {
+export interface ChangeMetadataOptionBasic<D> {
   /** 需要更改的 meta 的属性 */
   // metaAttr: keyof PageMetadata
   /** 更改 meta 后的数据 */
@@ -77,37 +77,42 @@ export interface ChangeMetadataOptionsBasic<D> {
   replace?: boolean
 }
 
-export interface ChangeActionMetaOptions extends ChangeMetadataOptionsBasic<ActionsMeta> {
+export interface ChangeActionMetaOption extends ChangeMetadataOptionBasic<ActionsMeta> {
   metaAttr: 'actions'
 }
 
-export interface ChangeDSMetaOptions extends ChangeMetadataOptionsBasic<DSMeta> {
+export interface ChangeDSMetaOption extends ChangeMetadataOptionBasic<DSMeta> {
   metaAttr: 'dataSource'
 }
 
-export interface ChangeSchemaMetaOptions extends ChangeMetadataOptionsBasic<SchemaMeta> {
+export interface ChangeSchemaMetaOption extends ChangeMetadataOptionBasic<SchemaMeta> {
   metaAttr: 'schema'
 }
 
-export interface ChangeVarMetaOptions extends ChangeMetadataOptionsBasic<VarMeta> {
+export interface ChangeVarMetaOption extends ChangeMetadataOptionBasic<VarMeta> {
   metaAttr: 'varRely'
 }
 
-export type ChangeMetadataOptions = ChangeActionMetaOptions | 
-ChangeDSMetaOptions | 
-ChangeVarMetaOptions | 
-ChangeSchemaMetaOptions
+export type ChangeMetadataOption = ChangeActionMetaOption | 
+ChangeDSMetaOption | 
+ChangeVarMetaOption | 
+ChangeSchemaMetaOption
+
+export type ChangeMetadataOptions = ChangeMetadataOption | ChangeMetadataOption[]
 
 export type ChangeMetadataAction = {
   type: typeof CHANGE_METADATA
-} & ChangeMetadataOptions
+  changeDatas: ChangeMetadataOption[]
+}
+
 
 /**
  * 初始化应用数据
  */
 export const ChangePageMeta = (options: ChangeMetadataOptions): ChangeMetadataAction => {
+  const changeDatas = Array.isArray(options) ? options : [options];
   return {
     type: CHANGE_METADATA,
-    ...options
+    changeDatas
   };
 };

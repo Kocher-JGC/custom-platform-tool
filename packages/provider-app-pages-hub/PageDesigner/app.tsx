@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
 import produce from 'immer';
-import { ChangeMetadataAction, ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
+import { ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
 import { getPageDetailService, updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
 import { nanoid } from 'nanoid';
@@ -87,55 +87,64 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   /**
    * 更改 page meta 的策略
    */
-  changePageMeta = (options: ChangeMetadataOptions) => {
+  changePageMeta = (options: ChangeMetadataOptions): string | string[] => {
     const { selectedInfo } = this.props;
     const { id: activeEntityID } = selectedInfo;
-    const { metaAttr, metaID, data, relyID } = options;
-    let _metaID;
     const { ChangePageMeta } = this.props.dispatcher;
 
-    ChangePageMeta({
-      metaAttr: 'varRely',
-      data: {}
-    });
+    const isArrayOptions = Array.isArray(options);
 
-    if(metaID) {
-      let idStratrgy;
+    // ts 的 bug，ts 无法通过变量来推断类型是否数据
+    const optionsArr = Array.isArray(options) ? options : [options];
 
-      /**
-       * 以下为生成对应的 meta 节点数据的 ID 的策略
-       */
-      switch (metaAttr) {
-        case 'dataSource':
-          idStratrgy = data.id;
-          break;
-        case 'schema':
-          /** 通过绑定 column field code 与组件 id 生成有标志性的 key */
-          idStratrgy = [data?.column?.fieldCode, activeEntityID];
-          break;
-        case 'varRely':
-          /** 通过绑定外部传入的 rely id 来确认与变量的依赖项的关系 */
-          idStratrgy = relyID;
-          break;
-        case 'actions':
-          const nanoID = nanoid(8);
-          /** 通过生成随机的 id 确保动作的唯一 */
-          idStratrgy = nanoID;
-          break;
-        default:
-      }
+    const returnMetaIDs: string[] = [];
+    const nextOptions: ChangeMetadataOptions = [];
+
+    optionsArr.forEach((optItem) => {
+
+      const { metaAttr, metaID, data, relyID } = optItem;
+      let _metaID;
   
-      _metaID = this.genMetaRefID(metaAttr, { idStratrgy });
-    }
+      if(!metaID) {
+        let idStratrgy;
+  
+        /**
+         * 以下为生成对应的 meta 节点数据的 ID 的策略
+         */
+        switch (metaAttr) {
+          case 'dataSource':
+            idStratrgy = data.id;
+            break;
+          case 'schema':
+            /** 通过绑定 column field code 与组件 id 生成有标志性的 key */
+            idStratrgy = [data?.column?.fieldCode, activeEntityID];
+            break;
+          case 'varRely':
+            /** 通过绑定外部传入的 rely id 来确认与变量的依赖项的关系 */
+            idStratrgy = relyID;
+            break;
+          case 'actions':
+            const nanoID = nanoid(8);
+            /** 通过生成随机的 id 确保动作的唯一 */
+            idStratrgy = nanoID;
+            break;
+          default:
+        }
+    
+        _metaID = this.genMetaRefID(metaAttr, { idStratrgy });
 
-    const nextOptions = Object.assign({}, options, {
-      metaID: _metaID,
-      relyID
+        returnMetaIDs.push(_metaID);
+
+        nextOptions.push(Object.assign({}, optItem, {
+          metaID: _metaID,
+          relyID
+        }));
+      }
     });
 
     ChangePageMeta(nextOptions);
     
-    return _metaID;
+    return isArrayOptions ? returnMetaIDs : returnMetaIDs[0];
   }
 
   /**
