@@ -6,7 +6,7 @@ import { PageActionSelector } from './PageActionSelector';
 export interface PageConfigContainerProps {
   flatLayoutItems
   pageMetadata
-  ChangePageMeta
+  changePageMeta
   onClose
 }
 
@@ -15,7 +15,7 @@ export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) =
   const handleOk = async () => {
     const { valid: actionValid, actions } = await actionSelectorRef.current?.onSubmitData?.() || {};
     if([actionValid].includes('invalid')) return;
-    props.ChangePageMeta({
+    props.changePageMeta({
       metaAttr: 'actions',
       data: actions,
       replace: true
