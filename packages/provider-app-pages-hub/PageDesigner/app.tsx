@@ -94,6 +94,11 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     let _metaID;
     const { ChangePageMeta } = this.props.dispatcher;
 
+    ChangePageMeta({
+      metaAttr: 'varRely',
+      data: {}
+    });
+
     if(metaID) {
       let idStratrgy;
 
