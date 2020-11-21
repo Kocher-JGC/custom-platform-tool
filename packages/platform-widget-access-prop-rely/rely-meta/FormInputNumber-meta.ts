@@ -29,7 +29,8 @@ export const FormInputNumberMeta = CreateWidgetPropItemRely({
       { propID: 'prop_note_info', editAttr: ['noteInfo'] },
       { propID: 'prop_number_max', editAttr: ['max'] },
       { propID: 'prop_number_min', editAttr: ['mix'] },
-      { propID: 'prop_number_radixPoint', editAttr: ['radixPoint'] }
+      { propID: 'prop_number_radixPoint', editAttr: ['radixPoint'] },
+      { propID: 'prop_field', editAttr: ['field'] }
     ]
   }
 });

@@ -15,6 +15,7 @@ export const widgetPanelData: GroupPanelData = {
       title: '表单控件',
       items: [
         'FormInput',
+        'FormTimeTicker',
         'FormInputNumber',
         'Textarea',
         'DropdownSelector',

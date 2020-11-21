@@ -30,7 +30,7 @@ export const WidgetTypeComp = ({
         value
       })}
     >
-      {FIELD_TYPE_MENU.map((item)=><Option value={item.value} disabled={!item.value}>{item.label}</Option>)}
+      {FIELD_TYPE_MENU.map((item)=><Option key={item.value} value={item.value} disabled={!item.value}>{item.label}</Option>)}
     </Select>
   );
 };
