@@ -44,7 +44,7 @@ export class PageActionSelector extends React.Component {
   }
 
   componentDidMount(){
-    const list = this.initDataSource();
+    const list = this.initList();
     this.setState({
       list,
       listForShow: list,
@@ -64,7 +64,7 @@ export class PageActionSelector extends React.Component {
     return actions;
   }
 
-  initDataSource = () => {
+  initList = () => {
     const actions  = this.initActions();
     const list = [];
     for(const key in actions){
@@ -74,12 +74,8 @@ export class PageActionSelector extends React.Component {
     return list.sort((a,b)=>a.index<b.index).map(item=>item.data);
   }
 
-  getIndexByActionId = (actionId) => {
-    return (actionId || '').split('.')[1]-0;
-  }
-
   getActionId = (index) => {
-    return `action.${index}.${nanoid(8)}`;
+    return `act.${index}.${nanoid(8)}`;
   }
 
   getTypeList = () => {
