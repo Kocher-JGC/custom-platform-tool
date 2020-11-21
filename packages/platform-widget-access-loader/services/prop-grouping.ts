@@ -37,6 +37,14 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_number_radixPoint'
         ]
       },
+      {
+        title: '控件校验',
+        items: [
+          'prop_check_fixed_rule',
+          'prop_check_custom_rule',
+          'prop_check_tooltip'
+        ]
+      },
     ]
   },
   {
