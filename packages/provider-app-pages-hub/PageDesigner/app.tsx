@@ -29,7 +29,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   componentDidMount = async () => {
     // 在顶层尝试捕获异常
     try {
-      this.perpareInitData();
+      await this.perpareInitData();
+      /** 补充完整数据 */
+      this.completeData();
     } catch (e) {
       console.error(e);
     }
@@ -253,6 +255,15 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     });
 
     InitApp(initData);
+  }
+
+  completeData = () => {
+    const completeMeta = ()=>{
+      const { pageMetadata, appLocation } = this.props;
+      console.log(pageMetadata);
+      console.log(appLocation);
+    };
+    completeMeta();
   }
 
   updatePage = (options = {}) => {
