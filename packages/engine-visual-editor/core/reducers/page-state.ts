@@ -45,23 +45,13 @@ export function pageMetadataReducer(
       const {
         pageContent
       } = action;
-      return produce(pageContent, (draft) => (draft ? draft.meta : state));
-    // case ADD_ENTITY:
-    //   return produce(state, (draft) => {
-    //     const { entity: { id, varAttr } } = action;
-    //     if (varAttr) {
-    //       // 设置变量
-    //       const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
-    //       draft.lastCompID += 1;
-    //       if (!draft.varRely) draft.varRely = {};
-    //       draft.varRely[id] = varAttrArr;
-    //     }
-    //     // varAttrArr.forEach((attr) => {
-    //     //   const varAttrID = `${id}.${attr}`;
-    //     //   draft.varAttr[varAttrID] = attr;
-    //     // });
-    //     return draft;
-    //   });
+      return produce(pageContent, (draft) => {
+        /**
+         * 合并默认 meta 和由外部传入的 meta
+         */
+        const metaFormInit = draft?.meta;
+        return mergeDeep(DefaultPageMeta, metaFormInit);
+      });
     case DEL_ENTITY:
       return produce(state, (draft) => {
         const { idx, entity: delE } = action;
