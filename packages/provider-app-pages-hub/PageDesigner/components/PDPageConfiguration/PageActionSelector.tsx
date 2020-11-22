@@ -297,6 +297,7 @@ export class PageActionSelector extends React.Component {
             rowKey="id"
             dataSource = {listForShow}
             pagination={false}
+            scroll={{ y: 440 }}
             columns={[
               {
                 dataIndex: 'index',

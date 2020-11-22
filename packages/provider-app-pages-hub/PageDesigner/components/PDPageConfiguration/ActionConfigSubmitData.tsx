@@ -5,7 +5,7 @@ import { CloseModal, ShowModal } from "@infra/ui";
 import { getTableList as getTableListAPI } from '@provider-app/table-editor/apis';
 import { nanoid } from 'nanoid';
 import { FormInstance } from 'antd/lib/form';
-import { ActionConfigSubmitDataChangeColumns } from './ActionConfigSubmitDataChangeColumns';
+import { ActionConfigSubmitDataChangeFields } from './ActionConfigSubmitDataChangeFields';
 
 const OPERATE_TYPE_MENU = [
   { label: '新增', key: 'insert', value: 'insert' },
@@ -178,27 +178,23 @@ export class ActionConfigSubmitData extends React.Component {
     this.searchFormRef.current?.resetFields();
     this.handleSearch();
   }
-  filterListAfterSearch = ({ type, name }) => {
+  filterListAfterSearch = ({ tableId, operateType }) => {
     const { list } = this.state;
     return list.filter(item=>{
-      return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
+      return (!tableId || item.tableId ===tableId) && (!operateType || item.operateType === operateType);
     });
   }
-  handleClickChangeColumns=(_r)=>{
+  handleClickChangeFields=(_r)=>{
     const modalID = ShowModal({
       title: '配置字段',
-      width: 600,
+      width: 500,
       children: () => {
         return (
           <div className="p-5">
-            <ActionConfigSubmitDataChangeColumns
-              data = {{
-                tableId: _r.tableId,
-                tableCode: _r.tableCode,
-                changeColumns: _r.changeColumns
-              }}
-              onSuccess={(changeColumns) => {
-                this.handleSetValue(_r.id, { changeColumns });
+            <ActionConfigSubmitDataChangeFields
+              {..._r}
+              onSuccess={(changeFields, changeFieldsTitle) => {
+                this.handleSetValue(_r.id, { changeFields, changeFieldsTitle });
                 CloseModal(modalID);
               }}
               onCancel={()=>{
@@ -221,7 +217,7 @@ export class ActionConfigSubmitData extends React.Component {
         >
           <Form.Item
             className="w-1/4"
-            name="type"
+            name="operateType"
           >
             <Select 
               placeholder="请选择操作类型"
@@ -232,7 +228,7 @@ export class ActionConfigSubmitData extends React.Component {
           
           <Form.Item
             className="w-1/4"
-            name="name"
+            name="tableId"
           >
             <Select  
               placeholder="请选择数据表"
@@ -274,6 +270,7 @@ export class ActionConfigSubmitData extends React.Component {
             rowKey="id"
             dataSource = {listForShow}
             pagination={false}
+            scroll={{ y: 440 }}
             columns={[
               {
                 dataIndex: 'index',
@@ -329,7 +326,7 @@ export class ActionConfigSubmitData extends React.Component {
                         className="w-full"
                         options = {tableList}
                         onChange={(value, option)=>{
-                          this.handleSetValue(_r.id, { tableId: value, tableCode: option.key, changeColumns: null, changeRange: null });
+                          this.handleSetValue(_r.id, { tableId: value, tableCode: option.key, changeFields: null, changeRange: null });
                         }}
                         value = {_r.tableId}
                       />
@@ -338,15 +335,15 @@ export class ActionConfigSubmitData extends React.Component {
                 }
               },
               {
-                dataIndex: 'changeColumns',
-                key: 'changeColumns',
+                dataIndex: 'changeFieldsTitle',
+                key: 'changeFieldsTitle',
                 title: '字段配置',
                 align: 'center',
                 width: 202,
                 render: (_t, _r, _i)=>{
-                  return (
+                  return _r.tableId && ['update', 'insert'].includes(_r.operateType) ? (
                     <Form.Item
-                      name={['list', _i, 'changeColumns']}
+                      name={['list', _i, 'changeFieldsTitle']}
                       rules={[{
                         validator: ()=>{
 
@@ -355,10 +352,11 @@ export class ActionConfigSubmitData extends React.Component {
                     >
                       <Input
                         className="cursor-pointer"
-                        onClick={()=>{this.handleClickChangeColumns(_r);}}
+                        title={_r.changeFieldsTitle}
+                        onClick={()=>{this.handleClickChangeFields(_r);}}
                       />
                     </Form.Item>
-                  );
+                  ) : null;
                 }
               },
               {
@@ -368,7 +366,7 @@ export class ActionConfigSubmitData extends React.Component {
                 width: 202,
                 align: 'center',
                 render: (_t, _r, _i)=>{
-                  return (
+                  return _r.tableId && ['update', 'delete'].includes(_r.operateType) ? (
                     <Form.Item
                       name={['list', _i, 'changeRange']}
                       rules={[{
@@ -381,7 +379,7 @@ export class ActionConfigSubmitData extends React.Component {
                         className="cursor-pointer"
                       />
                     </Form.Item>
-                  );
+                  ) : null;
                 }
               },
               {
