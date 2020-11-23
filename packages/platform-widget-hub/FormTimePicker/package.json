@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/form-time-picker",
+  "description": "表单时间框",
+  "version": "0.0.1",
+  "author": "Vale",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

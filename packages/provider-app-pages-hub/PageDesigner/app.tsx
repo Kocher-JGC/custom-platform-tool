@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
 import produce from 'immer';
-import { ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
+import { AppActionsContext, ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
 import { getPageDetailService, updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
 import { nanoid } from 'nanoid';
@@ -266,7 +266,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     ]);
 
     /** 准备初始化数据 */
-    const initData = produce({}, (draftInitData) => {
+    const initData = produce<AppActionsContext>({}, (draftInitData) => {
       if (!offlineMode) {
         const {
           pageContent
@@ -274,6 +274,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         draftInitData.pageContent = pageContent;
         draftInitData.payload = {
           pageDataRes,
+        };
+        draftInitData.initMeta = {
+          // 合并初始化 meta
+          varRely: {
+            // 'qwqr': {}
+          }
         };
       }
       return draftInitData;
@@ -362,8 +368,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       flatLayoutItems,
       appLocation,
     } = this.props;
-    // console.log(appLocation);
-    // console.log(props);
+    
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
     const {
       InitEntityState, UpdateEntityState,
@@ -427,8 +432,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                     selectedEntity={activeEntity}
                     platformCtx={this.platformCtx}
                     defaultEntityState={activeEntity.propState}
-                    initEntityState={(entityState) => InitEntityState(selectedInfo, entityState)}
+                    initEntityState={(entityState) => {
+                      // TODO: 属性项更改属性追踪器
+                      InitEntityState(selectedInfo, entityState);
+                    }}
                     updateEntityState={(entityState) => {
+                      console.log('updateEntityState', entityState);
+                      // TODO: 属性项更改属性追踪器
                       UpdateEntityState({
                         nestingInfo: selectedInfo.nestingInfo,
                         entity: activeEntity
