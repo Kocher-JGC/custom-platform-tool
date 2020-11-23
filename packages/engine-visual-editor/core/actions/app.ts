@@ -6,11 +6,13 @@
 
 import { ActionsMeta, BasePageData, DSMeta, SchemaMeta, VarMeta } from "../../data-structure";
 
-interface AppActionsContext {
+export interface AppActionsContext {
   pageContent?: BasePageData
   payload?: any
   name?: string
   id?: string
+  /** 初始化的 meta */
+  initMeta?: any
 }
 
 export const INIT_APP = 'app/init';

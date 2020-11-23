@@ -43,14 +43,14 @@ export function pageMetadataReducer(
   switch (action.type) {
     case INIT_APP:
       const {
-        pageContent
+        pageContent, initMeta
       } = action;
       return produce(pageContent, (draft) => {
         /**
          * 合并默认 meta 和由外部传入的 meta
          */
         const metaFormInit = draft?.meta;
-        return mergeDeep(DefaultPageMeta, metaFormInit);
+        return mergeDeep({}, DefaultPageMeta, initMeta, metaFormInit);
       });
     case DEL_ENTITY:
       return produce(state, (draft) => {
@@ -117,7 +117,11 @@ export interface AppContext {
   /** App 是否做好准备 */
   ready: boolean
   /** 页面元数据 */
-  payload?: any
+  payload?: {
+    [payloadKey: string]: any
+    /** 默认的 meta */
+    defaultMeta?: any
+  }
 }
 /**
  * 整个应用的上下文数据

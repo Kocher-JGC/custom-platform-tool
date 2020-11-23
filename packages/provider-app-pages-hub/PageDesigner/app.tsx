@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
 import produce from 'immer';
-import { ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
+import { AppActionsContext, ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
 import { getPageDetailService, updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
 import { nanoid } from 'nanoid';
@@ -264,7 +264,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     ]);
 
     /** 准备初始化数据 */
-    const initData = produce({}, (draftInitData) => {
+    const initData = produce<AppActionsContext>({}, (draftInitData) => {
       if (!offlineMode) {
         const {
           pageContent
@@ -272,6 +272,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         draftInitData.pageContent = pageContent;
         draftInitData.payload = {
           pageDataRes,
+        };
+        draftInitData.initMeta = {
+          // 合并初始化 meta
+          varRely: {
+            // 'qwqr': {}
+          }
         };
       }
       return draftInitData;
