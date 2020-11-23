@@ -56,8 +56,8 @@ export type DSMeta = PD.Datasources
  * 页面的元数据
  */
 export interface PageMetadata {
-  /** 记录最后一个创建的组件的 ID */
-  lastCompID: number
+  /** 记录 widget 的数量 */
+  widgetCounter: number
   /** 页面标准接口 */
   pageInterface: MetaStorage
   /** 联动 meta */

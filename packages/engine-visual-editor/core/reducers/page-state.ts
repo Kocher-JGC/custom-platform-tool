@@ -7,7 +7,7 @@ import {
 import { PageMetadata } from "../../data-structure";
 
 const DefaultPageMeta: PageMetadata = {
-  lastCompID: 0,
+  widgetCounter: 0,
   dataSource: {},
   pageInterface: {},
   linkpage: {},
@@ -54,7 +54,7 @@ export function pageMetadataReducer(
       });
     case ADD_ENTITY:
       return produce(state, (draft) => {
-        draft.lastCompID += 1;
+        draft.widgetCounter += 1;
         return draft;
       });
     case DEL_ENTITY:

@@ -13,8 +13,8 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
     metaAttr: 'schema',
     metaRefID: field
   });
-  const lastCompID = takeMeta({
-    metaAttr: 'lastCompID',
+  const widgetCounter = takeMeta({
+    metaAttr: 'widgetCounter',
   });
   /** 取自身定义的 whichAttr */
   useEffect(() => {
@@ -27,7 +27,7 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
     if (field && schema) {
       nextWidgetCode = schema.column?.fieldCode;
     } else {
-      nextWidgetCode = widgetCode || `${widgetRef}.${lastCompID}`;
+      nextWidgetCode = widgetCode || `${widgetRef}.${widgetCounter}`;
     }
     if(widgetCode !== nextWidgetCode) {
       changeEntityState({
