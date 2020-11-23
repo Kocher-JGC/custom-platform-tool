@@ -30,8 +30,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     // 在顶层尝试捕获异常
     try {
       await this.perpareInitData();
-      /** 补充完整数据 */
-      this.completeData();
     } catch (e) {
       console.error(e);
     }
@@ -286,21 +284,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     });
 
     InitApp(initData);
-  }
-
-  completeData = () => {
-    const completeVarrely = (varRely) => {
-      const options = [];
-      if(!('var.pageName' in varRely)){
-
-      }
-    };
-    const completeMeta = ()=>{
-      const { pageMetadata } = this.props;
-      const { varRely } = pageMetadata;
-      completeVarrely(varRely);
-    };
-    completeMeta();
   }
 
   updatePage = (options = {}) => {

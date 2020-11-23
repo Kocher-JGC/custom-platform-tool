@@ -33,6 +33,26 @@ export interface DSVarRely {
   varAttr: any
 }
 
+
+/**
+ * 基础页面变量
+ */
+export interface PageVarRely {
+  type: 'page'
+  alias: string
+}
+
+/**
+ * 输入参数变量
+ */
+export interface PageInputVarRely {
+  type: 'pageInput',
+  alias: string
+  exp?: any
+  realValue?: string
+  var?: string
+}
+
 export interface MetaStorage<D = any> {
   [metaID: string]: D
 }
