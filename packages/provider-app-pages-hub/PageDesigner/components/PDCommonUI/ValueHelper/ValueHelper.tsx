@@ -58,7 +58,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
     case 'expression':
       Comp = (
         <span
-          className="px-4 py-2 border"
+          className="px-4 py-2 border cursor-pointer"
           onClick={(e) => {
             const modalID = ShowModal({
               title: '设置表达式',
