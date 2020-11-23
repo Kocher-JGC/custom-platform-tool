@@ -32,14 +32,6 @@ export interface UnexpectedWidgetMeta {
   unexpected: true
 }
 
-/**
- * 业务组件的接入标准
- */
-export class PlatformWidgetAccessSpec implements PlatformWidgetMeta {
-  name!: PlatformWidgetMeta['name']
-
-  editableProps!: PlatformWidgetMeta['editableProps']
-
-  render!: PlatformWidgetMeta['render']
+export interface CustomEditorMeta {
+  name: string
 }
-// export type PlatformWidgetAccessSpec = () => PlatformWidgetMeta

@@ -7,12 +7,15 @@ import { GeneralTableComp } from '.';
   editableProps: {
     columns: {
       type: 'array[{ key: string }]'
+    },
+    optDS: {
+      type: 'string'
     }
   },
 })
 export class NormalTable implements PlatformWidgetComp {
   render(widgetState: WidgetEntityState) {
-    // console.log(widgetState);
+    console.log(widgetState);
 
     return (
       <GeneralTableComp {...widgetState} />
