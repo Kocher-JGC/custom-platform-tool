@@ -43,25 +43,15 @@ export function pageMetadataReducer(
   switch (action.type) {
     case INIT_APP:
       const {
-        pageContent
+        pageContent, initMeta
       } = action;
-      return produce(pageContent, (draft) => (draft ? draft.meta : state));
-    // case ADD_ENTITY:
-    //   return produce(state, (draft) => {
-    //     const { entity: { id, varAttr } } = action;
-    //     if (varAttr) {
-    //       // 设置变量
-    //       const varAttrArr = Array.isArray(varAttr) ? varAttr : [...varAttr];
-    //       draft.lastCompID += 1;
-    //       if (!draft.varRely) draft.varRely = {};
-    //       draft.varRely[id] = varAttrArr;
-    //     }
-    //     // varAttrArr.forEach((attr) => {
-    //     //   const varAttrID = `${id}.${attr}`;
-    //     //   draft.varAttr[varAttrID] = attr;
-    //     // });
-    //     return draft;
-    //   });
+      return produce(pageContent, (draft) => {
+        /**
+         * 合并默认 meta 和由外部传入的 meta
+         */
+        const metaFormInit = draft?.meta;
+        return mergeDeep({}, DefaultPageMeta, initMeta, metaFormInit);
+      });
     case DEL_ENTITY:
       return produce(state, (draft) => {
         const { idx, entity: delE } = action;
@@ -127,7 +117,11 @@ export interface AppContext {
   /** App 是否做好准备 */
   ready: boolean
   /** 页面元数据 */
-  payload?: any
+  payload?: {
+    [payloadKey: string]: any
+    /** 默认的 meta */
+    defaultMeta?: any
+  }
 }
 /**
  * 整个应用的上下文数据
