@@ -21,7 +21,7 @@ export const takeColumnsData = (columns: any[]): PD.Column[] => {
  * 从后端返回的数据提取前端需要用到的数据
  */
 export const takeTableField = (datasourceData): PD.Datasource => {
-  return Object.assign({}, pick(
+  const resData = Object.assign({}, pick(
     datasourceData, [
       'name',
       'id',
@@ -32,6 +32,7 @@ export const takeTableField = (datasourceData): PD.Datasource => {
   ), {
     columns: takeColumnsData(datasourceData.columns)
   });
+  return resData;
 };
 
 /**

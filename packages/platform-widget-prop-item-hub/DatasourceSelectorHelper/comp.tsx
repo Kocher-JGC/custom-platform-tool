@@ -54,7 +54,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
           position: 'right',
           single: true,
           type: dsType,
-          onSubmit: (submitData, { close, interDatasources }) => {
+          onSubmit: ({ close, interDatasources }) => {
             const bindedDS = interDatasources[0];
             const nextMetaID = changePageMeta({
               metaAttr: 'dataSource',
