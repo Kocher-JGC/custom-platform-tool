@@ -13,7 +13,8 @@ import {
   INIT_ENTITY_STATE,
   INIT_APP,
   InitAppAction,
-  CHANGE_ENTITY_TYPE
+  CHANGE_ENTITY_TYPE,
+  ChangeEntityTypeAction
 } from '../actions';
 import { getItemFromNestingItemsByBody } from '../utils';
 
@@ -76,7 +77,6 @@ export const layoutInfoReducer = (
         const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
         const { nestingInfo: initIdx } = initSInfo;
         const targetData = getItemFromNestingItemsByBody(draftState, initIdx);
-        // eslint-disable-next-line no-param-reassign
         targetData.propState = defaultEntityState;
         return draftState;
       });
@@ -132,19 +132,25 @@ export function flatLayoutItemsReducer(
         ...state,
         [entity.id]: entity
       };
+    case INIT_ENTITY_STATE:
+      const nextStateInit = produce(state, (draftState) => {
+        const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
+        const { entity } = initSInfo;
+        if(entity) draftState[entity.id].propState = defaultEntityState;
+        return draftState;
+      });
+      return nextStateInit;
     case UPDATE_ENTITY_STATE:
-      const { targetEntity: { entity: updateEntity }, formState } = action;
-      const { id: updateId } = updateEntity;
       return produce(state, (draftState) => {
-        // eslint-disable-next-line no-param-reassign
-        draftState[updateId].propState = formState;
+        const { targetEntity: { entity }, formState } = action;
+        const { id } = entity;
+        draftState[id].propState = formState;
         return draftState;
       });
     case DEL_ENTITY:
       return produce(state, (draft) => {
-        const { idx, entity: delE } = action;
-        // eslint-disable-next-line no-param-reassign
-        delete draft[delE.id];
+        const { idx, entity } = action;
+        Reflect.deleteProperty(draft, entity.id);
         return draft;
       });
     default:

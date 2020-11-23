@@ -86,12 +86,24 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
           })
         }
       </div>
+      {
+        interDatasources.length === 0 && (
+          <div 
+            onClick={e => {
+
+            }}
+          >
+            还没有绑定数据源，请先绑定
+          </div>
+        )
+      }
       <Button
+        disabled={!selectColInfo.column}
         onClick={(e) => {
-          selectColInfo && onSubmit?.(selectColInfo);
+          selectColInfo.column && onSubmit?.(selectColInfo);
         }}
       >
-        确定选择
+      确定选择
       </Button>
     </div>
   );
