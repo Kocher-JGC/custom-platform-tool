@@ -187,7 +187,7 @@ export class ActionConfigSubmitData extends React.Component {
   handleClickChangeFields=(_r)=>{
     const modalID = ShowModal({
       title: '配置字段',
-      width: 500,
+      width: 900,
       children: () => {
         return (
           <div className="p-5">

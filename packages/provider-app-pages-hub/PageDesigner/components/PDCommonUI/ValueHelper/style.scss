@@ -1,0 +1,17 @@
+.value-helper {
+  .custom-value {
+    &.focusing {
+      z-index: 1;
+    }
+    .form-control, .input-group {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+  .value-type-selector {
+    .search-input, .display-title {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+}

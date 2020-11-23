@@ -1,21 +1,27 @@
 import React, { useEffect } from 'react';
 import {
-  CloseModal, Input, ShowModal
+  CloseModal, Input, ShowModal, Selector
 } from '@infra/ui';
 import { ExpEditor } from './ExpEditor';
-import { Dropdown, Menu } from 'antd';
-import { EllipsisOutlined } from '@ant-design/icons';
+import './style.scss';
 
 /**
  * 可用的值的类型
  */
 
 const DROPDOWN_MENU = [
-  { label: '自定义', key: 'costomValue', value: 'costomValue' },
+  { label: '自定义', key: 'customValue', value: 'customValue' },
   { label: '表达式', key: 'expression', value: 'expression' },
   { label: '变量', key: 'variable', value: 'variable' }
 ];
-
+/**
+ * 可用的值的类型
+ */
+const selectTypes = {
+  customValue: '自定义',
+  expression: '表达式',
+  variable: '变量',
+};
 /**
  * ValueHelperProps
  */
@@ -32,13 +38,14 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   editedState,
   onChange,
 }) => {
-  const [selectedItem, setSelectedItem] = React.useState('costomValue');
+  const [selectedItem, setSelectedItem] = React.useState('customValue');
   const { exp, realVal, variable } = editedState;
   let Comp;
   switch (selectedItem) {
-    case 'costomValue':
+    case 'customValue':
       Comp = (
-        <Input
+        <Input 
+          className="custom-value"
           value={realVal || ''}
           onChange={(value) => onChange({
             exp: null,
@@ -85,35 +92,30 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       break;
   }
   useEffect(() => {
-    // const selectedKey = 'costomValue'; 
-    const keyMenu = DROPDOWN_MENU.map(item=>item.value);
+    // const selectedKey = 'customValue'; 
+    const keyMenu = Object.keys(selectTypes);
     for(const key in editedState){
       if(!editedState[key] || !keyMenu.includes(key)) continue;
       setSelectedItem(key);
     }
   }, []);
-  const menu = (
-    <Menu onClick={item=>{
-      setSelectedItem(item.key);
-    }}
-    >
-      {DROPDOWN_MENU.map(item=>{
-        return (
-          <Menu.Item key={item.key} className={selectedItem === item.key ? 'ant-menu-item-selected' : ''}>
-            {item.label}
-          </Menu.Item>
-        );
-      })}
-    </Menu>
-  );
   return (
     <div className="value-helper">
       <span>
         {Comp}
       </span>
-      <Dropdown overlay={menu} className="p-2 cursor-pointer">
+      <span className="value-type-selector">
+        <Selector
+          needCancel={false}
+          value={selectedItem}
+          values={selectTypes}
+          onChange={(val) => setSelectedItem(val)}
+        />
+      </span>
+      
+      {/* <Dropdown overlay={menu} className="p-2 cursor-pointer">
         <EllipsisOutlined  style={{ verticalAlign: '0.125em' }}/>
-      </Dropdown>
+      </Dropdown> */}
     </div>
   );
 };
