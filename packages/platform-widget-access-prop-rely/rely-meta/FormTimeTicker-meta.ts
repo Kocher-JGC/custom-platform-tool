@@ -1,9 +1,9 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
-export const FormInputMeta = CreateWidgetPropItemRely({
-  id: 'widget-id-1',
-  label: '文本框',
-  widgetRef: 'FormInput',
+export const FormTimeTickerMeta = CreateWidgetPropItemRely({
+  id: 'widget-form-time-ticker',
+  label: '时间框',
+  widgetRef: 'FormTimeTicker',
   varAttr: [{
     alias: '实际值',
     attr: 'realVal',
@@ -21,14 +21,14 @@ export const FormInputMeta = CreateWidgetPropItemRely({
         propID: 'prop_title_value',
         editAttr: ['title'],
         defaultValues: {
-          title: '文本框'
+          title: '时间框'
         },
       },
-      { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       { propID: 'prop_check_fixed_rule', editAttr: ['checkFixedRule'] },
       { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },
       { propID: 'prop_check_tooltip', editAttr: ['checkTooltip'] },
-      { propID: 'prop_field', editAttr: ['field'] },
+      // { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
+      // { propID: 'prop_field', editAttr: ['field'] },
     ]
   }
 });
