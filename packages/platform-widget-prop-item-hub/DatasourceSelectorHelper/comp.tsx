@@ -47,6 +47,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
 
   const dsBinder = dsType ? (
     <div 
+      className="px-4 py-2 border cursor-pointer"
       onClick={e => {
         platformCtx.selector.openDatasourceSelector({
           defaultSelected: datasourceMeta ? [datasourceMeta] : [],
@@ -55,12 +56,12 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
           single: true,
           type: dsType,
           onSubmit: ({ close, interDatasources }) => {
+            // 由于是单选的，所以只需要取 0
             const bindedDS = interDatasources[0];
             const nextMetaID = changePageMeta({
               metaAttr: 'dataSource',
               metaID: DSOptionsRef,
               rmMetaID: DSOptionsRef,
-              // 由于是单选的，所以只需要取 0
               data: bindedDS
               // metaID:
             });

@@ -419,7 +419,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                       InitEntityState(selectedInfo, entityState);
                     }}
                     updateEntityState={(entityState) => {
-                      console.log('updateEntityState', entityState);
                       // TODO: 属性项更改属性追踪器
                       UpdateEntityState({
                         nestingInfo: selectedInfo.nestingInfo,
