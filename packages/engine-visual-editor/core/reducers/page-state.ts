@@ -52,6 +52,11 @@ export function pageMetadataReducer(
         const metaFormInit = draft?.meta;
         return mergeDeep({}, DefaultPageMeta, initMeta, metaFormInit);
       });
+    case ADD_ENTITY:
+      return produce(state, (draft) => {
+        draft.lastCompID += 1;
+        return draft;
+      });
     case DEL_ENTITY:
       return produce(state, (draft) => {
         const { idx, entity: delE } = action;
