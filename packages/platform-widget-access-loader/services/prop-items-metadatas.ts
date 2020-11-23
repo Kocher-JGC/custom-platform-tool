@@ -1,4 +1,4 @@
-import { PropItemsCollection } from "@engine/visual-editor/data-structure";
+import { PropItemsCollection } from "@platform-widget-access/spec";
 import * as PropItemComps from "../refs-prop-item";
 import { ApiMock } from "./api-mock";
 

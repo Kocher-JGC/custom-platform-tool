@@ -6,6 +6,8 @@ export interface OnDatasourceSelectorSubmitOptions {
   close: () => void
   /** 内部的数据源结构 */
   interDatasources
+  /** 从远端选择回来的数据源 */
+  selectedDSFromRemote
 }
 
 export interface OpenDatasourceSelectorOptions {
@@ -18,7 +20,7 @@ export interface OpenDatasourceSelectorOptions {
   /** 默认选择的数据源的项 */
   defaultSelected: ({ id: string })[]
   /** 数据源选择器选择后的回调 */
-  onSubmit: (submitData, submitOptions: OnDatasourceSelectorSubmitOptions) => void
+  onSubmit: (submitOptions: OnDatasourceSelectorSubmitOptions) => void
   /** 是否单选 */
   single?: boolean
 }

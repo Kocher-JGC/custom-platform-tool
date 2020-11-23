@@ -31,6 +31,7 @@ export class FieldHelperSpec {
     return new Promise((resolve, reject) => {
       for (const sID in schema) {
         const fieldCode = _selectedField.column?.fieldCode;
+        console.log(_selectedField.column);
         if (!fieldCode || sID.indexOf(fieldCode) !== -1) {
           reject();
           break;
@@ -80,7 +81,6 @@ export class FieldHelperSpec {
                   interDatasources={interDatasources}
                   defaultSelected={selectedField}
                   onSubmit={(_selectedField) => {
-                    const fieldCode = _selectedField.column?.fieldCode;
                     const prevMetaRefID = currMetaRefID;
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {

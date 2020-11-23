@@ -42,8 +42,8 @@ export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx =>
                 bindedDataSources={defaultSelected}
                 type={type}
                 single={single}
-                onSubmit={(selectedItems, interDatasources) => {
-                  onSubmit(selectedItems, { close, interDatasources });
+                onSubmit={(selectedDSFromRemote, interDatasources) => {
+                  onSubmit({ close, interDatasources, selectedDSFromRemote });
                 }}
               />
             );

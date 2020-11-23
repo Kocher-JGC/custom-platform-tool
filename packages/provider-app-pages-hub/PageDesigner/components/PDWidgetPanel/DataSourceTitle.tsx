@@ -30,8 +30,8 @@ export const DataSourceTitle: React.FC<DataSourceTitleProps> = ({
                     modalType: 'side',
                     type: 'TABLE',
                     position: 'left',
-                    onSubmit: (submitData) => {
-                      onAddDataSource(submitData);
+                    onSubmit: ({ interDatasources }) => {
+                      onAddDataSource(interDatasources);
                       closeModal();
                     }
                   });
