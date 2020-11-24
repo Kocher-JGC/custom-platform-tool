@@ -77,40 +77,148 @@ export function pageMetadataReducer(
       });
     case CHANGE_METADATA:
       return produce(state, (draft) => {
+        const relyAnalysis = (metaID, relyID) => {
+          /** 将依赖关系记录在 _rely 中 */
+          if(!draft._rely) draft._rely = {};
+          if(!draft._rely[metaID]) draft._rely[metaID] = [];
+          if(relyID) draft._rely[metaID].push(relyID);
+        };
         const { changeDatas } = action;
-        changeDatas.forEach((changeData) => {
-          const {
-            data, datas, metaAttr, metaID, rmMetaID, replace, relyID
-          } = changeData;
-          /** 如果是 replace 模式，则直接替换整个 meta */
-          if(replace) {
-            draft[metaAttr] = data;
-            return draft;
-          }
-          if(datas) {
-            draft[metaAttr] = Object.assign({}, draft[metaAttr], datas);
-          }
+        for (const changeData of changeDatas) {
+          // .forEach((changeData) => {
+
+          /**
+           * 为什么那么多 if/else？
+           * 由于 ts 对 switch case 的检查的问题，需要通过 if/else 的方式来做类型检查
+           * 网上的解决方案也是采用 if/else 的方式来处理，参考：https://javascript.info/switch
+           * 
+           * TODO: 后续优化此实现
+           */
+          const { metaAttr } = changeData;
           if (!draft[metaAttr]) {
             console.error('尝试修改了不存在的 meta，请检查代码');
             draft[metaAttr] = {};
           }
-          if (metaID) {
-            draft[metaAttr][metaID] = data;
-  
-            /** 将依赖关系记录在 _rely 中 */
-            if(!draft._rely) draft._rely = {};
-            if(!draft._rely[metaID]) draft._rely[metaID] = [];
-            if(relyID) draft._rely[metaID].push(relyID);
-          } else {
-            const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
-            Object.assign(draft[metaAttr], {
-              [newDataRefID]: data
-            });
+
+          if(changeData.type === 'create' || changeData.type === 'create/rm') {
+            const {
+              data, metaID, relyID
+              // data, datas, metaAttr, metaID, rmMetaID, replace, relyID
+            } = changeData;
+            let _metaID;
+            if (metaID) {
+              _metaID = metaID;
+            } else {
+              console.error(`并未传入 metaID，系统默认将 ${metaAttr} 的属性的数量 + 1 作为 metaID`);
+              const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
+              _metaID = newDataRefID;
+            }
+
+            /** 依赖分析 */
+            relyAnalysis(_metaID, relyID);
+            
+            draft[metaAttr][_metaID] = data;
+
+            if(changeData.type === 'create/rm') {
+              const { rmMetaID } = changeData;
+              Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+            }
           }
-          if (rmMetaID && draft[metaAttr]) {
+
+          if(changeData.type === 'replace') {
+            const { datas } = changeData;
+            if(!datas) {
+              console.error(`在 replace 模式下需要指定 datas`);
+            }
+            draft[metaAttr] = datas;
+          }
+
+          if(changeData.type === 'update') {
+            const { metaID, data } = changeData;
+            if(!metaID) {
+              console.error(`在更新时没有传入对应的 metaID，请检查调用链路`);
+            } else {
+              draft[metaAttr][metaID] = data;
+            }
+          }
+
+          if(changeData.type === 'update/batch') {
+            const { datas } = changeData;
+            Object.assign(draft[metaAttr], datas);
+          }
+
+          if(changeData.type === 'rm') {
+            const { rmMetaID } = changeData;
             Reflect.deleteProperty(draft[metaAttr], rmMetaID);
           }
-        });
+
+          // switch (type) {
+          //   case 'create':
+          //     const {
+          //       metaAttr, data
+          //       // data, datas, metaAttr, metaID, rmMetaID, replace, relyID
+          //     } = changeData;
+          //     if (!draft[metaAttr]) {
+          //       console.error('尝试修改了不存在的 meta，请检查代码');
+          //       draft[metaAttr] = {};
+          //     }
+          //     break;
+          //   case 'replace':
+          //     const {
+          //       datas
+          //     } = changeData;
+          //     if(!datas) {
+          //       console.error(`在 replace 模式下需要指定 datas`);
+          //     }
+          //     draft[metaAttr] = datas;
+          //     return draft;
+          //     // break;
+          //   case 'rm':
+          //     Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+          //     break;
+          //   case 'create/rm':
+              
+          //     break;
+          //   case 'update':
+              
+          //     break;
+          //   case 'update/batch':
+          //     Object.assign(draft[metaAttr], datas);
+          //     break;
+          // }
+          /** 如果是 replace 模式，则直接替换整个 meta */
+          // if(replace) {
+          //   if(!datas) {
+          //     console.error(`在 replace 模式下需要指定 datas`);
+          //   }
+          //   draft[metaAttr] = datas;
+          //   return draft;
+          // }
+          // if(datas) {
+          //   Object.assign(draft[metaAttr], datas);
+          // }
+          // if (!draft[metaAttr]) {
+          //   console.error('尝试修改了不存在的 meta，请检查代码');
+          //   draft[metaAttr] = {};
+          // }
+          // if (metaID) {
+          //   draft[metaAttr][metaID] = data;
+  
+          //   /** 将依赖关系记录在 _rely 中 */
+          //   if(!draft._rely) draft._rely = {};
+          //   if(!draft._rely[metaID]) draft._rely[metaID] = [];
+          //   if(relyID) draft._rely[metaID].push(relyID);
+          // } else {
+          //   console.error(`并未传入 metaID，系统默认将 ${metaAttr} 的属性的数量 + 1 作为 metaID`);
+          //   const newDataRefID = Object.keys(draft[metaAttr]).length + 1;
+          //   Object.assign(draft[metaAttr], {
+          //     [`${metaAttr}.${newDataRefID}`]: data
+          //   });
+          // }
+          // if (rmMetaID && draft[metaAttr]) {
+          //   Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+          // }
+        }
         return draft;
       });
     default:

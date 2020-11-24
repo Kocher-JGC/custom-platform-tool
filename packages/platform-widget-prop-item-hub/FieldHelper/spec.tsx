@@ -85,8 +85,9 @@ export class FieldHelperSpec {
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
                         const nextMetaRefID = changePageMeta({
+                          type: 'create/rm',
                           data: _selectedField,
-                          metaAttr,
+                          metaAttr: 'schema',
                           metaID: currMetaRefID,
                           // 将上一个 meta 删除
                           rmMetaID: prevMetaRefID

@@ -17,6 +17,7 @@ import {
   ChangeEntityTypeAction
 } from '../actions';
 import { getItemFromNestingItemsByBody } from '../utils';
+import { mergeDeep } from '@infra/utils/tools';
 
 /**
  * action types
@@ -142,9 +143,16 @@ export function flatLayoutItemsReducer(
       return nextStateInit;
     case UPDATE_ENTITY_STATE:
       return produce(state, (draftState) => {
-        const { targetEntity: { entity }, formState } = action;
+        const { targetEntity: { entity }, formState, options } = action;
         const { id } = entity;
-        draftState[id].propState = formState;
+
+        /** 如果是替换模式 */
+        if(options?.replace) {
+          draftState[id].propState = formState;
+        } else {
+          draftState[id].propState = mergeDeep({}, draftState[id].propState, formState);
+        }
+        
         return draftState;
       });
     case DEL_ENTITY:

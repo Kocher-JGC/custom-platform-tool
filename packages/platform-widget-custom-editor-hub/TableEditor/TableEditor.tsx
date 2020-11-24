@@ -2,9 +2,8 @@ import React from 'react';
 import { Button, Input } from '@infra/ui';
 import { RegisterEditor } from '@engine/visual-editor/spec';
 import { GeneralTableComp } from '@platform-widget/general-table';
-import { data } from './mock-data';
 import { CustomEditor } from '@platform-widget-access/spec';
-
+import { genRenderColumn, genRowData } from './utils';
 
 interface TableEditorState {
   datasourceMeta: PD.Datasource
@@ -30,10 +29,10 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     return columns;
   }
 
-  useCol = (item, id) => {
+  setCol = (item, id) => {
     const { usingColumns } = this.state;
     const itemIdx = usingColumns.findIndex((col) => col.id === id);
-    const nextState = [...usingColumns];
+    const nextState = genRenderColumn([...usingColumns]);
     if (itemIdx === -1) {
       nextState.push(item);
     } else {
@@ -59,7 +58,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
               <span
                 className={`pointer mb5 shadow-sm bg-gray-200 rounded mr10 px-4 py-2 ${isActive ? 't_blue' : ''}`}
                 key={id}
-                onClick={(e) => this.useCol(col, id)}
+                onClick={(e) => this.setCol(col, id)}
               >
                 {name}
               </span>
@@ -70,54 +69,27 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     );
   }
 
-  getChangeValue = (currColumns) => {
+  getChangeValue = () => {
     const { entityState } = this.props;
-    return {
+    const { usingColumns } = this.state;
+    const targetData = {
       ...entityState,
-      columns: currColumns
+      columns: usingColumns
     };
-  }
-
-  /**
-   * 模拟生成 row 数据
-   */
-  genRowData = () => {
-    const { usingColumns } = this.state;
-    const rowCount = 3;
     const resData = [];
-    [...Array(rowCount)].forEach((_, _idx) => {
-      const rowItem = {};
-      usingColumns.forEach((col, idx) => {
-        // const { id, name, fieldCode } = col;
-        for (const colKey in col) {
-          if (Object.prototype.hasOwnProperty.call(col, colKey)) {
-            rowItem[colKey] = '';
-          }
-        }
-        rowItem.id = _idx;
-      });
-      resData.push(rowItem);
-    });
+    for (const attr in targetData) {
+      if (Object.prototype.hasOwnProperty.call(targetData, attr)) {
+        const value = targetData[attr];
+        resData.push({
+          attr,
+          value
+        });
+      }
+    }
     return resData;
   }
 
-  /**
-   * 模拟生成 row 数据
-   */
-  genRenderColumn = () => {
-    const { usingColumns } = this.state;
-    const resData = [];
-    const colItem = {};
-    usingColumns.forEach((col, idx) => {
-      const { id, name, fieldCode } = col;
-      colItem[fieldCode] = '';
-      resData.push({
-        title: name,
-        dataIndex: fieldCode,
-      });
-    });
-    return resData;
-  }
+
 
   takeDS = () => {
     const { platformCtx, entityState } = this.props;
@@ -133,13 +105,17 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
 
   render() {
     const {
-      changeEntityState, onSubmit
+      onSubmit, platformCtx: {
+        meta: {
+          changeEntityState
+        }
+      }
     } = this.props;
+    const { usingColumns } = this.state
 
-    const rowData = this.genRowData();
-    const colRender = this.genRenderColumn();
+    const rowData = genRowData(usingColumns);
+    const colRender = genRenderColumn();
     
-    const { usingColumns } = this.state;
     return (
       <div className="px-4 py-2">
         {this.renderSetColumn()}
@@ -150,7 +126,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
         <div className="action-area p10">
           <Button
             onClick={(e) => {
-              changeEntityState(this.getChangeValue(usingColumns));
+              changeEntityState(this.getChangeValue());
               // this.props.modalOptions?.close();
               onSubmit?.();
             }}

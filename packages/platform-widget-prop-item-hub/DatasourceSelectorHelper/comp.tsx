@@ -59,6 +59,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
             // 由于是单选的，所以只需要取 0
             const bindedDS = interDatasources[0];
             const nextMetaID = changePageMeta({
+              type: 'create/rm',
               metaAttr: 'dataSource',
               metaID: DSOptionsRef,
               rmMetaID: DSOptionsRef,

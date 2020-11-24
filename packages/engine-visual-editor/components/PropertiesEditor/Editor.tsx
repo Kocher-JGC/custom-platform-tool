@@ -13,8 +13,8 @@ import {
   NextEntityState,
   ChangeEntityState,
 } from '../../data-structure';
-import { entityStateMergeRule } from './entityStateMergeRule';
 import { GroupPanel, GroupPanelData } from '../GroupPanel';
+import { entityStateMergeRule } from '../../utils';
 
 
 /**
@@ -34,9 +34,9 @@ export type InitEntityStateOfEditor = (entityState: WidgetEntityState) => void
  */
 export interface PropItemRendererProps {
   propItemMeta: PropItemMeta
-  changeEntityState: (nextState) => void
   /** 编辑中的所有属性 */
   editingWidgetState: any
+  changeEntityState: ChangeEntityState
 }
 
 export interface PropertiesEditorProps {
@@ -50,18 +50,16 @@ export interface PropertiesEditorProps {
   // /** 属性编辑器的配置，通过该配置生成有层级结构的属性编辑面板 */
   // editorConfig?: any
   /** 默认的表单数据state */
-  defaultEntityState?: WidgetEntityState
+  entityState?: WidgetEntityState
   /** 保存属性 */
-  updateEntityState: UpdateEntityStateOfEditor
+  changeEntityState: ChangeEntityState
   /** 初始化实例 */
   initEntityState: InitEntityStateOfEditor
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
-  /** 更改元数据 */
-  // changePageMeta: VEAppDispatcher['ChangePageMeta']
 }
 
-const debounce = new Debounce();
+// const debounce = new Debounce();
 
 function makeArray<T>(item: T | T[]): T[] {
   return Array.isArray(item) ? item : [item];
@@ -92,26 +90,26 @@ PropertiesEditorProps, PropertiesEditorState
 > {
   state: PropertiesEditorState = {
     ready: false,
-    entityState: null
+    // entityState: null
   }
 
   bindPropItemsMap: PropItemMetaMap | null = null
 
   constructor(props) {
     super(props);
-    const { defaultEntityState } = props;
-    if (defaultEntityState) {
-      this.state.entityState = defaultEntityState;
-    }
+    // const { entityState } = props;
+    // if (entityState) {
+    //   this.state.entityState = entityState;
+    // }
   }
 
   componentDidMount = async () => {
     // 1. 先等待 this.bindPropItemsMap 赋值完成
     this.setupBindPropItemsMap().then(() => {
-      // 2. 设置 entity 的默认 state
-      const { entityState } = this.state;
+      // 2. 设置 entity 的默认 propState
+      const { entityState } = this.props;
       let _defaultEntityState = entityState;
-      if (!_defaultEntityState) {
+      if (!entityState) {
         const {
           initEntityState,
         } = this.props;
@@ -120,7 +118,7 @@ PropertiesEditorProps, PropertiesEditorState
         initEntityState(_defaultEntityState);
       }
       this.setState({
-        entityState: _defaultEntityState,
+        // entityState: _defaultEntityState,
         ready: true
       });
     });
@@ -157,15 +155,15 @@ PropertiesEditorProps, PropertiesEditorState
    *
    * TODO: 做更强的状态管理工具
    */
-  updateEntityStateForSelf = (nextValue: NextEntityStateType) => {
-    this.setState(({ entityState }) => {
-      const _nextValue = makeArray(nextValue);
-      const nextState = entityStateMergeRule(entityState, _nextValue);
-      return {
-        entityState: nextState
-      };
-    });
-  }
+  // updateEntityStateForSelf = (nextValue: NextEntityStateType) => {
+  //   this.setState(({ entityState }) => {
+  //     const _nextValue = makeArray(nextValue);
+  //     const nextState = entityStateMergeRule(entityState, _nextValue);
+  //     return {
+  //       entityState: nextState
+  //     };
+  //   });
+  // }
 
   /**
    * 将组件绑定的属性项转换成 PropItemMetaMap
@@ -226,31 +224,14 @@ PropertiesEditorProps, PropertiesEditorState
 
   changeEntityState: ChangeEntityState = (nextValue) => {
     /** 更新自身的数据 */
-    this.updateEntityStateForSelf(nextValue);
+    // this.updateEntityStateForSelf(nextValue);
 
     /** 延后更新整个应用的数据 */
-    debounce.exec(() => {
-      const { entityState } = this.state;
-      entityState && this.props.updateEntityState(entityState);
-    }, 100);
+    nextValue && this.props.changeEntityState(nextValue);
+    // debounce.exec(() => {
+    //   const { entityState } = this.state;
+    // }, 100);
   }
-
-  // genMetaRefID = (metaAttr: string, len = 8) => {
-  //   const { selectedEntity } = this.props;
-  //   if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
-  //   const metaID = nanoid(len);
-  //   const prefix = metaAttr;
-  //   return `${prefix}.${selectedEntity.id}.${metaID}`;
-  // }
-
-  /**
-   * 获取 meta
-   */
-  // takeMeta = (options) => {
-  //   const { pageMetadata } = this.props;
-  //   const { metaAttr, metaRefID } = options;
-  //   return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
-  // }
 
   /**
    * prop item 渲染器
@@ -259,7 +240,7 @@ PropertiesEditorProps, PropertiesEditorState
    */
   propItemRendererSelf = (propItemID, groupType) => {
     // const { selectedEntity } = this.props;
-    const { entityState } = this.state;
+    const { entityState } = this.props;
     const propItemMeta = this.takePropItemMeta(propItemID);
 
     /** 如果组件没有绑定该属性项，则直接返回 */
@@ -267,7 +248,6 @@ PropertiesEditorProps, PropertiesEditorState
 
     const {
       propItemRenderer, 
-      // changePageMeta
     } = this.props;
 
     const editingAttr = propItemMeta.whichAttr;
@@ -283,14 +263,6 @@ PropertiesEditorProps, PropertiesEditorState
             propItemMeta,
             changeEntityState: this.changeEntityState,
             editingWidgetState: activeState,
-            // renderCtx: {
-            // businessPayload: {},
-            // editingWidgetState: activeState,
-            // widgetEntity: selectedEntity,
-            // genMetaRefID: this.genMetaRefID,
-            // takeMeta: this.takeMeta,
-            // changePageMeta,
-            // }
           })
         }
       </div>
@@ -298,8 +270,9 @@ PropertiesEditorProps, PropertiesEditorState
   }
 
   render() {
-    const { propItemGroupingData } = this.props;
+    const { propItemGroupingData, entityState } = this.props;
     const { bindPropItemsMap } = this;
+    // console.log(entityState);
 
     return bindPropItemsMap ? (
       <div

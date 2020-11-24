@@ -12,9 +12,9 @@ interface PropsEditorProps {
   pageMetadata
   customConfig?: any
   selectedEntity
-  defaultEntityState: PropertiesEditorProps['defaultEntityState']
+  entityState: PropertiesEditorProps['entityState']
   initEntityState: PropertiesEditorProps['initEntityState']
-  updateEntityState: PropertiesEditorProps['updateEntityState']
+  changeEntityState: PropertiesEditorProps['changeEntityState']
 }
 
 /**
@@ -61,7 +61,6 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     const {
       interDatasources,
       pageMetadata,
-      platformCtx,
       selectedEntity,
     } = this.props;
     
@@ -90,8 +89,8 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   render() {
     const {
       initEntityState,
-      updateEntityState,
-      defaultEntityState,
+      changeEntityState,
+      entityState,
     } = this.props;
     const { widgetMeta, propItemGroupingData, ready } = this.state;
     const widgetBindedPropItemsMeta = widgetMeta.propItemsRely;
@@ -100,9 +99,9 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
         <Editor
           // {...otherProps}
           getPropItem={this.getPropItem}
-          defaultEntityState={defaultEntityState}
+          entityState={entityState}
           initEntityState={initEntityState}
-          updateEntityState={updateEntityState}
+          changeEntityState={changeEntityState}
           propItemGroupingData={propItemGroupingData}
           widgetBindedPropItemsMeta={widgetBindedPropItemsMeta}
           propItemRenderer={this.propItemRenderer}

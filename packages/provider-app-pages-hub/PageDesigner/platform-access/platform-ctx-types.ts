@@ -1,5 +1,5 @@
-import { ChangeMetadataOptions } from "@engine/visual-editor/core";
-import { GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
+import { ChangeMetadataOptions } from "@engine/visual-editor/core/actions/change-meta";
+import { ChangeEntityState, GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
 
 export interface OnDatasourceSelectorSubmitOptions {
   /** 关闭当前弹窗 */
@@ -27,7 +27,7 @@ export interface OpenDatasourceSelectorOptions {
 
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 
-export type ChangeWidgetType = () => void
+export type ChangeWidgetType = (widgetType: string) => void
 
 /**
  * 平台提供的 UI 上下文
@@ -41,12 +41,14 @@ export interface PlatformCtx {
   }
   meta: {
     /** 更改页面的 meta 数据，如果没有该数据，则返回新创建的 metaID */
-    changePageMeta: (options: ChangeMetadataOptions) => string
+    changePageMeta: (options: ChangeMetadataOptions) => string | string[]
     /** 获取 meta */
     takeMeta: TakeMeta
     /** 生成 meta 引用的 ID */
     genMetaRefID: GenMetaRefID
     /** 更改组件的类型 */
     changeWidgetType: ChangeWidgetType
+    /** 更改 widget state */
+    changeEntityState: ChangeEntityState
   }
 }
