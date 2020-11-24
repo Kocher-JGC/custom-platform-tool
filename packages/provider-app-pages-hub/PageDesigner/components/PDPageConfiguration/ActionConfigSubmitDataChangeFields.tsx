@@ -1,17 +1,20 @@
 import React from 'react';
 import { Table, Button, Space } from 'antd';
-import pick from 'lodash/pick';
 import { ValueHelper } from '@provider-app/page-designer/components/PDCommonUI';
 export class ActionConfigSubmitDataChangeFields extends React.PureComponent {
   state = {
     treeList: [],
     treeMap: {},
-    changeFields: {}
+    changeFields: {},
+    variableData: {}
   }
   componentDidMount(){
     this.getColumnList();
     this.setState({
       changeFields: this.props.changeFields || {}
+    });
+    this.props.getVariableData([]).then(variableData=>{
+      this.setState({ variableData });
     });
   }
   getColumnList = () => {
@@ -112,7 +115,7 @@ export class ActionConfigSubmitDataChangeFields extends React.PureComponent {
     return list.join('，');
   }
   render(){
-    const { treeList, changeFields } = this.state;
+    const { treeList, changeFields, variableData } = this.state;
     return <>
       <Table
         size="small"
@@ -129,6 +132,7 @@ export class ActionConfigSubmitDataChangeFields extends React.PureComponent {
             const { tableCode, columnCode } = _r;
             return columnCode ? (
               <ValueHelper 
+                variableData = {variableData}
                 editedState = {changeFields[tableCode+'.'+columnCode] || {}}
                 onChange={(changeArea)=>{
                   this.handleSetValue(_r, changeArea);

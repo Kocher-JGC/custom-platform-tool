@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  CloseModal, Input, ShowModal, Selector
+  CloseModal, Input, ShowModal, Selector 
 } from '@infra/ui';
 import { ExpEditor } from './ExpEditor';
 import './style.scss';
-
+import { TreeSelect } from 'antd';
+import { VariableItem } from '@provider-app/page-designer/platform-access';
 /**
  * 可用的值的类型
  */
@@ -19,6 +20,7 @@ const selectTypes = {
 interface ValueHelperProps {
   editedState
   onChange
+  variableData: {[key: string]: VariableItem[]}
 }
 
 /**
@@ -26,10 +28,12 @@ interface ValueHelperProps {
  * @param param0
  */
 export const ValueHelper: React.FC<ValueHelperProps> = ({
+  variableData,
   editedState,
   onChange,
 }) => {
-  const [selectedItem, setSelectedItem] = React.useState('customValue');
+  const [selectedItem, setSelectedItem] = useState('customValue');
+  const [variableList, setVariableList] = useState([]);
   const { exp, realVal, variable } = editedState;
   let Comp;
   switch (selectedItem) {
@@ -49,7 +53,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
     case 'expression':
       Comp = (
         <span
-          className="px-4 py-2 border cursor-pointer"
+          className="border cursor-pointer exp-editor"
           onClick={(e) => {
             const modalID = ShowModal({
               title: '设置表达式',
@@ -79,9 +83,31 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       );
       break;
     case 'variable':
-
+      Comp = (
+        <TreeSelect 
+          className="variable-selector py-1"
+          treeDefaultExpandAll
+          treeData = {variableList}
+        />
+      );
       break;
   }
+  const constructVars = () => {
+    return [
+      { title: '自定义变量', value: 'customed', children: constructVarList(variableData.customed), disabled: true },
+      { title: '页面变量', value: 'page', children: constructVarList(variableData.page), disabled: true },
+      { title: '系统变量', value: 'system', children: constructVarList(variableData.system), disabled: true },
+      { title: '控件变量', value: 'widget', children: constructVarList(variableData.widget), disabled: true },
+      { title: '输入参数变量', value: 'pageInput', children: constructVarList(variableData.pageInput), disabled: true }
+    ];
+  };
+  const constructVarList = (list)=>{
+    return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
+  };
+  const constructVarItem = (item) => {
+    const { id, alias } = item;
+    return { value: id, title: alias };
+  };
   useEffect(() => {
     // const selectedKey = 'customValue'; 
     const keyMenu = Object.keys(selectTypes);
@@ -89,6 +115,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       if(!editedState[key] || !keyMenu.includes(key)) continue;
       setSelectedItem(key);
     }
+    setVariableList(constructVars());
   }, []);
   return (
     <div className="value-helper">

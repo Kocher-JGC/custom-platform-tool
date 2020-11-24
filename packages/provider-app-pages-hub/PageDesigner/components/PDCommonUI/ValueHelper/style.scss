@@ -1,5 +1,6 @@
 .value-helper {
   .custom-value {
+    width: calc(100% - 84px);
     &.focusing {
       z-index: 1;
     }
@@ -8,8 +9,28 @@
       border-bottom-right-radius: 0;
     }
   }
-  .value-type-selector {
+  .exp-editor {
+    width: calc(100% - 84px);
+    &.focusing {
+      z-index: 1;
+    }
+    display: inline-block;
     vertical-align: 0.5px;
+    padding: 0.36rem 1rem;
+  }
+  .variable-selector {
+    width: calc(100% - 70px);
+    &.focusing {
+      z-index: 1;
+    }
+    .ant-select-selector {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      height: 34px;
+    }
+  }
+  .value-type-selector {
+    vertical-align: top;
     margin-left: -1px;
     .search-input, .display-title {
       border-top-left-radius: 0;
