@@ -1,5 +1,5 @@
 const path = require("path");
-const { access, ensureDir, readJson } = require("fs-extra");
+const { access, ensureDir, readJson, writeFile } = require("fs-extra");
 const { exec } = require("child_process");
 const config = require("./config.json");
 
@@ -74,7 +74,22 @@ exports.removeFolder = function removeFolder(removePath) {
   });
 };
 
-exports.generateApp = function generateApp(appPath, folder) {
+exports.saveInstallAppInfo = function saveInstallAppInfo(appConfig) {
+  return new Promise((resolve, reject) => {
+    readJson(path.join(__dirname, "installApp.json"), (err, installApp = {}) => {
+      installApp[appConfig.applicationCode] = appConfig;
+      writeFile(path.join(__dirname, `installApp.json`), JSON.stringify(installApp), (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  });
+};
+
+exports.generateApp = function generateApp(appPath, folder, appConfig) {
   return new Promise((resolve, reject) => {
     ensureDir(appPath, (err) => {
       if (err) {
@@ -93,7 +108,15 @@ exports.generateApp = function generateApp(appPath, folder) {
               console.log(`移动${appPath}，${folder}目录失败`, err);
               reject(error);
             } else {
-              resolve(true);
+              // TODO 生成 app 成功，暂时用 json 文件保存应用安装信息
+              saveInstallAppInfo(appConfig)
+                .then(() => {
+                  resolve(true);
+                })
+                .catch((saveErr) => {
+                  console.log(`记录应用信息失败`, saveErr);
+                  reject(saveErr);
+                });
             }
           }
         );

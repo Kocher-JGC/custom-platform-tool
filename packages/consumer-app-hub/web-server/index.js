@@ -78,6 +78,20 @@ app.get("/node-web/page-data", (req, res) => {
   });
 });
 
+// 获取安装应用列表
+app.get("/app-list", (req, res) => {
+  readJson(path.join(__dirname, "installApp.json"), (err, json) => {
+    if (err) {
+      res.json({
+        err: "未发现应用",
+        code: "10000"
+      });
+    } else {
+      res.json(json);
+    }
+  });
+});
+
 // 安装前端应用文件
 app.post("/upload", (req, res) => {
   upload(req, res, (uploadErr) => {
@@ -105,7 +119,7 @@ app.post("/upload", (req, res) => {
                         // 如果存在，先删除，再创建
                         removeFolder(appPath)
                           .then(() => {
-                            generateApp(appPath, folder)
+                            generateApp(appPath, folder, appConfig)
                               .then(() => {
                                 res.json({ code: "00000", msg: "安装成功" });
                               })
@@ -119,7 +133,7 @@ app.post("/upload", (req, res) => {
                           });
                       } else {
                         // 没有直接创建和移动
-                        generateApp(appPath, folder)
+                        generateApp(appPath, folder, appConfig)
                           .then(() => {
                             res.json({ code: "00000", msg: "安装成功" });
                           })
