@@ -28,13 +28,15 @@ export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) =>
 export type ChangeWidgetType = () => void
 
 export type VariableType = 'system'|'page'|'pageInput'|'widget'
-export type variableItem = {
+export type VariableItem = {
   code: string
   id: string
   alias: string
-  type: 'number'|'string'
+  varType: 'number'|'string'|'date'|'dateTime'
+  realVal: any
+  type: VariableType
 }
-export type GetVariableData = (options: VariableType[]) => {[key: string]: variableItem[] }
+export type GetVariableData = (options: VariableType[]) => Promise<{[key: string]: VariableItem[]}>
 
 /**
  * 平台提供的 UI 上下文

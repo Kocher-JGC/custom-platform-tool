@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
-import { Button, Form, Input, Select, Space, InputNumber, DatePicker, TimePicker } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, Select, Space, InputNumber, DatePicker, TimePicker, ConfigProvider } from 'antd';
 import moment from 'moment';
+import 'moment/locale/zh-cn';
+import locale from 'antd/lib/locale/zh_CN';
 
+import zh_CN from 'antd/es/date-picker/locale/zh_CN';
 const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
@@ -18,21 +21,35 @@ const VAR_ATTR_TYPE_MENU = [
   { label: '日期时间', value: 'dateTime', key: 'dateTime' }
 ];
 export const VariableEditor = ({
-  data, mode, onCancel, onSuccess
+  data, mode, onCancel, onSuccess, getVariableData
 })=>{
   const [form] = Form.useForm();
+  const [variableList, setVariableList] = useState([]);
   useEffect(()=>{
+    /** 默认数据类型 */
     form.setFieldsValue({ varType: 'string' });
     if(mode === 'UPDATE'){
       form.setFieldsValue(data);
     }    
+    getVariableData([]).then(res=>{
+      setVariableList(res);
+    });
   }, []);
+
+  /**
+   * 提交数据
+   * @param fieldsValue 表单数据
+   */
   const onFinish = (fieldsValue) => {
     for(const key in fieldsValue){
       fieldsValue[key] = fieldsValue[key] || null;
     }
     onSuccess(fieldsValue);
   };
+  
+  /**
+   * 清空，修改状态下，编码保持不变
+   */
   const onReset = () => {
     form.resetFields();
     if(mode === 'UPDATE'){
@@ -42,9 +59,19 @@ export const VariableEditor = ({
       });
     }
   };
-  const getMonentValue = (value)=>{
-    return value ? moment(value) : null;
+  /** 
+   * 对 日期时间 组件的数据进行转换
+   * @param value 2020-12-13 / 19:13:22
+   * @param format "YYYY-MM-DD"/"HH:mm:ss"
+   */
+  const getMonentValue = (value: string, format: "YYYY-MM-DD"|"HH:mm:ss")=>{
+    return value ? moment(value, format) : null;
   };
+
+  /**
+   * “值”的 组件渲染，每种数据类型对应渲染不同的组件
+   * @param param0 
+   */
   const valRenderer = ({ setFieldsValue, getFieldsValue }) => {
     const { varType, realVal } = getFieldsValue(['realVal', 'varType']);
     /** 字符串 */
@@ -52,19 +79,20 @@ export const VariableEditor = ({
     /** 数字 */
     if(varType === 'number') return <InputNumber/>;
     /** 日期 */
-    if(varType === 'date') return <DatePicker />;
+    if(varType === 'date') return <DatePicker locale={zh_CN}/>;
     /** 日期时间 */
     if(varType === 'dateTime') return (
       <>
         <DatePicker 
-          value={getMonentValue((realVal || '').split(' ')[0])}
+          locale={zh_CN}
+          value={getMonentValue((realVal || '').split(' ')[0], 'YYYY-MM-DD')}
           onChange={(_m, dateString)=>{
             const [_d, time] = (realVal || '').split(' ');
             setFieldsValue({ realVal: `${dateString || ''} ${time || ''}` });
           }} 
         />
         <TimePicker 
-          value={getMonentValue((realVal || '').split(' ')[1])}
+          value={getMonentValue((realVal || '').split(' ')[1], 'HH:mm:ss')}
           onChange={(_m, timeString)=>{
             const [date, _t] = (realVal || '').split(' ');
             setFieldsValue({ realVal: `${date || ''} ${timeString || ''}` });
@@ -73,68 +101,98 @@ export const VariableEditor = ({
       </>
     );
   };
+  /**
+   * 变量编码、变量描述 不能重复 TODO
+   * 
+   */
+  const isDuplicated = (value, key)=> {
+    if(!value) return false;
+    let amIDuplicated = false;
+    for(const type in variableList){
+      const variables = variableList[type];
+      amIDuplicated = variables.some(item=>item[key] === value);
+      if(amIDuplicated) break;
+    }
+    return amIDuplicated;
+  };
   return (
-    <Form
-      {...layout}
-      form={form}
-      className="edit-variable"
-      onFinish={onFinish}
-    >
-      <Form.Item
-        name="code" label="变量编码"
-        rules={[
-          { required: true, message: '请填写变量编码' },
-          { pattern: /^[a-zA-Z0-9\._]+$/, message: '只能填写字母、数字、下划线和 .' }
-        ]}
+    <ConfigProvider locale={locale}>
+      <Form
+        {...layout}
+        form={form}
+        className="edit-variable"
+        onFinish={onFinish}
       >
-        <Input 
-          disabled = {mode!=="INSERT"}
-        />
-      </Form.Item>
-      <Form.Item
-        name="varType" label="类型"
-        rules={[{ required: true, message: '请填写类型' }]}
-      >
-        <Select 
-          onChange = {()=>{
-            form.setFieldsValue({ realVal: null });
+        <Form.Item
+          name="code" label="变量编码"
+          rules={[
+            { required: true, message: '请填写变量编码' },
+            { pattern: /^[a-zA-Z0-9\._]+$/, message: '只能填写字母、数字、下划线和 .' },
+            { validator: (_r, value)=>{
+              const amIDuplicated = isDuplicated(value, 'code');
+              if(amIDuplicated){
+                return Promise.reject('变量编码重复');
+              } 
+              return Promise.resolve();
+            } }
+          ]}
+        >
+          <Input 
+            disabled = {mode!=="INSERT"}
+          />
+        </Form.Item>
+        <Form.Item
+          name="varType" label="类型"
+          rules={[{ required: true, message: '请填写类型' }]}
+        >
+          <Select 
+            onChange = {()=>{
+              form.setFieldsValue({ realVal: null });
+            }}
+            options={VAR_ATTR_TYPE_MENU}
+          />
+        </Form.Item>
+        <Form.Item
+          noStyle
+          shouldUpdate
+        >
+          {({ getFieldsValue, setFieldsValue })=>{
+            return (
+              <Form.Item
+                name="realVal" label="变量值"
+              >
+                {valRenderer({ setFieldsValue, getFieldsValue })}
+              </Form.Item>
+            );
           }}
-          options={VAR_ATTR_TYPE_MENU}
-        />
-      </Form.Item>
-      <Form.Item
-        noStyle
-        shouldUpdate
-      >
-        {({ getFieldsValue, setFieldsValue })=>{
-          return (
-            <Form.Item
-              name="realVal" label="变量值"
-            >
-              {valRenderer({ setFieldsValue, getFieldsValue })}
-            </Form.Item>
-          );
-        }}
-      </Form.Item>
+        </Form.Item>
       
-      <Form.Item
-        name="alias" label="描述"
-      >
-        <Input.TextArea />
-      </Form.Item>
-      <Form.Item style={{ marginBottom: 0 }} {...tailLayout}>
-        <Space className="float-right">
-          <Button htmlType="button" onClick={onReset}>
+        <Form.Item
+          name="alias" label="描述"
+          rules={[
+            { validator: (_r, value)=>{
+              const amIDuplicated = isDuplicated(value, 'alias');
+              if(amIDuplicated) return Promise.reject('变量描述重复');
+              return Promise.resolve();
+            } }
+          ]}
+        >
+          <Input.TextArea />
+        </Form.Item>
+        <Form.Item style={{ marginBottom: 0 }} {...tailLayout}>
+          <Space className="float-right">
+            <Button htmlType="button" onClick={onReset}>
           清空
-          </Button>
-          <Button type="primary" htmlType="submit">
+            </Button>
+            <Button type="primary" htmlType="submit">
           确定
-          </Button>
-          <Button htmlType="button" onClick={onCancel}>
+            </Button>
+            <Button htmlType="button" onClick={onCancel}>
           取消
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </ConfigProvider>
   );
 };
