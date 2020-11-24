@@ -29,7 +29,7 @@ export class ReleaseAppController {
    */
   @Get("/:lesseeCode/:applicationCode")
   async releaseApp(
-    @Req() req: Request,
+  @Req() req: Request,
     @Res() res: Response,
     @Param() { lesseeCode, applicationCode },
     @Query() { releaseId }
@@ -80,12 +80,12 @@ export class ReleaseAppController {
           return res.download(link);
         }
         // throw new Error(pageDataRes.msg || "没有页面可以发布");
-        return res.status(404).json({ msg: "没有页面可以发布" + step });
+        return res.status(404).json({ msg: `没有页面可以发布${step}` });
       } catch (error) {
         return res.status(500).json({ msg: error.message + step });
       }
     } else {
-      return res.status(400).json({ msg: "需要参数 app" + step });
+      return res.status(400).json({ msg: `需要参数 app${step}` });
     }
   }
 

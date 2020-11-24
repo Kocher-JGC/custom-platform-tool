@@ -177,7 +177,7 @@ app.listen(config.port, () => {
       .then((res) => {
         const config = res.data;
         if (config[0] && config[0].Value) {
-          const configStr = new Buffer.from(config[0].Value, "base64").toString();
+          const configStr = Buffer.from(config[0].Value, "base64").toString();
           ensureDir(path.join(__dirname, projectFolder)).then(() => {
             writeJSON(path.join(__dirname, projectFolder, `config.json`), JSON.parse(configStr))
               .then(() => {

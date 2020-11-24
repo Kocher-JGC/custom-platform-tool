@@ -3,11 +3,14 @@ import { Injectable } from "@nestjs/common";
 import axios from "axios";
 import { PageDataService } from "../page-data/page-data.service";
 import config from "../../config";
+import * as env from "../../env.json";
 
 const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
-const { paasServerUrl, pageDataStorePath } = config;
+
+const { paasServerUrl } = env;
+const { pageDataStorePath } = config;
 
 /**
  * 子进程运行 shell 方法
