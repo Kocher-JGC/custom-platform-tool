@@ -111,7 +111,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
         }
       }
     } = this.props;
-    const { usingColumns } = this.state
+    const { usingColumns } = this.state;
 
     const rowData = genRowData(usingColumns);
     const colRender = genRenderColumn();
