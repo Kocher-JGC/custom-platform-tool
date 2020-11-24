@@ -33,6 +33,7 @@ const conditionExample: Condition = {
 
 /**
  * 条件处理引擎
+ * 扩张: 分开2种实现, 1、先list后运行  2、边运行边计算
  * @param conf 需要处理的条件信息
  * @param param1 条件引擎需要使用的参数
  */

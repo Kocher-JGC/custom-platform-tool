@@ -6,6 +6,7 @@ import { RenderStructInfo, RenderCompInfo } from './component-store/types/render
 import { normalInputCompParser } from './component-parser/normal-input-parser';
 import { normalTableParser } from './component-parser/normal-table-parser';
 import { normalButtonParser } from './component-parser/normal-button-parser';
+import { getWidget } from "@platform-widget-access/loader";
 
 /**
  * 调度对应的组件解析器进行解析
@@ -19,6 +20,8 @@ const widgetParseScheduler = (id: string, confItem, options): {
   renderCompInfo: RenderCompInfo
 } => {
   const { widgetRef } = confItem;
+  console.log(getWidget(widgetRef));
+  
   switch (widgetRef) {
     case AllWidgetType.FormInput:
       return normalInputCompParser(id, confItem, options);

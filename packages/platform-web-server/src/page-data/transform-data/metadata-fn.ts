@@ -74,8 +74,31 @@ const genMetadataFromRemoteTableMeta = (tableMeta: RemoteTableMeta, extralData =
   };
 };
 
+/**
+ * post获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/tableWithAux
+ * {
+  "tables":[
+     {
+        "tableId":"1330688851571777536",
+        "addWithAuxTable":false
+     },{
+        "tableId":"1330688706906038272",
+        "addWithAuxTable":false
+     }  
+    ]
+  }
+ */
+/**
+ * list获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/list
+ * 默认100条一页
+ */
+/**
+ * get获取
+ */
 const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promise<RemoteTableMeta | false> => {
   const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
+  console.log(reqUrl);
+  
   const resData = await axios
     .get(reqUrl, {
       headers: {

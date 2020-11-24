@@ -21,8 +21,6 @@ export interface TableMetadata {
   metaType: MetaType.table
   /** 该条记录的 id */
   id: string
-  /** 该条记录关联的表的 id */
-  moduleId: string
   /** 名字 */
   name: string
   /** 类型 */
