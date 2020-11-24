@@ -8,6 +8,7 @@ import * as EntityStateActions from './entity-state';
 export * from './app';
 export * from './canvas';
 export * from './entity-state';
+export * from './change-meta';
 
 export const AllDispatcherActions = {
   ...AppActions,

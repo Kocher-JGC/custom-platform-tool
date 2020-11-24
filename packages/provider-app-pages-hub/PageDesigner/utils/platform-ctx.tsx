@@ -1,21 +1,13 @@
 import React from 'react';
 import { message } from 'antd';
 import { CloseModal, ShowModal } from '@infra/ui';
-import { PageMetadata, PlatformCtx } from '@platform-widget-access/spec';
+import { PlatformCtx } from '@platform-widget-access/spec';
 import { DataSourceSelector } from '../components/PDDataSource';
-
-interface CreatePlatformCtxOptions {
-  changePageMeta
-  genMetaRefID
-  takeMeta
-  changeWidgetType
-}
 
 /**
  * 平台提供给的上下文
  */
-export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx => {
-  const { changePageMeta, genMetaRefID, takeMeta, changeWidgetType } = ctx;
+export const createPlatformCtx = (metaCtx: PlatformCtx['meta']): PlatformCtx => {
   return {
     ui: {
       showMsg: (ctx) => {
@@ -23,12 +15,7 @@ export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx =>
         message[type](msg);
       }
     },
-    meta: {
-      changePageMeta,
-      genMetaRefID,
-      takeMeta,
-      changeWidgetType,
-    },
+    meta: metaCtx,
     selector: {
       openDatasourceSelector: (options) => {
         const { defaultSelected, modalType, position, type, single, onSubmit } = options;

@@ -12,9 +12,10 @@ import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
 import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext } from "./utils";
 
-import { GenMetaRefID } from "@engine/visual-editor/data-structure";
+import { ChangeEntityState, GenMetaRefID, NextEntityStateType } from "@engine/visual-editor/data-structure";
 
 import './style';
+import { entityStateMergeRule } from "@engine/visual-editor/utils";
 
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
@@ -45,8 +46,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     options
   ) => {
     if (!metaAttr) throw Error('请传入 metaAttr，否则逻辑无法进行');
-    const { idStratrgy } = options || {};
-    const _extraInfo = idStratrgy ? Array.isArray(idStratrgy) ? idStratrgy : [idStratrgy] : null;
+    const { idStrategy } = options || {};
+    const _extraInfo = idStrategy ? Array.isArray(idStrategy) ? idStrategy : [idStrategy] : null;
     const _extraInfoStr = _extraInfo ? _extraInfo.join('.') : '';
     let prefix = '';
     /**
@@ -81,16 +82,19 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       _extraInfoStr,
     ].filter(i => !!i);
     return idArr.join('.');
-    // return `${prefix}.${activeEntityID}${idStratrgy ? `.${idStratrgy}` : ''}${nanoID ? `.${nanoID}` : ''}`;
+    // return `${prefix}.${activeEntityID}${idStrategy ? `.${idStrategy}` : ''}${nanoID ? `.${nanoID}` : ''}`;
   }
 
   /**
    * 更改 page meta 的策略
+   * 1. 如果没有传入 metaID，认为是新增行为
+   * 2. 如果传入了 metaID，则认为是更新行为
+   * 3. 通过 replace 控制是否全量替换更新
+   * 4. 通过 relyID 指定该 meta 的被依赖项
    */
-  changePageMeta = (options: ChangeMetadataOptions): string | string[] => {
-    const { selectedInfo } = this.props;
+  changePageMetaStradegy = (options: ChangeMetadataOptions): string | string[] => {
+    const { selectedInfo, dispatcher: { ChangePageMeta } } = this.props;
     const { id: activeEntityID } = selectedInfo;
-    const { ChangePageMeta } = this.props.dispatcher;
 
     const isArrayOptions = Array.isArray(options);
 
@@ -101,49 +105,61 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const nextOptions: ChangeMetadataOptions = [];
 
     optionsArr.forEach((optItem) => {
+      const {
+        metaAttr,
+      } = optItem;
 
-      const { metaAttr, metaID, data, relyID } = optItem;
-      let _metaID;
-  
-      if(!metaID) {
-        let idStratrgy;
-  
-        /**
-         * 以下为生成对应的 meta 节点数据的 ID 的策略
-         */
-        switch (metaAttr) {
-          case 'dataSource':
-            idStratrgy = data.id;
-            break;
-          case 'schema':
-            /** 通过绑定 column field code 与组件 id 生成有标志性的 key */
-            idStratrgy = [data?.column?.fieldCode, activeEntityID];
-            break;
-          case 'varRely':
-            /** 通过绑定外部传入的 rely id 来确认与变量的依赖项的关系 */
-            idStratrgy = relyID;
-            break;
-          case 'actions':
-            const nanoID = nanoid(8);
-            /** 通过生成随机的 id 确保动作的唯一 */
-            idStratrgy = nanoID;
-            break;
-          default:
+      const nextItem = { ...optItem };
+
+      if(optItem.type === 'create' || optItem.type === 'create/rm') {
+        /** 如果是新增 meta */
+        const { metaID, data, relyID } = optItem;
+        let newMetaID = metaID;
+        if(!newMetaID) {
+          /** 
+           * 如果没有 metaID, 则根据 metaAttr 生成对应的 id 生成策略
+           */
+          let idStrategy;
+
+          /**
+           * 以下为生成对应的 meta 节点数据的 ID 的策略
+           */
+          switch (metaAttr) {
+            case 'dataSource':
+              idStrategy = data.id;
+              break;
+            case 'schema':
+              /** 通过绑定 column field code 与组件 id 生成有标志性的 key */
+              idStrategy = [data?.column?.fieldCode, activeEntityID];
+              break;
+            case 'varRely':
+              /** 通过绑定外部传入的 rely id 来确认与变量的依赖项的关系 */
+              idStrategy = relyID;
+              break;
+            case 'actions':
+              const nanoID = nanoid(8);
+              /** 通过生成随机的 id 确保动作的唯一 */
+              idStrategy = nanoID;
+              break;
+            default:
+          }
+
+          newMetaID = this.genMetaRefID(metaAttr, { idStrategy });
         }
-    
-        _metaID = this.genMetaRefID(metaAttr, { idStratrgy });
 
-        returnMetaIDs.push(_metaID);
+        returnMetaIDs.push(newMetaID);
 
-        nextOptions.push(Object.assign({}, optItem, {
-          metaID: _metaID,
+        Object.assign(nextItem, {
+          metaID: newMetaID,
           relyID
-        }));
+        });
       }
+
+      nextOptions.push(nextItem);
     });
 
     ChangePageMeta(nextOptions);
-    
+
     return isArrayOptions ? returnMetaIDs : returnMetaIDs[0];
   }
 
@@ -173,14 +189,14 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const nextDSState = {};
     interDatasources.forEach((dsItem, idx) => {
       const dsRefID = this.genMetaRefID('dataSource', {
-        idStratrgy: dsItem.id
+        idStrategy: dsItem.id
       });
       nextDSState[dsRefID] = dsItem;
     });
-    this.changePageMeta({
+    this.changePageMetaStradegy({
+      type: 'replace',
       metaAttr: 'dataSource',
-      data: nextDSState,
-      replace: true
+      datas: nextDSState,
     });
   }
 
@@ -317,7 +333,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    * 添加控件变量的规则，响应添加
    */
   onAddEntity = (entity) => {
-    this.changePageMeta({
+    this.changePageMetaStradegy({
+      type: 'create',
       metaAttr: 'varRely',
       relyID: entity.id,
       data: {
@@ -325,20 +342,32 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         widgetRef: entity.id,
         varAttr: entity.varAttr
       },
-      // metaID: this.genMetaRefID('varRely', {
-      //   nanoIDLen: 0
-      // })
     });
+  }
+
+  /**
+   * 更改组件实例状态的统一方法
+   * @param nextEntityState 
+   */
+  changeEntityState: ChangeEntityState = (nextEntityState: NextEntityStateType) => {
+    const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
+    const { entity: activeEntity } = selectedInfo;
+    const entityState = entityStateMergeRule(activeEntity?.propState, nextEntityState);
+    UpdateEntityState({
+      nestingInfo: selectedInfo.nestingInfo,
+      entity: activeEntity
+    }, entityState);
   }
 
   /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
   platformCtx = createPlatformCtx({
-    changePageMeta: this.changePageMeta,
+    changePageMeta: this.changePageMetaStradegy,
     genMetaRefID: this.genMetaRefID,
     takeMeta: this.takeMeta,
     changeWidgetType: this.changeWidgetType,
+    changeEntityState: this.changeEntityState,
   });
 
   render() {
@@ -351,10 +380,12 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       flatLayoutItems,
       appLocation,
     } = this.props;
+    // console.log(pageMetadata);
+    // console.log(layoutInfo);
     
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
     const {
-      InitEntityState, UpdateEntityState,
+      InitEntityState,
     } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
@@ -412,18 +443,14 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                     pageMetadata={pageMetadata}
                     interDatasources={this.getDatasources()}
                     selectedEntity={activeEntity}
-                    platformCtx={this.platformCtx}
-                    defaultEntityState={activeEntity.propState}
+                    entityState={activeEntity?.propState}
                     initEntityState={(entityState) => {
                       // TODO: 属性项更改属性追踪器
                       InitEntityState(selectedInfo, entityState);
                     }}
-                    updateEntityState={(entityState) => {
+                    changeEntityState={(entityState) => {
                       // TODO: 属性项更改属性追踪器
-                      UpdateEntityState({
-                        nestingInfo: selectedInfo.nestingInfo,
-                        entity: activeEntity
-                      }, entityState);
+                      this.changeEntityState(entityState);
                     }}
                   />
                 )

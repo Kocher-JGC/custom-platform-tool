@@ -28,6 +28,7 @@ export const PDCustomEditorLoader = ({
   propEditor,
   changeEntityState
 }) => {
+  if(!propEditor) return null;
   /** 自定义编辑器的接口 */
   return (
     <PlatformContext.Consumer>
