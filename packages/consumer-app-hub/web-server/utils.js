@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const { access, ensureDir, readJson } = require("fs-extra");
 const { exec } = require("child_process");

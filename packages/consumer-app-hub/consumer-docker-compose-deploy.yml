@@ -1,0 +1,21 @@
+version: "2.3"
+services:
+  consumer_app:
+    container_name: consumer_app
+    image: reg.hydevops.com/custom-platform-v3-frontend/consumer_app:release-main-flow
+    ports:
+      - "5020:5020"
+    healthcheck:
+      test: ["CMD","curl", "-f", "http://localhost:5020"]
+      interval: 5s
+      timeout: 60s
+      retries: 12
+    # volumes:
+      # - /home/hydev/paas/logs:/app/logs
+    environment:
+      CONSUMER_HOST: 192.168.14.181
+      CONSUL_HOST: 192.168.14.180
+      CONSUL_PORT: 8502
+volumes:
+  consul_cfg_vol:
+  consul_data_vol:

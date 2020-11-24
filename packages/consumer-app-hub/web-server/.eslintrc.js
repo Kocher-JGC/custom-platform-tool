@@ -57,5 +57,8 @@ module.exports = {
     "import/resolver": {
       typescript: {} // this loads <rootdir>/tsconfig.json to eslint
     },
+  },
+  parserOptions: {
+    ecmaVersion: 6,
   }
 };
