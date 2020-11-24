@@ -24,6 +24,7 @@ export const PageVariableSelector = ({
   changePageMeta
 }: Props) => {
   const [variableList, setVariableList] = useState<VariableRecord[]>([]);
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   /** 
    * 对列表数据进行排序，由于新增按钮在表头，所以按 唯一标识中的索引值 降序处理 
    */
@@ -52,6 +53,7 @@ export const PageVariableSelector = ({
   const initVariableList = () => {
     getVariableData([]).then(res=>{
       setVariableList(getVariableList(res));
+      setExpandedKeys(['page', 'widget', 'pageInput']);
     });
   };
   /** 
@@ -133,6 +135,7 @@ export const PageVariableSelector = ({
         metaID
       });
       initVariableList();
+      setExpandedKeys([type, ...expandedKeys]);
     });
   };
   /**
@@ -169,7 +172,7 @@ export const PageVariableSelector = ({
           {
             dataIndex: 'code',
             title: '变量编码',
-            width: 300,
+            width: 250,
             render: (_t)=>lowerFirst(_t)
           },
           {
@@ -182,18 +185,29 @@ export const PageVariableSelector = ({
           {
             dataIndex: 'alias',
             title: '描述',
-            width: 400,
+            width: 350,
             align: 'center',
           },
           {
             dataIndex: 'action',
             title: '操作',
-            width: 120,
+            width: 100,
             render: (_, record) => {
               return actionRenderer(record);
             }
           },
         ]}
+        expandable={{
+          expandedRowKeys: expandedKeys,
+          onExpand: (expanded, record)=>{
+            if(expanded){
+              setExpandedKeys([record.id, ...expandedKeys]);
+            }else {
+              setExpandedKeys(expandedKeys.filter(item=>item!==record.id));
+            }
+          }
+        }}
+        scroll={{ y: 440 }}
         pagination={false}
         size="small"
         dataSource={variableList}

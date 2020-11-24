@@ -238,6 +238,15 @@ export class PageActionSelector extends React.Component {
       return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
     });
   }
+  handleOk = async () => {
+    const { valid: actionValid, actions } = await actionSelectorRef.current?.onSubmitData?.() || {};
+    if([actionValid].includes('invalid')) return;
+    this.props.changePageMeta({
+      metaAttr: 'actions',
+      data: actions,
+      replace: true
+    });
+  };
   render () {
     const { listForShow } = this.state;
     return (
@@ -479,6 +488,17 @@ export class PageActionSelector extends React.Component {
             ]}
           />
         </Form>
+            
+        <div className="clear-both mt-2" style={{ height: '30px' }}>
+          <Button
+            className="float-right mr-2"
+            onClick={this.handleOk}
+            size="sm"
+            type="primary"
+          >
+          确定
+          </Button>
+        </div>
       </div>      
     );
   }
