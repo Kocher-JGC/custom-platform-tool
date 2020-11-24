@@ -8,6 +8,7 @@ export interface PageConfigContainerProps {
   pageMetadata
   changePageMeta
   onClose
+  getVariableData
 }
 
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) => {

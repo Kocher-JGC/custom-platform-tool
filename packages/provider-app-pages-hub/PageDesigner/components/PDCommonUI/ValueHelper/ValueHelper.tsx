@@ -8,15 +8,6 @@ import './style.scss';
 /**
  * 可用的值的类型
  */
-
-const DROPDOWN_MENU = [
-  { label: '自定义', key: 'customValue', value: 'customValue' },
-  { label: '表达式', key: 'expression', value: 'expression' },
-  { label: '变量', key: 'variable', value: 'variable' }
-];
-/**
- * 可用的值的类型
- */
 const selectTypes = {
   customValue: '自定义',
   expression: '表达式',

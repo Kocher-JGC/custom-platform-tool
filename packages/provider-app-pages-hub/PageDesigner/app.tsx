@@ -276,7 +276,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         draftInitData.initMeta = {
           // 合并初始化 meta
           varRely: {
-            // 'qwqr': {}
+            'var.page.0.mode': {
+              alias: '页面模式',
+              type: 'pageInput',
+              varType: 'string',
+              realVal: 'insert',
+              code: 'var.page.mode'
+            }
           }
         };
       }
@@ -332,6 +338,87 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   /**
+   * 获取变量数据
+   */
+  getVariableData = async (filter: string[] = []) => {
+    const { 
+      pageMetadata: { 
+        varRely 
+      }, 
+      flatLayoutItems 
+    } = this.props;
+    console.log(varRely);
+    /** 获取控件变量 */
+    const getWidgetVariable = () => {
+      const varList = [];
+      for(const varID in varRely ){
+        if (!Object.prototype.hasOwnProperty.call(varRely, varID)) continue;
+        const variableItems = varRely[varID];
+        const { type, varAttr, widgetRef } = variableItems;
+        /** 只检索控件类型变量 */
+        if(type !== 'widget' || !widgetRef) continue;
+        /** 获取对应控件数据 */
+        const widgetEntity = flatLayoutItems[widgetRef];
+        if(!widgetEntity) continue;
+        const { propState } = widgetEntity;
+        if (!propState) continue;
+        // TODO: 这里取了特定的值，后续需要改进
+        const { widgetCode, title } = propState;
+        /** 控件对应变量 */
+        varAttr && varAttr.forEach((varItem) => {
+          const { alias, attr, type: varType } = varItem;
+          const code = `${widgetCode}.${attr}`;
+          varList.push({
+            code, varType, type,
+            alias: `${title}.${alias}`,
+            id: code,
+          });
+        });
+      }
+      return varList;
+    };
+    /** 获取页面变量 */
+    const getPageVariable = () => {
+      return [
+        { code: 'var.page.name', alias: '页面名称', id: 'var.page.name', varType: 'string', type: 'page' },
+        { code: 'var.page.code', alias: '页面编码', id: 'var.page.code', varType: 'string', type: 'page' },
+      ];
+    };
+    /** 获取系统变量 */
+    const getSystemVaraible = () => {
+      return [];
+    };
+    /** 获取输入参数变量 */
+    const getInputVariable = () => {
+      const varList = [];
+      for(const id in varRely ){
+        if (!Object.prototype.hasOwnProperty.call(varRely, id)) continue;
+        const variableItems = varRely[id];
+        const { type, alias, varType, code, realVal } = variableItems || {};
+        if(type !== 'pageInput') continue;
+        varList.push({
+          code, type, varType, alias, id, realVal
+        });
+      }
+      return varList;
+    };
+    const getVariable = {
+      system: getSystemVaraible,
+      widget: getWidgetVariable,
+      page: getPageVariable,
+      pageInput: getInputVariable
+    };
+    const result = {};
+    for(const key in getVariable){
+      if(filter.includes(key)) continue;
+      if(typeof getVariable[key] !== 'function') continue;
+      const resultTmpl = await getVariable[key]();
+      Object.assign(result, { [key]: resultTmpl });
+    }
+    return result;    
+  }
+
+  /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
   platformCtx = createPlatformCtx({
@@ -339,6 +426,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     genMetaRefID: this.genMetaRefID,
     takeMeta: this.takeMeta,
     changeWidgetType: this.changeWidgetType,
+    getVariableData: this.getVariableData
   });
 
   render() {
@@ -351,7 +439,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       flatLayoutItems,
       appLocation,
     } = this.props;
-    
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
     const {
       InitEntityState, UpdateEntityState,
@@ -374,6 +461,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               onReleasePage={this.onReleasePage}
               appLocation={appLocation}
               changePageMeta = {this.changePageMeta}
+              getVariableData = {this.getVariableData}
             />
           </header>
           <div

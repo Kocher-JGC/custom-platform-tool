@@ -27,6 +27,15 @@ export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) =>
 
 export type ChangeWidgetType = () => void
 
+export type VariableType = 'system'|'page'|'pageInput'|'widget'
+export type variableItem = {
+  code: string
+  id: string
+  alias: string
+  type: 'number'|'string'
+}
+export type GetVariableData = (options: VariableType[]) => {[key: string]: variableItem[] }
+
 /**
  * 平台提供的 UI 上下文
  */
@@ -46,5 +55,7 @@ export interface PlatformCtx {
     genMetaRefID: GenMetaRefID
     /** 更改组件的类型 */
     changeWidgetType: ChangeWidgetType
+    /** 获取变量数据 */
+    getVariableData: GetVariableData
   }
 }

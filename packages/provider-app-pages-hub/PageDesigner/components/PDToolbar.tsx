@@ -31,7 +31,8 @@ interface ToolbarCustomProps {
   flatLayoutItems
   appLocation
   pageMetadata,
-  changePageMeta
+  changePageMeta,
+  getVariableData
 }
 
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
@@ -39,7 +40,8 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   flatLayoutItems,
   pageMetadata,
   appLocation,
-  changePageMeta
+  changePageMeta,
+  getVariableData
 }) => {
   const previewUrl = getAppPreviewUrl({
     ...appLocation,
@@ -71,6 +73,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                   pageMetadata={pageMetadata}
                   flatLayoutItems={flatLayoutItems}
                   changePageMeta = {changePageMeta }
+                  getVariableData = { getVariableData }
                   onClose = {()=>{
                     CloseModal(modalId);
                   }}

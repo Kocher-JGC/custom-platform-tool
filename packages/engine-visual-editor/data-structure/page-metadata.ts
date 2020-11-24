@@ -33,24 +33,19 @@ export interface DSVarRely {
   varAttr: any
 }
 
-
-/**
- * 基础页面变量
- */
-export interface PageVarRely {
-  type: 'page'
-  alias: string
-}
-
 /**
  * 输入参数变量
  */
 export interface PageInputVarRely {
-  type: 'pageInput',
+  type: 'pageInput'
+  /** 变量描述信息 */
   alias: string
-  exp?: any
-  realValue?: string
-  var?: string
+  /** 变量值 */
+  realVal?: string|number
+  /** 变量数据类型 */
+  varType: string
+  /** 变量编码，由配置人员定义 */
+  code: string
 }
 
 export interface MetaStorage<D = any> {

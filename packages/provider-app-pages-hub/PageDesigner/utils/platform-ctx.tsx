@@ -9,13 +9,14 @@ interface CreatePlatformCtxOptions {
   genMetaRefID
   takeMeta
   changeWidgetType
+  getVariableData
 }
 
 /**
  * 平台提供给的上下文
  */
 export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx => {
-  const { changePageMeta, genMetaRefID, takeMeta, changeWidgetType } = ctx;
+  const { changePageMeta, genMetaRefID, takeMeta, changeWidgetType, getVariableData } = ctx;
   return {
     ui: {
       showMsg: (ctx) => {
@@ -28,6 +29,7 @@ export const createPlatformCtx = (ctx: CreatePlatformCtxOptions): PlatformCtx =>
       genMetaRefID,
       takeMeta,
       changeWidgetType,
+      getVariableData
     },
     selector: {
       openDatasourceSelector: (options) => {
