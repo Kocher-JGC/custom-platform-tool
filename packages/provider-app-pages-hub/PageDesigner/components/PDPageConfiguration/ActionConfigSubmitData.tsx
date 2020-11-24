@@ -23,10 +23,24 @@ export class ActionConfigSubmitData extends React.Component {
   listFormRef = React.createRef<FormInstance>();
   searchFormRef = React.createRef<FormInstance>();
 
-  handleFinish = async () => {
-    const valid = await this.validateList();
-    if(!valid) return;
-    
+  getSubmitDataTitle = ()=>{
+    const { list } = this.state;
+    const operateMap = {
+      insert: '新增',
+      update: '修改',
+      delete: '删除'
+    };
+    return list.map(item=>{
+      const { operateType, tableName } = item;
+      return operateMap[operateType] + tableName + '记录';
+    }).join('；');
+  }
+  handleFinish = () => {
+    const { onSuccess } = this.props;
+    typeof onSuccess === 'function' && onSuccess(
+      this.state.list,
+      this.getSubmitDataTitle()
+    );
   }
   handleCancel = () => {
     
@@ -192,6 +206,7 @@ export class ActionConfigSubmitData extends React.Component {
         return (
           <div className="p-5">
             <ActionConfigSubmitDataChangeFields
+              {...this.props}
               {..._r}
               onSuccess={(changeFields, changeFieldsTitle) => {
                 this.handleSetValue(_r.id, { changeFields, changeFieldsTitle });
@@ -326,7 +341,9 @@ export class ActionConfigSubmitData extends React.Component {
                         className="w-full"
                         options = {tableList}
                         onChange={(value, option)=>{
-                          this.handleSetValue(_r.id, { tableId: value, tableCode: option.key, changeFields: null, changeRange: null });
+                          this.handleSetValue(_r.id, { 
+                            tableId: value, tableCode: option.key, changeFields: null, changeRange: null, tableName: option.label
+                          });
                         }}
                         value = {_r.tableId}
                       />
@@ -344,11 +361,7 @@ export class ActionConfigSubmitData extends React.Component {
                   return _r.tableId && ['update', 'insert'].includes(_r.operateType) ? (
                     <Form.Item
                       name={['list', _i, 'changeFieldsTitle']}
-                      rules={[{
-                        validator: ()=>{
-
-                        }
-                      }]}
+                      rules={[{ required: true, message: '需要配置字段' }]}
                     >
                       <Input
                         className="cursor-pointer"
@@ -369,11 +382,7 @@ export class ActionConfigSubmitData extends React.Component {
                   return _r.tableId && ['update', 'delete'].includes(_r.operateType) ? (
                     <Form.Item
                       name={['list', _i, 'changeRange']}
-                      rules={[{
-                        validator: ()=>{
-
-                        }
-                      }]}
+                      rules={[{ required: true, message: '需要配置检索范围' }]}
                     >
                       <Input
                         className="cursor-pointer"

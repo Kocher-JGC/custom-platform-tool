@@ -1,6 +1,5 @@
 import React from 'react';
-import { Table, Select, Input, Form, Modal, Button } from 'antd';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { Table, Select, Input, Form, Button, message } from 'antd';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { nanoid } from 'nanoid';
 import { ActionConfigOpenPage } from './ActionConfigOpenPage';
@@ -190,6 +189,7 @@ export class PageActionSelector extends React.Component {
           return (
             <div className="p-5">
               <ModalContent
+                {...this.props}
                 config = {actionConfig}
                 onSuccess={(config, configCn) => {
                   resolve({ config, configCn });
@@ -239,14 +239,16 @@ export class PageActionSelector extends React.Component {
     });
   }
   handleOk = async () => {
-    const { valid: actionValid, actions } = await actionSelectorRef.current?.onSubmitData?.() || {};
+    const { valid: actionValid, actions } = await this.onSubmitData();
     if([actionValid].includes('invalid')) return;
     this.props.changePageMeta({
       metaAttr: 'actions',
       data: actions,
       replace: true
     });
+    message.success('动作配置成功');
   };
+
   render () {
     const { listForShow } = this.state;
     return (
