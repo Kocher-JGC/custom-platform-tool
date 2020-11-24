@@ -1,3 +1,4 @@
+import { PlatformCtx } from "@platform-widget-access/spec";
 import { ChangeEntityState, WidgetEntityState } from "../data-structure";
 
 /**
@@ -6,6 +7,7 @@ import { ChangeEntityState, WidgetEntityState } from "../data-structure";
 export interface CustomEditorCtx {
   entityState: WidgetEntityState
   changeEntityState: ChangeEntityState
+  platformCtx: PlatformCtx
   onSubmit: (nextValue) => void
 }
 

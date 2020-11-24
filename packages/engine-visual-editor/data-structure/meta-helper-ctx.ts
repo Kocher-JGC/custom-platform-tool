@@ -21,6 +21,9 @@ export interface TakeMetaOptions {
   metaRefID?: string
 }
 
+/**
+ * TODO: 加强返回结果的类型检查
+ */
 export type TakeMeta = (options: TakeMetaOptions) => unknown
 
 export type GenMetaRefID = (
