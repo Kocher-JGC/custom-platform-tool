@@ -2,13 +2,12 @@ import React from 'react';
 import { Tabs, Tab } from '@infra/ui';
 import { PageVariableSelector } from './PageVariableSelector';
 import { PageActionSelector } from './PageActionSelector';
+import { PlatformContext } from '@provider-app/page-designer/utils';
 
 export interface PageConfigContainerProps {
   flatLayoutItems
   pageMetadata
-  changePageMeta
-  onClose
-  getVariableData
+  platformCtx
 }
 
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) => {
@@ -21,7 +20,9 @@ export const PageConfigContainer: React.FC<PageConfigContainerProps> = (props) =
           />
         </Tab>
         <Tab label="页面变量">
-          <PageVariableSelector {...props} />
+          <PageVariableSelector
+            {...props}
+          />
         </Tab>
       </Tabs>
     </div>

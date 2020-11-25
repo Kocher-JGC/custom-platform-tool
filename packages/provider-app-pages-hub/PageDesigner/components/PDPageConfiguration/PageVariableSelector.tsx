@@ -13,15 +13,12 @@ export enum VarAttrTypeMap {
   dateTime='日期时间'
 }
 interface Props {
-  getVariableData: GetVariableData,
-  changePageMeta: (options: ChangeMetadataOptions) => string
-  pageMetadata
+  platformCtx
 }
 type VariableRecord = {code: string, id: string, children: VariableItem[]}
 type GetVariableList = (options: {[key: string]: VariableItem[]}) => VariableRecord[]
 export const PageVariableSelector = ({
-  getVariableData,
-  changePageMeta
+  platformCtx
 }: Props) => {
   const [variableList, setVariableList] = useState<VariableRecord[]>([]);
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
@@ -51,7 +48,7 @@ export const PageVariableSelector = ({
    * 初始化变量列表 
    */
   const initVariableList = () => {
-    getVariableData([]).then(res=>{
+    platformCtx.meta.getVariableData([]).then(res=>{
       setVariableList(getVariableList(res));
       setExpandedKeys(['page', 'widget', 'pageInput']);
     });
@@ -86,7 +83,7 @@ export const PageVariableSelector = ({
           return (
             <div className="p-5">
               <VariableEditor
-                getVariableData = {getVariableData}
+                getVariableData = {platformCtx.meta.getVariableData}
                 mode={mode}
                 data={record}
                 onSuccess={(data) => {
@@ -129,7 +126,8 @@ export const PageVariableSelector = ({
     const { id: type } = record;
     openModal(mode).then(data=>{
       const metaID = `var.${type}.${newOrder(record)}.${nanoid(8)}`;
-      changePageMeta({
+      platformCtx.meta.changePageMeta({
+        type: 'update',
         metaAttr: 'varRely',
         data: { ...data, type },
         metaID
@@ -146,7 +144,8 @@ export const PageVariableSelector = ({
   const handleEdit = (record, mode) => {
     const { id, ...oldData } = record;
     openModal(mode, record).then(data=>{
-      changePageMeta({
+      platformCtx.meta.changePageMeta({
+        type: 'e',
         metaAttr: 'varRely',
         data: { ...oldData, ...data },
         metaID: id
@@ -159,7 +158,7 @@ export const PageVariableSelector = ({
    * @param record 
    */
   const handleDelete = (record) => {
-    changePageMeta({
+    platformCtx.meta.changePageMeta({
       metaAttr: 'varRely',
       rmMetaID: record.id
     });
