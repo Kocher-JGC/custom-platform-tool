@@ -4,11 +4,11 @@ export default {
   sysRtCxtInterface: {},
   schemas: {
     "1321031025366802436": {
-      schemaId: "1321031025366802436", name: "主键", type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
+      schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(meta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
     },
-    "schema_ss-paFCD": { type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031261006995466" },
-    schema_lMYnJ6Hj: { type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031261006995456" },
-    schema_gcl50wFr: { type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031261006995461" }
+    "schema_ss-paFCD": { type: "string", fieldRef: "@(meta).1321031025329053696.1321031261006995466" },
+    schema_lMYnJ6Hj: { type: "string", fieldRef: "@(meta).1321031025329053696.1321031261006995456" },
+    schema_gcl50wFr: { type: "string", fieldRef: "@(meta).1321031025329053696.1321031261006995461" }
   },
   metadataCollection: [{
     id: "1321031025329053696",
@@ -65,14 +65,14 @@ export default {
         actionList: {
           apbId1: {
             type: "TableInsert",
-            table: "@(metadata).1321031025329053696",
-            fieldMapping: {
+            table: "@(meta).1321031025329053696",
+            fieldRef: {
               collectionType: "structObject",
               struct: [
-                { field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
-                { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
-                { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
-                { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
+                { field: "@(meta).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
+                { field: "@(meta).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
+                { field: "@(meta).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
+                { field: "@(meta).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
               ]
             }
           }
@@ -90,19 +90,19 @@ export default {
         actionList: {
           apbId1: {
             type: "TableUpdate",
-            table: "@(metadata).1321031025329053696",
-            fieldMapping: {
+            table: "@(meta).1321031025329053696",
+            fieldRef: {
               collectionType: "structObject",
               struct: [
-                { field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
-                { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
-                { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
-                { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
+                { field: "@(meta).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
+                { field: "@(meta).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
+                { field: "@(meta).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
+                { field: "@(meta).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
               ]
             },
             condition: {
               conditionControl: { and: ["0_0"] },
-              conditionList: { "0_0": { operator: "equ", exp1: "@(metadata).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
+              conditionList: { "0_0": { operator: "equ", exp1: "@(meta).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
             }
           }
         },
@@ -119,10 +119,10 @@ export default {
         actionList: {
           apbId1: {
             type: "TableDelete",
-            table: "@(metadata).1321031025329053696",
+            table: "@(meta).1321031025329053696",
             condition: {
               conditionControl: { and: ["0_0"] },
-              conditionList: { "0_0": { operator: "equ", exp1: "@(metadata).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
+              conditionList: { "0_0": { operator: "equ", exp1: "@(meta).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
             }
           }
         },

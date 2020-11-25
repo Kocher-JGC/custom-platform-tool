@@ -5,29 +5,29 @@ export default {
       schemaId: "1321031025329053696",
       collectionType: "structArray",
       struct: [{
-        name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldMapping: "@(metadata).1321031025329053696.1321031261006995456"
+        name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldRef: "@(meta).1321031025329053696.1321031261006995456"
       }, {
-        name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldMapping: "@(metadata).1321031025329053696.1321031261006995461"
+        name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldRef: "@(meta).1321031025329053696.1321031261006995461"
       }, {
-        schemaId: "1321031025366802436", name: "主键", type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
+        schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(meta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
       }, {
-        name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldMapping: "@(metadata).1321031025329053696.1321031261006995466"
+        name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldRef: "@(meta).1321031025329053696.1321031261006995466"
       }]
     },
     "1321031261006995456": {
-      name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldMapping: "@(metadata).1321031025329053696.1321031261006995456"
+      name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldRef: "@(meta).1321031025329053696.1321031261006995456"
     },
     "1321031261006995461": {
-      name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldMapping: "@(metadata).1321031025329053696.1321031261006995461"
+      name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldRef: "@(meta).1321031025329053696.1321031261006995461"
     },
     "1321031025366802436": {
-      schemaId: "1321031025366802436", name: "主键", type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
+      schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(meta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
     },
     "1321031261006995466": {
-      name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldMapping: "@(metadata).1321031025329053696.1321031261006995466"
+      name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldRef: "@(meta).1321031025329053696.1321031261006995466"
     }
   },
-  metadataCollection: [{
+  metaCollection: [{
     id: "1321031025329053696",
     name: "用户_K",
     code: "yonghu_k",
@@ -80,7 +80,7 @@ export default {
       actionId: "1321031261006995466", actionName: "updateState", actionType: "updateState", actionOptions: { changeTarget: "@(schemas).1321031261006995466" }, actionOutput: "undefined"
     },
     button_1321031025329053696: {
-      actionId: "button_1321031025329053696", actionName: "button_1321031025329053696TableSelect", actionType: "APBDSLCURD", actionOptions: { businesscode: "34562", actionList: { apbA1: { type: "TableSelect", table: "@(metadata).1321031025329053696", condition: { conditionControl: { and: ["0_0", "1_1", "3_3"] }, conditionList: { "0_0": { operator: "like", exp1: "@(metadata).1321031025329053696.1321031261006995456", exp2: "@(schemas).1321031261006995456" }, "1_1": { operator: "like", exp1: "@(metadata).1321031025329053696.1321031261006995461", exp2: "@(schemas).1321031261006995461" }, "3_3": { operator: "like", exp1: "@(metadata).1321031025329053696.1321031261006995466", exp2: "@(schemas).1321031261006995466" } } } } }, actionStep: ["apbA1"] }, actionOutput: "string"
+      actionId: "button_1321031025329053696", actionName: "button_1321031025329053696TableSelect", actionType: "APBDSLCURD", actionOptions: { businesscode: "34562", actionList: { apbA1: { type: "TableSelect", table: "@(meta).1321031025329053696", condition: { conditionControl: { and: ["0_0", "1_1", "3_3"] }, conditionList: { "0_0": { operator: "like", exp1: "@(meta).1321031025329053696.1321031261006995456", exp2: "@(schemas).1321031261006995456" }, "1_1": { operator: "like", exp1: "@(meta).1321031025329053696.1321031261006995461", exp2: "@(schemas).1321031261006995461" }, "3_3": { operator: "like", exp1: "@(meta).1321031025329053696.1321031261006995466", exp2: "@(schemas).1321031261006995466" } } } } }, actionStep: ["apbA1"] }, actionOutput: "string"
     },
     button_1321031025329053696_U: {
       actionId: "button_1321031025329053696_U", actionName: "updateState", actionType: "updateState", actionOptions: { changeTarget: "@(schemas).1321031025329053696" }, actionOutput: "undefined"

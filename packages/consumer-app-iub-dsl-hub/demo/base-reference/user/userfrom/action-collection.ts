@@ -1,8 +1,5 @@
 import { ActionCollection } from '@iub-dsl/definition/actions/action';
-import {
-  EnumCURD, ComplexType, FoundationType,
-  ConditionOperator, MetadataMappingCollection, GeneralTableMapping
-} from '@iub-dsl/definition';
+import { EnumCURD, ComplexType, FoundationType } from '@iub-dsl/definition';
 
 import { FlowCollection } from '@iub-dsl/definition/flow';
 

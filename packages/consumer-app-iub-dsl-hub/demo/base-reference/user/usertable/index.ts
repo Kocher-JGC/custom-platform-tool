@@ -1,5 +1,5 @@
 import {
-  FoundationType, ComplexType, TypeOfIUBDSL, Schemas, EnumCURD
+  FoundationType, ComplexType, TypeOfIUBDSL, Schema, EnumCURD
 } from '@iub-dsl/definition';
 import { FlowCollection } from '@iub-dsl/definition/flow';
 import { ActionCollection } from '@iub-dsl/definition/actions/action';
