@@ -5,6 +5,7 @@ type FieldHook = {
 
 export enum AllWidgetType {
   FormInput = "FormInput",
+  DropdownSelector = "DropdownSelector",
   Selector = "Selector",
   TreeSelector = "TreeSelector",
   NormalTable = "NormalTable",

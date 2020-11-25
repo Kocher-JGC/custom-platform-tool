@@ -14,11 +14,11 @@ export type ActionDirectType = {
 
 /** 从 action collection 中引用 action */
 export type ActionRefType = {
-  type: "actionRef";
+  type: "eventHandler";
+  /** 引用的子流程的id */
+  flowItemId: string;
   /** 引用的页面，如果没有，则代表当前页 */
   pageID?: string;
-  /** 需要引用的组件 ID */
-  actionID: string;
 }
 
 // TODO: 有问题
@@ -36,3 +36,16 @@ export interface WidgetEvents {
   /** 获取焦点时的回调 */
   onFocus?: ActionTypes;
 }
+
+// export type UserBehavior =
+//   | "onClick"
+//   | "onChange"
+//   | "onUserChange"
+//   | "onFocus"
+//   | "onBlur";
+
+// export type Lifecycles = "onMount" | "onUnmount";
+
+// export type TriggerEvents = UserBehavior | Lifecycles;
+
+// export default TriggerEvents;

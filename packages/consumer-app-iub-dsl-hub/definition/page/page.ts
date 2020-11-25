@@ -1,13 +1,13 @@
 import PageMetadata from '@spec/page-metadata';
-import { widgetCollection, } from "../widget";
-import SRCInterface from "./src-interface";
-import RelationshipsCollection from "../relationship/relationship-collection";
+import { WidgetCollection, } from "../widget";
 import { ActionCollection } from "../actions/action";
 import { FlowCollection } from '../flow';
-import { Schemas } from "../schemas";
+import { Schema } from "../schema";
 import { LayoutContent } from "../layout";
-import { MetadataCollection } from "..";
 import { PageVariable } from '../page-variable';
+import { InterfaceMetaCollection } from '../interface';
+/** 公共的hub */
+import { ConditionCollection, LowcodeCollection, DataCollection, InterCollection } from '../hub';
 
 export interface PageCommunication {
   pageInfo: {
@@ -26,26 +26,25 @@ export interface PageCommunication {
  */
 export interface TypeOfIUBDSL extends PageMetadata {
   /** 与 system runtime context 的接口 */
-  sysRtCxtInterface: SRCInterface;
+  // sysRtCxtInterface: any;
+  /** 关系集合 */
+  // relationshipsCollection: any;
+
+  // 以上暂时弃用 2020-11-24
 
   /** Schema 数据模型 */
-  schemas: Schemas;
+  schema: Schema;
 
   /**
-   * 数据源关系枢纽
-   *
-   * 规则：
-   * 1. 子模版的 dataSourceHub 需要合并到最高层，
+   * 页面所用到的接口的元数据的定义
    */
-  metadataCollection: MetadataCollection;
+  interfaceMetaCollection: InterfaceMetaCollection;
 
-  /** 关系集合 */
-  relationshipsCollection: RelationshipsCollection;
+  /** 页面生命周期 */
+  pageLifecycle: any;
 
-  /** 组件集合 */
-  widgetCollection: {
-    [componentID: string]: widgetCollection;
-  };
+  /** widget集合 */
+  widgetCollection: WidgetCollection
 
   /** 动作集合 */
   actionsCollection: ActionCollection;
@@ -53,7 +52,21 @@ export interface TypeOfIUBDSL extends PageMetadata {
   flowCollection: FlowCollection;
 
   /** 布局信息 */
-  layoutContent: LayoutContent;
+  layoutContent: any; // LayoutContent;
+  /** hub 可以在适当的业务节点动态插入的抽象公共提取 --------- Start */
+  
+  /** 公共条件描述 */
+  conditionCollection: ConditionCollection;
+  /** 获取值的时候的配置{数据收集的描述} */
+  dataCollection: DataCollection;
+  /** 低代码的描述 */
+  lowcodeCollection: LowcodeCollection;
+  /** 页面所有接口请求的配置的描述 */
+  interCollection: InterCollection;
+  
+  /** hub 可以在适当的业务节点动态插入的抽象公共提取 --------- end */
+
+  /** 临时结构 */
   openPageUrl: string; // TODO: TEMP
   isSearch: boolean;
   businessCode: string[];
