@@ -4832,10 +4832,10 @@
     antd "^4.0.0"
     antd-mobile "^2.3.1"
 
-"@umijs/plugin-block-devtool@1.2.2":
-  version "1.2.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-block-devtool/-/plugin-block-devtool-1.2.2.tgz#1840829be263c3b5d936a2b3244c3c4c07ad8f0b"
-  integrity sha1-GECCm+Jjw7XZNqKzJEw8TAetjws=
+"@umijs/plugin-block-devtool@1.2.3":
+  version "1.2.3"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-block-devtool/-/plugin-block-devtool-1.2.3.tgz#b7b7d97a989990d0df4bc094eb2b69542978dbf5"
+  integrity sha1-t7fZepiZkNDfS8CU6ytpVCl42/U=
   dependencies:
     uppercamelcase "^3.0.0"
 
@@ -4919,12 +4919,12 @@
   dependencies:
     "@umijs/test" "^3.0.7"
 
-"@umijs/preset-ant-design-pro@1.2.0":
-  version "1.2.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/preset-ant-design-pro/-/preset-ant-design-pro-1.2.0.tgz#34e0ee300972cf4eead03aeee4271aa10f9917db"
-  integrity sha1-NODuMAlyz07q0Dru5CcaoQ+ZF9s=
+"@umijs/preset-ant-design-pro@1.3.0":
+  version "1.3.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/preset-ant-design-pro/-/preset-ant-design-pro-1.3.0.tgz#bf666c0b680d184c442ea62d4754080a53d0669b"
+  integrity sha1-v2ZsC2gNGExELqYtR1QIClPQZps=
   dependencies:
-    "@umijs/plugin-block-devtool" "1.2.2"
+    "@umijs/plugin-block-devtool" "1.2.3"
     umi-plugin-antd-icon-config "^2.0.0"
     umi-plugin-pro-block "^2.0.1"
 

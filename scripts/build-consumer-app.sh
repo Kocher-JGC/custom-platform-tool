@@ -1,11 +1,10 @@
 # 保存当前的路径
 pwd=$PWD
 
-rm -rf node_modules
-rm yarn.lock
+# rm -rf node_modules
+# rm yarn.lock
 
 source_dir=$pwd/packages/consumer-app-hub
-npm ls @types/react
 
 # 构建 web 服务
 cd $source_dir/web-server
