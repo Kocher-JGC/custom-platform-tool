@@ -84,11 +84,17 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
     case 'variable':
       Comp = (
         <TreeSelector 
-          className="variable-selector py-1"
+          value={variable || ''}
+          className="variable-selector py-1 cursor-pointer"
           showSearch
           onSearch={(value)=>{
 
           }}
+          onChange={(value) => onChange({
+            exp: null,
+            realVal: null,
+            variable: value
+          })}
           treeDefaultExpandAll
           treeData = {variableList}
         />
