@@ -1,5 +1,5 @@
-import { FoundationType, TypeOfIUBDSL, ComplexType } from "@iub-dsl/core";
-import { ActionFlowKeywork } from "@iub-dsl/core/types/actions/action-flow";
+import { FoundationType, TypeOfIUBDSL, ComplexType } from "@iub-dsl/definition";
+import { ActionFlowKeywork } from "@iub-dsl/definition/actions/action-flow.bak";
 import { ApbFunction } from "../../apb-dsl";
 
 /**
@@ -14,6 +14,208 @@ import { ApbFunction } from "../../apb-dsl";
  * 5. 如何支持多步骤的apb-dsl
  * 7. 每个单元格可以显示不同的内容
  */
+
+/** 树 / 多重嵌套 */
+const dId7 = { // 位置管理表格数据
+  type: ComplexType.structArray,
+  refTable: 'tableId1', // 整个结构引用得表
+  desc: '位置管理表格数据',
+  struct: {
+    // 普通字段
+    sdId1: {
+      type: FoundationType.string,
+      desc: '位置名字',
+      fieldRef: 'tableId1.filedId2',
+    },
+    // 复杂结构引用
+    sdId3: {
+      type: ComplexType.structObject,
+      desc: '上级位置',
+      fieldRef: 'tableId1.filedId3', // 原表字段
+      refTable: 'tableId2', // 复杂结构引用的表
+      // TODO: 使用关系描述处理
+      struct: {
+        ssdId0: {
+          type: FoundationType.string,
+          fieldRef: 'tableId2.filedId1',
+          compTag: 'value', // 对外有映射的字段
+        },
+        ssdId1: {
+          type: FoundationType.string,
+          desc: '上级位置名字',
+          fieldRef: 'tableId2.filedId2',
+          compTag: 'show',
+        },
+        // 多重引用
+        ssdId2: {
+          type: ComplexType.structObject,
+          fieldRef: 'tableId2.filedId3',
+          refTable: 'tableId2',
+          struct: {}
+        },
+        // 树形引用
+        ssdId3: {
+          type: 'structTreeArr',
+        }
+      }
+    }
+  }
+};
+export const testSchemas = {
+  dId0: { // 表单隐藏的 ID
+    type: FoundationType.string,
+    fieldRef: 'tableId1.fieldId1',
+  },
+  // 输入表单三个
+  dId1: {
+    type: FoundationType.string,
+    desc: '位置名称',
+    alias: 'location_name',
+    fieldRef: 'tableId1.fieldId2',
+  },
+  dId2: {
+    type: FoundationType.string,
+    desc: '位置类型',
+    alias: 'location_type',
+    fieldRef: 'tableId1.fieldId4'
+  },
+  dId3: {
+    type: ComplexType.structObject,
+    desc: '上级位置',
+    struct: {
+      sdId1: {
+        type: FoundationType.string,
+        compTag: 'value',
+        fieldRef: 'tableId1.fieldId1',
+      },
+      sdId2: {
+        type: FoundationType.string,
+        compTag: 'show',
+        fieldRef: 'tableId1.fieldId2',
+        desc: '位置名称'
+      },
+      sdId3: {
+        type: FoundationType.string,
+        fieldRef: 'tableId1.fieldId4',
+        desc: '位置类型'
+      },
+      sdId4: {
+        type: FoundationType.string,
+        fieldRef: 'tableId1.fieldId3',
+        desc: 'pid'
+      },
+    }
+  },
+  dId4: { // 位置类型下拉框
+    type: ComplexType.structArray,
+    desc: '位置类型数据',
+    struct: {
+      sdId0: {
+        type: FoundationType.string,
+        fieldRef: 'tableId2.filedId1',
+      },
+      sdId1: {
+        type: FoundationType.string,
+        compTag: 'show',
+        fieldRef: 'tableId2.filedId2',
+        desc: '显示值'
+      },
+      sdId2: {
+        type: FoundationType.string,
+        fieldRef: 'tableId2.filedId3',
+        compTag: 'value',
+        desc: '实际值'
+      }
+    }
+  },
+  dId6: {
+    type: ComplexType.structObject,
+    struct: {
+      sdId0: {
+        type: FoundationType.string,
+        fieldRef: 'tableId1.filedId1',
+      },
+      sdId3: {
+        type: ComplexType.structObject,
+        desc: '上级位置',
+        // TODO: 使用关系描述处理
+        struct: {
+          ssdId0: {
+            type: FoundationType.string,
+            fieldRef: 'tableId1.filedId1',
+            compTag: 'value',
+          },
+          ssdId1: {
+            type: ComplexType.structObject,
+            desc: '上级位置名字',
+            struct: {
+              sssdId1: {
+                type: FoundationType.string,
+                fieldRef: ''
+              }
+            }
+          },
+        }
+      },
+    }
+  },
+  dId5: { // 位置管理表格数据
+    type: ComplexType.structArray,
+    desc: '位置管理表格数据',
+    struct: {
+      sdId0: {
+        type: FoundationType.string,
+        fieldRef: 'tableId1.filedId1',
+      },
+      sdId1: {
+        type: FoundationType.string,
+        desc: '位置名字',
+        fieldRef: 'tableId1.filedId2',
+      },
+      sdId3: {
+        type: ComplexType.structObject,
+        desc: '上级位置',
+        // TODO: 使用关系描述处理
+        struct: {
+          ssdId0: {
+            type: FoundationType.string,
+            fieldRef: 'tableId1.filedId1',
+            compTag: 'value',
+          },
+          ssdId1: {
+            type: FoundationType.string,
+            desc: '上级位置名字',
+            fieldRef: 'tableId1.filedId2',
+            compTag: 'show',
+          },
+        }
+      },
+      sdId4: {
+        type: ComplexType.structObject,
+        desc: '位置名字',
+        struct: {
+          sdId0: {
+            type: FoundationType.string,
+            fieldRef: 'tableId2.filedId1',
+          },
+          sdId1: {
+            type: FoundationType.string,
+            compTag: 'show',
+            fieldRef: 'tableId2.filedId2',
+            desc: '显示值'
+          },
+          sdId2: {
+            type: FoundationType.string,
+            fieldRef: 'tableId2.filedId3',
+            compTag: 'value',
+            desc: '实际值'
+          }
+        }
+      },
+    }
+  },
+  dId7
+};
 
 const IUBLocationForm: TypeOfIUBDSL = {
   id: 'locationFrom',
@@ -100,129 +302,7 @@ const IUBLocationForm: TypeOfIUBDSL = {
     }
   },
 
-  schemas: {
-    dId0: { // 表单隐藏的 ID
-      type: FoundationType.string,
-      fieldMapping: 'tableId1.fieldId1',
-    },
-    // 输入表单三个
-    dId1: {
-      type: FoundationType.string,
-      desc: '位置名称',
-      alias: 'location_name',
-      fieldMapping: 'tableId1.fieldId2',
-    },
-    dId2: {
-      type: FoundationType.string,
-      desc: '位置类型',
-      alias: 'location_type',
-      fieldMapping: 'tableId1.fieldId4'
-    },
-    dId3: {
-      type: ComplexType.structObject,
-      desc: '上级位置',
-      struct: {
-        sdId1: {
-          type: FoundationType.string,
-          compTag: 'value',
-          fieldMapping: 'tableId1.fieldId1',
-        },
-        sdId2: {
-          type: FoundationType.string,
-          compTag: 'show',
-          fieldMapping: 'tableId1.fieldId2',
-          desc: '位置名称'
-        },
-        sdId3: {
-          type: FoundationType.string,
-          fieldMapping: 'tableId1.fieldId4',
-          desc: '位置类型'
-        },
-        sdId4: {
-          type: FoundationType.string,
-          fieldMapping: 'tableId1.fieldId3',
-          desc: 'pid'
-        },
-      }
-    },
-    dId4: { // 位置类型下拉框
-      type: ComplexType.structArray,
-      desc: '位置类型数据',
-      struct: {
-        sdId0: {
-          type: FoundationType.string,
-          fieldMapping: 'tableId2.filedId1',
-        },
-        sdId1: {
-          type: FoundationType.string,
-          compTag: 'show',
-          fieldMapping: 'tableId2.filedId2',
-          desc: '显示值'
-        },
-        sdId2: {
-          type: FoundationType.string,
-          fieldMapping: 'tableId2.filedId3',
-          compTag: 'value',
-          desc: '实际值'
-        }
-      }
-    },
-    dId5: { // 位置管理表格数据
-      type: ComplexType.structArray,
-      desc: '位置管理表格数据',
-      struct: {
-        sdId0: {
-          type: FoundationType.string,
-          fieldMapping: 'tableId1.filedId1',
-        },
-        sdId1: {
-          type: FoundationType.string,
-          desc: '位置名字',
-          fieldMapping: 'tableId1.filedId2',
-        },
-        sdId3: {
-          type: ComplexType.structObject,
-          desc: '上级位置',
-          // TODO: 使用关系描述处理
-          struct: {
-            ssdId0: {
-              type: FoundationType.string,
-              fieldMapping: 'tableId1.filedId1',
-              compTag: 'value',
-            },
-            ssdId1: {
-              type: FoundationType.string,
-              desc: '上级位置名字',
-              fieldMapping: 'tableId1.filedId2',
-              compTag: 'show',
-            },
-          }
-        },
-        sdId4: {
-          type: ComplexType.structObject,
-          desc: '位置名字',
-          struct: {
-            sdId0: {
-              type: FoundationType.string,
-              fieldMapping: 'tableId2.filedId1',
-            },
-            sdId1: {
-              type: FoundationType.string,
-              compTag: 'show',
-              fieldMapping: 'tableId2.filedId2',
-              desc: '显示值'
-            },
-            sdId2: {
-              type: FoundationType.string,
-              fieldMapping: 'tableId2.filedId3',
-              compTag: 'value',
-              desc: '实际值'
-            }
-          }
-        },
-      }
-    }
-  },
+  schemas: testSchemas,
   relationshipsCollection: {
     dataCollection: {
       // 获取表单详情收集ID的描述
@@ -393,8 +473,8 @@ const IUBLocationForm: TypeOfIUBDSL = {
           table: 'userInfo',
           type: ApbFunction.SET,
           // ID或者是映射
-          fieldMapping: '@(dataCollection).collectId1'
-          // fieldMapping: {
+          fieldRef: '@(dataCollection).collectId1'
+          // fieldRef: {
           //   type: ComplexType.structObject,
           //   struct: []
           // }
@@ -522,18 +602,18 @@ const IUBLocationForm: TypeOfIUBDSL = {
         apbActionId1: {
           type: ApbFunction.SET,
           table: 'table1',
-          fieldMapping: '@(dataCollection).collectId99'
+          fieldRef: '@(dataCollection).collectId99'
         },
         apbActionId2: {
           type: ApbFunction.SET,
           table: 'table2',
-          fieldMapping: '@(dataCollection).collectId98',
+          fieldRef: '@(dataCollection).collectId98',
           useQuoteRelation: '@(dataSourceRelation).tableId1.relationId1' // 处理fid外键关系的
         },
         apbActionId3: {
           type: ApbFunction.SET,
           table: 'table3',
-          fieldMapping: '@(dataCollection).collectId97',
+          fieldRef: '@(dataCollection).collectId97',
           useQuoteRelation: '@(dataSourceRelation).tableId1.relationId1' // 处理fid外键关系的
         },
       },

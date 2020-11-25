@@ -138,16 +138,16 @@ const SimpleCreateUser: TypeOfIUBDSL = {
     data_UUID1: {
       type: 'string',
       defaultVal: '张三',
-      fieldMapping: 'userTable_UUID.field_UUID1',
+      fieldRef: 'userTable_UUID.field_UUID1',
     },
     data_UUID2: {
       type: 'num',
       defaultVal: 0,
-      fieldMapping: 'userTable_UUID.field_UUID2',
+      fieldRef: 'userTable_UUID.field_UUID2',
     },
     data_UUID3: { // 部门
       type: 'string',
-      fieldMapping: 'userTable_UUID.field_UUID3',
+      fieldRef: 'userTable_UUID.field_UUID3',
     },
     data_UUID4: { // 建筑物
       type: 'structObject',
@@ -156,12 +156,12 @@ const SimpleCreateUser: TypeOfIUBDSL = {
         dataUUID_1: {
           type: 'string',
           alias: 'showValue',
-          fieldMapping: 'location_UUID.field_UUID2',
+          fieldRef: 'location_UUID.field_UUID2',
         },
         dataUUID_2: {
           type: 'string',
           alias: 'value',
-          fieldMapping: 'location_UUID.field_UUID1'
+          fieldRef: 'location_UUID.field_UUID1'
         },
       }
     },
@@ -171,12 +171,12 @@ const SimpleCreateUser: TypeOfIUBDSL = {
         dataUUID_1: {
           type: 'string',
           alias: 'showValue',
-          fieldMapping: 'location_UUID.field_UUID2',
+          fieldRef: 'location_UUID.field_UUID2',
         },
         dataUUID_2: {
           type: 'string',
           alias: 'value',
-          fieldMapping: 'location_UUID.field_UUID1'
+          fieldRef: 'location_UUID.field_UUID1'
         },
       }
     },
@@ -186,12 +186,12 @@ const SimpleCreateUser: TypeOfIUBDSL = {
         dataUUID_1: {
           type: 'string',
           alias: 'showValue',
-          fieldMapping: 'location_UUID.field_UUID2',
+          fieldRef: 'location_UUID.field_UUID2',
         },
         dataUUID_2: {
           type: 'string',
           alias: 'value',
-          fieldMapping: 'location_UUID.field_UUID1'
+          fieldRef: 'location_UUID.field_UUID1'
         },
       }
     },
@@ -200,22 +200,22 @@ const SimpleCreateUser: TypeOfIUBDSL = {
       struct: {
         UUID_1: {
           type: 'string',
-          fieldMapping: ''
+          fieldRef: ''
         },
         UUID_2: {
           type: 'string',
-          fieldMapping: ''
+          fieldRef: ''
         },
         UUID_3: {
           type: 'string',
-          fieldMapping: ''
+          fieldRef: ''
         }
       }
     },
     // 运行时候的数据
     data_UUID: {
       type: 'boolean',
-      fieldMapping: 'userTableId.field_UUID2',
+      fieldRef: 'userTableId.field_UUID2',
       defaultVal: false
     },
     data_UUID8: {
@@ -227,12 +227,12 @@ const SimpleCreateUser: TypeOfIUBDSL = {
             dataUUID_1: {
               type: 'string',
               alias: 'showValue',
-              fieldMapping: 'location_UUID.field_UUID2',
+              fieldRef: 'location_UUID.field_UUID2',
             },
             dataUUID_2: {
               type: 'string',
               alias: 'value',
-              fieldMapping: 'location_UUID.field_UUID1'
+              fieldRef: 'location_UUID.field_UUID1'
             },
           }
         },
@@ -242,12 +242,12 @@ const SimpleCreateUser: TypeOfIUBDSL = {
             dataUUID_1: {
               type: 'string',
               alias: 'showValue',
-              fieldMapping: 'location_UUID.field_UUID2',
+              fieldRef: 'location_UUID.field_UUID2',
             },
             dataUUID_2: {
               type: 'string',
               alias: 'value',
-              fieldMapping: 'location_UUID.field_UUID1'
+              fieldRef: 'location_UUID.field_UUID1'
             },
           }
         },
@@ -257,12 +257,12 @@ const SimpleCreateUser: TypeOfIUBDSL = {
             dataUUID_1: {
               type: 'string',
               alias: 'showValue',
-              fieldMapping: 'location_UUID.field_UUID2',
+              fieldRef: 'location_UUID.field_UUID2',
             },
             dataUUID_2: {
               type: 'string',
               alias: 'value',
-              fieldMapping: 'location_UUID.field_UUID1'
+              fieldRef: 'location_UUID.field_UUID1'
             },
           }
         }
@@ -273,11 +273,11 @@ const SimpleCreateUser: TypeOfIUBDSL = {
       struct: {
         label: {
           type: 'string',
-          fieldMapping: ''
+          fieldRef: ''
         },
         value: {
           type: 'string',
-          fieldMapping: ''
+          fieldRef: ''
         }
       }
     }

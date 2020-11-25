@@ -1,4 +1,4 @@
-import { TypeOfIUBDSL, ComplexType, FoundationType } from '@iub-dsl/core';
+import { ComplexType, FoundationType } from '@iub-dsl/definition';
 
 export const MockLocationType = [
   {
@@ -61,7 +61,7 @@ export const MockLocationData = [
 
 ];
 
-const locationManage: TypeOfIUBDSL = {
+const locationManage = {
   id: 'locationManage',
   type: 'config',
   name: '位置管理列表',
@@ -127,21 +127,21 @@ const locationManage: TypeOfIUBDSL = {
       type: FoundationType.string,
       desc: '位置名称',
       alias: 'location_name',
-      fieldMapping: '',
+      fieldRef: '',
     },
     dId2: {
       type: FoundationType.string,
       desc: '位置类型',
       defaultVal: '建分组',
       alias: 'location_type',
-      fieldMapping: ''
+      fieldRef: ''
     },
     dId3: {
       type: FoundationType.string,
       desc: '上级位置',
       alias: 'pid',
       defaultVal: '',
-      fieldMapping: ''
+      fieldRef: ''
     },
     dId4: {
       type: ComplexType.structArray,
@@ -151,12 +151,12 @@ const locationManage: TypeOfIUBDSL = {
         sdId1: {
           type: FoundationType.string,
           fieldTag: 'type',
-          fieldMapping: '',
+          fieldRef: '',
           desc: '显示值'
         },
         sdId2: {
           type: FoundationType.string,
-          fieldMapping: '',
+          fieldRef: '',
           fieldTag: 'name',
           desc: '实际值'
         }
@@ -170,25 +170,25 @@ const locationManage: TypeOfIUBDSL = {
         sdId1: {
           type: FoundationType.string,
           fieldTag: 'id',
-          fieldMapping: '',
+          fieldRef: '',
           desc: 'id'
         },
         sdId2: {
           type: FoundationType.string,
           fieldTag: 'locationName',
-          fieldMapping: '',
+          fieldRef: '',
           desc: '位置名称'
         },
         sdId3: {
           type: FoundationType.string,
           fieldTag: 'locationType',
-          fieldMapping: '',
+          fieldRef: '',
           desc: '位置类型'
         },
         sdId4: {
           type: FoundationType.string,
           fieldTag: 'pid',
-          fieldMapping: '',
+          fieldRef: '',
           desc: 'pid'
         },
       }
