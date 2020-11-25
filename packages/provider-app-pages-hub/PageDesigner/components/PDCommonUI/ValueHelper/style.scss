@@ -32,7 +32,9 @@
   .value-type-selector {
     vertical-align: top;
     margin-left: -1px;
-    .search-input, .display-title {
+    .ant-select-selector {
+      border-color: #e2e8f0;
+      height: 34px;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
     }
