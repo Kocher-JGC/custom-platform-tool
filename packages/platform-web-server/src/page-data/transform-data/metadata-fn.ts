@@ -179,14 +179,20 @@ export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx):
     const tableRefIdx = Object.keys(dataSource);
     const r = tableRefIdx.map(async (tableRefId) => {
       const info = dataSource[tableRefId];
-      const { tableInfo, type } = info;
-      const remoteTableMeta = await getRemoteTableMeta({ ...processCtx, tableId: tableInfo.id });
-      if (remoteTableMeta) {
-        return genMetadataFromRemoteTableMeta(remoteTableMeta, { tableRefId, tableType: type });
-      } 
+      const { tableInfo, type, columns, id } = info;
+      const tableId = tableInfo?.id || id;
+      if (tableId) {
+        const remoteTableMeta = await getRemoteTableMeta({ ...processCtx, tableId });
+        if (remoteTableMeta) {
+          return genMetadataFromRemoteTableMeta(remoteTableMeta, { tableRefId, tableType: type });
+        } 
+      } else if (Array.isArray(columns)) {
+        info.columns = transformCols(info.columns);
+        return info;
+      }
       return null;
     });
-    return Promise.all(r);
+    return (await Promise.all(r)).filter(v => v);
   }
   return [];
 };

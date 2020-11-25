@@ -62,9 +62,10 @@ export const pageData2IUBDSL = async (pageData, processCtx: ProcessCtx) => {
   
   /** 页面widget */
   /** 生成元数据 */
-  const metadata1 = await genTableMetadata(dataSources, processCtx);
-  const metadata2 = await genTableMetadata(dataSource, processCtx);
-  const tableMetadata = mergeMetadata(metadata1, metadata2);
+  // const metadata1 = await genTableMetadata(dataSources, processCtx);
+  const tableMetadata: any[] = await genTableMetadata(dataSource, processCtx);
+  // const tableMetadata = mergeMetadata(metadata1, metadata2);
+
   genMetadataPkSchema(transfromCtx, tableMetadata);
   transfromCtx.tableMetadata = tableMetadata;
   console.log(tableMetadata);
