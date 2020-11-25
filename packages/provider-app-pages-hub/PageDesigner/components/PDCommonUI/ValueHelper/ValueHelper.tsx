@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  CloseModal, Input, ShowModal, Selector 
+  CloseModal, Input, ShowModal, Selector, TreeSelector
 } from '@infra/ui';
 import { ExpEditor } from './ExpEditor';
 import './style.scss';
-import { TreeSelect } from 'antd';
 import { VariableItem } from '@provider-app/page-designer/platform-access';
 /**
  * 可用的值的类型
@@ -84,8 +83,12 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       break;
     case 'variable':
       Comp = (
-        <TreeSelect 
+        <TreeSelector 
           className="variable-selector py-1"
+          showSearch
+          onSearch={(value)=>{
+
+          }}
           treeDefaultExpandAll
           treeData = {variableList}
         />
