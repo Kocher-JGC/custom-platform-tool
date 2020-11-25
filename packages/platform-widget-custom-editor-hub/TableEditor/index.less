@@ -1,7 +1,7 @@
 #sortable_list_container {
   display: inline-block;
   .column-item {
-    padding: 8px 30px;
+    padding: 5px 28px;
     background-color: #fafafa;
     margin-bottom: 5px;
     margin-right: 5px;
@@ -15,13 +15,15 @@
       // color: #1890ff;
     }
     &.blue-background-class {
-      background-color: #1890ff;
-      color: #FFF;
+      background-color: #1890ff !important;
+      * {
+        color: #FFF !important;
+      }
     }
 
     .__action {
       position: absolute;
-      transform: translateY(40%);
+      transform: translateY(35%);
 
       &.close {
         right: 8px;

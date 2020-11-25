@@ -27,7 +27,8 @@ export const entityStateMergeRule = (
   entityStateItemParams: NextEntityStateType
 ): WidgetEntityState => {
   const resState = produce(srcEntityState, (draft) => {
-    Object.assign(draft, entityParams2UpdateObj(entityStateItemParams));
+    draft = Object.assign({}, draft, entityParams2UpdateObj(entityStateItemParams));
+    return draft;
   });
 
   return resState;

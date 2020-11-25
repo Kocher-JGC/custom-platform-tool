@@ -1,13 +1,14 @@
 {
   "name": "multiple-page-routing",
   "version": "0.1.0",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/history": "^4.7.7"
+  },
   "peerDependencies": {
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },
   "dependencies": {
-    "@types/history": "^4.7.7",
     "@mini-code/base-func": "^1.1.0",
     "@mini-code/request": "^1.0.5",
     "history": "^4.9.0"

@@ -4,6 +4,7 @@ import produce from 'immer';
 import { AppActionsContext, ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
 import { getPageDetailService, updatePageService } from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
+import Debounce from "@mini-code/base-func/debounce";
 import { nanoid } from 'nanoid';
 import pick from "lodash/pick";
 import ToolBar from './components/PDToolbar';
@@ -12,7 +13,7 @@ import CanvasStage from './components/PDCanvasStage';
 import PropertiesEditor from './components/PDPropertiesEditor';
 import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext } from "./utils";
 
-import { ChangeEntityState, GenMetaRefID, NextEntityStateType } from "@engine/visual-editor/data-structure";
+import { ChangeEntityState, GenMetaRefID, NextEntityState, NextEntityStateType } from "@engine/visual-editor/data-structure";
 
 import './style';
 import { entityStateMergeRule } from "@engine/visual-editor/utils";
@@ -24,6 +25,8 @@ const offlineMode = false;
 interface VisualEditorAppProps extends VisualEditorState {
   dispatcher: VEDispatcher
 }
+
+const debounce = new Debounce();
 
 class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.ProviderSubAppProps> {
 
@@ -345,18 +348,41 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     });
   }
 
+  private updateQueue: NextEntityState[] = []
+
+  pushToUpdateQueue = (nextEntityState: NextEntityStateType) => {
+    if(Array.isArray(nextEntityState)) {
+      this.updateQueue = [...this.updateQueue, ...nextEntityState];
+    } else {
+      this.updateQueue.push(nextEntityState);
+    }
+  }
+
+  consumUpdateQueue = () => {
+    this.updateQueue = [];
+  }
+
   /**
    * 更改组件实例状态的统一方法
    * @param nextEntityState 
+   * TODO: 属性项更改属性追踪器
    */
   changeEntityState: ChangeEntityState = (nextEntityState: NextEntityStateType) => {
     const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
     const { entity: activeEntity } = selectedInfo;
-    const entityState = entityStateMergeRule(activeEntity?.propState, nextEntityState);
-    UpdateEntityState({
-      nestingInfo: selectedInfo.nestingInfo,
-      entity: activeEntity
-    }, entityState);
+
+    /** 
+     * 这里做批量更新操作，将多个并发的更新 state 操作推入待更新队列中
+     */
+    this.pushToUpdateQueue(nextEntityState);
+    debounce.exec(() => {
+      const entityState = entityStateMergeRule(activeEntity?.propState, this.updateQueue);
+      this.consumUpdateQueue();
+      UpdateEntityState({
+        nestingInfo: selectedInfo.nestingInfo,
+        entity: activeEntity
+      }, entityState);
+    }, 50);
   }
 
   /**
@@ -448,10 +474,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                       // TODO: 属性项更改属性追踪器
                       InitEntityState(selectedInfo, entityState);
                     }}
-                    changeEntityState={(entityState) => {
-                      // TODO: 属性项更改属性追踪器
-                      this.changeEntityState(entityState);
-                    }}
+                    changeEntityState={this.changeEntityState}
                   />
                 )
               }

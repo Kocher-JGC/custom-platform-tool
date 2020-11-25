@@ -5,7 +5,7 @@
     "start": "start"
   },
   "devDependencies": {
-    "@types/react-hyperscript": "^3.0.4"
+    "@types/react-hyperscript": "3.0.4"
   },
   "peerDependencies": {},
   "dependencies": {

@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
 import { Input } from '@infra/ui';
+import { PropItemRenderContext } from '@platform-widget-access/spec';
 
-export const TitleEditorComp = ({
+export const TitleEditorComp: React.FC<PropItemRenderContext> = ({
   changeEntityState,
   editingWidgetState,
-  takeMeta
+  platformCtx: {
+    meta: {
+      takeMeta
+    }
+  }
 }) => {
   const { title, field } = editingWidgetState;
   const selectedField = takeMeta({
@@ -18,7 +23,7 @@ export const TitleEditorComp = ({
       attr: 'title',
       value: nextTitle
     });
-  }, [selectedField]);
+  }, [field]);
   return (
     <div>
       <Input
