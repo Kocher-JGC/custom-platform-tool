@@ -1,3 +1,3 @@
 export * from './state-manage';
 export * from './const';
-export * from './schemas';
+export * from './schema-parser';

@@ -10,7 +10,7 @@ interface LowcodeOpts extends RefActionOptions {
 /**
  * 接口请求的动作
  */
-export interface Lowcode extends BasicActionConf {
+export interface LowcodeAction extends BasicActionConf {
   actionType: LowcodeType;
   actionOptions: LowcodeOpts;
 }

@@ -9,8 +9,8 @@ import {
 import { 
   APBDSLCURD, APBDSLCURDActionType,
   LinkageType, Linkage,
-  InterfaceRequestType, InterfaceRequest,
-  LowcodeType, Lowcode,
+  InterfaceRequestType, InterfaceRequestAction,
+  LowcodeType, LowcodeAction,
 } from './business-actions';
 
 type  RefActionType = 'lowcode' | 'inter'
@@ -68,7 +68,7 @@ export type AllActionType = SysActionType | BusinessActionType
  * 所有动作的定义
  */
 export type ActionDef = 
-  OpenPage | ChangeState | InterfaceRequest | Lowcode |
+  OpenPage | ChangeState | InterfaceRequestAction | LowcodeAction |
   FeedBack | APBDSLCURD | OpenPageFromTableClick | Linkage
 export type ActionOutput = any; // 'string' | 'boolean' | 'undefined' | 'number' | FlowOutputOfObj;
 

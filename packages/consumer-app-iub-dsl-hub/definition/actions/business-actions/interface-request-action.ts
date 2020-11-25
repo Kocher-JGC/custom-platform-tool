@@ -10,7 +10,7 @@ interface InterReqOpts extends RefActionOptions {
 /**
  * 接口请求的动作
  */
-export interface InterfaceRequest extends BasicActionConf {
+export interface InterfaceRequestAction extends BasicActionConf {
   actionType: InterfaceRequestType;
   actionOptions: InterReqOpts;
 }

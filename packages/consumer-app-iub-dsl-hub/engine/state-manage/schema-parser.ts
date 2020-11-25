@@ -1,8 +1,4 @@
-/* eslint-disable no-param-reassign */
-import {
-  ComplexType, FoundationType, Schema
-} from '@iub-dsl/definition';
-import { testSchemas } from "@iub-dsl/demo/business-case/location";
+import { Schema } from '@iub-dsl/definition';
 import schemasAnalysis from './analysis/analysis';
 
 /**
@@ -14,7 +10,6 @@ import schemasAnalysis from './analysis/analysis';
  * @steps_4 实例化状态管理
  */
 export const SchemasParser = (originSchemas: Schema) => {
-  // originSchemas = Object.assign({}, testSchemas, originSchemas);
 
   const schemasAnalysisRes = schemasAnalysis(originSchemas);
 

@@ -1,4 +1,4 @@
-import { CommonConditionRef, Ref2ValueOfArr } from "@iub-dsl/definition";
+import { CommonConditionRef, Ref2ValueOfArr } from "../../hub";
 
 export enum InterType {
   C = 'C',
