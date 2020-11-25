@@ -2,6 +2,7 @@
 pwd=$PWD
 
 source_dir=$pwd/packages/consumer-app-hub
+npm ls @types/react
 
 # 构建 web 服务
 cd $source_dir/web-server
@@ -12,6 +13,5 @@ npm i
 # 构建所有项目
 cd $source_dir/web-client
 echo "进入 web-client 构建"
-npm ls @types/react
 yarn build
 # && mv ./dist/* "$pwd/dist/web-platform"
