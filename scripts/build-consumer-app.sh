@@ -1,8 +1,8 @@
 # 保存当前的路径
 pwd=$PWD
 
-echo "删除 yarn lock 文件，$pwd/yarn.lock"
-rm $pwd/yarn.lock
+# echo "删除 yarn lock 文件，$pwd/yarn.lock"
+# rm $pwd/yarn.lock
 
 source_dir=$pwd/packages/consumer-app-hub
 
