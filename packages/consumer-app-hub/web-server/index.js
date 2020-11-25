@@ -1,11 +1,11 @@
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
-const { access, ensureDir, readJson } = require("fs-extra");
+const axios = require("axios");
+const { access, ensureDir, writeJSON, readJson } = require("fs-extra");
 const cors = require("cors");
 const {
   checkFolder,
-  createFolder,
   unzip,
   getZipName,
   getAppConfig,
@@ -13,19 +13,15 @@ const {
   removeFolder
 } = require("./utils");
 const config = require("./config.json");
-
-// require('./utils/setup-consumer-app-web-client')
-const setStaticResource = require('./utils/setStaticResource')
+const setStaticResource = require("./utils/setStaticResource");
+const ConsulConfig = require("./consul");
 
 const app = express();
+const consul = new ConsulConfig();
 const { uploadFolder, projectFolder } = config;
 app.use(cors());
 
 setStaticResource(app);
-
-// app.use(express.static(path.join(__dirname, "/web-client")));
-// app.use("/app-installation", express.static(path.join(__dirname, "/updateApp")));
-// app.use("/public", express.static(path.join(__dirname, "/public")));
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -60,6 +56,12 @@ const upload = multer({
   }
 }).single("file");
 
+// consul 健康检查
+app.get("/health", (req, res) => {
+  res.end("ok");
+});
+
+// 获取已安装的应用页面文件
 app.get("/node-web/page-data", (req, res) => {
   const { id } = req.query;
   const appCode = req.query.app;
@@ -76,6 +78,21 @@ app.get("/node-web/page-data", (req, res) => {
   });
 });
 
+// 获取安装应用列表
+app.get("/app-list", (req, res) => {
+  readJson(path.join(__dirname, "installApp.json"), (err, json) => {
+    if (err) {
+      res.json({
+        err: "未发现应用",
+        code: "10000"
+      });
+    } else {
+      res.json(json);
+    }
+  });
+});
+
+// 安装前端应用文件
 app.post("/upload", (req, res) => {
   upload(req, res, (uploadErr) => {
     if (uploadErr) {
@@ -102,7 +119,7 @@ app.post("/upload", (req, res) => {
                         // 如果存在，先删除，再创建
                         removeFolder(appPath)
                           .then(() => {
-                            generateApp(appPath, folder)
+                            generateApp(appPath, folder, appConfig)
                               .then(() => {
                                 res.json({ code: "00000", msg: "安装成功" });
                               })
@@ -116,7 +133,7 @@ app.post("/upload", (req, res) => {
                           });
                       } else {
                         // 没有直接创建和移动
-                        generateApp(appPath, folder)
+                        generateApp(appPath, folder, appConfig)
                           .then(() => {
                             res.json({ code: "00000", msg: "安装成功" });
                           })
@@ -143,79 +160,51 @@ app.post("/upload", (req, res) => {
           // 获取应用配置
         } else {
           console.log("没有项目路径");
-          createFolder(path.join(__dirname, projectFolder))
-            .then(() => {
-              // 将上传文件解压
-              unzip(file.originalname, folder)
-                .then(() => {
-                  getAppConfig(file.originalname, folder)
-                    .then((appConfig) => {
-                      if (appConfig && appConfig.applicationCode) {
-                        // 检查项目内 app 文件夹是否存在
-                        const appPath = path.join(
-                          __dirname,
-                          projectFolder,
-                          appConfig.applicationCode
-                        );
-                        checkFolder(appPath).then((hasApp) => {
-                          if (hasApp) {
-                            // 如果存在，先删除，再创建
-                            removeFolder(appPath)
-                              .then(() => {
-                                generateApp(appPath, folder)
-                                  .then(() => {
-                                    res.json({ code: "00000", msg: "安装成功" });
-                                  })
-                                  .catch(() => {
-                                    res.json({ code: "10000", msg: `"生成 ${projectFolder} 目录失败"` });
-                                  });
-                              })
-                              .catch(() => {
-                                // 删除 app 目录失败
-                                res.json({ code: "10000", msg: `"删除 ${projectFolder} 目录失败"` });
-                              });
-                          } else {
-                            // 没有直接创建和移动
-                            generateApp(appPath, folder)
-                              .then(() => {
-                                res.json({ code: "00000", msg: "安装成功" });
-                              })
-                              .catch(() => {
-                                res.json({ code: "10000", msg: `"生成 ${projectFolder} 目录失败"` });
-                              });
-                          }
-                        });
-                      } else {
-                        // 压缩包内容异常
-                        res.json({ code: "10000", msg: "压缩包配置文件异常" });
-                      }
-                    })
-                    .catch(() => {
-                      // 压缩包异常
-                      res.json({ code: "10000", msg: "压缩包缺少配置文件" });
-                    });
-                })
-                .catch((error) => {
-                  console.log("解压文件失败", error);
-                  res.json({ msg: "解压文件失败" });
-                });
-            })
-            .catch((error) => {
-              console.log("创建目录失败", error);
-              res.json({ code: "10000" });
-            });
+          res.json({ code: "10000", msg: "项目不存在" });
         }
       });
-      // 将上传文件解压
-      // 获取应用配置
-      // 准备应用配置文件夹（置为空）
     }
   });
 });
 
-// TODO 代码优化
-// 删除压缩包
-
 app.listen(config.port, () => {
   console.log("启动应用端更新服务成功");
+  // 根据环境变量注册对应的 consul
+  if (process.env.CONSUL_HOST && process.env.CONSUL_PORT && process.env.CONSUMER_HOST) {
+    const namespace = process.env.CONSUL_NAMESPACE;
+    console.log(
+      "注册 consul",
+      process.env.CONSUL_HOST,
+      process.env.CONSUL_PORT,
+      process.env.CONSUMER_HOST
+    );
+    consul.register();
+    // 从 consul 更新 config
+    axios
+      .get(
+        `http://${process.env.CONSUL_HOST}:${
+          process.env.CONSUL_PORT
+        }/v1/kv/config/consumer-app-server${
+          namespace ? `/${namespace}` : ""
+        }/consumer-app.json?t=${Date.now()}`
+      )
+      .then((res) => {
+        const config = res.data;
+        if (config[0] && config[0].Value) {
+          const configStr = Buffer.from(config[0].Value, "base64").toString();
+          ensureDir(path.join(__dirname, projectFolder)).then(() => {
+            writeJSON(path.join(__dirname, projectFolder, `config.json`), JSON.parse(configStr))
+              .then(() => {
+                console.log("更新 config 成功");
+              })
+              .catch((error) => {
+                console.log("更新 config 失败", error);
+              });
+          });
+        }
+      })
+      .catch((error) => {
+        console.log("获取 consul 配置失败", error);
+      });
+  }
 });

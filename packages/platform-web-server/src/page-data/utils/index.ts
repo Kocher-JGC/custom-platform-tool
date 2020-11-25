@@ -1,4 +1,5 @@
-import config from '../../../config';
+import * as config from '../../../env.json';
+
 export const genUrl = (params: {lessee: string, app: string }) => {
   return `${config.paasServerUrl}/${params.lessee}/${params.app}`;
 };

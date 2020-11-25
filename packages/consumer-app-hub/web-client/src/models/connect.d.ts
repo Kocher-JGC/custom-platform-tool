@@ -4,6 +4,7 @@ import { IUserModelState } from './user';
 import { ILoginModelState } from './login';
 import { IMenusModelState } from './menu';
 import { ITabsModelState } from './tabs';
+import { IAppModelState } from './app';
 
 export { IGlobalModelState, IUserModelState };
 
@@ -17,6 +18,7 @@ export interface ILoading {
     user?: boolean;
     login?: boolean;
     tabs? : boolean;
+    app? : boolean;
   };
 }
 
@@ -29,6 +31,7 @@ export interface ConnectState {
   menus: IMenusModelState;
 
   tabs: ITabsModelState;
+  app: IAppModelState;
 }
 
 export interface Route extends MenuDataItem {

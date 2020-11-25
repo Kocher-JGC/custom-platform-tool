@@ -7,6 +7,11 @@ export default [{
       path: '/user/login',
       component: './user/login',
     },
+    {
+      name: 'appList',
+      path: '/user/app-list',
+      component: './user/app-list',
+    },
   ],
 },
 {

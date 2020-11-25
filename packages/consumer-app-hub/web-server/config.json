@@ -2,5 +2,5 @@
   "uploadFolder": "unzip",
   "projectFolder": "web-client",
   "staticWebClientPath": "web-client",
-  "port": 3000
+  "port": 5020
 }
