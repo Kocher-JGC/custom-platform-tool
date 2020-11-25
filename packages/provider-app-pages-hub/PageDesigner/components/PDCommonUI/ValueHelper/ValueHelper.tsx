@@ -10,7 +10,7 @@ import { VariableItem } from '@provider-app/page-designer/platform-access';
  */
 const SELECT_TYPE_MENU = [
   { label: '自定义', value: 'customValue', key: 'customValue' },
-  { label: '表达式', value: 'expression', key: 'expression' },
+  { label: '表达式', value: 'exp', key: 'exp' },
   { label: '变量', value: 'variable', key: 'variable' },
 ];
 /**
@@ -49,7 +49,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
         />
       );
       break;
-    case 'expression':
+    case 'exp':
       Comp = (
         <span
           className="border cursor-pointer exp-editor"
