@@ -11,6 +11,11 @@
         "dockerfilePath": "./packages/provider-app-entry"
       },
       {
+        "name": "consumer_app",
+        "buildCmd": "yarn build:consumer-app",
+        "dockerfilePath": "./packages/consumer-app-hub"
+      },
+      {
         "name": "node_web_server",
         "buildCmd": "yarn build:platform-web-server",
         "dockerfilePath": "./packages/platform-web-server"
