@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Select, Input, Form, Button, message } from 'antd';
+import { Table, Select, Input, Form, Button, message,Space } from 'antd';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { nanoid } from 'nanoid';
 import { OpenLink } from './OpenLink';
@@ -7,6 +7,9 @@ import { DisplayControl } from './DisplayControl';
 import { SubmitData } from './SubmitData';
 import { FormInstance } from 'antd/lib/form';
 
+const tailLayout = {
+  wrapperCol: { offset: 8, span: 16 },
+};
 export class PageActionSelector extends React.Component {
   state = {
     list: [],
@@ -94,8 +97,7 @@ export class PageActionSelector extends React.Component {
   getActionConfig = (action) => {
     const config = {
       openPage: {
-        ModalContent: OpenLink,
-        width: 500
+        ModalContent: OpenLink
       },
       refreshPage: {
         readOnly: true
@@ -104,11 +106,9 @@ export class PageActionSelector extends React.Component {
         readOnly: true
       }, 
       displayControl: {
-        width: 500,
         ModalContent: DisplayControl
       },
       submitData: {
-        width: 900,
         ModalContent: SubmitData
       },
       readFormData: {
@@ -184,7 +184,7 @@ export class PageActionSelector extends React.Component {
     return new Promise((resolve, reject) => {
       const modalID = ShowModal({
         title: '配置动作',
-        width: width || 700,
+        width: width || 900,
         children: () => {
           return (
             <div className="p-5">
@@ -238,12 +238,10 @@ export class PageActionSelector extends React.Component {
       return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
     });
   }
-  handleOk = async () => {
-    const { valid: actionValid, actions } = await this.onSubmitData();
-    if([actionValid].includes('invalid')) return;
+  handleFinish = () => {
     this.props.changePageMeta({
       metaAttr: 'actions',
-      data: actions,
+      datas: this.constructActions(),
       replace: true
     });
     message.success('动作配置成功');
@@ -302,7 +300,10 @@ export class PageActionSelector extends React.Component {
             新增
           </Button>
         </Form>
-        <Form ref={this.listFormRef}>
+        <Form 
+          ref={this.listFormRef}
+          onFinish={this.handleFinish}
+        >
           <Table
             size="small"
             rowKey="id"
@@ -489,18 +490,15 @@ export class PageActionSelector extends React.Component {
               }
             ]}
           />
-        </Form>
-            
-        <div className="clear-both mt-2" style={{ height: '30px' }}>
-          <Button
-            className="float-right mr-2"
-            onClick={this.handleOk}
-            size="sm"
-            type="primary"
-          >
-          确定
-          </Button>
-        </div>
+          <Form.Item {...tailLayout} style={{ marginBottom: 0 }}>
+            <Space className="float-right">
+              <Button type="primary" htmlType="submit">
+                确定
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>            
+        
       </div>      
     );
   }
