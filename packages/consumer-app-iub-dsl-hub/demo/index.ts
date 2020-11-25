@@ -1,3 +1,1 @@
-import { TypeOfIUBDSL } from "@iub-dsl/definition";
-
-export { TypeOfIUBDSL };
+export * from './business-case/location/location-form';
