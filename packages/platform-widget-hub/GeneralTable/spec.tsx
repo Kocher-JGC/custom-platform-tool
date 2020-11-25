@@ -7,6 +7,9 @@ import { GeneralTableComp } from '.';
   editableProps: {
     columns: {
       type: 'array[{ key: string }]'
+    },
+    optDS: {
+      type: 'string'
     }
   },
 })

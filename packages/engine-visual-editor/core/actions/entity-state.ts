@@ -32,11 +32,16 @@ export type UpdateTargetEntity = {
   nestingInfo: ElemNestingInfo
   entity: WidgetEntity
 }
+interface UpdateEntityStateActionOptions {
+  replace?: boolean
+}
+
 export const UPDATE_ENTITY_STATE = 'entityState/update';
 export interface UpdateEntityStateAction {
   type: typeof UPDATE_ENTITY_STATE
   targetEntity: UpdateTargetEntity
   formState: WidgetEntityState
+  options?: UpdateEntityStateActionOptions
 }
 
 /**
@@ -44,12 +49,14 @@ export interface UpdateEntityStateAction {
  */
 export const UpdateEntityState = (
   targetEntity: UpdateTargetEntity,
-  formState: WidgetEntityState
+  formState: WidgetEntityState,
+  options?: UpdateEntityStateActionOptions
 ): UpdateEntityStateAction => {
   return {
     type: UPDATE_ENTITY_STATE,
     targetEntity,
-    formState
+    formState,
+    options
   };
 };
 

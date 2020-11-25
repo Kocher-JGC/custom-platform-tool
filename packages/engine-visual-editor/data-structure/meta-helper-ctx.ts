@@ -21,6 +21,9 @@ export interface TakeMetaOptions {
   metaRefID?: string
 }
 
+/**
+ * TODO: 加强返回结果的类型检查
+ */
 export type TakeMeta = (options: TakeMetaOptions) => unknown
 
 export type GenMetaRefID = (
@@ -29,7 +32,7 @@ export type GenMetaRefID = (
   /** 生成的 options */
   options?: {
     /** 生成 id 的策略，将通过 . 分割传入的每一项策略 */
-    idStratrgy?: string | string[]
+    idStrategy?: string | string[]
   }
 ) => string
 

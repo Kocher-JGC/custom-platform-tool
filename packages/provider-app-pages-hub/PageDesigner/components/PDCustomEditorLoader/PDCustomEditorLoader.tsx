@@ -1,40 +1,71 @@
 import { ShowModal } from '@infra/ui';
 import React from 'react';
-import { useCustomEditor } from '../../utils';
+import { PlatformContext, useCustomEditor } from '../../utils';
+
+const PropEditorWrapper = ({
+  entityState,
+  changeEntityState,
+  platformCtx,
+  propEditor,
+  onSubmit,
+}) => {
+  const [ready, PropEditor] = useCustomEditor(propEditor);
+  if (!ready) return null;
+  return (
+    <PropEditor
+      onSubmit={() => {
+        onSubmit?.();
+      }}
+      platformCtx={platformCtx}
+      entityState={entityState}
+      changeEntityState={changeEntityState}
+    />
+  );
+};
 
 export const PDCustomEditorLoader = ({
+  children,
+  onClick,
   entityState,
   propEditor,
   changeEntityState
 }) => {
-  const [ready, PropEditor] = useCustomEditor(propEditor);
-  if (!propEditor) return null;
+  if(!propEditor) return null;
   /** 自定义编辑器的接口 */
   return (
-    <span className="custom-editor-loader">
-      <span
-        className="default btn"
-        onClick={(e) => {
-          e.stopPropagation();
-          ShowModal({
-            title: '编辑表格',
-            width: `80vw`,
-            children: ({ close }) => {
-              return (
-                <PropEditor
-                  onSubmit={() => {
-                    close();
-                  }}
-                  entityState={entityState}
-                  changeEntityState={changeEntityState}
-                />
-              );
-            }
-          });
-        }}
-      >
-      编辑
-      </span>
-    </span>
+    <PlatformContext.Consumer>
+      {
+        (platformCtx) => {
+          return (
+            <span
+              className="custom-editor-loader"
+              onClick={(e) => {
+                onClick?.();
+                // e.stopPropagation();
+                ShowModal({
+                  title: '编辑表格',
+                  width: `80vw`,
+                  children: ({ close }) => {
+                    return (
+                      <PropEditorWrapper
+                        propEditor={propEditor}
+                        onSubmit={() => {
+                          close();
+                        }}
+                        platformCtx={platformCtx}
+                        entityState={entityState}
+                        changeEntityState={changeEntityState}
+                      />
+                    );
+                  }
+                });
+              }}
+            >
+              {children}
+            </span>
+          );
+        }
+      }
+    </PlatformContext.Consumer>
   );
 };

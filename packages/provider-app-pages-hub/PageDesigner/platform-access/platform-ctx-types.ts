@@ -1,11 +1,13 @@
-import { ChangeMetadataOptions } from "@engine/visual-editor/core";
-import { GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
+import { ChangeMetadataOptions } from "@engine/visual-editor/core/actions/change-meta";
+import { ChangeEntityState, GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
 
 export interface OnDatasourceSelectorSubmitOptions {
   /** 关闭当前弹窗 */
   close: () => void
   /** 内部的数据源结构 */
   interDatasources
+  /** 从远端选择回来的数据源 */
+  selectedDSFromRemote
 }
 
 export interface OpenDatasourceSelectorOptions {
@@ -18,14 +20,14 @@ export interface OpenDatasourceSelectorOptions {
   /** 默认选择的数据源的项 */
   defaultSelected: ({ id: string })[]
   /** 数据源选择器选择后的回调 */
-  onSubmit: (submitData, submitOptions: OnDatasourceSelectorSubmitOptions) => void
+  onSubmit: (submitOptions: OnDatasourceSelectorSubmitOptions) => void
   /** 是否单选 */
   single?: boolean
 }
 
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 
-export type ChangeWidgetType = () => void
+export type ChangeWidgetType = (widgetType: string) => void
 
 export type VariableType = 'system'|'page'|'pageInput'|'widget'
 export type VariableItem = {
@@ -50,7 +52,7 @@ export interface PlatformCtx {
   }
   meta: {
     /** 更改页面的 meta 数据，如果没有该数据，则返回新创建的 metaID */
-    changePageMeta: (options: ChangeMetadataOptions) => string
+    changePageMeta: (options: ChangeMetadataOptions) => string | string[]
     /** 获取 meta */
     takeMeta: TakeMeta
     /** 生成 meta 引用的 ID */
@@ -59,5 +61,7 @@ export interface PlatformCtx {
     changeWidgetType: ChangeWidgetType
     /** 获取变量数据 */
     getVariableData: GetVariableData
+    /** 更改 widget state */
+    changeEntityState: ChangeEntityState
   }
 }

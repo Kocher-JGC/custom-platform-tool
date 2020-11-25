@@ -46,6 +46,7 @@ export class ActionHelperSpec {
                   defaultConfig={actionConfig}
                   onSubmit={(actionSetting) => {
                     const nextMetaID = changePageMeta({
+                      type: 'create',
                       data: actionSetting,
                       metaID: metaRefID,
                       metaAttr: 'actions',
