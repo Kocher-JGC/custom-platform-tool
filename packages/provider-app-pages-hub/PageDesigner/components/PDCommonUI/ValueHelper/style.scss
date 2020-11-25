@@ -20,7 +20,7 @@
   }
   .variable-selector {
     width: calc(100% - 70px);
-    &.focusing {
+    &.ant-select-focused {
       z-index: 1;
     }
     .ant-select-selector {
