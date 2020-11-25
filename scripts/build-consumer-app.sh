@@ -1,6 +1,8 @@
 # 保存当前的路径
 pwd=$PWD
 
+rm $pwd/yarn.lock
+
 source_dir=$pwd/packages/consumer-app-hub
 
 # 构建 web 服务
