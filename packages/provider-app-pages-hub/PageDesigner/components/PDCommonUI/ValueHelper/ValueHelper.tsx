@@ -101,14 +101,17 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       );
       break;
   }
-  const constructVars = () => {
+  const transferVars = () => {
     return [
-      { title: '自定义变量', value: 'customed', children: constructVarList(variableData.customed), disabled: true },
-      { title: '页面变量', value: 'page', children: constructVarList(variableData.page), disabled: true },
-      { title: '系统变量', value: 'system', children: constructVarList(variableData.system), disabled: true },
-      { title: '控件变量', value: 'widget', children: constructVarList(variableData.widget), disabled: true },
-      { title: '输入参数变量', value: 'pageInput', children: constructVarList(variableData.pageInput), disabled: true }
-    ];
+      { title: '自定义变量', value: 'customed', variableList: variableData.customed, disabled: true },
+      { title: '页面变量', value: 'page', variableList: variableData.page, disabled: true },
+      { title: '系统变量', value: 'system', variableList: variableData.system, disabled: true },
+      { title: '控件变量', value: 'widget', variableList: variableData.widget, disabled: true },
+      { title: '输入参数变量', value: 'pageInput', variableList: variableData.pageInput, disabled: true }
+    ].filter(item=>item.variableList?.length>0).map(item=>{
+      const { variableList, ...rest } = item;
+      return { ...rest, children: constructVarList(variableList) };
+    });
   };
   const constructVarList = (list)=>{
     return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
@@ -124,7 +127,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       if(!editedState[key] || !keyMenu.includes(key)) continue;
       setSelectedItem(key);
     }
-    setVariableList(constructVars());
+    setVariableList(transferVars());
   }, []);
   return (
     <div className="value-helper">
