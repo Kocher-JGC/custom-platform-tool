@@ -4035,13 +4035,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^16.9.8":
-  version "16.9.10"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-dom/-/react-dom-16.9.10.tgz#4485b0bec3d41f856181b717f45fd7831101156f"
-  integrity sha1-RIWwvsPUH4VhgbcX9F/XgxEBFW8=
-  dependencies:
-    "@types/react" "^16"
-
 "@types/react-hyperscript@3.0.4":
   version "3.0.4"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-hyperscript/-/react-hyperscript-3.0.4.tgz#b7d4b357c018ac9d6b16dd543fb4c0209a23e91d"
@@ -4986,8 +4979,8 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/renderer-mpa/-/renderer-mpa-3.2.28.tgz#b89e5c5055b982e42bc482394fcd8593e1432f00"
   integrity sha1-uJ5cUFW5guQrxII5T82Fk+FDLwA=
   dependencies:
-    "@types/react" "^16.9.43"
-    "@types/react-dom" "^16.9.8"
+    "@types/react" "^17.0.0"
+    "@types/react-dom" "^17.0.0"
     "@umijs/runtime" "3.2.28"
     react "^16.13.1"
     react-dom "^16.13.1"
@@ -4997,8 +4990,8 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/renderer-react/-/renderer-react-3.2.28.tgz#cc66611a595afb63c93ad41d6f4c81b740468015"
   integrity sha1-zGZhGlla+2PJOtQdb0yBt0BGgBU=
   dependencies:
-    "@types/react" "^16.9.43"
-    "@types/react-dom" "^16.9.8"
+    "@types/react" "^17.0.0"
+    "@types/react-dom" "^17.0.0"
     "@types/react-router-config" "^5.0.1"
     "@umijs/runtime" "3.2.28"
     react "^16.13.1"
