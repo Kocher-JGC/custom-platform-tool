@@ -482,7 +482,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         <LoadingTip />
       );
     }
-
     return (
       <PlatformContext.Provider value={this.platformCtx}>
         <div className="visual-app bg-white">
@@ -492,8 +491,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               flatLayoutItems={flatLayoutItems}
               onReleasePage={this.onReleasePage}
               appLocation={appLocation}
-              changePageMeta = {this.changePageMeta}
-              getVariableData = {this.getVariableData}
             />
           </header>
           <div
