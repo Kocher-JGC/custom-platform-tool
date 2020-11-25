@@ -24,6 +24,8 @@ const PropEditorWrapper = ({
 };
 
 export const PDCustomEditorLoader = ({
+  children,
+  onClick,
   entityState,
   propEditor,
   changeEntityState
@@ -35,32 +37,31 @@ export const PDCustomEditorLoader = ({
       {
         (platformCtx) => {
           return (
-            <span className="custom-editor-loader">
-              <span
-                className="default btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  ShowModal({
-                    title: '编辑表格',
-                    width: `80vw`,
-                    children: ({ close }) => {
-                      return (
-                        <PropEditorWrapper
-                          propEditor={propEditor}
-                          onSubmit={() => {
-                            close();
-                          }}
-                          platformCtx={platformCtx}
-                          entityState={entityState}
-                          changeEntityState={changeEntityState}
-                        />
-                      );
-                    }
-                  });
-                }}
-              >
-                编辑
-              </span>
+            <span
+              className="custom-editor-loader"
+              onClick={(e) => {
+                onClick?.();
+                // e.stopPropagation();
+                ShowModal({
+                  title: '编辑表格',
+                  width: `80vw`,
+                  children: ({ close }) => {
+                    return (
+                      <PropEditorWrapper
+                        propEditor={propEditor}
+                        onSubmit={() => {
+                          close();
+                        }}
+                        platformCtx={platformCtx}
+                        entityState={entityState}
+                        changeEntityState={changeEntityState}
+                      />
+                    );
+                  }
+                });
+              }}
+            >
+              {children}
             </span>
           );
         }

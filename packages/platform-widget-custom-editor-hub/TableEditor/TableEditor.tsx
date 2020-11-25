@@ -1,9 +1,13 @@
 import React from 'react';
-import { Button, Input } from '@infra/ui';
+import { Button, Input, DropdownWrapper } from '@infra/ui';
 import { RegisterEditor } from '@engine/visual-editor/spec';
 import { GeneralTableComp } from '@platform-widget/general-table';
+import { PlusOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
 import { CustomEditor } from '@platform-widget-access/spec';
+import Sortable from "sortablejs";
 import { genRenderColumn, genRowData } from './utils';
+
+import './index.less';
 
 interface TableEditorState {
   datasourceMeta: PD.Datasource
@@ -23,6 +27,32 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     };
   }
 
+  componentDidMount() {
+    this.setupSortableColumnItems();
+  }
+
+  setupSortableColumnItems = () => {
+    const sortable_list_container = document.querySelector('#sortable_list_container') as HTMLElement;
+    if(sortable_list_container) {
+      Sortable.create(sortable_list_container, {
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        onSort: (evt) => {
+          // console.log(evt);
+          const { oldIndex, newIndex } = evt;
+          this.setState(({ usingColumns }) => {
+            const nextState = [...usingColumns];
+            const sortItem = nextState.splice(oldIndex, 1);
+            nextState.splice(newIndex, 0, sortItem[0]);
+            return {
+              usingColumns: nextState
+            };
+          });
+        },
+      });
+    }
+  }
+
   setUsingColumns = () => {
     const { entityState } = this.props;
     const { columns = [] } = entityState || {};
@@ -32,39 +62,104 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
   setCol = (item, id) => {
     const { usingColumns } = this.state;
     const itemIdx = usingColumns.findIndex((col) => col.id === id);
-    const nextState = genRenderColumn([...usingColumns]);
+    let nextState = [...usingColumns];
     if (itemIdx === -1) {
       nextState.push(item);
     } else {
       nextState.splice(itemIdx, 1);
     }
+    nextState = genRenderColumn([...nextState]);
     this.setState({
       usingColumns: nextState
     });
   }
 
+  /**
+   * column 的渲染器
+   * TODO: 完善更强的 column 的数据结构抽象
+   */
   renderSetColumn = () => {
     const { usingColumns, datasourceMeta } = this.state;
-    const { columns, name, id } = datasourceMeta;
+    if(!datasourceMeta) return null;
+    const { columns } = datasourceMeta;
     return (
       <div className="column-selector p-4 flex flex-wrap">
-        <span>选择列：</span>
-        {
-          columns.map((col, idx) => {
-          // console.log(col);
-            const { name, id } = col;
-            const isActive = usingColumns.find((item) => item.id === id);
+        <span className="title">显示字段</span>
+        <DropdownWrapper 
+          outside
+          overlay={(helper) => {
             return (
-              <span
-                className={`pointer mb5 shadow-sm bg-gray-200 rounded mr10 px-4 py-2 ${isActive ? 't_blue' : ''}`}
-                key={id}
-                onClick={(e) => this.setCol(col, id)}
+              <div
+                className="column-selector-container"
               >
-                {name}
-              </span>
+                {
+                  columns.map((col, idx) => {
+                    const { name, id } = col;
+                    const isSelected = usingColumns.find(uCol => uCol.id === id);
+                    return (
+                      <div 
+                        onClick={(e) => {
+                          !isSelected && this.setCol(col, id);
+                        }}
+                        className={`list-item ${isSelected ? 'disabled' : ''}`}
+                        key={id}
+                      >
+                        {name}
+                      </div>
+                    );
+                  })
+                }
+              </div>
             );
-          })
-        }
+          }}
+        >
+          <span 
+            onClick={e => {
+          
+            }}
+          >
+            <PlusOutlined />
+          </span>
+        </DropdownWrapper>
+        <span id="sortable_list_container">
+          {
+            usingColumns.map((col, idx) => {
+              if(!col) return null;
+              // console.log(col);
+              const { name, id } = col;
+              const isActive = usingColumns.find((item) => item && item.id === id);
+              return (
+                <DropdownWrapper
+                  key={id}
+                  overlay={(helper) => {
+                    return (
+                      <div className="column-setting-helper-container">
+                        <div className="item">
+                          修改显示名
+                        </div>
+                      </div>
+                    );
+                  }}
+                >
+                  <span
+                    className={`column-item idx-${idx} ${isActive ? 'active' : ''}`}
+                  >
+                    <DownOutlined 
+                      className="selection __action"
+                    />
+                    {name}
+                    <CloseOutlined
+                      className="close __action"
+                      onClick={e => {
+                        this.setCol(col, id);
+                      }}
+                    />
+                  </span>
+                </DropdownWrapper>
+              );
+            })
+          }
+        </span>
       </div>
     );
   }
@@ -114,7 +209,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     const { usingColumns } = this.state;
 
     const rowData = genRowData(usingColumns);
-    const colRender = genRenderColumn();
+    // const colRender = genRenderColumn();
     
     return (
       <div className="px-4 py-2">
@@ -122,7 +217,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
         {/* <div className="p10">
           <Button>变量</Button>
         </div> */}
-        <GeneralTableComp columns={colRender} rowKey="id" dataSource={rowData} />
+        <GeneralTableComp columns={usingColumns} rowKey="id" dataSource={rowData} />
         <div className="action-area p10">
           <Button
             onClick={(e) => {
