@@ -13,7 +13,7 @@ export class ChangeFields extends React.PureComponent {
     this.setState({
       changeFields: this.props.changeFields || {}
     });
-    this.props.getVariableData([]).then(variableData=>{
+    this.props.platformCtx.meta.getVariableData([]).then(variableData=>{
       this.setState({ variableData });
     });
   }
