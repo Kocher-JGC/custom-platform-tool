@@ -17,17 +17,17 @@ export const FIELD_TYPE_MENU: IOptions[] = [
   },
   {
     label: "单选框",
-    key: "",
+    key: "001",
     value: ""
   },
   {
     label: "多选框",
-    key: "",
+    key: "002",
     value: ""
   },
   {
     label: "时间框",
-    key: "",
+    key: "003",
     value: ""
   },
   {
@@ -37,12 +37,12 @@ export const FIELD_TYPE_MENU: IOptions[] = [
   },
   {
     label: "密码框",
-    key: "",
+    key: "004",
     value: ""
   },
   {
     label: "IP地址框",
-    key: "",
+    key: "005",
     value: ""
   },
 ];

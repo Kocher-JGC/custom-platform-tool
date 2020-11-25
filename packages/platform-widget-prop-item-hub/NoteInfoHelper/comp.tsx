@@ -14,12 +14,12 @@ export const NoteInfoComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextNoteInfo = selectedField?.column?.name;
-    if (!nextNoteInfo || nextNoteInfo === noteInfo) return;
-    changeEntityState({
-      attr: 'noteInfo',
-      value: nextNoteInfo
-    });
+    // const nextNoteInfo = selectedField?.column?.name;
+    // if (!nextNoteInfo || nextNoteInfo === noteInfo) return;
+    // changeEntityState({
+    //   attr: 'noteInfo',
+    //   value: nextNoteInfo
+    // });
   }, [selectedField]);
   return (
     <TextArea

@@ -12,12 +12,12 @@ export const CheckErrorTooltipComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextCheckErrorTooltip = selectedField?.column?.name;
-    if (!nextCheckErrorTooltip || nextCheckErrorTooltip === checkErrorTooltip) return;
-    changeEntityState({
-      attr: 'checkErrorTooltip',
-      value: nextCheckErrorTooltip
-    });
+    // const nextCheckErrorTooltip = selectedField?.column?.name;
+    // if (!nextCheckErrorTooltip || nextCheckErrorTooltip === checkErrorTooltip) return;
+    // changeEntityState({
+    //   attr: 'checkErrorTooltip',
+    //   value: nextCheckErrorTooltip
+    // });
   }, [selectedField]);
   return (
     <Input

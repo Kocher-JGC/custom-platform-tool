@@ -7,7 +7,7 @@ export const FormInputNumberMeta = CreateWidgetPropItemRely({
   varAttr: [{
     alias: '实际值',
     attr: 'realVal',
-    type: 'string'
+    type: 'number'
   }, {
     alias: '显示值',
     attr: 'showVal',

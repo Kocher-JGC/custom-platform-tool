@@ -13,12 +13,12 @@ export const CheckCustomRuleComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextCheckCustomRule = selectedField?.column?.name;
-    if (!nextCheckCustomRule || nextCheckCustomRule === checkCustomRule) return;
-    changeEntityState({
-      attr: 'checkCustomRule',
-      value: nextCheckCustomRule
-    });
+    // const nextCheckCustomRule = selectedField?.column?.name;
+    // if (!nextCheckCustomRule || nextCheckCustomRule === checkCustomRule) return;
+    // changeEntityState({
+    //   attr: 'checkCustomRule',
+    //   value: nextCheckCustomRule
+    // });
   }, [selectedField]);
   return (
     <Search
