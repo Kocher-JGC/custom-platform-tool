@@ -35,10 +35,14 @@ export type VariableItem = {
   id: string
   alias: string
   varType: 'number'|'string'|'date'|'dateTime'
-  realVal: any
+  realVal?: number|string
   type: VariableType
 }
-export type GetVariableData = (options: VariableType[]) => Promise<{[key: string]: VariableItem[]}>
+export type VariableOptions = {
+  varRely?
+  flatLayoutItems?
+}
+export type GetVariableData = (filter: VariableType[], options?: VariableOptions) => Promise<{[key: string]: VariableItem[]}>
 
 /**
  * 平台提供的 UI 上下文
