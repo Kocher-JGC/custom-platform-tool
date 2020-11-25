@@ -39,13 +39,15 @@ export interface DSVarRely {
 export interface PageInputVarRely {
   type: 'pageInput'
   /** 变量描述信息 */
-  alias: string
+  alias?: string
   /** 变量值 */
   realVal?: string|number
   /** 变量数据类型 */
   varType: string
   /** 变量编码，由配置人员定义 */
   code: string
+  /** 变量名称：由配置人员定义 */
+  title: string
 }
 
 export interface MetaStorage<D = any> {

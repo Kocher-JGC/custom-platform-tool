@@ -124,6 +124,22 @@ export const VariableEditor = ({
         onFinish={onFinish}
       >
         <Form.Item
+          name="title" label="变量名称"
+          rules={[
+            { required: true, message: '请填写变量名称' },
+            { pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_()]{1,10}$/, message: '支持10个字符内的中文、英文、数字、下划线、英文小括号' },
+            { validator: (_r, value)=>{
+              const amIDuplicated = isDuplicated(value, 'name');
+              if(amIDuplicated){
+                return Promise.reject('变量名称重复');
+              } 
+              return Promise.resolve();
+            } }
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
           name="code" label="变量编码"
           rules={[
             { required: true, message: '请填写变量编码' },
@@ -169,7 +185,8 @@ export const VariableEditor = ({
       
         <Form.Item
           name="alias" label="描述"
-          rules={[
+          rules={[            
+            { pattern: /^.{1,32}$/, message: '长度为 32 的任意字符' },
             { validator: (_r, value)=>{
               const amIDuplicated = isDuplicated(value, 'alias');
               if(amIDuplicated) return Promise.reject('变量描述重复');

@@ -35,9 +35,9 @@ export const PageVariableSelector = ({
    */
   const getVariableList: GetVariableList = (variableData) => {
     return [
-      { code: '页面变量', id:'page', children: variableData.page },
-      { code: '控件变量', id: 'widget', children: variableData.widget },
-      { code: '输入参数变量', id: 'pageInput', children: sortList(variableData.pageInput) }
+      { title: '页面变量', id:'page', children: variableData.page },
+      { title: '控件变量', id: 'widget', children: variableData.widget },
+      { title: '输入参数变量', id: 'pageInput', children: sortList(variableData.pageInput) }
     ];
   };
   useEffect(()=>{
@@ -169,9 +169,18 @@ export const PageVariableSelector = ({
       <Table
         columns={[
           {
+            dataIndex: 'title',
+            title: '变量名称',
+            ellipsis: { showTitle: true },
+            className: 'cursor-pointer',
+            width: 175,
+          },
+          {
             dataIndex: 'code',
             title: '变量编码',
-            width: 250,
+            ellipsis: { showTitle: true },
+            className: 'cursor-pointer',
+            width: 175,
             render: (_t)=>lowerFirst(_t)
           },
           {
@@ -184,13 +193,13 @@ export const PageVariableSelector = ({
           {
             dataIndex: 'alias',
             title: '描述',
-            width: 350,
-            align: 'center',
+            width: 250,
+            align: 'center'
           },
           {
             dataIndex: 'action',
             title: '操作',
-            width: 100,
+            width: 120,
             render: (_, record) => {
               return actionRenderer(record);
             }

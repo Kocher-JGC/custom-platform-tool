@@ -293,7 +293,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           // 合并初始化 meta
           varRely: {
             'var.page.0.mode': {
-              alias: '页面模式',
+              title: '页面模式',
               type: 'pageInput',
               varType: 'string',
               realVal: 'insert',
@@ -382,7 +382,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           const code = `${widgetCode}.${attr}`;
           varList.push({
             code, varType, type,
-            alias: `${title}.${alias}`,
+            title: `${title}.${alias}`,
             id: code,
           });
         });
@@ -392,8 +392,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     /** 获取页面变量 */
     const getPageVariable = () => {
       return [
-        { code: 'var.page.name', alias: '页面名称', id: 'var.page.name', varType: 'string', type: 'page' },
-        { code: 'var.page.code', alias: '页面编码', id: 'var.page.code', varType: 'string', type: 'page' },
+        { code: 'var.page.name', title: '页面名称', id: 'var.page.name', varType: 'string', type: 'page' },
+        { code: 'var.page.code', title: '页面编码', id: 'var.page.code', varType: 'string', type: 'page' },
       ];
     };
     /** 获取系统变量 */
@@ -403,16 +403,16 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     /** 获取输入参数变量 */
     const getInputVariable = () => {
       if(!varRely) return [
-        { alias: '页面模式', type: 'pageInput', varType: 'string', realVal: 'insert', code: 'var.page.mode', id: 'var.page.0.mode' }
+        { title: '页面模式', type: 'pageInput', varType: 'string', realVal: 'insert', code: 'var.page.mode', id: 'var.page.0.mode' }
       ];
       const varList = [];
       for(const id in varRely ){
         if (!Object.prototype.hasOwnProperty.call(varRely, id)) continue;
         const variableItems = varRely[id];
-        const { type, alias, varType, code, realVal } = variableItems || {};
+        const { type, alias, varType, code, realVal, title } = variableItems || {};
         if(type !== 'pageInput') continue;
         varList.push({
-          code, type, varType, alias, id, realVal
+          code, type, varType, alias, id, realVal, title
         });
       }
       return varList;
