@@ -292,7 +292,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         draftInitData.initMeta = {
           // 合并初始化 meta
           varRely: {
-            'var.page.0.mode': {
+            'var.pageInput.0.mode': {
               title: '页面模式',
               type: 'pageInput',
               varType: 'string',
@@ -355,10 +355,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    * 获取变量数据
    */
   getVariableData = async (filter: string[] = [], options) => {
-    const {
-      varRely = this.props.pageMetadata.varRely,
-      flatLayoutItems = this.props.flatLayoutItems
-    } = options || {};
+    const varRely = options ? options.varRely : this.props.pageMetadata.varRely;
+    const flatLayoutItems = options ? options.flatLayoutItems : this.props.flatLayoutItems;
     /** 获取控件变量 */
     const getWidgetVariable = () => {
       const varList = [];
