@@ -1,8 +1,8 @@
-import store from 'store';
-import { history } from 'umi';
-import { initRequest } from './utils/request';
-import { getAppEnvConfig, getMainConf, UrlConfKey } from './utils/env';
-import { checkEnvConfig } from './utils/check-env-config';
+import store from "store";
+import { history } from "umi";
+import { initRequest } from "./utils/request";
+import { getAppEnvConfig, UrlConfKey } from "./utils/env";
+import { checkEnvConfig } from "./utils/check-env-config";
 
 /**
  * 获取后端 config 和 main 的数据
@@ -10,15 +10,15 @@ import { checkEnvConfig } from './utils/check-env-config';
 const getAppParams = async () => {
   try {
     const appEnvConfig = await getAppEnvConfig();
-    const mainConf = await getMainConf(appEnvConfig.currentApp);
+    // const mainConf = await getMainConf(appEnvConfig.currentApp);
     // TODO 租户信息的来源
     return {
-      ...appEnvConfig,
-      "app/code": appEnvConfig.currentApp,
-      "app/lessee": mainConf.lessee,
+      ...appEnvConfig
+      // "app/code": appEnvConfig.currentApp,
+      // "app/lessee": mainConf.lessee
     };
-  } catch(err) {
-    console.log("获取后端 config 和 main 的数据失败", err);
+  } catch (err) {
+    console.log("获取后端 config", err);
     return {};
   }
 };
@@ -33,15 +33,19 @@ const getQueryParams = () => {
   const params = {};
 
   if (Array.isArray(queryKeys)) {
-    if (queryKeys.includes('mode') && queryKeys.includes(UrlConfKey.saasServerUrl) && queryKeys.includes(UrlConfKey.pageServerUrlForApp)) {
+    if (
+      queryKeys.includes("mode") &&
+      queryKeys.includes(UrlConfKey.saasServerUrl) &&
+      queryKeys.includes(UrlConfKey.pageServerUrlForApp)
+    ) {
       queryKeys.forEach((q) => {
-        if (q === 't') {
-          params['app/token'] = query[q];
-        } else if (q === 'app') {
-          params['app/app'] = query[q];
-        } else if (q === 'lessee') {
-          params['app/lessee'] = query[q];
-        } else if(q !== 'redirect') {
+        if (q === "t") {
+          params["app/token"] = query[q];
+        } else if (q === "app") {
+          params["app/code"] = query[q];
+        } else if (q === "lessee") {
+          params["app/lessee"] = query[q];
+        } else if (q !== "redirect") {
           params[q] = query[q];
         }
       });
@@ -69,9 +73,9 @@ export async function render(oldRender) {
   const params = Object.assign(await getAppParams(), getQueryParams());
   // 判断参数合法性
   const isPass = checkEnvConfig(params);
-  if(isPass){
-    Object.keys(params).forEach(field => {
-      store.set(field,params[field]);
+  if (isPass) {
+    Object.keys(params).forEach((field) => {
+      store.set(field, params[field]);
     });
   }
   initReq();

@@ -80,14 +80,14 @@ export interface IUserModel {
     setAppConfig: Reducer<IUserModelState>;
   };
 }
-const inintState: IUserModelState = {
+const initState: IUserModelState = {
   token: store.get("app/token"),
   refreshToken: store.get("app/token"),
 };
 const UserModel: IUserModel = {
   namespace: 'user',
 
-  state: inintState,
+  state: initState,
 
   effects: {
     * fetchUserInfo({ payload }, { call, put }) {
