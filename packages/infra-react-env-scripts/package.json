@@ -11,10 +11,6 @@
     "@babel/core": "7.4.3",
     "@babel/plugin-proposal-export-default-from": "^7.2.0",
     "@svgr/webpack": "4.1.0",
-    "@types/react": "16.14.2",
-    "@types/react-dom": "16.9.10",
-    "@types/react-redux": "7.1.11",
-    "@types/redux": "3.6.0",
     "ts-loader": "^8.0.3",
     "babel-loader": "8.0.5",
     "babel-plugin-named-asset-import": "^0.3.6",
@@ -68,10 +64,15 @@
     "workbox-webpack-plugin": "4.2.0"
   },
   "resolutions": {
-    "@types/react-dom": "16.9.10",
-    "@types/react": "16.14.0"
+    "@types/react-dom": "17.0.0",
+    "@types/react": "17.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/react": "17.0.0",
+    "@types/react-dom": "17.0.0",
+    "@types/react-redux": "7.1.9",
+    "@types/redux": "3.6.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/minimal-studio/mini-scripts.git"
