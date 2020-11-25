@@ -38,7 +38,7 @@ const PAGE_TYPE_MENU = [
   { label: '地址（未实现）', value: 'address', key: 'address' },
   { label: '功能码（未实现）', value: 'funcCode', key: 'funcCode' },
 ];
-export const ActionConfigOpenPage = ({
+export const OpenLink = ({
   onSuccess, onCancel, config
 }: IProps) => {
   const [form] = Form.useForm();

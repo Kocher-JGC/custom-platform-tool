@@ -1,11 +1,11 @@
 import React from 'react';
 import { Table, Select, Input, Form, Space, Button } from 'antd';
-import { PlusOutlined, MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { MinusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { getTableList as getTableListAPI } from '@provider-app/table-editor/apis';
 import { nanoid } from 'nanoid';
 import { FormInstance } from 'antd/lib/form';
-import { ActionConfigSubmitDataChangeFields } from './ActionConfigSubmitDataChangeFields';
+import { ChangeFields } from './ChangeFields';
 
 const OPERATE_TYPE_MENU = [
   { label: '新增', key: 'insert', value: 'insert' },
@@ -13,7 +13,7 @@ const OPERATE_TYPE_MENU = [
   { label: '删除', key: 'delete', value: 'delete' }
 ];
 
-export class ActionConfigSubmitData extends React.Component {
+export class SubmitData extends React.Component {
   state = {
     list: [],
     listForShow: [],
@@ -205,7 +205,7 @@ export class ActionConfigSubmitData extends React.Component {
       children: () => {
         return (
           <div className="p-5">
-            <ActionConfigSubmitDataChangeFields
+            <ChangeFields
               {...this.props}
               {..._r}
               onSuccess={(changeFields, changeFieldsTitle) => {

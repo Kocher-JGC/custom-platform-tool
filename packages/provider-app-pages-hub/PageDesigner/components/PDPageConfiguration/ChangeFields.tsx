@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Button, Space } from 'antd';
 import { ValueHelper } from '@provider-app/page-designer/components/PDCommonUI';
-export class ActionConfigSubmitDataChangeFields extends React.PureComponent {
+export class ChangeFields extends React.PureComponent {
   state = {
     treeList: [],
     treeMap: {},

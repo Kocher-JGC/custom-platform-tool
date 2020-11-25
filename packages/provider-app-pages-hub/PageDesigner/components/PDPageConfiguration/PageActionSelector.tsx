@@ -2,9 +2,9 @@ import React from 'react';
 import { Table, Select, Input, Form, Button, message } from 'antd';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { nanoid } from 'nanoid';
-import { ActionConfigOpenPage } from './ActionConfigOpenPage';
-import { ActionConfigDisplayControl } from './ActionConfigDisplayControl';
-import { ActionConfigSubmitData } from './ActionConfigSubmitData';
+import { OpenLink } from './OpenLink';
+import { DisplayControl } from './DisplayControl';
+import { SubmitData } from './SubmitData';
 import { FormInstance } from 'antd/lib/form';
 
 export class PageActionSelector extends React.Component {
@@ -94,7 +94,7 @@ export class PageActionSelector extends React.Component {
   getActionConfig = (action) => {
     const config = {
       openPage: {
-        ModalContent: ActionConfigOpenPage,
+        ModalContent: OpenLink,
         width: 500
       },
       refreshPage: {
@@ -105,11 +105,11 @@ export class PageActionSelector extends React.Component {
       }, 
       displayControl: {
         width: 500,
-        ModalContent: ActionConfigDisplayControl
+        ModalContent: DisplayControl
       },
       submitData: {
         width: 900,
-        ModalContent: ActionConfigSubmitData
+        ModalContent: SubmitData
       },
       readFormData: {
         readOnly: true

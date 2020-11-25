@@ -22,7 +22,7 @@ interface IProps {
   config: any
 }
 
-export const ActionConfigDisplayControl = ({
+export const DisplayControl = ({
   onSuccess, onCancel, config, flatLayoutItems
 }: IProps) => {
   const [form] = Form.useForm();
