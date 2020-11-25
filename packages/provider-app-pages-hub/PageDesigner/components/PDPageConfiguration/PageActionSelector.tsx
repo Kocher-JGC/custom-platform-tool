@@ -19,13 +19,6 @@ export class PageActionSelector extends React.Component {
   listFormRef = React.createRef<FormInstance>();
   searchFormRef = React.createRef<FormInstance>();
 
-  onSubmitData = async () => {
-    const valid = await this.validateList();
-    return {
-      valid: valid ? 'valid': 'invalid',
-      actions: this.constructActions()
-    };
-  }
 
   constructActions = () => {
     const result = {};
@@ -239,10 +232,10 @@ export class PageActionSelector extends React.Component {
     });
   }
   handleFinish = () => {
-    this.props.changePageMeta({
+    this.props.platformCtx.meta.changePageMeta({
+      type: 'replace',
       metaAttr: 'actions',
       datas: this.constructActions(),
-      replace: true
     });
     message.success('动作配置成功');
   };
@@ -331,9 +324,11 @@ export class PageActionSelector extends React.Component {
                         { required: true, message: '动作名称必填' },
                         { 
                           validator: (_, value) => {
-                            if(!value) return Promise.resolve();
+                            if(!value) {
+                              return Promise.resolve();
+                            }
                             const listTmpl = this.state.list;
-                            const duplicate = listTmpl.some((item,index)=>item.name===value&&index!==_i);
+                            const duplicate = listTmpl.some((item,index)=>item.name===value&&item.id!==_r.id);
                             if(duplicate){
                               return Promise.reject('动作名称重复');
                             }
@@ -416,9 +411,14 @@ export class PageActionSelector extends React.Component {
                       rules={[
                         { 
                           validator: (_, value) => {
-                            if(!ModalContent)return Promise.resolve();
+                            if(!ModalContent) {
+                              return Promise.resolve();
+                            }
                             const { actionType } = _r;
-                            if(!_r[actionType]) return Promise.reject('需补充动作配置');
+                            if(!_r[actionType]) {
+                              return Promise.reject('需补充动作配置');
+                            }
+                            return Promise.resolve();
                           } 
                         }
                       ]}
@@ -490,7 +490,7 @@ export class PageActionSelector extends React.Component {
               }
             ]}
           />
-          <Form.Item {...tailLayout} style={{ marginBottom: 0 }}>
+          <Form.Item {...tailLayout} style={{ marginBottom: 0, marginTop: 5 }}>
             <Space className="float-right">
               <Button type="primary" htmlType="submit">
                 确定
