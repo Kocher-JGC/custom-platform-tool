@@ -27,7 +27,7 @@ export const FormInputMeta = CreateWidgetPropItemRely({
       { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       { propID: 'prop_check_fixed_rule', editAttr: ['checkFixedRule'] },
       { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },
-      { propID: 'prop_check_tooltip', editAttr: ['checkTooltip'] },
+      { propID: 'prop_check_error_tooltip', editAttr: ['checkErrorTooltip'] },
       { propID: 'prop_field', editAttr: ['field'] },
     ]
   }

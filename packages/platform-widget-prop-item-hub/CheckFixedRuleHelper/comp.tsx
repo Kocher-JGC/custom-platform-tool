@@ -30,6 +30,7 @@ export const CheckFixedRuleComp = ({
         attr: 'checkFixedRule',
         value
       })}
+      allowClear
     >
       {FIELD_TYPE_MENU.map((item)=><Option key={item.value} value={item.value}>{item.label}</Option>)}
     </Select>

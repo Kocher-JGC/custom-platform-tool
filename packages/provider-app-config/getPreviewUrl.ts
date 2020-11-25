@@ -46,7 +46,7 @@ export const getAppPreviewUrl = (options?: Options) => {
     t: $R_P.config.commonHeaders?.Authorization,
     saasServerUrl,
     pageServerUrlForApp,
-    menuid: defaultPath ? `menuid=/${defaultPath}` : ''
+    menuid: defaultPath ? `/${defaultPath}` : ''
   });
   // console.log(`${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`);
   return `${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`;
