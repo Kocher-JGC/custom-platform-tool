@@ -87,7 +87,6 @@ const genBaseRenderStruct = (
     dynamicProps: {}
   };
 
-  // console.log(genRenderStructContext);
 
   genCompPropsMapList(usePropsKeys, {
     genPropsMap: (key: string, ctx) => {
@@ -95,7 +94,6 @@ const genBaseRenderStruct = (
       propContextHandle(propsParser(key, conf), ctx);
     }
   }, propsParseRes);
-  console.log(propsParseRes);
 
   if (Object.keys(propsParseRes.dynamicProps) || Object.keys(propsParseRes.staticProps) || requireRender) {
     const childrenStructInfo = [];

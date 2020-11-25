@@ -63,6 +63,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
       if (typeof strOrStruct === 'string') {
         if (isPageState(strOrStruct)) {
+          // _.at(object, [paths])
           return LGet(IUBPageStore, pickPageStateKeyWord(strOrStruct), '');
         }
         // console.warn('stateManage: 非schemas描述');

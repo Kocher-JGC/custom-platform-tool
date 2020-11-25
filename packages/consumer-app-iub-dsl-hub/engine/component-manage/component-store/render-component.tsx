@@ -29,7 +29,7 @@ const genCompRenderFC = (
     //   return extralProps;
     // }, [extralProps]);
     const renderedComp = useMemo(() => {
-      // console.count(mark);
+      console.count(mark);
       return (
         <Comp
           key={mark}

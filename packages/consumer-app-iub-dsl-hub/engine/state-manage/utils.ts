@@ -9,6 +9,10 @@ const pathMarkRegExp = new RegExp(PATH_SPLIT_MARK, 'g');
 const pathMarkRep = (s: string) => s.replace(pathMarkRegExp, '.');
 
 const arrMarkRegExp = /\[([^\]]*)\]/g;
+// const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\/\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\/|\[\])(?:\/|\[\]|$))/g;
+
+// const rrMarkRegExp = new RegExp(`(\\[([^\\]]*)\\]|${'/'})|[^\\[|${'/'}]+(?=\\[([^\\]]*)\\]|${'/'})` ,'g');
+
 /**
  * 将匹配数组标示的path, 防止设置的时候出错
  * @param s 需要替换的字符串

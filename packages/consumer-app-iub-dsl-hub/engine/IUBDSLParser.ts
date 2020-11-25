@@ -2,29 +2,13 @@ import { TypeOfIUBDSL } from "@iub-dsl/definition";
 import { tableExtralAction, tableExtralFlow } from "../demo/base-reference/user/usertable/index";
 /** dont Overengineering */
 
-import SchemasParser from "./state-manage/schemas";
+import { SchemasParser, isPageState } from "./state-manage";
 import widgetParser from "./component-manage/widget-parser";
 import { actionsCollectionParser } from "./actions-manage/actions-parser";
 import { flowParser } from './flow-engine';
-import { isPageState } from "./state-manage";
 import { eventPropsHandle } from "./event-manage";
 import { actionsCollectConstor } from "./relationship/depend-collet/action-depend";
 import { metadataManage } from "./metadata-manage";
-
-const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContext) => {
-  const { changeTarget } = actionConf;
-  const { changeStateToUse, getStateToUse } = actionConfParseRes;
-  if (changeTarget) {
-    changeStateToUse.push(actionConf.changeTarget);
-  }
-  return actionConfParseRes;
-};
-
-const extralAPBDSLCURDOfConfParser = (actionConf, actionConfParseRes, parseContext) => {
-  const { changeStateToUse, getStateToUse } = actionConfParseRes;
-  getStateToUse.push("@(schema).entity_25", "@(schema).entity_26", "@(schema).entity_28");
-  return actionConfParseRes;
-};
 
 const genIUBDSLParserCtx = (parseRes) => {
   /** param: 内部暴露功能或参数到外部 */
@@ -54,14 +38,7 @@ const genIUBDSLParserCtx = (parseRes) => {
   };
 
   const actionConfParser = (actionConf, actionConfParseRes, parseContext) => {
-    switch (actionConf.actionType) {
-      case 'updateState':
-        return extralUpdateStateConfParser(actionConf, actionConfParseRes, parseContext);
-      case 'APBDSLCURD':
-        return extralAPBDSLCURDOfConfParser(actionConf, actionConfParseRes, parseContext);
-      default:
-        return actionConfParseRes;
-    }
+    return actionConfParseRes;
   };
   const {
     actionDependCollect,
@@ -79,22 +56,19 @@ const genIUBDSLParserCtx = (parseRes) => {
 
 const IUBDSLParser = ({ dsl }) => {
   const {
-    actionsCollection, sysRtCxtInterface,
-    widgetCollection, schemas,
-    metadataCollection, relationshipsCollection,
+    actionsCollection,
+    widgetCollection, schema,
     layoutContent, pageID, name, type,
     flowCollection, openPageUrl, isSearch,
     businessCode
   } = dsl as TypeOfIUBDSL;
 
   let parseRes: any = {
-    sysRtCxtInterface,
-    relationshipsCollection,
     layoutContent,
     pageID,
     name,
     type,
-    schemas,
+    schema,
     isSearch,
     businessCode
   };
@@ -108,7 +82,7 @@ const IUBDSLParser = ({ dsl }) => {
   const datasourceMetaEntity = metadataManage({ metadata: metadataCollection.metadata });
 
   /** 页面模型解析 */
-  const schemasParseRes = SchemasParser(schemas);
+  const schemasParseRes = SchemasParser(schema);
   /** 每个动作解析成函数「流程将其连起来」 */
   const actionParseRes = actionsCollectionParser(Object.assign(actionsCollection, tableExtralAction), parseContext);
 
@@ -132,6 +106,7 @@ const IUBDSLParser = ({ dsl }) => {
   // console.log(flowItemRun({
   //   getFlowItemInfo
   // })?.then());
+  
 
   parseRes = {
     ...parseRes,

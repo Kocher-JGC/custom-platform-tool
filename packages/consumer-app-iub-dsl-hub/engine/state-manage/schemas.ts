@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import {
-  ComplexType, FoundationType, Schemas
+  ComplexType, FoundationType, Schema
 } from '@iub-dsl/definition';
 import { testSchemas } from "@iub-dsl/demo/business-case/location";
 import schemasAnalysis from './analysis/analysis';
@@ -13,7 +13,7 @@ import schemasAnalysis from './analysis/analysis';
  * @steps_3 解析
  * @steps_4 实例化状态管理
  */
-const SchemasParser = (originSchemas: Schemas) => {
+export const SchemasParser = (originSchemas: Schema) => {
   // originSchemas = Object.assign({}, testSchemas, originSchemas);
 
   const schemasAnalysisRes = schemasAnalysis(originSchemas);
@@ -39,4 +39,3 @@ const SchemasParser = (originSchemas: Schemas) => {
  * 3. 数据变化, 更新多个局部
  */
 
-export default SchemasParser;

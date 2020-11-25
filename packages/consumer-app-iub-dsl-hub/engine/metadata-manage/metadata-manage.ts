@@ -14,7 +14,6 @@ export const createMetaManageEntity = (parseRes: MetaDateParseRes) => {
     tableFieldDataMapToFieldMarkData
   } = tableManage(parseRes);
 
-  const { tableList, allColumnsList, allColumnsIdMarks } = parseRes;
 
   /**
    * 获取某个元数据的关键字信息

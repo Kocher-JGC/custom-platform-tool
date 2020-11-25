@@ -1,5 +1,5 @@
 import {
-  Schemas, FoundationTypeSchemas, ComplexType, ComplexTypeSchemas, FoundationType, SchemaItem
+  Schema, FoundationTypeSchemas, ComplexType, ComplexTypeSchemas, FoundationType, SchemaItem
 } from "@iub-dsl/definition";
 import { SchemasAnalysisRes, SchemasAnalysisCommonFn, SchemaItemAnalysisCtx } from "../types";
 import { SCHEMAS_DEFAULT_KEY, PATH_SPLIT_MARK_ARR, PATH_SPLIT_MARK } from "../const";
@@ -85,7 +85,7 @@ const foundationAnalysis: SchemasAnalysisCommonFn<FoundationTypeSchemas> = (sche
 
   /** 结构的构建 */
   baseStruct[schemaBasePath] = schemaItem.defaultVal || ''; // 上下文临时结构赋值
-  pathMapMetaId[schemaBasePath] = schemaItem.fieldMapping || '';
+  pathMapMetaId[schemaBasePath] = schemaItem.fieldRef || '';
 };
 
 /**
@@ -120,12 +120,12 @@ const complexAnalysis: SchemasAnalysisCommonFn<ComplexTypeSchemas> = (schemaItem
 
 /**
  * schemas结构分析
- * @param schemas Schemas
+ * @param schemas Schema
  * @param option { parentPath: '递归: 父级的路径' }
  * @param schemasAnalysisRes 每一级的返回结果
  */
 const schemasStructAnalysis = (
-  schemas: Schemas,
+  schemas: Schema,
   { parentPath }: { parentPath: string },
   schemasAnalysisRes = initAnalysisRes(),
   // schemasAnalysisRes: SchemasAnalysisRes
@@ -155,7 +155,7 @@ const schemasStructAnalysis = (
  * @param originSchemas 原始的页面数据模型
  */
 const schemasAnalysis = (
-  originSchemas: Schemas
+  originSchemas: Schema
 ) => {
   const options = {
     parentPath: '',

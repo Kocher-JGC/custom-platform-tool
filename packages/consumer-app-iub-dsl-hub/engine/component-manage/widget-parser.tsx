@@ -20,7 +20,7 @@ const widgetParseScheduler = (id: string, confItem, options): {
   renderCompInfo: RenderCompInfo
 } => {
   const { widgetRef } = confItem;
-  console.log(getWidget(widgetRef));
+  // console.log(getWidget(widgetRef));
   
   switch (widgetRef) {
     case AllWidgetType.FormInput:

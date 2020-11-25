@@ -1,4 +1,4 @@
-import { ActionsDefinition, ActionCollection } from "@iub-dsl/definition/actions/action";
+import { ActionDef, ActionCollection } from "@iub-dsl/definition/actions/action";
 import { openModelFromTable } from './sys-actions/modal/modal-show-from-table';
 
 import { updateStateAction, dataCollectionAction, openModal } from "./sys-actions";
@@ -87,7 +87,7 @@ const commonActionConfParser = (
 };
 
 /** 生成动作的基本信息 */
-const genBaseActionInfo = (conf: ActionsDefinition) => ({ actionId: conf.actionId, actionName: conf.actionName, actionType: conf.actionType });
+const genBaseActionInfo = (conf: ActionDef) => ({ actionId: conf.actionId, actionName: conf.actionName, actionType: conf.actionType });
 
 /**
  * 动作包装器
@@ -95,7 +95,7 @@ const genBaseActionInfo = (conf: ActionsDefinition) => ({ actionId: conf.actionI
  * @param conf 原始动作配置
  * @param originFn 原始生成实际运行动作的函数
  */
-const actionWrapFn = (conf: ActionsDefinition, originFn) => {
+const actionWrapFn = (conf: ActionDef, originFn) => {
   const baseActionInfo = genBaseActionInfo(conf);
   const { when, condition, actionOptions } = conf;
   const extralConf = {
@@ -108,7 +108,7 @@ const actionWrapFn = (conf: ActionsDefinition, originFn) => {
  * 根据动作类型,获取动作处理函数并返回可以运行的动作函数
  * @param actionConf 动作配置
  */
-const getActionFn = (actionConf: ActionsDefinition) => {
+const getActionFn = (actionConf: ActionDef) => {
   switch (actionConf.actionType) {
     case 'updateState':
       return actionWrapFn(actionConf, updateStateAction);
