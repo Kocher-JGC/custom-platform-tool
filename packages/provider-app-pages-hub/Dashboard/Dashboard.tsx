@@ -159,10 +159,13 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                     action: () => {
                       const cur = `${accessName}_${new Date().getTime()}`;
                       downloadBackEnd(accessName, `${appShortNameEn}后端部署文件-${accessName}_${new Date().getTime()}`).catch((error) => {
+                        console.log("后端部署文件下载失败", error);
                         message.error("后端部署文件下载失败");
                       });
                       downloadFrontEnd(accessName, `${appShortNameEn}前端部署文件-${accessName}_${cur}`, cur).catch((error) => {
-                        message.error(error.response?.data?.msg || "前端部署文件下载失败");
+                        console.log("前端部署文件下载失败", error.message);
+                        const errObj = JSON.parse(error.message);
+                        message.error(errObj.msg || "前端部署文件下载失败");
                       });
                     }
                   },
