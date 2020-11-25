@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  CloseModal, Input, ShowModal, Selector, TreeSelector
+  CloseModal, Input, ShowModal, Select, TreeSelector
 } from '@infra/ui';
 import { ExpEditor } from './ExpEditor';
 import './style.scss';
@@ -8,11 +8,11 @@ import { VariableItem } from '@provider-app/page-designer/platform-access';
 /**
  * 可用的值的类型
  */
-const selectTypes = {
-  customValue: '自定义',
-  expression: '表达式',
-  variable: '变量',
-};
+const SELECT_TYPE_MENU = [
+  { label: '自定义', value: 'customValue', key: 'customValue' },
+  { label: '表达式', value: 'expression', key: 'expression' },
+  { label: '变量', value: 'variable', key: 'variable' },
+];
 /**
  * ValueHelperProps
  */
@@ -119,7 +119,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   };
   useEffect(() => {
     // const selectedKey = 'customValue'; 
-    const keyMenu = Object.keys(selectTypes);
+    const keyMenu = SELECT_TYPE_MENU.map(item=>item.value);
     for(const key in editedState){
       if(!editedState[key] || !keyMenu.includes(key)) continue;
       setSelectedItem(key);
@@ -132,11 +132,10 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
         {Comp}
       </span>
       <span className="value-type-selector">
-        <Selector
-          needCancel={false}
-          value={selectedItem}
-          values={selectTypes}
+        <Select
+          options={SELECT_TYPE_MENU}
           onChange={(val) => setSelectedItem(val)}
+          value={selectedItem}
         />
       </span>
       
