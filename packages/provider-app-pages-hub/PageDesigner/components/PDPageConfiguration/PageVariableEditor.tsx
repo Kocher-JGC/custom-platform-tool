@@ -110,7 +110,7 @@ export const VariableEditor = ({
     let amIDuplicated = false;
     for(const type in variableList){
       const variables = variableList[type];
-      amIDuplicated = variables.some(item=>item[key] === value);
+      amIDuplicated = variables.some(item=>(!data?.id || item.id !== data.id) && item[key] === value);
       if(amIDuplicated) break;
     }
     return amIDuplicated;
