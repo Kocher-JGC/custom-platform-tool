@@ -2,14 +2,6 @@
 # yarn lockfile v1
 
 
-"@ahooksjs/use-request@^2.0.0":
-  version "2.8.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ahooksjs/use-request/-/use-request-2.8.1.tgz#bf06a63368df1859b6b79a946612eb0d2889ab6f"
-  integrity sha1-vwamM2jfGFm2t5qUZhLrDSiJq28=
-  dependencies:
-    lodash.debounce "^4.0.8"
-    lodash.throttle "^4.1.1"
-
 "@ant-design/colors@^5.0.0":
   version "5.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/colors/-/colors-5.0.0.tgz#46b73b4cc6935b35fc8b84555e8e42c8cfc190e6"
@@ -73,7 +65,7 @@
     umi-utils "^1.5.1"
     yargs-parser "^16.1.0"
 
-"@ant-design/pro-descriptions@^1.0.17":
+"@ant-design/pro-descriptions@1.0.36":
   version "1.0.36"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-descriptions/-/pro-descriptions-1.0.36.tgz#a1605f4126d0e643cae1f0f48c2280521707046d"
   integrity sha1-oWBfQSbQ5kPK4fD0jCKAUhcHBG0=
@@ -135,7 +127,7 @@
     rc-resize-observer "^0.2.3"
     use-media-antd-query "^1.0.3"
 
-"@ant-design/pro-layout@^6.4.18":
+"@ant-design/pro-layout@6.5.15":
   version "6.5.15"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-layout/-/pro-layout-6.5.15.tgz#a5b8fb414ca51deebc8c4214b09699cfc30b60a7"
   integrity sha1-pbj7QUylHe68jEIUsJaZz8MLYKc=
@@ -159,6 +151,31 @@
     use-media-antd-query "^1.0.3"
     warning "^4.0.3"
 
+"@ant-design/pro-layout@^5.0.0":
+  version "5.0.19"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-layout/-/pro-layout-5.0.19.tgz#d15e8dc10d7e7be7da1978e166f1ff016ad98e4e"
+  integrity sha1-0V6NwQ1+e+faGXjhZvH/AWrZjk4=
+  dependencies:
+    "@ant-design/icons" "^4.0.0"
+    "@umijs/route-utils" "^1.0.5"
+    classnames "^2.2.6"
+    hash.js "^1.1.7"
+    history "^4.10.1"
+    lodash.isequal "^4.5.0"
+    memoize-one "^5.1.1"
+    omit.js "^1.0.0"
+    path-to-regexp "2.4.0"
+    qs "^6.9.0"
+    rc-resize-observer "^0.2.1"
+    react-copy-to-clipboard "^5.0.1"
+    react-responsive "^8.0.1"
+    react-router-dom "5.1.2"
+    unstated-next "^1.1.0"
+    use-json-comparison "^1.0.3"
+    use-media-antd-query "^1.0.1"
+    use-merge-value "^1.0.1"
+    warning "^4.0.3"
+
 "@ant-design/pro-provider@0.1.0":
   version "0.1.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-provider/-/pro-provider-0.1.0.tgz#e7e68ec67e6d306968d208b763db92030b4a2d31"
@@ -180,7 +197,7 @@
   dependencies:
     use-media-antd-query "^1.0.3"
 
-"@ant-design/pro-table@^2.7.4", "@ant-design/pro-table@^2.9.7":
+"@ant-design/pro-table@2.11.4", "@ant-design/pro-table@^2.9.7":
   version "2.11.4"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-table/-/pro-table-2.11.4.tgz#d1825fea8aa017ad35a86528d5e0e0625a557836"
   integrity sha1-0YJf6oqgF601qGUo1eDgYlpVeDY=
@@ -1982,7 +1999,7 @@
   dependencies:
     "@formatjs/intl-utils" "^2.3.0"
 
-"@formatjs/intl-listformat@^1.4.1":
+"@formatjs/intl-listformat@^1.3.7":
   version "1.4.8"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@formatjs/intl-listformat/-/intl-listformat-1.4.8.tgz#70b81005e7dcf74329cb5b314a940ce5fce36cd0"
   integrity sha1-cLgQBefc90Mpy1sxSpQM5fzjbNA=
@@ -1996,24 +2013,29 @@
   dependencies:
     "@formatjs/intl-utils" "^2.3.0"
 
-"@formatjs/intl-relativetimeformat@^4.5.7", "@formatjs/intl-relativetimeformat@^4.5.9":
+"@formatjs/intl-relativetimeformat@^4.5.7":
   version "4.5.16"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@formatjs/intl-relativetimeformat/-/intl-relativetimeformat-4.5.16.tgz#7449cef3213dd66d25924ca41f125f87b58df95a"
   integrity sha1-dEnO8yE91m0lkkykHxJfh7WN+Vo=
   dependencies:
     "@formatjs/intl-utils" "^2.3.0"
 
-"@formatjs/intl-unified-numberformat@^3.2.0":
+"@formatjs/intl-unified-numberformat@^3.0.4", "@formatjs/intl-unified-numberformat@^3.2.0":
   version "3.3.7"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@formatjs/intl-unified-numberformat/-/intl-unified-numberformat-3.3.7.tgz#9995a24568908188e716d81a1de5b702b2ee00e2"
   integrity sha1-mZWiRWiQgYjnFtgaHeW3ArLuAOI=
   dependencies:
     "@formatjs/intl-utils" "^2.3.0"
 
-"@formatjs/intl-utils@^2.2.0", "@formatjs/intl-utils@^2.3.0":
+"@formatjs/intl-utils@^2.0.4", "@formatjs/intl-utils@^2.3.0":
   version "2.3.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@formatjs/intl-utils/-/intl-utils-2.3.0.tgz#2dc8c57044de0340eb53a7ba602e59abf80dc799"
   integrity sha1-LcjFcETeA0DrU6e6YC5Zq/gNx5k=
+
+"@formatjs/macro@^0.2.6":
+  version "0.2.8"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@formatjs/macro/-/macro-0.2.8.tgz#e43228e02d0159817734ad80cc0326cfefaeeb6c"
+  integrity sha1-5DIo4C0BWYF3NK2AzAMmz++u62w=
 
 "@fullhuman/postcss-purgecss@^2.1.2":
   version "2.3.0"
@@ -3669,11 +3691,6 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/ejs/-/ejs-3.0.4.tgz#8851fcdedb96e410fbb24f83b8be6763ef9afa77"
   integrity sha1-iFH83tuW5BD7sk+DuL5nY++a+nc=
 
-"@types/eslint-visitor-keys@^1.0.0":
-  version "1.0.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
-  integrity sha1-HuMNeVRMqE1o1LPNsK9PIFZj3S0=
-
 "@types/estree@*":
   version "0.0.45"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/estree/-/estree-0.0.45.tgz#e9387572998e5ecdac221950dab3e8c3b16af884"
@@ -4006,21 +4023,14 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha1-fuMwunyq+5gJC+zoal7kQRWQTCw=
 
-"@types/react-dom@17.0.0":
-  version "17.0.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-dom/-/react-dom-17.0.0.tgz#b3b691eb956c4b3401777ee67b900cb28415d95a"
-  integrity sha1-s7aR65VsSzQBd37me5AMsoQV2Vo=
-  dependencies:
-    "@types/react" "*"
-
-"@types/react-dom@^16.9.8":
+"@types/react-dom@16.9.10", "@types/react-dom@^16.9.8":
   version "16.9.10"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-dom/-/react-dom-16.9.10.tgz#4485b0bec3d41f856181b717f45fd7831101156f"
   integrity sha1-RIWwvsPUH4VhgbcX9F/XgxEBFW8=
   dependencies:
     "@types/react" "^16"
 
-"@types/react-helmet@6.1.0", "@types/react-helmet@^6.1.0":
+"@types/react-helmet@^6.1.0":
   version "6.1.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-helmet/-/react-helmet-6.1.0.tgz#af586ed685f4905e2adc7462d1d65ace52beee7a"
   integrity sha1-r1hu1oX0kF4q3HRi0dZazlK+7no=
@@ -4079,7 +4089,7 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@17.0.0":
+"@types/react@*":
   version "17.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react/-/react-17.0.0.tgz#5af3eb7fad2807092f0046a1302b7823e27919b8"
   integrity sha1-WvPrf60oBwkvAEahMCt4I+J5Gbg=
@@ -4087,7 +4097,7 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/react@^16", "@types/react@^16.9.43":
+"@types/react@16.14.2", "@types/react@^16", "@types/react@^16.9.43":
   version "16.14.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react/-/react-16.14.2.tgz#85dcc0947d0645349923c04ccef6018a1ab7538c"
   integrity sha1-hdzAlH0GRTSZI8BMzvYBihq3U4w=
@@ -4339,18 +4349,6 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^3.4.0":
-  version "3.10.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/eslint-plugin/-/eslint-plugin-3.10.1.tgz#7e061338a1383f59edc204c605899f93dc2e2c8f"
-  integrity sha1-fgYTOKE4P1ntwgTGBYmfk9wuLI8=
-  dependencies:
-    "@typescript-eslint/experimental-utils" "3.10.1"
-    debug "^4.1.1"
-    functional-red-black-tree "^1.0.1"
-    regexpp "^3.0.0"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
-
 "@typescript-eslint/eslint-plugin@^4.4.1", "@typescript-eslint/eslint-plugin@^4.7.0":
   version "4.8.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.8.2.tgz#cf9102ec800391caa574f589ffe0623cca1d9308"
@@ -4364,17 +4362,6 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
-"@typescript-eslint/experimental-utils@3.10.1":
-  version "3.10.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/experimental-utils/-/experimental-utils-3.10.1.tgz#e179ffc81a80ebcae2ea04e0332f8b251345a686"
-  integrity sha1-4Xn/yBqA68ri6gTgMy+LJRNFpoY=
-  dependencies:
-    "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/types" "3.10.1"
-    "@typescript-eslint/typescript-estree" "3.10.1"
-    eslint-scope "^5.0.0"
-    eslint-utils "^2.0.0"
-
 "@typescript-eslint/experimental-utils@4.8.2", "@typescript-eslint/experimental-utils@^4.0.1":
   version "4.8.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/experimental-utils/-/experimental-utils-4.8.2.tgz#8909a5732f19329cf5ef0c39766170476bff5e50"
@@ -4387,15 +4374,6 @@
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
-"@typescript-eslint/experimental-utils@^1.13.0":
-  version "1.13.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/experimental-utils/-/experimental-utils-1.13.0.tgz#b08c60d780c0067de2fb44b04b432f540138301e"
-  integrity sha1-sIxg14DABn3i+0SwS0MvVAE4MB4=
-  dependencies:
-    "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/typescript-estree" "1.13.0"
-    eslint-scope "^4.0.0"
-
 "@typescript-eslint/parser@4.4.1":
   version "4.4.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/parser/-/parser-4.4.1.tgz#25fde9c080611f303f2f33cedb145d2c59915b80"
@@ -4405,17 +4383,6 @@
     "@typescript-eslint/types" "4.4.1"
     "@typescript-eslint/typescript-estree" "4.4.1"
     debug "^4.1.1"
-
-"@typescript-eslint/parser@^3.1.0":
-  version "3.10.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/parser/-/parser-3.10.1.tgz#1883858e83e8b442627e1ac6f408925211155467"
-  integrity sha1-GIOFjoPotEJifhrG9AiSUhEVVGc=
-  dependencies:
-    "@types/eslint-visitor-keys" "^1.0.0"
-    "@typescript-eslint/experimental-utils" "3.10.1"
-    "@typescript-eslint/types" "3.10.1"
-    "@typescript-eslint/typescript-estree" "3.10.1"
-    eslint-visitor-keys "^1.1.0"
 
 "@typescript-eslint/parser@^4.7.0":
   version "4.8.2"
@@ -4443,11 +4410,6 @@
     "@typescript-eslint/types" "4.8.2"
     "@typescript-eslint/visitor-keys" "4.8.2"
 
-"@typescript-eslint/types@3.10.1":
-  version "3.10.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/types/-/types-3.10.1.tgz#1d7463fa7c32d8a23ab508a803ca2fe26e758727"
-  integrity sha1-HXRj+nwy2KI6tQioA8ov4m51hyc=
-
 "@typescript-eslint/types@4.4.1":
   version "4.4.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/types/-/types-4.4.1.tgz#c507b35cf523bc7ba00aae5f75ee9b810cdabbc1"
@@ -4457,28 +4419,6 @@
   version "4.8.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/types/-/types-4.8.2.tgz#c862dd0e569d9478eb82d6aee662ea53f5661a36"
   integrity sha1-yGLdDladlHjrgtau5mLqU/VmGjY=
-
-"@typescript-eslint/typescript-estree@1.13.0":
-  version "1.13.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/typescript-estree/-/typescript-estree-1.13.0.tgz#8140f17d0f60c03619798f1d628b8434913dc32e"
-  integrity sha1-gUDxfQ9gwDYZeY8dYouENJE9wy4=
-  dependencies:
-    lodash.unescape "4.0.1"
-    semver "5.5.0"
-
-"@typescript-eslint/typescript-estree@3.10.1":
-  version "3.10.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/typescript-estree/-/typescript-estree-3.10.1.tgz#fd0061cc38add4fad45136d654408569f365b853"
-  integrity sha1-/QBhzDit1PrUUTbWVECFafNluFM=
-  dependencies:
-    "@typescript-eslint/types" "3.10.1"
-    "@typescript-eslint/visitor-keys" "3.10.1"
-    debug "^4.1.1"
-    glob "^7.1.6"
-    is-glob "^4.0.1"
-    lodash "^4.17.15"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
 
 "@typescript-eslint/typescript-estree@4.4.1":
   version "4.4.1"
@@ -4507,13 +4447,6 @@
     lodash "^4.17.15"
     semver "^7.3.2"
     tsutils "^3.17.1"
-
-"@typescript-eslint/visitor-keys@3.10.1":
-  version "3.10.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/visitor-keys/-/visitor-keys-3.10.1.tgz#cd4274773e3eb63b2e870ac602274487ecd1e931"
-  integrity sha1-zUJ0dz4+tjsuhwrGAidEh+zR6TE=
-  dependencies:
-    eslint-visitor-keys "^1.1.0"
 
 "@typescript-eslint/visitor-keys@4.4.1":
   version "4.4.1"
@@ -4594,7 +4527,7 @@
     babel-plugin-transform-react-remove-prop-types "0.4.24"
     babel-plugin-transform-typescript-metadata "0.3.1"
 
-"@umijs/block-sdk@^2.0.5":
+"@umijs/block-sdk@^2.2.2":
   version "2.2.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/block-sdk/-/block-sdk-2.2.2.tgz#2d4cd1d464cd7301696f72f5f27214354caa3202"
   integrity sha1-LUzR1GTNcwFpb3L18nIUNUyqMgI=
@@ -4707,39 +4640,7 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/error-code-map/-/error-code-map-1.0.1.tgz#2a2dd7b4bcd11869e968264ff3dabacfabe8b874"
   integrity sha1-Ki3XtLzRGGnpaCZP89q6z6vouHQ=
 
-"@umijs/fabric@2.2.0":
-  version "2.2.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/fabric/-/fabric-2.2.0.tgz#2b8320cbc8fa61ce2b7701f9133c928deac13a3b"
-  integrity sha1-K4Mgy8j6Yc4rdwH5EzySjerBOjs=
-  dependencies:
-    "@typescript-eslint/eslint-plugin" "^3.4.0"
-    eslint "^7.3.1"
-    eslint-config-airbnb "^18.2.0"
-    eslint-config-airbnb-base "^14.2.0"
-    eslint-config-airbnb-typescript "^8.0.0"
-    eslint-config-prettier "^6.10.0"
-    eslint-formatter-pretty "^4.0.0"
-    eslint-plugin-babel "^5.3.0"
-    eslint-plugin-compat "^3.1.1"
-    eslint-plugin-eslint-comments "^3.1.1"
-    eslint-plugin-import "^2.17.3"
-    eslint-plugin-jest "^22.4.1"
-    eslint-plugin-jsx-a11y "^6.2.0"
-    eslint-plugin-markdown "^1.0.0"
-    eslint-plugin-promise "^4.1.1"
-    eslint-plugin-react "^7.13.0"
-    eslint-plugin-react-hooks "^2.3.0"
-    eslint-plugin-unicorn "^20.0.0"
-    stylelint "^13.2.1"
-    stylelint-config-css-modules "^2.2.0"
-    stylelint-config-prettier "^8.0.1"
-    stylelint-config-rational-order "^0.1.2"
-    stylelint-config-standard "^20.0.0"
-    stylelint-declaration-block-no-ignored-properties "^2.1.0"
-    stylelint-order "^4.0.0"
-    typescript "^3.8.3"
-
-"@umijs/fabric@^2.0.0", "@umijs/fabric@^2.2.2":
+"@umijs/fabric@2.3.1", "@umijs/fabric@^2.0.0", "@umijs/fabric@^2.2.2":
   version "2.3.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/fabric/-/fabric-2.3.1.tgz#61ba46c47671e10f677965ba59619af04d2b7c10"
   integrity sha1-YbpGxHZx4Q9neWW6WWGa8E0rfBA=
@@ -4789,51 +4690,51 @@
     through2 "^3.0.1"
     vinyl "^2.2.0"
 
-"@umijs/plugin-access@2.3.2":
-  version "2.3.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-access/-/plugin-access-2.3.2.tgz#2d736e72bf27c69c7a0d1d1d1ac334a408e069c0"
-  integrity sha1-LXNucr8nxpx6DR0dGsM0pAjgacA=
+"@umijs/plugin-access@2.3.0":
+  version "2.3.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-access/-/plugin-access-2.3.0.tgz#3d7c5781fe0c482a0caf86ab9e50984a3a2d69a4"
+  integrity sha1-PXxXgf4MSCoMr4arnlCYSjotaaQ=
 
-"@umijs/plugin-analytics@0.2.2":
-  version "0.2.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-analytics/-/plugin-analytics-0.2.2.tgz#575fd231d4327ea13413217aa1b5fc6bdd89465e"
-  integrity sha1-V1/SMdQyfqE0EyF6obX8a92JRl4=
+"@umijs/plugin-analytics@0.2.0":
+  version "0.2.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-analytics/-/plugin-analytics-0.2.0.tgz#446098e79eb9ea6d9b168b6a302fc4921a776b08"
+  integrity sha1-RGCY55656m2bFotqMC/Ekhp3awg=
 
-"@umijs/plugin-antd@0.9.0":
-  version "0.9.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-antd/-/plugin-antd-0.9.0.tgz#9e62bd8fad1e8f42a88ba74ae3c07f9642dcb74b"
-  integrity sha1-nmK9j60ej0Koi6dK48B/lkLct0s=
+"@umijs/plugin-antd@0.4.0":
+  version "0.4.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-antd/-/plugin-antd-0.4.0.tgz#5129f650d9507d755a388f02f44098282111eb7a"
+  integrity sha1-USn2UNlQfXVaOI8C9ECYKCER63o=
   dependencies:
-    antd "^4.1.3"
+    antd "^4.0.0"
     antd-mobile "^2.3.1"
 
-"@umijs/plugin-block-devtool@1.2.2":
-  version "1.2.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-block-devtool/-/plugin-block-devtool-1.2.2.tgz#1840829be263c3b5d936a2b3244c3c4c07ad8f0b"
-  integrity sha1-GECCm+Jjw7XZNqKzJEw8TAetjws=
+"@umijs/plugin-block-devtool@1.2.3":
+  version "1.2.3"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-block-devtool/-/plugin-block-devtool-1.2.3.tgz#b7b7d97a989990d0df4bc094eb2b69542978dbf5"
+  integrity sha1-t7fZepiZkNDfS8CU6ytpVCl42/U=
   dependencies:
     uppercamelcase "^3.0.0"
 
-"@umijs/plugin-blocks@2.0.5":
-  version "2.0.5"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-blocks/-/plugin-blocks-2.0.5.tgz#cc94af5113de3fb47b48c2ddda20f47afb4ceb90"
-  integrity sha1-zJSvURPeP7R7SMLd2iD0evtM65A=
+"@umijs/plugin-blocks@2.2.2":
+  version "2.2.2"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-blocks/-/plugin-blocks-2.2.2.tgz#d2c030732f50108bf6180f76b2873c6f1c03988d"
+  integrity sha1-0sAwcy9QEIv2GA92soc8bxwDmI0=
   dependencies:
-    "@umijs/block-sdk" "^2.0.5"
+    "@umijs/block-sdk" "^2.2.2"
 
-"@umijs/plugin-crossorigin@1.2.0":
-  version "1.2.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-crossorigin/-/plugin-crossorigin-1.2.0.tgz#bf9ec0ccd76cf04e178c63fda813b06e93280131"
-  integrity sha1-v57AzNds8E4XjGP9qBOwbpMoATE=
+"@umijs/plugin-crossorigin@1.1.0":
+  version "1.1.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-crossorigin/-/plugin-crossorigin-1.1.0.tgz#369a594812276458aa0a9284681349179b73662d"
+  integrity sha1-NppZSBInZFiqCpKEaBNJF5tzZi0=
 
-"@umijs/plugin-dva@0.9.1":
-  version "0.9.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-dva/-/plugin-dva-0.9.1.tgz#08588b80ff9867e256368aa91923ac48c0a01602"
-  integrity sha1-CFiLgP+YZ+JWNoqpGSOsSMCgFgI=
+"@umijs/plugin-dva@0.6.4":
+  version "0.6.4"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-dva/-/plugin-dva-0.6.4.tgz#29ccd67ab997f6b598e494d121bff79bcc8cd188"
+  integrity sha1-KczWermX9rWY5JTRIb/3m8yM0Yg=
   dependencies:
     babel-plugin-dva-hmr "^0.4.2"
     dva "^2.6.0-beta.20"
-    dva-immer "^0.5.0"
+    dva-immer "^0.4.19"
     dva-loading "^3.0.20"
 
 "@umijs/plugin-esbuild@1.0.1":
@@ -4843,55 +4744,48 @@
   dependencies:
     esbuild-webpack-plugin "^1.0.0-beta.3"
 
-"@umijs/plugin-helmet@1.1.1":
-  version "1.1.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-helmet/-/plugin-helmet-1.1.1.tgz#841aea37b5076b51c2f332659bf9c671cf63794d"
-  integrity sha1-hBrqN7UHa1HC8zJlm/nGcc9jeU0=
-  dependencies:
-    "@types/react-helmet" "^6.1.0"
-    react-helmet "^6.1.0"
+"@umijs/plugin-initial-state@2.2.0":
+  version "2.2.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-initial-state/-/plugin-initial-state-2.2.0.tgz#fbd21df6d9f1ad9ed9d351871aa9ebe74f29c4a8"
+  integrity sha1-+9Id9tnxrZ7Z01GHGqnr508pxKg=
 
-"@umijs/plugin-initial-state@2.3.0":
-  version "2.3.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-initial-state/-/plugin-initial-state-2.3.0.tgz#b0afc6cf8446bddb0ed2c2fa4271c4cff993d688"
-  integrity sha1-sK/Gz4RGvdsO0sL6QnHEz/mT1og=
-
-"@umijs/plugin-layout@0.12.5":
-  version "0.12.5"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-layout/-/plugin-layout-0.12.5.tgz#ef6a426ea4decd787dea40933b132e08b66d80fa"
-  integrity sha1-72pCbqTezXh96kCTOxMuCLZtgPo=
+"@umijs/plugin-layout@0.7.0":
+  version "0.7.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-layout/-/plugin-layout-0.7.0.tgz#7ff6186fc5517d4c29cfbc49bee70d69aeb8c1a5"
+  integrity sha1-f/YYb8VRfUwpz7xJvucNaa64waU=
   dependencies:
-    "@umijs/route-utils" "^1.0.7"
-    antd "^4.1.2"
+    "@ant-design/icons" "^4.0.0"
+    "@ant-design/pro-layout" "^5.0.0"
+    antd "^4.0.0-rc.4"
     lodash "^4.17.15"
+    memoize-one "^5.1.1"
     path-to-regexp "1.x"
 
-"@umijs/plugin-locale@0.10.4":
-  version "0.10.4"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-locale/-/plugin-locale-0.10.4.tgz#b5842f42c39a3828520d9c2edabd8da2a678969d"
-  integrity sha1-tYQvQsOaOChSDZwu2r2NoqZ4lp0=
+"@umijs/plugin-locale@0.4.3":
+  version "0.4.3"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-locale/-/plugin-locale-0.4.3.tgz#e7a2dc78d412d154f7c950cf47e7915d4899bf32"
+  integrity sha1-56LceNQS0VT3yVDPR+eRXUiZvzI=
   dependencies:
-    "@ant-design/icons" "^4.1.0"
     "@formatjs/intl-pluralrules" "^1.5.0"
     "@formatjs/intl-relativetimeformat" "^4.5.7"
     intl "1.2.5"
-    moment "^2.29.1"
-    react-intl "3.12.1"
+    moment "2.x"
+    react-intl "3.12.0"
     warning "^4.0.3"
 
-"@umijs/plugin-model@2.5.6":
-  version "2.5.6"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-model/-/plugin-model-2.5.6.tgz#1eec24000d608375d0790fb6713a50d7ee7b5153"
-  integrity sha1-HuwkAA1gg3XQeQ+2cTpQ1+57UVM=
+"@umijs/plugin-model@2.2.0":
+  version "2.2.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-model/-/plugin-model-2.2.0.tgz#846a5940c53a2c0d2f02b6ca4ee9e8caca8add7a"
+  integrity sha1-hGpZQMU6LA0vArbKTunoysqK3Xo=
   dependencies:
     fast-deep-equal "3.1.1"
 
-"@umijs/plugin-request@2.5.0":
-  version "2.5.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-request/-/plugin-request-2.5.0.tgz#3b222be9400c3c21ac84bdeefbd4103e48690748"
-  integrity sha1-OyIr6UAMPCGshL3u+9QQPkhpB0g=
+"@umijs/plugin-request@2.3.2":
+  version "2.3.2"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/plugin-request/-/plugin-request-2.3.2.tgz#2343d21ccd09bdbbe39d6aee9340e0f87313fdd4"
+  integrity sha1-I0PSHM0JvbvjnWruk0Dg+HMT/dQ=
   dependencies:
-    "@ahooksjs/use-request" "^2.0.0"
+    "@umijs/use-request" "^1.2.0"
     umi-request "^1.2.14"
 
 "@umijs/plugin-test@1.0.0":
@@ -4901,12 +4795,12 @@
   dependencies:
     "@umijs/test" "^3.0.7"
 
-"@umijs/preset-ant-design-pro@1.2.0":
-  version "1.2.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/preset-ant-design-pro/-/preset-ant-design-pro-1.2.0.tgz#34e0ee300972cf4eead03aeee4271aa10f9917db"
-  integrity sha1-NODuMAlyz07q0Dru5CcaoQ+ZF9s=
+"@umijs/preset-ant-design-pro@1.3.0":
+  version "1.3.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/preset-ant-design-pro/-/preset-ant-design-pro-1.3.0.tgz#bf666c0b680d184c442ea62d4754080a53d0669b"
+  integrity sha1-v2ZsC2gNGExELqYtR1QIClPQZps=
   dependencies:
-    "@umijs/plugin-block-devtool" "1.2.2"
+    "@umijs/plugin-block-devtool" "1.2.3"
     umi-plugin-antd-icon-config "^2.0.0"
     umi-plugin-pro-block "^2.0.1"
 
@@ -4946,22 +4840,21 @@
     umi-webpack-bundle-analyzer "3.6.0"
     zlib "1.0.5"
 
-"@umijs/preset-react@1.7.0":
-  version "1.7.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/preset-react/-/preset-react-1.7.0.tgz#a5e81f7751cca092cc6edb6c9538eec159c5134d"
-  integrity sha1-pegfd1HMoJLMbttslTjuwVnFE00=
+"@umijs/preset-react@1.4.8":
+  version "1.4.8"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/preset-react/-/preset-react-1.4.8.tgz#877d7ddedc9b56c41736eca602af1d01424d54ae"
+  integrity sha1-h3193tybVsQXNuymAq8dAUJNVK4=
   dependencies:
-    "@umijs/plugin-access" "2.3.2"
-    "@umijs/plugin-analytics" "0.2.2"
-    "@umijs/plugin-antd" "0.9.0"
-    "@umijs/plugin-crossorigin" "1.2.0"
-    "@umijs/plugin-dva" "0.9.1"
-    "@umijs/plugin-helmet" "1.1.1"
-    "@umijs/plugin-initial-state" "2.3.0"
-    "@umijs/plugin-layout" "0.12.5"
-    "@umijs/plugin-locale" "0.10.4"
-    "@umijs/plugin-model" "2.5.6"
-    "@umijs/plugin-request" "2.5.0"
+    "@umijs/plugin-access" "2.3.0"
+    "@umijs/plugin-analytics" "0.2.0"
+    "@umijs/plugin-antd" "0.4.0"
+    "@umijs/plugin-crossorigin" "1.1.0"
+    "@umijs/plugin-dva" "0.6.4"
+    "@umijs/plugin-initial-state" "2.2.0"
+    "@umijs/plugin-layout" "0.7.0"
+    "@umijs/plugin-locale" "0.4.3"
+    "@umijs/plugin-model" "2.2.0"
+    "@umijs/plugin-request" "2.3.2"
     "@umijs/plugin-test" "1.0.0"
 
 "@umijs/renderer-mpa@3.2.28":
@@ -4988,7 +4881,7 @@
     react-dom "^16.13.1"
     react-router-config "5.1.1"
 
-"@umijs/route-utils@^1.0.33", "@umijs/route-utils@^1.0.7":
+"@umijs/route-utils@^1.0.33", "@umijs/route-utils@^1.0.5":
   version "1.0.34"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/route-utils/-/route-utils-1.0.34.tgz#663d020669217dd7e8431a1b9ce9abea5fbbb6b8"
   integrity sha1-Zj0CBmkhfdfoQxobnOmr6l+7trg=
@@ -5062,6 +4955,15 @@
     "@umijs/utils" "3.2.28"
     webpack-chain "6.5.1"
 
+"@umijs/use-request@^1.2.0":
+  version "1.4.3"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/use-request/-/use-request-1.4.3.tgz#bc5fadc4cb07d796eb35f09838d6a15cb12802f7"
+  integrity sha1-vF+txMsH15brNfCYONahXLEoAvc=
+  dependencies:
+    lodash.debounce "^4.0.8"
+    lodash.throttle "^4.1.1"
+    umi-request "^1.2.17"
+
 "@umijs/utils@3.2.28", "@umijs/utils@^3.0.0-beta.12":
   version "3.2.28"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/utils/-/utils-3.2.28.tgz#fe8a7354db8d314d2438769f7e7abab021e74603"
@@ -5111,10 +5013,10 @@
     yargs "15.4.1"
     yargs-parser "18.1.3"
 
-"@umijs/yorkie@2.0.3":
-  version "2.0.3"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/yorkie/-/yorkie-2.0.3.tgz#ac37b15bea6e14c509c34a027ab2f3ff2cb9c2e5"
-  integrity sha1-rDexW+puFMUJw0oCerLz/yy5wuU=
+"@umijs/yorkie@2.0.5":
+  version "2.0.5"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/yorkie/-/yorkie-2.0.5.tgz#9ab9d7767ded7b596cc3ad5fb79965920d820905"
+  integrity sha1-mrnXdn3te1lsw61ft5llkg2CCQU=
   dependencies:
     execa "^0.8.0"
     is-ci "^1.0.10"
@@ -5700,7 +5602,7 @@ antd-mobile@^2.3.1:
     rmc-tabs "~1.2.0"
     rmc-tooltip "~1.0.0"
 
-antd@^4.1.2, antd@^4.1.3, antd@^4.6.3, antd@^4.7.1:
+antd@^4.0.0, antd@^4.0.0-rc.4, antd@^4.6.3, antd@^4.7.1:
   version "4.8.5"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/antd/-/antd-4.8.5.tgz#eb0af8154a6dffb070c016b344d4b49b6910ce4f"
   integrity sha1-6wr4FUpt/7BwwBazRNS0m2kQzk8=
@@ -9044,13 +8946,13 @@ dva-core@2.0.3:
     redux-saga "^0.16.0"
     warning "^3.0.0"
 
-dva-immer@^0.5.0:
-  version "0.5.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/dva-immer/-/dva-immer-0.5.0.tgz#cc949b20aae266f0a1ab76385ae567dd14a16ffa"
-  integrity sha1-zJSbIKriZvChq3Y4WuVn3RShb/o=
+dva-immer@^0.4.19:
+  version "0.4.19"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/dva-immer/-/dva-immer-0.4.19.tgz#aabb52bcf69cea26f1a08a9c5b0670486e063011"
+  integrity sha1-qrtSvPac6ibxoIqcWwZwSG4GMBE=
   dependencies:
     "@babel/runtime" "^7.0.0"
-    immer "^7.0.5"
+    immer "^2.1.1"
 
 dva-loading@^3.0.20:
   version "3.0.21"
@@ -9441,7 +9343,7 @@ eslint-config-airbnb-base@14.2.0:
     object.assign "^4.1.0"
     object.entries "^1.1.2"
 
-eslint-config-airbnb-base@^14.1.0, eslint-config-airbnb-base@^14.2.0, eslint-config-airbnb-base@^14.2.1:
+eslint-config-airbnb-base@^14.2.0, eslint-config-airbnb-base@^14.2.1:
   version "14.2.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-config-airbnb-base/-/eslint-config-airbnb-base-14.2.1.tgz#8a2eb38455dc5a312550193b319cdaeef042cd1e"
   integrity sha1-ii6zhFXcWjElUBk7MZza7vBCzR4=
@@ -9459,15 +9361,6 @@ eslint-config-airbnb-typescript@^12.0.0:
     eslint-config-airbnb "18.2.0"
     eslint-config-airbnb-base "14.2.0"
 
-eslint-config-airbnb-typescript@^8.0.0:
-  version "8.0.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-config-airbnb-typescript/-/eslint-config-airbnb-typescript-8.0.2.tgz#465b17b0b1facdcca4fe23a5426bc27ab7b2b2f2"
-  integrity sha1-RlsXsLH6zcyk/iOlQmvCereysvI=
-  dependencies:
-    "@typescript-eslint/parser" "^3.1.0"
-    eslint-config-airbnb "^18.1.0"
-    eslint-config-airbnb-base "^14.1.0"
-
 eslint-config-airbnb@18.2.0:
   version "18.2.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-config-airbnb/-/eslint-config-airbnb-18.2.0.tgz#8a82168713effce8fc08e10896a63f1235499dcd"
@@ -9477,7 +9370,7 @@ eslint-config-airbnb@18.2.0:
     object.assign "^4.1.0"
     object.entries "^1.1.2"
 
-eslint-config-airbnb@^18.1.0, eslint-config-airbnb@^18.2.0:
+eslint-config-airbnb@^18.2.0:
   version "18.2.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-config-airbnb/-/eslint-config-airbnb-18.2.1.tgz#b7fe2b42f9f8173e825b73c8014b592e449c98d9"
   integrity sha1-t/4rQvn4Fz6CW3PIAUtZLkScmNk=
@@ -9486,7 +9379,7 @@ eslint-config-airbnb@^18.1.0, eslint-config-airbnb@^18.2.0:
     object.assign "^4.1.2"
     object.entries "^1.1.2"
 
-eslint-config-prettier@^6.10.0, eslint-config-prettier@^6.13.0:
+eslint-config-prettier@^6.13.0:
   version "6.15.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-config-prettier/-/eslint-config-prettier-6.15.0.tgz#7f93f6cb7d45a92f1537a70ecc06366e1ac6fed9"
   integrity sha1-f5P2y31FqS8VN6cOzAY2bhrG/tk=
@@ -9615,13 +9508,6 @@ eslint-plugin-import@^2.17.3:
     resolve "^1.17.0"
     tsconfig-paths "^3.9.0"
 
-eslint-plugin-jest@^22.4.1:
-  version "22.21.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-plugin-jest/-/eslint-plugin-jest-22.21.0.tgz#8137294645866636160487d9764224b9a43e2eb1"
-  integrity sha1-gTcpRkWGZjYWBIfZdkIkuaQ+LrE=
-  dependencies:
-    "@typescript-eslint/experimental-utils" "^1.13.0"
-
 eslint-plugin-jest@^24.0.1:
   version "24.1.3"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-plugin-jest/-/eslint-plugin-jest-24.1.3.tgz#fa3db864f06c5623ff43485ca6c0e8fc5fe8ba0c"
@@ -9677,11 +9563,6 @@ eslint-plugin-promise@^4.1.1:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-plugin-promise/-/eslint-plugin-promise-4.2.1.tgz#845fd8b2260ad8f82564c1222fce44ad71d9418a"
   integrity sha1-hF/YsiYK2PglZMEiL85ErXHZQYo=
 
-eslint-plugin-react-hooks@^2.3.0:
-  version "2.5.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-2.5.1.tgz#4ef5930592588ce171abeb26f400c7fbcbc23cd0"
-  integrity sha1-TvWTBZJYjOFxq+sm9ADH+8vCPNA=
-
 eslint-plugin-react-hooks@^4.0.4, eslint-plugin-react-hooks@^4.1.2:
   version "4.2.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.2.0.tgz#8c229c268d468956334c943bb45fc860280f5556"
@@ -9704,7 +9585,7 @@ eslint-plugin-react@7.20.0:
     string.prototype.matchall "^4.0.2"
     xregexp "^4.3.0"
 
-eslint-plugin-react@^7.13.0, eslint-plugin-react@^7.20.6:
+eslint-plugin-react@^7.20.6:
   version "7.21.5"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/eslint-plugin-react/-/eslint-plugin-react-7.21.5.tgz#50b21a412b9574bfe05b21db176e8b7b3b15bff3"
   integrity sha1-ULIaQSuVdL/gWyHbF26LezsVv/M=
@@ -11067,7 +10948,7 @@ glob@7.1.4:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@7.1.6, glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
+glob@7.1.6, glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4:
   version "7.1.6"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
   integrity sha1-FB8zuBp8JJLhJVlDB0gMRmeSeKY=
@@ -11450,7 +11331,7 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
+hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.1, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
   integrity sha1-7OCsr3HWLClpwuxZ/v9CpLGoW0U=
@@ -11825,7 +11706,12 @@ immer@7.0.5:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/immer/-/immer-7.0.5.tgz#8af347db5b60b40af8ae7baf1784ea4d35b5208e"
   integrity sha1-ivNH21tgtAr4rnuvF4TqTTW1II4=
 
-immer@^7.0.5, immer@^7.0.7:
+immer@^2.1.1:
+  version "2.1.5"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/immer/-/immer-2.1.5.tgz#0389947455c5a2c7a47f1e6f415c9d1a62a1ebed"
+  integrity sha1-A4mUdFXFosekfx5vQVydGmKh6+0=
+
+immer@^7.0.7:
   version "7.0.15"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/immer/-/immer-7.0.15.tgz#dc3bc6db87401659d2e737c67a21b227c484a4ad"
   integrity sha1-3DvG24dAFlnS5zfGeiGyJ8SEpK0=
@@ -12059,19 +11945,24 @@ internal-slot@^1.0.2:
     has "^1.0.3"
     side-channel "^1.0.2"
 
-intl-format-cache@^4.2.21:
+intl-format-cache@^4.2.19, intl-format-cache@^4.2.21:
   version "4.3.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/intl-format-cache/-/intl-format-cache-4.3.1.tgz#484d31a9872161e6c02139349b259a6229ade377"
   integrity sha1-SE0xqYchYebAITk0myWaYimt43c=
 
-intl-messageformat-parser@^3.6.4:
+intl-locales-supported@^1.8.4:
+  version "1.8.12"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/intl-locales-supported/-/intl-locales-supported-1.8.12.tgz#bbd83475a1cda61dc026309ca61f64c450af8ccb"
+  integrity sha1-u9g0daHNph3AJjCcph9kxFCvjMs=
+
+intl-messageformat-parser@^3.6.2, intl-messageformat-parser@^3.6.4:
   version "3.6.4"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/intl-messageformat-parser/-/intl-messageformat-parser-3.6.4.tgz#5199d106d816c3dda26ee0694362a9cf823978fb"
   integrity sha1-UZnRBtgWw92ibuBpQ2Kpz4I5ePs=
   dependencies:
     "@formatjs/intl-unified-numberformat" "^3.2.0"
 
-intl-messageformat@^7.0.0, intl-messageformat@^7.8.4:
+intl-messageformat@^7.0.0, intl-messageformat@^7.8.2:
   version "7.8.4"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/intl-messageformat/-/intl-messageformat-7.8.4.tgz#c29146a06b9cd26662978a4d95fff2b133e3642f"
   integrity sha1-wpFGoGuc0mZil4pNlf/ysTPjZC8=
@@ -14331,11 +14222,6 @@ lodash.tonumber@^4.0.3:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/lodash.tonumber/-/lodash.tonumber-4.0.3.tgz#0b96b31b35672793eb7f5a63ee791f1b9e9025d9"
   integrity sha1-C5azGzVnJ5Prf1pj7nkfG56QJdk=
 
-lodash.unescape@4.0.1:
-  version "4.0.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/lodash.unescape/-/lodash.unescape-4.0.1.tgz#bf2249886ce514cda112fae9218cdc065211fc9c"
-  integrity sha1-vyJJiGzlFM2hEvrpIYzcBlIR/Jw=
-
 lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
@@ -15145,7 +15031,7 @@ modify-values@^1.0.0:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha1-s5OfpgVUZHTj4+PGPWS9Q7TuYCI=
 
-moment@^2.24.0, moment@^2.25.3, moment@^2.27.0, moment@^2.29.1:
+moment@2.x, moment@^2.24.0, moment@^2.25.3, moment@^2.27.0:
   version "2.29.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha1-sr52n6MZQL6e7qZGnAdeNQBvo9M=
@@ -15792,6 +15678,13 @@ octokit-pagination-methods@^1.1.0:
   version "1.1.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/octokit-pagination-methods/-/octokit-pagination-methods-1.1.0.tgz#cf472edc9d551055f9ef73f6e42b4dbb4c80bea4"
   integrity sha1-z0cu3J1VEFX573P25CtNu0yAvqQ=
+
+omit.js@^1.0.0:
+  version "1.0.2"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/omit.js/-/omit.js-1.0.2.tgz#91a14f0eba84066dfa015bf30e474c47f30bc858"
+  integrity sha1-kaFPDrqEBm36AVvzDkdMR/MLyFg=
+  dependencies:
+    babel-runtime "^6.23.0"
 
 omit.js@^2.0.0, omit.js@^2.0.2:
   version "2.0.2"
@@ -18417,12 +18310,7 @@ react-error-overlay@^6.0.3:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-error-overlay/-/react-error-overlay-6.0.8.tgz#474ed11d04fc6bda3af643447d85e9127ed6b5de"
   integrity sha1-R07RHQT8a9o69kNEfYXpEn7Wtd4=
 
-react-fast-compare@^2.0.4:
-  version "2.0.4"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
-  integrity sha1-6EtNRVsP7BE+BALDKTUnFRlvgfk=
-
-react-fast-compare@^3.1.1:
+react-fast-compare@^3.2.0:
   version "3.2.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-fast-compare/-/react-fast-compare-3.2.0.tgz#641a9da81b6a6320f270e89724fb45a0b39e43bb"
   integrity sha1-ZBqdqBtqYyDycOiXJPtFoLOeQ7s=
@@ -18432,26 +18320,16 @@ react-frame-component@^4.1.3:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-frame-component/-/react-frame-component-4.1.3.tgz#64c09dd29574720879c5f43ee36c17d8ae74d4ec"
   integrity sha1-ZMCd0pV0cgh5xfQ+42wX2K501Ow=
 
-react-helmet-async@1.0.4:
-  version "1.0.4"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-helmet-async/-/react-helmet-async-1.0.4.tgz#079ef10b7fefcaee6240fefd150711e62463cc97"
-  integrity sha1-B57xC3/vyu5iQP79FQcR5iRjzJc=
+react-helmet-async@^1.0.7:
+  version "1.0.7"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-helmet-async/-/react-helmet-async-1.0.7.tgz#b988fbc3abdc4b704982bb74b9cb4a08fcf062c1"
+  integrity sha1-uYj7w6vcS3BJgrt0uctKCPzwYsE=
   dependencies:
-    "@babel/runtime" "^7.3.4"
+    "@babel/runtime" "^7.11.2"
     invariant "^2.2.4"
     prop-types "^15.7.2"
-    react-fast-compare "^2.0.4"
+    react-fast-compare "^3.2.0"
     shallowequal "^1.1.0"
-
-react-helmet@^6.1.0:
-  version "6.1.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-helmet/-/react-helmet-6.1.0.tgz#a750d5165cb13cf213e44747502652e794468726"
-  integrity sha1-p1DVFlyxPPIT5EdHUCZS55RGhyY=
-  dependencies:
-    object-assign "^4.1.1"
-    prop-types "^15.7.2"
-    react-fast-compare "^3.1.1"
-    react-side-effect "^2.1.0"
 
 react-hyperscript@^3.2.0:
   version "3.2.0"
@@ -18465,22 +18343,24 @@ react-icons@3.11.0:
   dependencies:
     camelcase "^5.0.0"
 
-react-intl@3.12.1:
-  version "3.12.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-intl/-/react-intl-3.12.1.tgz#e9a783ea20302e9da25e4eda59e5593a43d2ec80"
-  integrity sha1-6aeD6iAwLp2iXk7aWeVZOkPS7IA=
+react-intl@3.12.0:
+  version "3.12.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-intl/-/react-intl-3.12.0.tgz#98ef1c94434cc25a8c67448e1e283e6bfe11b2fc"
+  integrity sha1-mO8clENMwlqMZ0SOHig+a/4Rsvw=
   dependencies:
     "@formatjs/intl-displaynames" "^1.2.0"
-    "@formatjs/intl-listformat" "^1.4.1"
-    "@formatjs/intl-relativetimeformat" "^4.5.9"
-    "@formatjs/intl-unified-numberformat" "^3.2.0"
-    "@formatjs/intl-utils" "^2.2.0"
+    "@formatjs/intl-listformat" "^1.3.7"
+    "@formatjs/intl-relativetimeformat" "^4.5.7"
+    "@formatjs/intl-unified-numberformat" "^3.0.4"
+    "@formatjs/intl-utils" "^2.0.4"
+    "@formatjs/macro" "^0.2.6"
     "@types/hoist-non-react-statics" "^3.3.1"
     "@types/invariant" "^2.2.31"
-    hoist-non-react-statics "^3.3.2"
-    intl-format-cache "^4.2.21"
-    intl-messageformat "^7.8.4"
-    intl-messageformat-parser "^3.6.4"
+    hoist-non-react-statics "^3.3.1"
+    intl-format-cache "^4.2.19"
+    intl-locales-supported "^1.8.4"
+    intl-messageformat "^7.8.2"
+    intl-messageformat-parser "^3.6.2"
     shallow-equal "^1.2.1"
 
 react-is@^16.12.0, react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
@@ -18592,11 +18472,6 @@ react-router@5.2.0:
     react-is "^16.6.0"
     tiny-invariant "^1.0.2"
     tiny-warning "^1.0.0"
-
-react-side-effect@^2.1.0:
-  version "2.1.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-side-effect/-/react-side-effect-2.1.1.tgz#66c5701c3e7560ab4822a4ee2742dee215d72eb3"
-  integrity sha1-ZsVwHD51YKtIIqTuJ0Le4hXXLrM=
 
 react-transition-group@^4.4.1:
   version "4.4.1"
@@ -19766,11 +19641,6 @@ semver-diff@^3.1.1:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/semver/-/semver-5.7.1.tgz#a954f931aeba508d307bbf069eff0c01c96116f7"
   integrity sha1-qVT5Ma66UI0we78Gnv8MAclhFvc=
 
-semver@5.5.0:
-  version "5.5.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/semver/-/semver-5.5.0.tgz#dc4bbc7a6ca9d916dee5d43516f0092b58f7b8ab"
-  integrity sha1-3Eu8emyp2Rbe5dQ1FvAJK1j3uKs=
-
 semver@6.0.0:
   version "6.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/semver/-/semver-6.0.0.tgz#05e359ee571e5ad7ed641a6eec1e547ba52dea65"
@@ -20424,7 +20294,7 @@ stealthy-require@^1.1.1:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/stealthy-require/-/stealthy-require-1.1.1.tgz#35b09875b4ff49f26a777e509b3090a3226bf24b"
   integrity sha1-NbCYdbT/SfJqd35QmzCQoyJr8ks=
 
-store@2.0.12:
+store@^2.0.12:
   version "2.0.12"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/store/-/store-2.0.12.tgz#8c534e2a0b831f72b75fc5f1119857c44ef5d593"
   integrity sha1-jFNOKguDH3K3X8XxEZhXxE711ZM=
@@ -20851,7 +20721,7 @@ stylelint-order@^4.0.0:
     postcss "^7.0.31"
     postcss-sorting "^5.0.1"
 
-stylelint@^13.0.0, stylelint@^13.2.1, stylelint@^13.7.0:
+stylelint@^13.0.0, stylelint@^13.7.0:
   version "13.8.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/stylelint/-/stylelint-13.8.0.tgz#446765dbe25e3617f819a0165956faf2563ddc23"
   integrity sha1-RGdl2+JeNhf4GaAWWVb68lY93CM=
@@ -21704,7 +21574,7 @@ typescript@4.0.3:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/typescript/-/typescript-4.0.3.tgz#153bbd468ef07725c1df9c77e8b453f8d36abba5"
   integrity sha1-FTu9Ro7wdyXB35x36LRT+NNqu6U=
 
-typescript@^3.5.3, typescript@^3.8.3:
+typescript@^3.5.3:
   version "3.9.7"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
   integrity sha1-mNYApevcOPQMsndSLxLcgA6eJfo=
@@ -21748,7 +21618,7 @@ umi-plugin-pro-block@^2.0.1:
   dependencies:
     debug "^4.1.0"
 
-umi-request@1.3.5, umi-request@^1.2.14:
+umi-request@1.3.5, umi-request@^1.2.14, umi-request@^1.2.17:
   version "1.3.5"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/umi-request/-/umi-request-1.3.5.tgz#2af7e9fbaaeed0086c07d8c4876b3af65c084aea"
   integrity sha1-Kvfp+6ru0AhsB9jEh2s69lwISuo=
@@ -22136,7 +22006,7 @@ use-media-antd-query@1.0.2:
   dependencies:
     react-responsive "^8.0.1"
 
-use-media-antd-query@^1.0.2, use-media-antd-query@^1.0.3:
+use-media-antd-query@^1.0.1, use-media-antd-query@^1.0.2, use-media-antd-query@^1.0.3:
   version "1.0.3"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/use-media-antd-query/-/use-media-antd-query-1.0.3.tgz#d9b86f4caf53056a33dc20145b7d376d88c5e50d"
   integrity sha1-2bhvTK9TBWoz3CAUW303bYjF5Q0=
