@@ -354,17 +354,15 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   /**
    * 获取变量数据
    */
-  getVariableData = async (filter: string[] = []) => {
-    const { 
-      pageMetadata: { 
-        varRely 
-      }, 
-      flatLayoutItems 
-    } = this.props;
-    console.log(varRely);
+  getVariableData = async (filter: string[] = [], options) => {
+    const {
+      varRely = this.props.pageMetadata.varRely,
+      flatLayoutItems = this.props.flatLayoutItems
+    } = options || {};
     /** 获取控件变量 */
     const getWidgetVariable = () => {
       const varList = [];
+      if(!varRely) return [];
       for(const varID in varRely ){
         if (!Object.prototype.hasOwnProperty.call(varRely, varID)) continue;
         const variableItems = varRely[varID];
@@ -404,6 +402,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     };
     /** 获取输入参数变量 */
     const getInputVariable = () => {
+      if(!varRely) return [
+        { alias: '页面模式', type: 'pageInput', varType: 'string', realVal: 'insert', code: 'var.page.mode', id: 'var.page.0.mode' }
+      ];
       const varList = [];
       for(const id in varRely ){
         if (!Object.prototype.hasOwnProperty.call(varRely, id)) continue;
