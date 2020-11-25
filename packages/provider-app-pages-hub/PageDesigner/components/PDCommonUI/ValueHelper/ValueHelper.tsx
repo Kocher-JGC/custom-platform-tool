@@ -114,8 +114,8 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
     return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
   };
   const constructVarItem = (item) => {
-    const { id, alias } = item;
-    return { value: id, title: alias };
+    const { id, title } = item;
+    return { value: id, title };
   };
   useEffect(() => {
     // const selectedKey = 'customValue'; 
