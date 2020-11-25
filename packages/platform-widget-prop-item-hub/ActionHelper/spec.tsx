@@ -15,8 +15,8 @@ const whichAttr = 'actionRef';
 export class ActionHelperSpec {
   render(ctx: PropItemRenderContext) {
     const {
-      changeEntityState, 
       editingWidgetState,
+      changeEntityState,
       platformCtx: {
         meta: { takeMeta, genMetaRefID, changePageMeta }
       },

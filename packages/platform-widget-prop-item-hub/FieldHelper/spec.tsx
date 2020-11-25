@@ -31,7 +31,7 @@ export class FieldHelperSpec {
     return new Promise((resolve, reject) => {
       for (const sID in schema) {
         const fieldCode = _selectedField.column?.fieldCode;
-        console.log(_selectedField.column);
+        // console.log(_selectedField.column, schema);
         if (!fieldCode || sID.indexOf(fieldCode) !== -1) {
           reject();
           break;
@@ -88,7 +88,7 @@ export class FieldHelperSpec {
                           type: 'create/rm',
                           data: _selectedField,
                           metaAttr: 'schema',
-                          metaID: currMetaRefID,
+                          // metaID: currMetaRefID,
                           // 将上一个 meta 删除
                           rmMetaID: prevMetaRefID
                         });

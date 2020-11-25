@@ -74,92 +74,109 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     });
   }
 
+  renderColumnSelector = () => {
+    const { usingColumns, datasourceMeta } = this.state;
+    if(!datasourceMeta) return null;
+    const { columns } = datasourceMeta;
+    return (
+      <DropdownWrapper 
+        outside
+        overlay={(helper) => {
+          return (
+            <div
+              className="column-selector-container"
+            >
+              {
+                columns.map((col, idx) => {
+                  const { name, id } = col;
+                  const isSelected = usingColumns.find(uCol => uCol.id === id);
+                  return (
+                    <div 
+                      onClick={(e) => {
+                        !isSelected && this.setCol(col, id);
+                      }}
+                      className={`list-item ${isSelected ? 'disabled' : ''}`}
+                      key={id}
+                    >
+                      {name}
+                    </div>
+                  );
+                })
+              }
+            </div>
+          );
+        }}
+      >
+        <span 
+          onClick={e => {
+          
+          }}
+        >
+          <PlusOutlined />
+        </span>
+      </DropdownWrapper>
+    );
+  }
+
+  renderSelectedColumnEditor = () => {
+    const { usingColumns, datasourceMeta } = this.state;
+    if(!datasourceMeta) return null;
+    return (
+      <span id="sortable_list_container" className="flex">
+        {
+          usingColumns.map((col, idx) => {
+            if(!col) return null;
+            // console.log(col);
+            const { name, id } = col;
+            const isActive = usingColumns.find((item) => item && item.id === id);
+            return (
+              <DropdownWrapper
+                key={id}
+                className={`column-item idx-${idx} ${isActive ? 'active' : ''}`}
+                overlay={(helper) => {
+                  return (
+                    <div className="column-setting-helper-container">
+                      <div className="item">
+                          修改显示名
+                      </div>
+                    </div>
+                  );
+                }}
+              >
+                <span style={{ color: 'inherit' }}>
+                  <DownOutlined 
+                    className="selection __action"
+                  />
+                  {name}
+                  <CloseOutlined
+                    className="close __action"
+                    onClick={e => {
+                      this.setCol(col, id);
+                    }}
+                  />
+                </span>
+              </DropdownWrapper>
+            );
+          })
+        }
+      </span>
+    );
+  }
+
   /**
    * column 的渲染器
    * TODO: 完善更强的 column 的数据结构抽象
    */
   renderSetColumn = () => {
-    const { usingColumns, datasourceMeta } = this.state;
+    const { datasourceMeta } = this.state;
     if(!datasourceMeta) return null;
-    const { columns } = datasourceMeta;
     return (
       <div className="column-selector p-4 flex flex-wrap">
-        <span className="title">显示字段</span>
-        <DropdownWrapper 
-          outside
-          overlay={(helper) => {
-            return (
-              <div
-                className="column-selector-container"
-              >
-                {
-                  columns.map((col, idx) => {
-                    const { name, id } = col;
-                    const isSelected = usingColumns.find(uCol => uCol.id === id);
-                    return (
-                      <div 
-                        onClick={(e) => {
-                          !isSelected && this.setCol(col, id);
-                        }}
-                        className={`list-item ${isSelected ? 'disabled' : ''}`}
-                        key={id}
-                      >
-                        {name}
-                      </div>
-                    );
-                  })
-                }
-              </div>
-            );
-          }}
-        >
-          <span 
-            onClick={e => {
-          
-            }}
-          >
-            <PlusOutlined />
-          </span>
-        </DropdownWrapper>
-        <span id="sortable_list_container">
-          {
-            usingColumns.map((col, idx) => {
-              if(!col) return null;
-              // console.log(col);
-              const { name, id } = col;
-              const isActive = usingColumns.find((item) => item && item.id === id);
-              return (
-                <DropdownWrapper
-                  key={id}
-                  overlay={(helper) => {
-                    return (
-                      <div className="column-setting-helper-container">
-                        <div className="item">
-                          修改显示名
-                        </div>
-                      </div>
-                    );
-                  }}
-                >
-                  <span
-                    className={`column-item idx-${idx} ${isActive ? 'active' : ''}`}
-                  >
-                    <DownOutlined 
-                      className="selection __action"
-                    />
-                    {name}
-                    <CloseOutlined
-                      className="close __action"
-                      onClick={e => {
-                        this.setCol(col, id);
-                      }}
-                    />
-                  </span>
-                </DropdownWrapper>
-              );
-            })
-          }
-        </span>
+        <div>
+          <span className="title">显示字段</span>
+          {this.renderColumnSelector()}
+        </div>
+        {this.renderSelectedColumnEditor()}
       </div>
     );
   }
@@ -181,6 +198,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
         });
       }
     }
+    // console.log(resData);
     return resData;
   }
 
@@ -217,7 +235,11 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
         {/* <div className="p10">
           <Button>变量</Button>
         </div> */}
-        <GeneralTableComp columns={usingColumns} rowKey="id" dataSource={rowData} />
+        <GeneralTableComp 
+          rowKey="id" 
+          columns={usingColumns} 
+          dataSource={rowData}
+        />
         <div className="action-area p10">
           <Button
             onClick={(e) => {

@@ -197,7 +197,7 @@
   dependencies:
     use-media-antd-query "^1.0.3"
 
-"@ant-design/pro-table@2.11.4", "@ant-design/pro-table@^2.9.7":
+"@ant-design/pro-table@2.11.4":
   version "2.11.4"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-table/-/pro-table-2.11.4.tgz#d1825fea8aa017ad35a86528d5e0e0625a557836"
   integrity sha1-0YJf6oqgF601qGUo1eDgYlpVeDY=
@@ -4028,12 +4028,19 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha1-fuMwunyq+5gJC+zoal7kQRWQTCw=
 
-"@types/react-dom@17.0.0", "@types/react-dom@^17.0.0":
+"@types/react-dom@17.0.0":
   version "17.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-dom/-/react-dom-17.0.0.tgz#b3b691eb956c4b3401777ee67b900cb28415d95a"
   integrity sha1-s7aR65VsSzQBd37me5AMsoQV2Vo=
   dependencies:
     "@types/react" "*"
+
+"@types/react-dom@^16.9.8":
+  version "16.9.10"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-dom/-/react-dom-16.9.10.tgz#4485b0bec3d41f856181b717f45fd7831101156f"
+  integrity sha1-RIWwvsPUH4VhgbcX9F/XgxEBFW8=
+  dependencies:
+    "@types/react" "^16"
 
 "@types/react-hyperscript@3.0.4":
   version "3.0.4"
@@ -4097,10 +4104,18 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@17.0.0", "@types/react@^17.0.0":
+"@types/react@*", "@types/react@17.0.0":
   version "17.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react/-/react-17.0.0.tgz#5af3eb7fad2807092f0046a1302b7823e27919b8"
   integrity sha1-WvPrf60oBwkvAEahMCt4I+J5Gbg=
+  dependencies:
+    "@types/prop-types" "*"
+    csstype "^3.0.2"
+
+"@types/react@^16", "@types/react@^16.9.43":
+  version "16.14.2"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react/-/react-16.14.2.tgz#85dcc0947d0645349923c04ccef6018a1ab7538c"
+  integrity sha1-hdzAlH0GRTSZI8BMzvYBihq3U4w=
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
