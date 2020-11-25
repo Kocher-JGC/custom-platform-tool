@@ -27,10 +27,10 @@ export const genRenderColumn = (usingColumns) => {
   const resData = [];
   const colItem = {};
   usingColumns.forEach((col, idx) => {
-    const { name, fieldCode, ...other } = col;
+    const { name, fieldCode } = col;
     colItem[fieldCode] = '';
     resData.push({
-      ...other,
+      ...col,
       title: name,
       dataIndex: fieldCode,
     });

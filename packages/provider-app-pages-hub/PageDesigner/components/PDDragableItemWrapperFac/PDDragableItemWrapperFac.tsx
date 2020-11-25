@@ -6,6 +6,8 @@
 
 import React from 'react';
 import classnames from 'classnames';
+import { Button } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { TEMP_ENTITY_ID } from '@engine/visual-editor/data-structure';
 import {
   DragItemComp,
@@ -86,14 +88,39 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
           </WidgetRenderer>
           <div className="action-area">
             <PDCustomEditorLoader
+              // onClick={(e) => {
+              //   onItemClick(e, actionCtx);
+              // }}
               propEditor={propEditor}
               entityState={entityState}
               changeEntityState={(changeVal) => {
                 // updateEntityState(changeVal);
                 UpdateEntityState(updateCtx, changeVal);
               }}
-            />
-            <span
+            >
+              <span className="t_green">
+                <EditOutlined 
+                  className="action-btn"
+                />
+              </span>
+              {/* <Button type="primary" shape="circle" icon={} /> */}
+            </PDCustomEditorLoader>
+            <span className="t_red">
+              <DeleteOutlined
+                className="action-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(e, actionCtx);
+                }}
+              />
+            </span>
+            {/* <Button 
+              
+              type="primary" 
+              shape="circle" icon={}
+            /> */}
+            
+            {/* <span
               className="default btn red"
               onClick={(e) => {
                 e.stopPropagation();
@@ -101,7 +128,7 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
               }}
             >
               删除
-            </span>
+            </span> */}
           </div>
         </DragItemComp>
       </div>
