@@ -145,7 +145,7 @@ export const PageVariableSelector = ({
     const { id, ...oldData } = record;
     openModal(mode, record).then(data=>{
       platformCtx.meta.changePageMeta({
-        type: 'e',
+        type: 'update',
         metaAttr: 'varRely',
         data: { ...oldData, ...data },
         metaID: id
@@ -160,7 +160,8 @@ export const PageVariableSelector = ({
   const handleDelete = (record) => {
     platformCtx.meta.changePageMeta({
       metaAttr: 'varRely',
-      rmMetaID: record.id
+      rmMetaID: record.id,
+      type: 'rm'
     });
     initVariableList();
   };
