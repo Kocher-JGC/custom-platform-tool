@@ -143,19 +143,6 @@ export class PageActionSelector extends React.Component {
     this.listFormRef.current?.setFieldsValue({list: listForShow});
   }
 
-  handleMoveUp = (index) => {
-    const list = this.state.list.slice();
-    const prev = list.splice(index-1, 1);
-    list.splice(index,0,prev[0]);
-    this.setState({
-      list 
-    });
-  }
-
-  handleMoveDown = (index) => {
-    this.handleMoveUp(index+1);
-  }
-
   getIndexById = (list, id) => {
     let index = -1;
     list.forEach((item, loopIndex)=>{
@@ -236,12 +223,14 @@ export class PageActionSelector extends React.Component {
     });
   }
   handleFinish = () => {
-    this.props.platformCtx.meta.changePageMeta({
-      type: 'replace',
-      metaAttr: 'actions',
-      datas: this.constructActions(),
-    });
-    message.success('动作配置成功');
+    this.listFormRef.current?.validateFields().then(()=>{
+      this.props.platformCtx.meta.changePageMeta({
+        type: 'replace',
+        metaAttr: 'actions',
+        datas: this.constructActions(),
+        });
+      message.success('动作配置成功');
+      });    
   };
 
   render () {
@@ -292,14 +281,17 @@ export class PageActionSelector extends React.Component {
           <div className="flex"></div>
           <Button
             type="primary"
+            className="mr-2"
             onClick={this.handlePlus}
           >
             新增
           </Button>
+          <Button type="primary" onClick={this.handleFinish}>
+            保存
+          </Button>
         </Form>
         <Form 
           ref={this.listFormRef}
-          onFinish={this.handleFinish}
         >
           <Table
             size="small"
@@ -494,13 +486,6 @@ export class PageActionSelector extends React.Component {
               }
             ]}
           />
-          <Form.Item {...tailLayout} style={{ marginBottom: 0, marginTop: 5 }}>
-            <Space className="float-right">
-              <Button type="primary" htmlType="submit">
-                确定
-              </Button>
-            </Space>
-          </Form.Item>
         </Form>            
         
       </div>      
