@@ -31,9 +31,10 @@ export type ChangeWidgetType = (widgetType: string) => void
 
 export type VariableType = 'system'|'page'|'pageInput'|'widget'
 export type VariableItem = {
+  title: string
   code: string
   id: string
-  alias: string
+  alias?: string
   varType: 'number'|'string'|'date'|'dateTime'
   realVal?: number|string
   type: VariableType
