@@ -24,6 +24,10 @@ export const FormInputMeta = CreateWidgetPropItemRely({
           title: '文本框'
         },
       },
+      {
+        propID: 'prop_unit_value',
+        editAttr: ['unit']
+      },
       { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       { propID: 'prop_check_fixed_rule', editAttr: ['checkFixedRule'] },
       { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },

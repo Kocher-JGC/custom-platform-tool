@@ -22,6 +22,10 @@ export const FormInputNumberMeta = CreateWidgetPropItemRely({
           title: '数字框'
         },
       },
+      {
+        propID: 'prop_unit_value',
+        editAttr: ['unit']
+      },
       { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
       { propID: 'prop_widget_type', editAttr: ['widgetType'] },
       { propID: 'prop_data_type', editAttr: ['dataType'] },
