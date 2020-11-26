@@ -9,7 +9,7 @@ import { VariableItem } from '@provider-app/page-designer/platform-access';
  * 可用的值的类型
  */
 const SELECT_TYPE_MENU = [
-  { label: '自定义', value: 'customValue', key: 'customValue' },
+  { label: '自定义', value: 'realVal', key: 'realVal' },
   { label: '表达式', value: 'exp', key: 'exp' },
   { label: '变量', value: 'variable', key: 'variable' },
 ];
@@ -31,12 +31,12 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   editedState,
   onChange,
 }) => {
-  const [selectedItem, setSelectedItem] = useState('customValue');
+  const [selectedItem, setSelectedItem] = useState('realVal');
   const [variableList, setVariableList] = useState([]);
   const { exp, realVal, variable } = editedState;
   let Comp;
   switch (selectedItem) {
-    case 'customValue':
+    case 'realVal':
       Comp = (
         <Input 
           className="custom-value"
@@ -101,7 +101,14 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       );
       break;
   }
-  const transferVars = () => {
+  const initVariableList = () => {
+    const constructVarList = (list)=>{
+      return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
+    };
+    const constructVarItem = (item) => {
+      const { id, title } = item;
+      return { value: id, title };
+    };
     return [
       { title: '自定义变量', value: 'customed', variableList: variableData.customed, disabled: true },
       { title: '页面变量', value: 'page', variableList: variableData.page, disabled: true },
@@ -113,13 +120,6 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       return { ...rest, children: constructVarList(variableList) };
     });
   };
-  const constructVarList = (list)=>{
-    return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
-  };
-  const constructVarItem = (item) => {
-    const { id, title } = item;
-    return { value: id, title };
-  };
   useEffect(() => {
     // const selectedKey = 'customValue'; 
     const keyMenu = SELECT_TYPE_MENU.map(item=>item.value);
@@ -127,7 +127,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       if(!editedState[key] || !keyMenu.includes(key)) continue;
       setSelectedItem(key);
     }
-    setVariableList(transferVars());
+    setVariableList(initVariableList());
   }, []);
   return (
     <div className="value-helper">
