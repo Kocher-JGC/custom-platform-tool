@@ -12,7 +12,7 @@ export interface TransfMapping {
 
 /**
  * 基础数据类型的引用值转换
- * user{普通值不需要转}、@(schema){页面运行时状态}、@(meta){元数据描述}、@(ctx){当前上下文}
+ * user{普通值不需要转}、@(schema){页面运行时状态}、@(interMeta){元数据描述}、@(ctx){当前上下文}
  * 如何支持额外情况:
  * 1. username 转成 @(schema).did1 「映射一个个转?」
  */
@@ -42,7 +42,7 @@ export type Ref2Value = Ref2ValueOfObj | Ref2ValueOfArr | Ref2ValueOfFoundation;
 export type Ref2ValueOfComplex = Ref2ValueOfObj | Ref2ValueOfArr;
 
 
-export interface DataCollection {
+export interface Ref2ValueCollection {
   [id: string]: Ref2ValueOfComplex
 }
 

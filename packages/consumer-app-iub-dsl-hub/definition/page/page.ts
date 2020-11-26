@@ -5,9 +5,9 @@ import { FlowCollection } from '../flow';
 import { Schema } from "../schema";
 import { LayoutContent } from "../layout";
 import { PageVariable } from '../page-variable';
-import { InterfaceMetaCollection } from '../interface';
+import { InterMetaCollection } from '../interface';
 /** 公共的hub */
-import { ConditionCollection, LowcodeCollection, DataCollection, InterCollection } from '../hub';
+import { ConditionCollection, LowcodeCollection, Ref2ValueCollection, InterCollection } from '../hub';
 
 export interface PageCommunication {
   pageInfo: {
@@ -38,7 +38,7 @@ export interface TypeOfIUBDSL extends PageMetadata {
   /**
    * 页面所用到的接口的元数据的定义
    */
-  interfaceMetaCollection: InterfaceMetaCollection;
+  interMetaCollection: InterMetaCollection;
 
   /** 页面生命周期 */
   pageLifecycle: any;
@@ -57,8 +57,8 @@ export interface TypeOfIUBDSL extends PageMetadata {
   
   /** 公共条件描述 */
   conditionCollection: ConditionCollection;
-  /** 获取值的时候的配置{数据收集的描述} */
-  dataCollection: DataCollection;
+  /** 数据转换的描述配置「获取值/赋值」  */
+  ref2ValueCollection: Ref2ValueCollection;
   /** 低代码的描述 */
   lowcodeCollection: LowcodeCollection;
   /** 页面所有接口请求的配置的描述 */

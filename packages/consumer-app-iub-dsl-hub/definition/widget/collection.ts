@@ -5,7 +5,7 @@ import { WidgetEvents } from "../events";
  * 组件元素，行为载体
  */
 export interface WidgetDef {
-  id: string;
+  widgetId: string;
   /** UI隔离的唯一引用标识 */
   widgetRef: AllWidgetType;
   /** widget唯一编码 */

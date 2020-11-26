@@ -4,7 +4,7 @@ import { Ref2ValueOfObj } from '../../hub';
  * 设置值时, 必须是对象 ComplexType.structObject
  * 对于 IUBStore.set时候而言 key:value 都是固定的
  * 但是实际情况
- * key: username/@(meta)/@(payload)/@(schema) 「key一般都是配置的」
+ * key: username/@(interMeta)/@(payload)/@(schema) 「key一般都是配置的」
  * value: '张三'/lowCode/exp/@(payload)
  */
 

@@ -1,14 +1,14 @@
-import { InterfaceMeta } from './interface-meta';
-import { InterfaceRefRelation } from './interace-relation';
+import { InterMeta } from './interface-meta';
+import { InterRefRelation } from './interace-relation';
 
 export * from './interface-meta';
 export * from './interace-relation';
 
-export interface InterfaceMetaCollection {
-  meta: {
-    [srt: string]: InterfaceMeta
+export interface InterMetaCollection {
+  metaList: {
+    [srt: string]: InterMeta
   };
   refRelation: {
-    [refId: string]: InterfaceRefRelation;
+    [refId: string]: InterRefRelation;
   };
 }
