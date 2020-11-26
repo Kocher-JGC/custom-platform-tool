@@ -8,7 +8,7 @@ export const entityParams2UpdateObj = (entityStateItemParams: NextEntityStateTyp
 
   _entityStateItemParams.forEach((param) => {
     const { value, attr } = param;
-    resData[attr] = value || null;
+    resData[attr] = typeof value === 'undefined' ? null : value;
   });
   
   return resData;

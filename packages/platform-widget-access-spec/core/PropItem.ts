@@ -6,6 +6,7 @@ import { mergeDeep } from '@infra/utils/tools';
 export const PropItem = (propItemMeta: PropItemMeta) => {
   const resData = { ...propItemMeta };
   return (SrouceClass): any => {
+    // Reflect.defineMetadata('print', 'asdasd', SrouceClass);
     // Reflect.defineMetadata();
     return mergeDeep<PropItemMeta>(resData, new SrouceClass(propItemMeta));
     // return Object.assign(resData, new SrouceClass());

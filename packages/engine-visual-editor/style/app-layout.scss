@@ -35,6 +35,7 @@
       left: $layout-left-panel-width;
       right: $layout-right-panel-width;
       bottom: 0;
+      overflow-x: auto;
       // width: $layout-left-panel-width;
     }
     .prop-panel {
@@ -55,5 +56,6 @@
 .canvas-stage-container {
   // max-height: 100vh;
   height: 100%;
+  // min-width: 680px;
   overflow-y: auto;
 }
