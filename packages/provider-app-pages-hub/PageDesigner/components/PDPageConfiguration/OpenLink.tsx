@@ -47,7 +47,7 @@ type PageItem = {
   label: string, value: string, key: string
 }
 type InputVarItem = {
-  alias: string, id: string
+  alias: string, id: string, varType: string
 }
 type InputVarConfig = {
   [key: string]: {
@@ -72,7 +72,6 @@ const InputVarList = ({
   /** 当前页面变量数据 */
   const [variableData, setVariableData] = useState({});
   useEffect(() => {
-    console.log(2);
     updateVarList();
     /** 获取当前页面变量 */
     platformCtx.meta.getVariableData([]).then(res=>{
@@ -86,7 +85,6 @@ const InputVarList = ({
       return item.id.split('.')[2]-0;
     };
     const pageRes = await getPageDetailService(pageId);
-    console.log(pageRes);
     const { varRely } = pageRes.pageContent?.meta || {};
     const { pageInput } = await platformCtx.meta.getVariableData(['widget', 'system', 'page', 'customed'], { varRely });
     setInputVarList(pageInput.sort((a, b)=>getInputVarOrder(b)-getInputVarOrder(a)));
@@ -155,7 +153,6 @@ export const OpenLink = ({
     if(pageArea === 'pageInApp'){
       pageNameCn = pageList.filter(item=>item.value === link)[0]?.label;
     }
-    console.log(inputVarConfig);
     onSuccess({ ...values, paramMatch: inputVarConfig }, `以 ${openTypeCn} 打开 ${pageNameCn}`);
   };
 
@@ -169,7 +166,6 @@ export const OpenLink = ({
     }, ['openType', 'pageArea', 'pageType', 'link']);
     form.setFieldsValue(values);
     setInputVarConfig(data?.paramMatch || {});
-    console.log(data?.paramMatch);
   }, []);
 
   /** 
@@ -282,8 +278,6 @@ export const OpenLink = ({
           shouldUpdate={(prev, current)=>prev.link !== current.link || prev.pageArea !== current.pageArea}
         >
           {({ getFieldValue })=>{
-            console.log(1);
-            console.log(getFieldValue('link'));
             return getFieldValue('link') && getFieldValue('pageArea')==='pageInApp' ? (
               <InputVarList 
                 platformCtx={platformCtx}
