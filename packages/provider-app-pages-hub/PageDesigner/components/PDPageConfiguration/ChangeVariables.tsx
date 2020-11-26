@@ -6,7 +6,7 @@ import { VariableEditor } from './PageVariableEditor';
 import { nanoid } from 'nanoid';
 import { GetVariableData, VariableItem } from '@provider-app/page-designer/platform-access';
 import { ChangeMetadataOptions } from "@engine/visual-editor/core";
-import { ValueHelper } from '@provider-app/page-designer/components/PDCommonUI';
+import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
 export enum VarAttrTypeMap {
   string = '字符串',
   number = '数字',

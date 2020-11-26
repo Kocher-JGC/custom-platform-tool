@@ -5,7 +5,7 @@ import {
 import pick from 'lodash/pick';
 import { getPageListServices } from '@provider-app/page-manager/services/apis';
 import { getPageDetailService } from "@provider-app/services";
-import { ValueHelper } from '@provider-app/page-designer/components/PDCommonUI';
+import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
 import { VarAttrTypeMap } from './PageVariableSelector';
 import { SyncOutlined } from '@ant-design/icons';
 
