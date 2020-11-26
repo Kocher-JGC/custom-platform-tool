@@ -6,6 +6,7 @@ import { OpenLink } from './OpenLink';
 import { DisplayControl } from './DisplayControl';
 import { SubmitData } from './SubmitData';
 import { FormInstance } from 'antd/lib/form';
+import { ChangeVariables } from './ChangeVariables';
 
 const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
@@ -77,7 +78,7 @@ export class PageActionSelector extends React.Component {
     return [
       { label: '打开链接', value: 'openPage', key: 'openPage' },
       { label: '刷新控件（未实现）', value: 'refreshControl', key: 'refreshControl' },
-      { label: '赋值给控件', value: 'setControlData', key: 'setControlData' },
+      { label: '赋值给变量', value: 'changeVariables', key: 'changeVariables' },
       { label: '数据提交', value: 'submitData', key: 'submitData' },
       { label: '显示隐藏', value: 'displayControl', key: 'displayControl' },
       { label: '刷新页面', value: 'refreshPage', key: 'refreshPage' },
@@ -89,6 +90,9 @@ export class PageActionSelector extends React.Component {
 
   getActionConfig = (action) => {
     const config = {
+      changeVariables: {
+        ModalContent: ChangeVariables
+      },
       openPage: {
         ModalContent: OpenLink
       },
