@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PopModelSelector } from '@infra/ui';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { ActionSettingPanel } from './ActionSettingPanel';
-
-const whichAttr = 'actionRef';
+import { EventSettingPanel } from './EventSettingPanel';
+import './style.scss';
+const whichAttr = 'eventRef';
 
 @PropItem({
   id: 'prop_action_config',
@@ -18,51 +18,93 @@ export class ActionHelperSpec {
       changeEntityState, 
       editingWidgetState,
       platformCtx: {
-        meta: { takeMeta, genMetaRefID, changePageMeta }
+        meta: { takeMeta, changePageMeta }
       },
+      widgetEntity
     } = ctx;
-    const metaRefID = editingWidgetState[whichAttr];
-    const actionConfig = metaRefID ? takeMeta({
-      metaAttr: 'actions',
-      metaRefID
-    }) : undefined;
-    const datasource = takeMeta({
-      metaAttr: 'dataSource',
-    });
-    const interDatasources = Object.values(datasource);
-
+    console.log(ctx);
+    /** 获取页面全部的动作列表 */
+    const getInterActions = () => {
+      const actions = takeMeta({
+        metaAttr: 'actions',
+      });
+      if(!actions) return [];
+      const actionList = [];
+      for(const key in actions){
+        const { [key]: { name: label } } = actions;
+        actionList.push({
+          label, value: key, key
+        });
+      }
+      return actionList;
+    };
+    /** 获取页面全部的事件列表 */
+    const interEvents = takeMeta({
+      metaAttr: 'events',
+    }) || {};
+    /** 组件所支持的事件列表 */
+    const supportEvents = widgetEntity.eventAttr || [];
+    const handleCreate = (param)=>{
+      const { eventsRef } = param || {};
+      changeEntityState({
+        attr: whichAttr,
+        value: eventsRef
+      });
+    };
+    const handleUpdate = (param) => {
+      const { event, eventConfig } = param || {};
+      changePageMeta({
+        metaAttr: 'events',
+        type: 'update',
+        data: eventConfig,
+        metaID: event
+      });
+    };
+    const handleRemove = (param) => {
+      const { eventRef, eventID } = param || {};
+      changePageMeta({
+        metaAttr: 'events',
+        type: 'rm',
+        rmMetaID: eventID
+      });
+      changeEntityState({
+        attr: whichAttr,
+        value: eventRef
+      });
+    };
+    const handleSubmit = {
+      'create': handleCreate,
+      'update': handleUpdate,
+      'remove': handleRemove
+    };
     return (
       <div>
         <PopModelSelector
           modelSetting={{
             title: '设置动作',
-            width: 500,
+            width: 350,
             position: 'right',
             type: 'side',
+            maxHeightable: false,
+            style:{ maxHeight: '100vh' },
             children: ({ close }) => {
-              return (
-                <ActionSettingPanel
-                  interDatasources={interDatasources}
-                  defaultConfig={actionConfig}
-                  onSubmit={(actionSetting) => {
-                    const nextMetaID = changePageMeta({
-                      type: 'create',
-                      data: actionSetting,
-                      metaID: metaRefID,
-                      metaAttr: 'actions',
-                    });
-                    changeEntityState({
-                      attr: whichAttr,
-                      value: nextMetaID
-                    });
-                    close();
-                  }}
-                />
-              );
+              return React.useMemo(()=>{
+                return (
+                  <EventSettingPanel
+                    supportEvents = {supportEvents}
+                    interActions={getInterActions()}
+                    interEvents={interEvents}
+                    defaultConfig={editingWidgetState[whichAttr] || {}}
+                    onSubmit={(eventSetting) => {
+                      const { type, ...rest } = eventSetting;
+                      handleSubmit[type](rest);
+                    }}
+                  />
+                );}, [interEvents, editingWidgetState[whichAttr]]);
             }
           }}
         >
-          设置点击动作
+          点击设置动作
         </PopModelSelector>
       </div>
     );

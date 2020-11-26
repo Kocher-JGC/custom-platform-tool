@@ -83,7 +83,7 @@ export const DisplayControl = ({
     <Form
       {...layout}
       form={form}
-      name="display-control"
+      className="display-control"
       onFinish={onFinish}
     >
       <Form.Item

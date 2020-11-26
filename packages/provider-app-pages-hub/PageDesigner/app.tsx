@@ -299,7 +299,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               realVal: 'insert',
               code: 'var.page.mode'
             }
-          }
+          },
+          events: {}
         };
       }
       return draftInitData;
@@ -346,7 +347,8 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       data: {
         type: 'widget',
         widgetRef: entity.id,
-        varAttr: entity.varAttr
+        varAttr: entity.varAttr,
+        eventAttr: entity.eventAttr
       },
     });
   }

@@ -13,6 +13,13 @@ export interface VarAttrType {
   type: 'string' | 'number'
 }
 
+export interface EventAttrType {
+  /** 该事件变量的别名 */
+  alias: string
+  /** 事件类型 */
+  type: 'onClick'|'onDbClick'
+}
+
 /**
  * 依赖控件的变量
  */
@@ -64,7 +71,12 @@ export interface SchemaMeta {
  */
 export interface ActionsMeta {
 }
+/**
+ * TODO: 事件类型
+ */
+export interface EventsMeta {
 
+}
 export type VarMeta = WidgetVarRely | DSVarRely
 
 export type DSMeta = PD.Datasources
@@ -91,6 +103,8 @@ export interface PageMetadata {
   _rely: {
     [metaID: string]: string[]
   }
+  /** 事件 meta */
+  events: MetaStorage<EventsMeta>
 }
 
 /**

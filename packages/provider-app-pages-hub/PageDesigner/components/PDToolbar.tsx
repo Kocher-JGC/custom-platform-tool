@@ -58,7 +58,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                 className="mr10"
                 color="default"
                 onClick={(e) => {
-                  ShowModal({
+                  const modalID = ShowModal({
                     title: '页面设置',
                     width: 900,
                     children: ({ close }) => {
@@ -69,6 +69,9 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                           flatLayoutItems={flatLayoutItems}
                         />
                       );
+                    },
+                    onClose: ()=>{
+                      CloseModal(modalID);
                     }
                   });
                 }}

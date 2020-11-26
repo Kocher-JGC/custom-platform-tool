@@ -7,6 +7,7 @@ import {
 import { PageMetadata } from "../../data-structure";
 
 const DefaultPageMeta: PageMetadata = {
+  events: {},
   widgetCounter: 0,
   dataSource: {},
   pageInterface: {},
