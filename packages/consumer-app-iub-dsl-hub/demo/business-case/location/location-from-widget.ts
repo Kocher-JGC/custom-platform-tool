@@ -2,7 +2,7 @@ import { WidgetCollection, AllWidgetType } from "@iub-dsl/definition";
 
 export const locationFromWidget: WidgetCollection = {
   mIEF110a: {
-    id: "mIEF110a",
+    widgetId: "mIEF110a",
     widgetRef: AllWidgetType.FormInput,
     widgetCode: "FormInput.0",
     propState: {
@@ -18,7 +18,7 @@ export const locationFromWidget: WidgetCollection = {
     }
   },
   wnlmddk6: {
-    id: "wnlmddk6",
+    widgetId: "wnlmddk6",
     widgetRef: AllWidgetType.FormInput,
     widgetCode: "FormInput.1",
     propState: {
@@ -34,7 +34,7 @@ export const locationFromWidget: WidgetCollection = {
     }
   },
   hZuHwTTk: {
-    id: "hZuHwTTk",
+    widgetId: "hZuHwTTk",
     widgetCode: "DropdownSelector.0",
     widgetRef: AllWidgetType.DropdownSelector,
     propState: {

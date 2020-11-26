@@ -1,11 +1,11 @@
 import { 
-  InterfaceMetaCollection, InterfaceType, 
+  InterMetaCollection, InterType, 
   FieldType, FieldDataType, RefType 
 } from '@iub-dsl/definition';
-export const locationInterface: InterfaceMetaCollection = {
-  meta: {
-    1330690108524994560: {
-      type: InterfaceType.TREE_TABLE,
+export const locationInterface: InterMetaCollection = {
+  metaList: {
+    '1330690108524994560': {
+      type: InterType.TREE_TABLE,
       /** 该条记录的 id */
       id: '1330690108524994560',
       /** 名字 */
@@ -64,8 +64,8 @@ export const locationInterface: InterfaceMetaCollection = {
         },
       ],
     },
-    1330690535979098112: {
-      type: InterfaceType.DICT_TABLE,
+    '1330690535979098112': {
+      type: InterType.DICT_TABLE,
       id: '1330690535979098112',
       code: 'dict_weizhileixing',
       name: '位置类型',
@@ -102,7 +102,7 @@ export const locationInterface: InterfaceMetaCollection = {
       refFieldCode: 'id',
     },
     '1330690108524994560/1330692953483649025': {
-      refType: RefType.DICT,
+      refType: RefType.DICT_Q,
       refId: '1330690108524994560/1330692953483649025',
       interId: '1330690108524994560',
       interCode: 'location',

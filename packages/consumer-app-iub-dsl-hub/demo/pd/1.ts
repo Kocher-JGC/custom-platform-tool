@@ -5,26 +5,26 @@ export default {
       schemaId: "1321031025329053696",
       collectionType: "structArray",
       struct: [{
-        name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldRef: "@(meta).1321031025329053696.1321031261006995456"
+        name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldRef: "@(interMeta).1321031025329053696.1321031261006995456"
       }, {
-        name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldRef: "@(meta).1321031025329053696.1321031261006995461"
+        name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldRef: "@(interMeta).1321031025329053696.1321031261006995461"
       }, {
-        schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(meta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
+        schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(interMeta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
       }, {
-        name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldRef: "@(meta).1321031025329053696.1321031261006995466"
+        name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldRef: "@(interMeta).1321031025329053696.1321031261006995466"
       }]
     },
     "1321031261006995456": {
-      name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldRef: "@(meta).1321031025329053696.1321031261006995456"
+      name: "地址", schemaId: "1321031261006995456", type: "string", fieldCode: "address", fieldRef: "@(interMeta).1321031025329053696.1321031261006995456"
     },
     "1321031261006995461": {
-      name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldRef: "@(meta).1321031025329053696.1321031261006995461"
+      name: "描述", schemaId: "1321031261006995461", type: "string", fieldCode: "description", fieldRef: "@(interMeta).1321031025329053696.1321031261006995461"
     },
     "1321031025366802436": {
-      schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(meta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
+      schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(interMeta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
     },
     "1321031261006995466": {
-      name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldRef: "@(meta).1321031025329053696.1321031261006995466"
+      name: "用户名", schemaId: "1321031261006995466", type: "string", fieldCode: "username", fieldRef: "@(interMeta).1321031025329053696.1321031261006995466"
     }
   },
   metaCollection: [{
@@ -80,7 +80,7 @@ export default {
       actionId: "1321031261006995466", actionName: "updateState", actionType: "updateState", actionOptions: { changeTarget: "@(schemas).1321031261006995466" }, actionOutput: "undefined"
     },
     button_1321031025329053696: {
-      actionId: "button_1321031025329053696", actionName: "button_1321031025329053696TableSelect", actionType: "APBDSLCURD", actionOptions: { businesscode: "34562", actionList: { apbA1: { type: "TableSelect", table: "@(meta).1321031025329053696", condition: { conditionControl: { and: ["0_0", "1_1", "3_3"] }, conditionList: { "0_0": { operator: "like", exp1: "@(meta).1321031025329053696.1321031261006995456", exp2: "@(schemas).1321031261006995456" }, "1_1": { operator: "like", exp1: "@(meta).1321031025329053696.1321031261006995461", exp2: "@(schemas).1321031261006995461" }, "3_3": { operator: "like", exp1: "@(meta).1321031025329053696.1321031261006995466", exp2: "@(schemas).1321031261006995466" } } } } }, actionStep: ["apbA1"] }, actionOutput: "string"
+      actionId: "button_1321031025329053696", actionName: "button_1321031025329053696TableSelect", actionType: "APBDSLCURD", actionOptions: { businesscode: "34562", actionList: { apbA1: { type: "TableSelect", table: "@(interMeta).1321031025329053696", condition: { conditionControl: { and: ["0_0", "1_1", "3_3"] }, conditionList: { "0_0": { operator: "like", exp1: "@(interMeta).1321031025329053696.1321031261006995456", exp2: "@(schemas).1321031261006995456" }, "1_1": { operator: "like", exp1: "@(interMeta).1321031025329053696.1321031261006995461", exp2: "@(schemas).1321031261006995461" }, "3_3": { operator: "like", exp1: "@(interMeta).1321031025329053696.1321031261006995466", exp2: "@(schemas).1321031261006995466" } } } } }, actionStep: ["apbA1"] }, actionOutput: "string"
     },
     button_1321031025329053696_U: {
       actionId: "button_1321031025329053696_U", actionName: "updateState", actionType: "updateState", actionOptions: { changeTarget: "@(schemas).1321031025329053696" }, actionOutput: "undefined"
@@ -94,25 +94,25 @@ export default {
   },
   flowCollection: {
     f_1321031261006995456: {
-      id: "f_1321031261006995456", actionId: "@(actions).1321031261006995456", flowOutCondition: [], flowOut: [[]]
+      id: "f_1321031261006995456", actionId: "@(action).1321031261006995456", flowOutCondition: [], flowOut: [[]]
     },
     f_1321031261006995461: {
-      id: "f_1321031261006995461", actionId: "@(actions).1321031261006995461", flowOutCondition: [], flowOut: [[]]
+      id: "f_1321031261006995461", actionId: "@(action).1321031261006995461", flowOutCondition: [], flowOut: [[]]
     },
     f_1321031261006995466: {
-      id: "f_1321031261006995466", actionId: "@(actions).1321031261006995466", flowOutCondition: [], flowOut: [[]]
+      id: "f_1321031261006995466", actionId: "@(action).1321031261006995466", flowOutCondition: [], flowOut: [[]]
     },
     f_button_1321031025329053696: {
-      id: "f_button_1321031025329053696", actionId: "@(actions).button_1321031025329053696", flowOutCondition: [], flowOut: [["f_button_1321031025329053696_U"]]
+      id: "f_button_1321031025329053696", actionId: "@(action).button_1321031025329053696", flowOutCondition: [], flowOut: [["f_button_1321031025329053696_U"]]
     },
     f_button_1321031025329053696_U: {
-      id: "f_button_1321031025329053696_U", actionId: "@(actions).button_1321031025329053696_U", flowOutCondition: [], flowOut: [[]]
+      id: "f_button_1321031025329053696_U", actionId: "@(action).button_1321031025329053696_U", flowOutCondition: [], flowOut: [[]]
     },
     f_actions_cPh0TJ3U: {
-      id: "f_actions_cPh0TJ3U", actionId: "@(actions).actions_cPh0TJ3U", flowOutCondition: [], flowOut: [[]]
+      id: "f_actions_cPh0TJ3U", actionId: "@(action).actions_cPh0TJ3U", flowOutCondition: [], flowOut: [[]]
     },
     f_actions_4I4bjEuu: {
-      id: "f_actions_4I4bjEuu", actionId: "@(actions).actions_4I4bjEuu", flowOutCondition: [], flowOut: [[]]
+      id: "f_actions_4I4bjEuu", actionId: "@(action).actions_4I4bjEuu", flowOutCondition: [], flowOut: [[]]
     }
   },
   layoutContent: {

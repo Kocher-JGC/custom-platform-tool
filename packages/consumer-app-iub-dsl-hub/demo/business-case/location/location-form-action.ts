@@ -2,27 +2,27 @@ import {
   ConditionOperator, ComplexType,
   OpenType, PageType, ActionCollection, InterReqType, InterType,
   ConditionCollection,
-  InterCollection, DataCollection
+  InterCollection, Ref2ValueCollection
 } from '@iub-dsl/definition';
 
-export const interSetDataCollection: DataCollection = {
+export const interSetDataCollection: Ref2ValueCollection = {
   inter3_set: {
     type: ComplexType.structArray,
     struct: [
       {
-        key: '@(meta).1330690108524994560.1330690108566937616',
+        key: '@(interMeta).1330690108524994560.1330690108566937616',
         value: '@(schema).id',
       },
       {
-        key: '@(meta).1330690108524994560.1330690108566937605',
+        key: '@(interMeta).1330690108524994560.1330690108566937605',
         value: '@(schema).mIEF110a' // 名称
       },
       {
-        key: '@(meta).1330690108524994560.1330690108566937614',
+        key: '@(interMeta).1330690108524994560.1330690108566937614',
         value: '@(schema).wnlmddk6.wnlmddk6_id1' // 上级位置id
       },
       {
-        key: '@(meta).1330690108524994560.1330692953483649025',
+        key: '@(interMeta).1330690108524994560.1330692953483649025',
         value: '@(schema).hZuHwTTk.code' // 位置类型
       }
     ]
@@ -35,7 +35,7 @@ export const interCollection: InterCollection = {
     interList: {
       inter1: {
         interType: InterType.R,
-        inter: '@(meta).1330690535979098112',
+        inter: '@(interMeta).1330690535979098112',
       }
     },
     interStep: ['inter1']
@@ -45,7 +45,7 @@ export const interCollection: InterCollection = {
     interList: {
       interId1: {
         interType: InterType.R,
-        inter: '@(meta).1330690108524994560',
+        inter: '@(interMeta).1330690108524994560',
         condition: '',
       }
     },
@@ -56,8 +56,8 @@ export const interCollection: InterCollection = {
     interList: {
       interId1: {
         interType: InterType.C,
-        inter: '@(meta).1330690108524994560',
-        set: '@(dCollect).inter3_set',
+        inter: '@(interMeta).1330690108524994560',
+        set: '@(ref2Value).inter3_set',
       }
     },
     interStep: ['interId1'],
@@ -67,8 +67,8 @@ export const interCollection: InterCollection = {
     interList: {
       interId1: {
         interType: InterType.U,
-        inter: '@(meta).1330690108524994560',
-        set: '@(dCollect).inter3_set',
+        inter: '@(interMeta).1330690108524994560',
+        set: '@(ref2Value).inter3_set',
         condition: ''
       }
     },
@@ -86,7 +86,7 @@ export const actionCollection: ActionCollection = {
         type: ComplexType.structObject,
         struct: [
           {
-            value: '@(payload)', // 来源: 固定值, 表达式, 后端数据
+            value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
             key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
           }
         ]
@@ -123,7 +123,7 @@ export const actionCollection: ActionCollection = {
         struct: [
           {
             // 需要根据打开目标{页面输出回填, 如何对应问题}
-            value: '@(payload)', // 来源: 固定值, 表达式, 后端数据
+            value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
             key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
           }
         ]
@@ -155,7 +155,7 @@ export const actionCollection: ActionCollection = {
         type: ComplexType.structObject,
         struct: [
           {
-            value: '@(payload)', // 根据meta转换成schema
+            value: '@(payload).', // 根据meta转换成schema
             key: '@(schema).hZuHwTTk_Arr',
           }
         ]
@@ -172,12 +172,12 @@ export const actionCollection: ActionCollection = {
         type: ComplexType.structObject,
         struct: [
           {
-            value: '@(payload)', // 根据meta转换成schema
+            value: '@(payload).', // 根据meta转换成schema
             key: '@(schema).hZuHwTTk', // TODO onChange仅拿到单个值, 需要转换、 可以在event统一转换
           }
           // {
           //   /** 第一种, 整个表转换的 */
-          //   from: '@(payload).payload',
+          //   from: '@(payload).',
           //   target: '@(schema).hZuHwTTk', 
           // },
           /** 
@@ -186,11 +186,11 @@ export const actionCollection: ActionCollection = {
            * 反思: 弹窗传值, 同理 其实也无法脱离元数据, 如果是赋值其他, 那么, 可以同时赋值给多个, 也可以验证复杂赋值
            */
           // {
-          //   from: '@(payload).payload.code',
+          //   from: '@(payload)..code',
           //   target: '@(schema).hZuHwTTk.hZuHwTTk_id1',
           // },
           // {
-          //   from: '@(payload).payload.name',
+          //   from: '@(payload)..name',
           //   target: '@(schema).hZuHwTTk.hZuHwTTk_id2',
           // }
         ]
