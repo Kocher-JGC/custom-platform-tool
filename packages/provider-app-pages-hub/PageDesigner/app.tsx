@@ -357,6 +357,10 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   getVariableData = async (filter: string[] = [], options) => {
     const varRely = options ? options.varRely : this.props.pageMetadata.varRely;
     const flatLayoutItems = options ? options.flatLayoutItems : this.props.flatLayoutItems;
+    /** 获取自定义变量 */
+    const getCustomedVariable = () => {
+      return [];
+    };
     /** 获取控件变量 */
     const getWidgetVariable = () => {
       const varList = [];
@@ -416,6 +420,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       return varList;
     };
     const getVariable = {
+      customed: getCustomedVariable,
       system: getSystemVaraible,
       widget: getWidgetVariable,
       page: getPageVariable,
