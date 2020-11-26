@@ -12,12 +12,14 @@ export const StringLengthComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    // const nextStringLength = selectedField?.column?.name;
-    // if (!nextStringLength || nextStringLength === stringLength) return;
-    // changeEntityState({
-    //   attr: 'stringLength',
-    //   value: nextStringLength
-    // });
+    if(selectedField?.column){
+      const { fieldSize } = selectedField?.column || {};
+
+      changeEntityState({
+        attr: "stringLength",
+        value: fieldSize
+      });
+    }
   }, [selectedField]);
   return (
     <InputNumber

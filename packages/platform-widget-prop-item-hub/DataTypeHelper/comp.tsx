@@ -11,12 +11,15 @@ export const DataTypeComp = ({ changeEntityState, editingWidgetState, takeMeta }
     metaRefID: field
   });
   useEffect(() => {
-    // const NextDataType = selectedField?.column?.name;
-    // if (!NextDataType || NextDataType === dataType) return;
-    // changeEntityState({
-    //   attr: "dataType",
-    //   value: NextDataType
-    // });
+    console.log("selectedField", selectedField);
+    if(selectedField?.column){
+      const { fieldType } = selectedField?.column || {};
+
+      changeEntityState({
+        attr: "dataType",
+        value: fieldType
+      });
+    }
   }, [selectedField]);
   return (
     <Select

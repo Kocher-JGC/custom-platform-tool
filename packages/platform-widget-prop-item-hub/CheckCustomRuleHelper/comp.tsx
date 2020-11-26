@@ -24,6 +24,7 @@ export const CheckCustomRuleComp = ({
     <Search
       value={checkCustomRule || ''}
       enterButton="fx"
+      allowClear
     />
   );
 };
