@@ -30,8 +30,14 @@ export const DisplayControl = ({
   const [showContorlList, setShowContorlList] = useState([]);
   const [hideContorlList, setHideContorlList] = useState([]);
 
+  const isDataEmpty = (data)=>{
+    return Array.isArray(data) ? data.length === 0 : !data;
+  };
   const onFinish = (data) => {
     const { showControl, hideControl } = data;
+    if(isDataEmpty(showControl) && isDataEmpty(hideControl)){
+      return onSuccess(null, '');
+    }
     const showControlCn = showControl.map(item=>getControlLabel(item)).join('，');
     const hideControlCn = hideControl.map(item=>getControlLabel(item)).join('，');
     onSuccess(data, `显示：${showControlCn || '无'}，隐藏：${hideControlCn || '无'}`);

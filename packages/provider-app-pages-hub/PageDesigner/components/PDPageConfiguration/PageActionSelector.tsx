@@ -7,10 +7,17 @@ import { DisplayControl } from './DisplayControl';
 import { SubmitData } from './SubmitData';
 import { FormInstance } from 'antd/lib/form';
 import { ChangeVariables } from './ChangeVariables';
+import { CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
+type ActionItem = {
+  id: string
+  name: string
+  actionType: string
+
+}
 export class PageActionSelector extends React.Component {
   state = {
     list: [],
@@ -21,30 +28,12 @@ export class PageActionSelector extends React.Component {
   searchFormRef = React.createRef<FormInstance>();
 
 
-  constructActions = () => {
-    const result = {};
-    this.state.list.forEach((item,order)=>{
-      result[item.id] = { ...item, order };
-    });
-    return result;
-  }
-  validateList = () => {
-    return new Promise((resolve, reject)=> {
-      try {
-        this.listFormRef.current?.validateFields();
-        resolve(true);
-      }catch(e){
-        resolve(false);
-      }
-    });
-  }
-
   componentDidMount(){
     const list = this.initList();
     this.setState({
       list,
       listForShow: list,
-      maxIndex: list.length > 0 ? list[list.length-1].index : this.state.maxIndex
+      maxIndex: list.length > 0 ? this.getOrderById(list[0].id) : this.state.maxIndex
     });
     this.listFormRef.current?.setFieldsValue({list});
   }
@@ -62,12 +51,20 @@ export class PageActionSelector extends React.Component {
 
   initList = () => {
     const actions  = this.initActions();
-    const list = [];
+    const list: {
+      order: number,
+      data: ActionItem
+    }[] = [];
     for(const key in actions){
-      const { order, ...data } = actions[key];
+      const data = actions[key];
+      const order = this.getOrderById(key);
       list.push({ order, data });
     }
-    return list.sort((a,b)=>a.order<b.order).map(item=>item.data);
+    return list.sort((a,b)=>a.order>b.order).map(item=>item.data);
+  }
+  getOrderById = (id) => {
+    if(!id) return -1;
+    return id.split('.')[1]-0;
   }
 
   getActionId = (index) => {
@@ -117,31 +114,6 @@ export class PageActionSelector extends React.Component {
     };
     return action && config[action] || {};
   }
-  handlePlus = (index) => {
-    const { listForShow, list, maxIndex } = this.state;
-    const newItem = { id: this.getActionId(maxIndex+1), index: maxIndex+1 };
-    const newListForShow = [newItem, ...listForShow];
-    this.setState({
-      listForShow: newListForShow,
-      list: [newItem, ...list],
-      maxIndex: maxIndex+1
-    });
-    this.listFormRef.current?.setFieldsValue({list: newListForShow});
-  }
-
-  handleMinus = (id) => {
-    const list = this.state.list.slice();
-    const indexInList = this.getIndexById(list, id);
-    list.splice(indexInList, 1);
-    const listForShow = this.state.listForShow.slice();
-    const indexInListForShow = this.getIndexById(listForShow, id);
-    listForShow.splice(indexInListForShow, 1);
-    this.setState({
-      list,
-      listForShow
-    });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
-  }
 
   getIndexById = (list, id) => {
     let index = -1;
@@ -151,17 +123,6 @@ export class PageActionSelector extends React.Component {
       }
     });
     return index;
-  }
-  handleSetValue = (id, data) => {
-    const list = this.state.list.slice();
-    const listForShow = this.state.listForShow.slice();
-    const index = this.getIndexById(list, id);
-    Object.assign(list[index], data);
-    this.setState({
-      list,
-      listForShow,
-    });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
   }
 
   perfectConfigInModal = ({ width, ModalContent }, actionConfig) => {
@@ -190,18 +151,63 @@ export class PageActionSelector extends React.Component {
       });
     });
   }
-
-  handlePerfectActionConfig = (index, record, modalProps) => {
-    const {
-      actionType,
-      [actionType]: actionConfig
-    } = record;
-    this.perfectConfigInModal(modalProps, actionConfig ).then(({ config, configCn })=>{
-      this.handleSetValue(record.id, {
-        [actionType]: config,
-        configCn
-      });
+  filterListAfterSearch = ({ type, name }) => {
+    const { list } = this.state;
+    return list.filter(item=>{
+      return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
     });
+  }
+
+  handlePlus = (index) => {
+    const { listForShow, list, maxIndex } = this.state;
+    const newItem = { id: this.getActionId(maxIndex+1) };
+    const newListForShow = [newItem, ...listForShow];
+    this.setState({
+      listForShow: newListForShow,
+      list: [newItem, ...list],
+      maxIndex: maxIndex+1
+    });
+    this.listFormRef.current?.setFieldsValue({list: newListForShow});
+  }
+
+  handleMinus = (id) => {
+    const list = this.state.list.slice();
+    const indexInList = this.getIndexById(list, id);
+    list.splice(indexInList, 1);
+    const listForShow = this.state.listForShow.slice();
+    const indexInListForShow = this.getIndexById(listForShow, id);
+    listForShow.splice(indexInListForShow, 1);
+    this.setState({
+      list,
+      listForShow
+    });
+    this.listFormRef.current?.setFieldsValue({list: listForShow});
+  }
+  handleSetValue = (id, data) => {
+    const list = this.state.list.slice();
+    const listForShow = this.state.listForShow.slice();
+    const index = this.getIndexById(list, id);
+    Object.assign(list[index], data);
+    this.setState({
+      list,
+      listForShow,
+    });
+    this.listFormRef.current?.setFieldsValue({list: listForShow});
+  }
+  handlePerfectActionConfig = (index, record, modalProps) => {
+    return new Promise((resolve, reject)=>{
+      const {
+        actionType,
+        [actionType]: actionConfig
+      } = record;
+      this.perfectConfigInModal(modalProps, actionConfig ).then(({ config, configCn })=>{
+        this.handleSetValue(record.id, {
+          [actionType]: config,
+          configCn
+        });
+        resolve();
+      });
+    });    
   }
 
   handleSearch = () => {
@@ -212,22 +218,23 @@ export class PageActionSelector extends React.Component {
     });
     this.listFormRef.current?.setFieldsValue({list: listForShow});
   }
+
   handleClear = () => {
     this.searchFormRef.current?.resetFields();
     this.handleSearch();
   }
-  filterListAfterSearch = ({ type, name }) => {
-    const { list } = this.state;
-    return list.filter(item=>{
-      return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
-    });
-  }
-  handleFinish = () => {
-    this.listFormRef.current?.validateFields().then(()=>{
+  handleFinish = (order, record) => {
+    const getValidateKeys = ()=>{
+      return ['name', 'actionType', 'configCn'].map(item=>['list', order, item]);
+    };
+    const validateKeys = getValidateKeys();
+    const { id, ...rest } = record;
+    this.listFormRef.current?.validateFields(validateKeys).then(()=>{
       this.props.platformCtx.meta.changePageMeta({
-        type: 'replace',
+        type: 'update',
         metaAttr: 'actions',
-        datas: this.constructActions(),
+        metaID: id,
+        data: {...rest, order},
         });
       message.success('动作配置成功');
       });    
@@ -286,9 +293,9 @@ export class PageActionSelector extends React.Component {
           >
             新增
           </Button>
-          <Button type="primary" onClick={this.handleFinish}>
+          {/* <Button type="primary" onClick={this.handleFinish}>
             保存
-          </Button>
+          </Button> */}
         </Form>
         <Form 
           ref={this.listFormRef}
@@ -422,7 +429,9 @@ export class PageActionSelector extends React.Component {
                       <Input 
                         value={_r.configCn}
                         onClick={e=>{
-                          this.handlePerfectActionConfig(_i, _r, { ModalContent,width });
+                          this.handlePerfectActionConfig(_i, _r, { ModalContent,width }).then(()=>{
+                            this.listFormRef.current?.validateFields([['list', _i, 'configCn']]);
+                          });
                         }}
                         title = {_r.configCn}
                         readOnly = {readOnly}
@@ -460,14 +469,15 @@ export class PageActionSelector extends React.Component {
                 render: (_t, _r, _i)=>{
                   return (
                     <>
-                      {/* <PlusOutlined 
-                        onClick = {() => {this.handlePlus(_i);}}
-                        className="mr-2 cursor-pointer"
-                      /> */}
-                      {/* <MinusOutlined 
-                        onClick = {()=>{this.handleMinus(_i);}}
-                        className="mr-2 cursor-pointer"
-                      /> */}
+                      <CheckCircleOutlined 
+                        onClick = {() => {this.handleFinish(_i, _r);}}
+                        className="mr-2 cursor-pointer ant-btn-link"
+                      />
+                      <DeleteOutlined 
+                        onClick = {()=>{this.handleMinus(_r.id);}}
+                        className="mr-2 cursor-pointer ant-btn-link"
+                      />
+                      {/* 
                       <Button
                         type="link"
                         onClick = {()=>{this.handleMinus(_r.id);}}
