@@ -11,11 +11,9 @@ export enum DispatchMethodNameOfIUBStore {
   targetUpdateState = 'targetUpdateState',
   mappingUpdateState = 'mappingUpdateState',
   getPageState = 'getPageState',
-  isPageState = 'isPageState',
-  pickPageStateKeyWord = 'pickPageStateKeyWord',
   getWatchDeps = 'getWatchDeps',
   getSchemaMetadata = 'getSchemaMetadata',
   updatePageStateFromTableRecord = 'updatePageStateFromTableRecord'
 }
 
-type A = keyof typeof DispatchMethodNameOfIUBStore;
+// type A = keyof typeof DispatchMethodNameOfIUBStore;

@@ -7,11 +7,9 @@ import { APBDSLCURDAction } from "./business-actions";
 import {
   ExtralActionParseRes, ActionParserRes, ActionInfoParseRes
 } from "./types";
+import { pickActionMark } from "../IUBDSL-mark";
 
 const getExtralActionParserRes = (): ExtralActionParseRes => ({ changeStateToUse: [], getStateToUse: [] });
-const actionRegExp = /^@\(actions\)\./;
-
-export const pickActionId = (str: string) => str.replace(actionRegExp, '');
 
 const noop = () => {};
 
@@ -46,7 +44,7 @@ export const actionsCollectionParser = (
 
   /** 对外暴露获取的函数 */
   const getActionParseRes = (actionID: string): ActionInfoParseRes => {
-    actionID = pickActionId(actionID);
+    actionID = pickActionMark(actionID);
     if (actionID === '') {
       return {
         actionHandle: noop,

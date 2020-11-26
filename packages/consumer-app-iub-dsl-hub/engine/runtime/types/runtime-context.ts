@@ -1,5 +1,4 @@
 import { RunTimeCtxToBusiness } from '.';
-import { EffectRelationshipEntity } from '../../relationship';
 import { IUBStoreEntity } from '../../state-manage/types';
 /**
 * TODO: 分类
@@ -12,6 +11,6 @@ import { IUBStoreEntity } from '../../state-manage/types';
 export interface GRCtx {
   runTimeCtxToBusiness: React.MutableRefObject<RunTimeCtxToBusiness>,
   IUBStoreEntity: IUBStoreEntity;
-  effectRelationship: EffectRelationshipEntity;
+  // effectRelationship: EffectRelationshipEntity;
   businessCode: any
 }

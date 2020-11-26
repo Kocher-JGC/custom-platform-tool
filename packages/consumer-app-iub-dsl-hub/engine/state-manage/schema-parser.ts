@@ -9,7 +9,7 @@ import schemasAnalysis from './analysis/analysis';
  * @steps_3 解析
  * @steps_4 实例化状态管理
  */
-export const SchemasParser = (originSchemas: Schema) => {
+export const schemaParser = (originSchemas: Schema) => {
 
   const schemasAnalysisRes = schemasAnalysis(originSchemas);
 

@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { get as LGet } from 'lodash';
 import { CommonObjStruct, ChangeMapping } from '@iub-dsl/definition';
 import { useCacheState } from '../utils';
-import { isPageState, pickPageStateKeyWord } from './const';
 import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from '../runtime/types';
 import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 import { setOfSchemaPath } from './utils';
+import { isSchema, pickSchemaMark } from '../IUBDSL-mark';
 
 // TODO
 const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
@@ -50,8 +50,8 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   const fullStruct = getFullInitStruct({ baseStruct, pathMapInfo });
 
   const getSchemaInfo = (schemaPath: string) => {
-    if (isPageState(schemaPath)) {
-      schemaPath = pickPageStateKeyWord(schemaPath);
+    if (isSchema(schemaPath)) {
+      schemaPath = pickSchemaMark(schemaPath);
     }
     return pathMapInfo[schemaPath];
   };
@@ -62,9 +62,9 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
     const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
       if (typeof strOrStruct === 'string') {
-        if (isPageState(strOrStruct)) {
+        if (isSchema(strOrStruct)) {
           // _.at(object, [paths])
-          return LGet(IUBPageStore, pickPageStateKeyWord(strOrStruct), '');
+          return LGet(IUBPageStore, pickSchemaMark(strOrStruct), '');
         }
         // console.warn('stateManage: 非schemas描述');
         // TODO
@@ -97,7 +97,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     const handleFn = useMemo(() => {
       /** 单个数据的更新 */
       const targetUpdateState = (ctx: RunTimeCtxToBusiness, target, value) => {
-        target = pickPageStateKeyWord(target);
+        target = pickSchemaMark(target);
         setIUBPageStore({
           [target]: value
         });
@@ -146,8 +146,6 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       };
 
       return {
-        isPageState: (ctx: RunTimeCtxToBusiness, param: string) => isPageState(param),
-        pickPageStateKeyWord: (ctx: RunTimeCtxToBusiness, param: string) => pickPageStateKeyWord(param),
         targetUpdateState,
         getSchemaMetadata,
         updatePageStateFromTableRecord,

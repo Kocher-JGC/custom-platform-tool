@@ -81,14 +81,14 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   const {
     IUBStoreEntity, // IUB页面仓库实例
     runTimeCtxToBusiness, // useRef
-    effectRelationship, // 副作用关系的实例
+    // effectRelationship, // 副作用关系的实例
     businessCode
   } = runtimeCtx;
   const {
     getPageState,
     // getWatchDeps,
     // updatePageState, targetUpdateState,
-    // IUBPageStore, pickPageStateKeyWord
+    // IUBPageStore
   } = IUBStoreEntity;
 
   const { effectAnalysis, effectDispatch } = effectRelationship;

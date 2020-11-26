@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { get as LGet, set as LSet } from 'lodash';
 import { CommonObjStruct } from '@iub-dsl/definition';
 import { useCacheState } from '../utils';
-import { isPageState, pickPageStateKeyWord } from './const';
 import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from '../runtime/types';
 import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
-import { MetaDateParseRes } from '../metadata-manage/types';
+import { InterMetaParseRes } from '../inter-meta-manage/types';
+import { isSchema, pickSchemaMark } from '../IUBDSL-mark';
 
 // {
 //   getMetaKeyInfo,
@@ -33,7 +33,7 @@ const getStructHandle = (struct: GetStruct, handle: (struct: GetStruct) => any) 
   return struct;
 };
 
-export const createIUB = (schemasParseRes: SchemasAnalysisRes, metadataParseRes: MetaDateParseRes) => {
+export const createIUB = (schemasParseRes: SchemasAnalysisRes, metadataParseRes: InterMetaParseRes) => {
   const {
     levelRelation, pathMapInfo, baseStruct, pathMapMetaId
   } = schemasParseRes;
@@ -49,8 +49,8 @@ export const createIUB = (schemasParseRes: SchemasAnalysisRes, metadataParseRes:
   // pathMapMetaId
   const getSchemaKey = (struct: GetStruct) => {
     if (typeof struct === 'string') {
-      if (isPageState(struct)) {
-        return pickPageStateKeyWord(struct);
+      if (isSchema(struct)) {
+        return pickSchemaMark(struct);
       }
       return '';
     }
@@ -106,19 +106,19 @@ const schemaMMetaMark = {};   // @(schema)
 const vals = Object.values(schemaMMetaMark);
 const keys = Object.keys(schemaMMetaMark);
 const metaCodeMMetaMark = {}; // 
-const metaMarkMMetaCode = {}; // @(meta)
+const metaMarkMMetaCode = {}; // @(interMeta)
 
 const transfFn = (struct, options) => {
   const { targetKeyType } = options;
   // @(schema)/@(metaMark) --> @(metaCode)
   if (targetKeyType === StateKeyType.metaCode) {
-    const metaMark = isPageState(struct) ? schemaMMetaMark[struct] : struct;
+    const metaMark = isSchema(struct) ? schemaMMetaMark[struct] : struct;
     const code = metaMarkMMetaCode[metaMark];
     return code || struct;
   }
   // @(schema)/@(metaCode) --> @(metaMark)
   if (targetKeyType === StateKeyType.metaMark) {
-    if (isPageState(struct)) {
+    if (isSchema(struct)) {
       return schemaMMetaMark[struct];
     }
     return metaCodeMMetaMark[struct] || struct;

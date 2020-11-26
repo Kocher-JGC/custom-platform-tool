@@ -3,8 +3,8 @@ import { APBDSLCURD } from "@iub-dsl/definition";
 import {
   ActionDependCollection, ActionDepend, DependInfo
 } from "../types";
-import { pickActionId } from "../../actions-manage/actions-parser";
 import { DispatchModuleName, DispatchMethodNameOfMetadata, RunTimeCtxToBusiness } from "../../runtime/types";
+import { pickActionMark } from "../../IUBDSL-mark";
 
 /**
  * 收集表名, 数据元数据描述的, 收集的信息是详细的描述
@@ -81,7 +81,7 @@ export const actionsCollectConstor = () => {
   };
 
   const flowToUseCollect = ({ flowId, actionId }: flowToUseCollectParam) => {
-    actionId = pickActionId(actionId || '');
+    actionId = pickActionMark(actionId || '');
     const idx = actionDependId.indexOf(actionId);
     const actionDepend = actionDependCollection[idx];
     if (actionDepend) {

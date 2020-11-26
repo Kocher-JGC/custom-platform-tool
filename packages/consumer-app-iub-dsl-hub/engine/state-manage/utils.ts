@@ -1,5 +1,6 @@
 import { set as LSet, flow } from 'lodash';
-import { PATH_SPLIT_MARK, pickPageStateKeyWord } from "./const";
+import { PATH_SPLIT_MARK } from "./const";
+import { pickSchemaMark } from '../IUBDSL-mark';
 
 const pathMarkRegExp = new RegExp(PATH_SPLIT_MARK, 'g');
 /**
@@ -33,7 +34,7 @@ const arrMarkRep = (s: string) => {
 };
 
 /** 将schema的标示转化成lodashSetPath的标示 */
-const schemaMarkToLSetPath = flow([pickPageStateKeyWord, pathMarkRep, arrMarkRep]);
+const schemaMarkToLSetPath = flow([pickSchemaMark, pathMarkRep, arrMarkRep]);
 
 /**
  * 使用schemaPath描述规则设置对象值
