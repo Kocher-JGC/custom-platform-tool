@@ -1,3 +1,17 @@
+.table-editor-container {
+  background-color: #EEE;
+  padding: 15px;
+
+  .action-area {
+    margin-top: 10px;
+  }
+}
+
+.column-selector {
+  background-color: #FFF;
+  margin-bottom: 15px;
+}
+
 #sortable_list_container {
   display: inline-block;
   .column-item {
@@ -58,10 +72,15 @@
 }
 
 .column-setting-helper-container {
-  width: 200px;
+  width: 300px;
   max-height: 400px;
   overflow-y: auto;
   .item {
     padding: 10px 10px;
+    border-bottom: 1px solid #EEE;
+
+    &:hover {
+      background-color: #fafafa;
+    }
   }
 }

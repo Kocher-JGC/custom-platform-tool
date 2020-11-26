@@ -359,7 +359,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   }
 
   consumUpdateQueue = () => {
+    const retData = [...this.updateQueue];
     this.updateQueue = [];
+    return retData;
   }
 
   /**
@@ -376,8 +378,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
      */
     this.pushToUpdateQueue(nextEntityState);
     debounce.exec(() => {
-      const entityState = entityStateMergeRule(activeEntity?.propState, this.updateQueue);
-      this.consumUpdateQueue();
+      const entityState = entityStateMergeRule(activeEntity?.propState, this.consumUpdateQueue());
       UpdateEntityState({
         nestingInfo: selectedInfo.nestingInfo,
         entity: activeEntity

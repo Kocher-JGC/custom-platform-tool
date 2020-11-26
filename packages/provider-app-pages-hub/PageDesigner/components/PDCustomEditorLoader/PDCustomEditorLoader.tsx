@@ -44,7 +44,9 @@ export const PDCustomEditorLoader = ({
                 // e.stopPropagation();
                 ShowModal({
                   title: '编辑表格',
-                  width: `80vw`,
+                  // hei: `80vw`,
+                  type: 'side',
+                  position: 'top',
                   children: ({ close }) => {
                     return (
                       <PropEditorWrapper

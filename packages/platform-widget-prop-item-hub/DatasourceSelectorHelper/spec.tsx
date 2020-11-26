@@ -5,7 +5,7 @@ import { OptionsSelector } from './comp';
 @PropItem({
   id: 'prop_datasource_selector',
   name: 'PropDataSource',
-  label: '选项数据源(待完善)',
+  label: '数据源选择',
   // optDS => option datasource
   whichAttr: ['optDS'],
   useMeta: ['dataSource'],
@@ -31,21 +31,3 @@ export class DatasourceSelectotHelper implements PropItemRender {
   }
 }
 
-// console.dir(A);
-
-// export const DatasourceSelectotHelper: PropItemCompAccessSpec = {
-//   id: 'prop_datasource_selector',
-//   name: 'PropDataSource',
-//   label: '选项数据源(待完善)',
-//   // optDS => option datasource
-//   whichAttr: ['optDS'],
-//   useMeta: ['dataSource'],
-//   render(ctx) {
-//     return (
-//       <OptionsSelector
-//         whichAttr="optDS"
-//         {...ctx}
-//       />
-//     );
-//   }
-// };

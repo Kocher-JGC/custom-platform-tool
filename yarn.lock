@@ -1891,14 +1891,14 @@
   integrity sha1-wns5HYRX0eiT8e3er15UEtEv+7U=
 
 "@ctrl/tinycolor@^3.1.6":
-  version "3.1.7"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ctrl/tinycolor/-/tinycolor-3.1.7.tgz#1585f67629882002a9f8e15a2941c9a4321bf80c"
-  integrity sha1-FYX2dimIIAKp+OFaKUHJpDIb+Aw=
+  version "3.2.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ctrl/tinycolor/-/tinycolor-3.2.0.tgz#77a8a33edb2fdc02318c828be78f6fb3d6c65eb2"
+  integrity sha1-d6ijPtsv3AIxjIKL549vs9bGXrI=
 
 "@deer-ui/core@^4.0.8":
   version "4.0.8"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@deer-ui/core/-/core-4.0.8.tgz#786cdaadaf5fd51d573990336d5d78d360417515"
-  integrity sha512-17e2p2Jqr8WV2BA2BQZpPZrQcWBrHa5F2aBvyfc+wJ7t23GcoiBbrSgqn7MmlSEmbrC0Dkbbf8pcxO81sWebbw==
+  integrity sha1-eGzara9f1R1XOZAzbV1402BBdRU=
   dependencies:
     classnames "^2.2.6"
 
@@ -3964,9 +3964,9 @@
   integrity sha1-5NQh7S0G1GOxIGIXdBhaXNG5LXc=
 
 "@types/node@*", "@types/node@>= 8", "@types/node@^14.14.7":
-  version "14.14.9"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/node/-/node-14.14.9.tgz#04afc9a25c6ff93da14deabd65dc44485b53c8d6"
-  integrity sha1-BK/Jolxv+T2hTeq9ZdxESFtTyNY=
+  version "14.14.10"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/node/-/node-14.14.10.tgz#5958a82e41863cfc71f2307b3748e3491ba03785"
+  integrity sha1-WVioLkGGPPxx8jB7N0jjSRugN4U=
 
 "@types/node@12.0.2":
   version "12.0.2"
@@ -3979,9 +3979,9 @@
   integrity sha1-Z2+giDRQ7Z2guyQVYhNjYpCJKAY=
 
 "@types/node@^12.6.2":
-  version "12.19.6"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/node/-/node-12.19.6.tgz#fbf249fa46487dd8c7386d785231368b92a33a53"
-  integrity sha1-+/JJ+kZIfdjHOG14UjE2i5KjOlM=
+  version "12.19.7"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/node/-/node-12.19.7.tgz#cf8b6ac088dd9182ac9a1d765f787a8d12490c04"
+  integrity sha1-z4tqwIjdkYKsmh12X3h6jRJJDAQ=
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -6114,6 +6114,13 @@ axios@^0.20.0:
   dependencies:
     follow-redirects "^1.10.0"
 
+axios@^0.21.0:
+  version "0.21.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/axios/-/axios-0.21.0.tgz#26df088803a2350dff2c27f96fef99fe49442aca"
+  integrity sha1-Jt8IiAOiNQ3/LCf5b++Z/klEKso=
+  dependencies:
+    follow-redirects "^1.10.0"
+
 axobject-query@^2.1.2, axobject-query@^2.2.0:
   version "2.2.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/axobject-query/-/axobject-query-2.2.0.tgz#943d47e10c0b704aa42275e20edf3722648989be"
@@ -6703,7 +6710,7 @@ browserslist@4.7.0:
     electron-to-chromium "^1.3.247"
     node-releases "^1.1.29"
 
-browserslist@^4.0.0, browserslist@^4.1.1, browserslist@^4.12.0, browserslist@^4.12.2, browserslist@^4.14.5, browserslist@^4.14.6, browserslist@^4.4.2, browserslist@^4.6.4, browserslist@^4.9.1:
+browserslist@^4.0.0, browserslist@^4.1.1, browserslist@^4.12.0, browserslist@^4.12.2, browserslist@^4.14.5, browserslist@^4.14.7, browserslist@^4.4.2, browserslist@^4.6.4, browserslist@^4.9.1:
   version "4.14.7"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/browserslist/-/browserslist-4.14.7.tgz#c071c1b3622c1c2e790799a37bb09473a4351cb6"
   integrity sha1-wHHBs2IsHC55B5mje7CUc6Q1HLY=
@@ -7759,6 +7766,13 @@ constants-browserify@^1.0.0:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/constants-browserify/-/constants-browserify-1.0.0.tgz#c20b96d8c617748aaf1c16021760cd27fcb8cb75"
   integrity sha1-wguW2MYXdIqvHBYCF2DNJ/y4y3U=
 
+consul@^0.39.0:
+  version "0.39.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/consul/-/consul-0.39.0.tgz#4cca710c9caf10b2a3ba6b819914602f8a83186b"
+  integrity sha1-TMpxDJyvELKjumuBmRRgL4qDGGs=
+  dependencies:
+    papi "^0.29.0"
+
 contains-path@^0.1.0:
   version "0.1.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
@@ -7944,17 +7958,17 @@ copy-webpack-plugin@6.1.0:
     webpack-sources "^1.4.3"
 
 core-js-compat@^3.6.2, core-js-compat@^3.7.0:
-  version "3.7.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js-compat/-/core-js-compat-3.7.0.tgz#8479c5d3d672d83f1f5ab94cf353e57113e065ed"
-  integrity sha1-hHnF09Zy2D8fWrlM81PlcRPgZe0=
+  version "3.8.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js-compat/-/core-js-compat-3.8.0.tgz#3248c6826f4006793bd637db608bca6e4cd688b1"
+  integrity sha1-MkjGgm9ABnk71jfbYIvKbkzWiLE=
   dependencies:
-    browserslist "^4.14.6"
+    browserslist "^4.14.7"
     semver "7.0.0"
 
 core-js-pure@^3.0.0:
-  version "3.7.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js-pure/-/core-js-pure-3.7.0.tgz#28a57c861d5698e053f0ff36905f7a3301b4191e"
-  integrity sha1-KKV8hh1WmOBT8P82kF96MwG0GR4=
+  version "3.8.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js-pure/-/core-js-pure-3.8.0.tgz#4cdd2eca37d49cda206b66e26204818dba77884a"
+  integrity sha1-TN0uyjfUnNoga2biYgSBjbp3iEo=
 
 core-js@3.6.5:
   version "3.6.5"
@@ -7967,14 +7981,14 @@ core-js@^1.0.0:
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
 
 core-js@^2.4.0, core-js@^2.5.0:
-  version "2.6.11"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
-  integrity sha1-OIMUafmSK97Y7iHJ3EaYXgOZMIw=
+  version "2.6.12"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
+  integrity sha1-2TM9+nsGXjR8xWgiGdb2kIWcwuw=
 
 core-js@^3.5.0, core-js@^3.6.5:
-  version "3.7.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js/-/core-js-3.7.0.tgz#b0a761a02488577afbf97179e4681bf49568520f"
-  integrity sha1-sKdhoCSIV3r7+XF55Ggb9JVoUg8=
+  version "3.8.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/core-js/-/core-js-3.8.0.tgz#0fc2d4941cadf80538b030648bb64d230b4da0ce"
+  integrity sha1-D8LUlByt+AU4sDBki7ZNIwtNoM4=
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -10152,7 +10166,7 @@ expect@^26.6.2:
     jest-message-util "^26.6.2"
     jest-regex-util "^26.0.0"
 
-express@4.17.1, express@^4.16.2, express@^4.16.3:
+express@4.17.1, express@^4.16.2, express@^4.16.3, express@^4.17.1:
   version "4.17.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/express/-/express-4.17.1.tgz#4491fc38605cf51f8629d39c2b5d026f98a4c134"
   integrity sha1-RJH8OGBc9R+GKdOcK10Cb5ikwTQ=
@@ -14433,9 +14447,9 @@ log4js@1.1.1:
     streamroller "^0.4.0"
 
 loglevel@^1.4.1, loglevel@^1.6.2:
-  version "1.7.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/loglevel/-/loglevel-1.7.0.tgz#728166855a740d59d38db01cf46f042caa041bb0"
-  integrity sha1-coFmhVp0DVnTjbAc9G8ELKoEG7A=
+  version "1.7.1"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/loglevel/-/loglevel-1.7.1.tgz#005fde2f5e6e47068f935ff28573e125ef72f197"
+  integrity sha1-AF/eL15uRwaPk1/yhXPhJe9y8Zc=
 
 lolex@^5.0.0:
   version "5.1.2"
@@ -16067,11 +16081,11 @@ p-limit@^2.0.0, p-limit@^2.2.0:
     p-try "^2.0.0"
 
 p-limit@^3.0.2:
-  version "3.0.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/p-limit/-/p-limit-3.0.2.tgz#1664e010af3cadc681baafd3e2a437be7b0fb5fe"
-  integrity sha1-FmTgEK88rcaBuq/T4qQ3vnsPtf4=
+  version "3.1.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/p-limit/-/p-limit-3.1.0.tgz#e1daccbe78d0d1388ca18c64fea38e3e57e3706b"
+  integrity sha1-4drMvnjQ0TiMoYxk/qOOPlfjcGs=
   dependencies:
-    p-try "^2.0.0"
+    yocto-queue "^0.1.0"
 
 p-locate@^2.0.0:
   version "2.0.0"
@@ -16171,6 +16185,11 @@ pako@~1.0.5:
   version "1.0.11"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
   integrity sha1-bJWZ00DVTf05RjgCUqNXBaa5kr8=
+
+papi@^0.29.0:
+  version "0.29.1"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/papi/-/papi-0.29.1.tgz#7373e2c527f5117d61fd2a0e6c6b1dd72bf7f180"
+  integrity sha1-c3PixSf1EX1h/SoObGsd1yv38YA=
 
 parallel-transform@^1.1.0:
   version "1.2.0"
@@ -18050,9 +18069,9 @@ rc-mentions@~1.5.0:
     rc-util "^5.0.1"
 
 rc-menu@^8.0.1, rc-menu@^8.6.1, rc-menu@~8.10.0:
-  version "8.10.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-menu/-/rc-menu-8.10.0.tgz#f14ff6456073bcf29603da818774543a73e44e92"
-  integrity sha1-8U/2RWBzvPKWA9qBh3RUOnPkTpI=
+  version "8.10.1"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-menu/-/rc-menu-8.10.1.tgz#5637d85760ea6bd6ead49f44ae29686c5cc59798"
+  integrity sha1-VjfYV2Dqa9bq1J9ErilobFzFl5g=
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "2.x"
@@ -18060,7 +18079,7 @@ rc-menu@^8.0.1, rc-menu@^8.6.1, rc-menu@~8.10.0:
     omit.js "^2.0.0"
     rc-motion "^2.0.1"
     rc-trigger "^5.1.2"
-    rc-util "^5.0.1"
+    rc-util "^5.5.0"
     resize-observer-polyfill "^1.5.0"
     shallowequal "^1.1.0"
 
@@ -18133,9 +18152,9 @@ rc-resize-observer@^0.2.0, rc-resize-observer@^0.2.1, rc-resize-observer@^0.2.3,
     resize-observer-polyfill "^1.5.1"
 
 rc-select@^11.1.1:
-  version "11.5.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-select/-/rc-select-11.5.0.tgz#360d2762207c2fef2622e7fcc542fc94dfc9d10f"
-  integrity sha1-Ng0nYiB8L+8mIuf8xUL8lN/J0Q8=
+  version "11.5.1"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-select/-/rc-select-11.5.1.tgz#f0a97e52fb9f4295e6abbc300c030d54206f4e16"
+  integrity sha1-8Kl+UvufQpXmq7wwDAMNVCBvThY=
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "2.x"
@@ -18211,9 +18230,9 @@ rc-switch@~3.2.0:
     rc-util "^5.0.1"
 
 rc-table@~7.11.0:
-  version "7.11.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-table/-/rc-table-7.11.2.tgz#07fde8e6323e27c6ed3f534a35dae413e8212d51"
-  integrity sha1-B/3o5jI+J8btP1NKNdrkE+ghLVE=
+  version "7.11.3"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-table/-/rc-table-7.11.3.tgz#a352a222664b1b746f872fb35c67a67934d73eab"
+  integrity sha1-o1KiImZLG3Rvhy+zXGemeTTXPqs=
   dependencies:
     "@babel/runtime" "^7.10.1"
     classnames "^2.2.5"
@@ -18222,13 +18241,12 @@ rc-table@~7.11.0:
     shallowequal "^1.1.0"
 
 rc-tabs@~11.7.0:
-  version "11.7.1"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-tabs/-/rc-tabs-11.7.1.tgz#c23fc53e59bd8b7250818a1a29bca1896450d79b"
-  integrity sha1-wj/FPlm9i3JQgYoaKbyhiWRQ15s=
+  version "11.7.2"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/rc-tabs/-/rc-tabs-11.7.2.tgz#d9443e471859b9dad81dc70abbdaefe40b1db5ab"
+  integrity sha1-2UQ+RxhZudrYHccKu9rv5Asdtas=
   dependencies:
     "@babel/runtime" "^7.11.2"
     classnames "2.x"
-    raf "^3.4.1"
     rc-dropdown "^3.1.3"
     rc-menu "^8.6.1"
     rc-resize-observer "^0.2.1"
@@ -20389,9 +20407,9 @@ stable@^0.1.8:
   integrity sha1-g26zyDgv4pNv6vVEYxAXzn1Ho88=
 
 stack-utils@^1.0.1:
-  version "1.0.3"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/stack-utils/-/stack-utils-1.0.3.tgz#db7a475733b5b8bf6521907b18891d29006f7751"
-  integrity sha1-23pHVzO1uL9lIZB7GIkdKQBvd1E=
+  version "1.0.4"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/stack-utils/-/stack-utils-1.0.4.tgz#4b600971dcfc6aed0cbdf2a8268177cc916c87c8"
+  integrity sha1-S2AJcdz8au0MvfKoJoF3zJFsh8g=
   dependencies:
     escape-string-regexp "^2.0.0"
 
@@ -23222,6 +23240,11 @@ yauzl@^2.10.0:
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"
+
+yocto-queue@^0.1.0:
+  version "0.1.0"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
+  integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
 zlib@1.0.5:
   version "1.0.5"

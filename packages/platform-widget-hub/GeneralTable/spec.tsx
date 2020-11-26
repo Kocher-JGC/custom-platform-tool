@@ -8,6 +8,9 @@ import { GeneralTableComp } from '.';
     columns: {
       type: 'array[{ key: string }]'
     },
+    search: {
+      type: 'boolean'
+    },
     optDS: {
       type: 'string'
     }
@@ -15,7 +18,7 @@ import { GeneralTableComp } from '.';
 })
 export class NormalTable implements PlatformWidgetComp {
   render(widgetState: WidgetEntityState) {
-    // console.log(widgetState);
+    console.log('NormalTable.widgetState', widgetState);
 
     return (
       <GeneralTableComp {...widgetState} />

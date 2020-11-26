@@ -1,7 +1,7 @@
 import React from 'react';
 
 window.onerror = function (err) {
-  console.log(`捕捉错误：${err}`);
+  console.error(`捕捉错误`, err);
 };
 
 export default class CatchError extends React.Component {
