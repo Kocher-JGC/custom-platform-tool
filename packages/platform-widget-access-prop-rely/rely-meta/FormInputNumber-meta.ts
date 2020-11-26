@@ -28,6 +28,7 @@ export const FormInputNumberMeta = CreateWidgetPropItemRely({
       },
       { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
       { propID: 'prop_widget_type', editAttr: ['widgetType'] },
+      { propID: 'prop_field_type', editAttr: ['fieldType'] },
       { propID: 'prop_data_type', editAttr: ['dataType'] },
       { propID: 'prop_string_length', editAttr: ['stringLength'] },
       { propID: 'prop_prompt_info', editAttr: ['promptInfo'] },

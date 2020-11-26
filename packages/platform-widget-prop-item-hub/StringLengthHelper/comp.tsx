@@ -29,6 +29,7 @@ export const StringLengthComp = ({
         attr: 'stringLength',
         value
       })}
+      disabled={!!selectedField?.column}
     />
   );
 };

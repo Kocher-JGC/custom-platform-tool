@@ -28,6 +28,7 @@ export const FormTimeTickerMeta = CreateWidgetPropItemRely({
       { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },
       { propID: 'prop_check_error_tooltip', editAttr: ['checkErrorTooltip'] },
       { propID: 'prop_widget_type', editAttr: ['widgetType'] },
+      { propID: 'prop_field_type', editAttr: ['fieldType'] },
       { propID: 'prop_data_type', editAttr: ['dataType'] },
       { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       { propID: 'prop_string_length', editAttr: ['stringLength'] },

@@ -1,48 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Select } from "antd";
-import { FIELD_TYPE_MENU } from "./constants";
+import { WIDGET_TYPE_MENU } from "./constants";
+import { IOptions } from "./interface";
+import { getWidgetOptions } from "./utils";
 
 const { Option } = Select;
 
 export const WidgetTypeComp = ({ changeEntityState, changeWidgetType, editingWidgetState, widgetEntity, takeMeta }) => {
-  const { widgetType, field } = editingWidgetState;
+  const [widgetOptions, setWidgetOptions]=useState<IOptions[]>([]);
+  const { field } = editingWidgetState;
   const selectedField = takeMeta({
     metaAttr: "schema",
     metaRefID: field
   });
   useEffect(() => {
-    // const { name, fieldType, fieldSize } = selectedField?.column || {};
-
-    // changeEntityState({
-    //   attr: "title",
-    //   value: name
-    // });
-
-    // changeEntityState({
-    //   attr: "dataType",
-    //   value: fieldType
-    // });
-
-    // changeEntityState({
-    //   attr: "stringLength",
-    //   value: fieldSize
-    // });
-
+    const { fieldType, colDataType } = selectedField?.column || {};
+    setWidgetOptions(getWidgetOptions(fieldType, colDataType));
   }, [selectedField]);
   return (
     <Select
       style={{ width: "100%" }}
       defaultValue={widgetEntity?.widgetRef}
       value={widgetEntity?.widgetRef}
-      onChange={(value) =>
-      // changeEntityState({
-      //   attr: "widgetType",
-      //   value
-      // })
-      {changeWidgetType(value);}
-      }
+      onChange={(value) => changeWidgetType(value)}
     >
-      {FIELD_TYPE_MENU.map((item) => (
+      {WIDGET_TYPE_MENU.map((item) => (
         <Option key={item.key} value={item.value} disabled={!item.value}>
           {item.label}
         </Option>

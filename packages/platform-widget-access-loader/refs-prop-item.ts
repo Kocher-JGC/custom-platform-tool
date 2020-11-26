@@ -21,3 +21,4 @@ export * from '@platform-widget-prop-item/check-fixed-rule-helper';
 export * from '@platform-widget-prop-item/check-tooltip-helper';
 export * from '@platform-widget-prop-item/table-datasource-helper';
 export * from '@platform-widget-prop-item/unit-helper';
+export * from '@platform-widget-prop-item/field-type-helper';
