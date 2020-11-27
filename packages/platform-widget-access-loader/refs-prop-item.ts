@@ -19,3 +19,4 @@ export * from '@platform-widget-prop-item/dropdown-multiple-helper';
 export * from '@platform-widget-prop-item/check-custom-rules-helper';
 export * from '@platform-widget-prop-item/check-fixed-rule-helper';
 export * from '@platform-widget-prop-item/check-tooltip-helper';
+export * from '@platform-widget-prop-item/table-datasource-helper';
