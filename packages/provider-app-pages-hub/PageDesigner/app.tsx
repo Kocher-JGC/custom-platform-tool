@@ -299,8 +299,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               realVal: 'insert',
               code: 'var.page.mode'
             }
-          },
-          events: {}
+          }
         };
       }
       return draftInitData;
