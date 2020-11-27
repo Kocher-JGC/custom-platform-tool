@@ -18,7 +18,7 @@ import { GeneralTableComp } from '.';
 })
 export class NormalTable implements PlatformWidgetComp {
   render(widgetState: WidgetEntityState) {
-    console.log('NormalTable.widgetState', widgetState);
+    // console.log('NormalTable.widgetState', widgetState);
 
     return (
       <GeneralTableComp {...widgetState} />

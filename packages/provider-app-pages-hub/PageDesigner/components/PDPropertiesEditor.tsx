@@ -31,6 +31,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
 
   componentDidMount = async () => {
     const { selectedEntity } = this.props;
+    
     const [
       widgetMeta,
       propItemGroupingData,
@@ -40,6 +41,7 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
       loadPropItemGroupingData(),
       loadPropItemData(),
     ]);
+
     this.setState({
       propItemGroupingData,
       widgetMeta,

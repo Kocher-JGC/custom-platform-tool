@@ -10,7 +10,6 @@ export interface GeneralTableCompProps {
 export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
   // console.log(props);
   const { columns = [], dataSource = [], ...other } = props || {};
-  // console.log(props);
   // console.log(columns, dataSource);
   return (
     <div>

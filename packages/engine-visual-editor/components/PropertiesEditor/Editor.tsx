@@ -4,7 +4,6 @@
 import React from 'react';
 import produce from 'immer';
 import union from 'lodash/union';
-import { Debounce } from '@mini-code/base-func';
 import {
   WidgetEntityState, PropItemMeta,
   WidgetRelyPropItems,
@@ -58,8 +57,6 @@ export interface PropertiesEditorProps {
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
 }
-
-// const debounce = new Debounce();
 
 function makeArray<T>(item: T | T[]): T[] {
   return Array.isArray(item) ? item : [item];

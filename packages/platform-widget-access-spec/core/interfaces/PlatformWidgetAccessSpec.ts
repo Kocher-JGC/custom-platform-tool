@@ -1,6 +1,18 @@
 import { WidgetEditableProps, WidgetEntityState } from "@engine/visual-editor/data-structure";
 
-export type BusinessWidgetRender = (widgetState: WidgetEntityState) => JSX.Element
+/**
+ * 来自应用运行时传入的上下文
+ * TODO: 蒋国才 ，完善应用传入的内容
+ */
+export interface WidgetActions {
+  onClick: Function
+  onChange: Function
+}
+
+export type PlatformWidgetRender = (
+  widgetState: WidgetEntityState, 
+  widgetActions: WidgetActions
+) => JSX.Element
 
 /**
  * 平台组件 meta
@@ -21,7 +33,7 @@ export interface PlatformWidgetComp {
   /** 被卸载时的回调 */
   didUnmount?: () => void
   /** 用于渲染的组件 */
-  render: BusinessWidgetRender
+  render: PlatformWidgetRender
 }
 
 /**

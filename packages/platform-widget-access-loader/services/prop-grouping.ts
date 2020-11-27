@@ -21,7 +21,7 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_note_info',
           'prop_start_search',
           'prop_dropdown_multiple',
-
+          'prop_table_ds_helper',
         ]
       },
       {
