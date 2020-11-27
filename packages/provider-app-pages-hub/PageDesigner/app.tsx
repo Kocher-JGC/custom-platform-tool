@@ -30,7 +30,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   componentDidMount = async () => {
     // 在顶层尝试捕获异常
     try {
-      await this.perpareInitData();
+      this.perpareInitData();
     } catch (e) {
       console.error(e);
     }

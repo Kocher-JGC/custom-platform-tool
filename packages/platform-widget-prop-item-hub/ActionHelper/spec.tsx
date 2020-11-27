@@ -3,8 +3,10 @@ import { PopModelSelector } from '@infra/ui';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
 import { EventSettingPanel } from './EventSettingPanel';
 import './style.scss';
+import { ActionsMeta } from '@engine/visual-editor/data-structure';
 const whichAttr = 'eventRef';
 export type EventsRef = {[key: string]: string[]}
+export type InterAction = {label: string, value: string, key: string}
 export type HandleCreate = (param1: {eventsRef: EventsRef}) => void;
 export type EventConfig = {actList?: string[], condition?: any, stopByUser?: boolean}
 export type HandleUpdate = (param1: {eventID: string, eventConfig: EventConfig}) => void;
@@ -28,11 +30,11 @@ export class ActionHelperSpec {
     } = ctx;
       /** 获取页面全部的动作列表 */
     const getInterActions = () => {
-      const actions = takeMeta({
+      const actions: {[key:string]: ActionsMeta} = takeMeta({
         metaAttr: 'actions',
       }) || {};
       if(!actions) return [];
-      const actionList = [];
+      const actionList: InterAction[] = [];
       for(const key in actions){
         const { [key]: { name: label } } = actions;
         actionList.push({

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Collapse, Form, Select, Input } from 'antd';
 import { PlusSquareOutlined, DeleteOutlined, CaretRightOutlined } from '@ant-design/icons';
 import { nanoid } from 'nanoid';
-import { EventsRef, EventConfig } from './spec';
+import { EventsRef, EventConfig, InterAction } from './spec';
 const { Panel } = Collapse;
 
 
@@ -125,7 +125,6 @@ export enum StopByError {yes, no}
 export type ParamOnCreate = {type: 'create', eventsRef: EventsRef}
 export type ParamOnUpdate = {type: 'update', eventConfig: EventConfig, eventID: string}
 export type ParamOnDelete = {type: 'remove', eventsRef: EventsRef, eventID: string}
-export type InterAction = {label: string, value: string, key: string}
 export type InterEvent = {actList: string[], condition?: any, stopByError: StopByError}
 export type InterEvents = {[key: string]: InterEvent}
 export interface PEventSettingPanel {
