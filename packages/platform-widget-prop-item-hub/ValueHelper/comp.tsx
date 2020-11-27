@@ -3,7 +3,7 @@ import {
   CloseModal, Input, Selector, ShowModal
 } from '@infra/ui';
 import { ChangeEntityState } from '@platform-widget-access/spec';
-import { ExpEditor } from './ExpEditor';
+import { Expression } from './Expression';
 
 /**
  * 可用的值的类型
@@ -56,7 +56,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
               width: 900,
               children: () => {
                 return (
-                  <ExpEditor
+                  <Expression
                     defaultValue={exp}
                     onSubmit={(val) => {
                       onChange([

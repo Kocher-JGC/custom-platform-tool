@@ -1,37 +1,32 @@
-import React, { useRef, useState, Suspense } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Row, Col, Collapse, List, Descriptions } from 'antd';
+import { ExpressionEditor } from './ExpressionEditor';
 import { EXPRESSION_FUNCTION, SHOW_FUNCTION_FIELD } from './constants';
 import { IExpressionFunctionOptions } from './interface';
-import './expEditor.less';
+import './expression.less';
 
 const { Panel } = Collapse;
 
-const ExpressEditor = React.lazy(() => import(/* webpackChunkName: "code_editor" */'@engine/code-editor'));
-
-export const ExpEditor = ({
+export const Expression = ({
   defaultValue,
   onSubmit
 }) => {
-  const [editingVal, setEditingVal] = useState('');
-  const [curFunction, setCurFunction] = useState<IExpressionFunctionOptions | null>(null);
   const editorRef = useRef();
+  const [curFunction, setCurFunction] = useState<IExpressionFunctionOptions | null>(null);
+
+  const handleFunctionSelect = (fun) => {
+    editorRef?.current?.addFunction(fun);
+  };
+
+  const handleVariableSelect = (fun) => {
+    editorRef?.current?.addVariable(fun);
+  };
+
+
   return (
     <div className="expression">
       <div className="expression-header">结果 =</div>
-      <Suspense fallback={<div>加载中...</div>}>
-        <div className="expression-editor">
-          <ExpressEditor
-            value={defaultValue}
-            ref={editorRef.current}
-            // theme="dracula"
-            onChange={(instance) => {
-              const value = instance.getValue();
-              setEditingVal(value);
-            }}
-          />
-        </div>
-
-      </Suspense>
+      <ExpressionEditor defaultValue={defaultValue} ref={editorRef} />
 
       <Row gutter={10}>
         <Col span={8}>
@@ -43,9 +38,12 @@ export const ExpEditor = ({
                   <List
                     size="small"
                     bordered={false}
-                    dataSource={[{ label: "张三", value: "101" }, { label: "张三", value: "102" }]}
+                    dataSource={[{ label: "张三", value: "101" }, { label: "李四", value: "102" }]}
                     renderItem={item => (
-                      <List.Item>
+                      <List.Item onClick={() => {
+                        handleVariableSelect(item);
+                      }}
+                      >
                         {item.label}
                       </List.Item>
                     )}
@@ -97,14 +95,14 @@ export const ExpEditor = ({
             <div className="expression-option-body">
               <Collapse bordered={false}>
                 {
-                  EXPRESSION_FUNCTION.map((funType,i)=><Panel key={funType.name} header="字符串函数">
+                  EXPRESSION_FUNCTION.map((funType)=><Panel key={funType.name} header="字符串函数">
                     <List
                       size="small"
                       bordered={false}
                       dataSource={funType.options}
                       renderItem={item => (
                         <List.Item onClick={()=>{
-                          console.log(item);
+                          handleFunctionSelect(item);
                           setCurFunction(item);
                         }}
                         >
@@ -138,7 +136,7 @@ export const ExpEditor = ({
         <Button
           type="primary"
           onClick={(e) => {
-            onSubmit?.(editingVal);
+            // onSubmit?.(editingVal);
           }}
         >
           确定

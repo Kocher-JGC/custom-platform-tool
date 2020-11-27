@@ -11,7 +11,6 @@ export const DataTypeComp = ({ changeEntityState, editingWidgetState, widgetEnti
     metaRefID: field
   });
   useEffect(() => {
-    console.log("selectedField", selectedField);
     if(selectedField?.column){
       const { colDataType } = selectedField?.column || {};
 
