@@ -92,6 +92,11 @@ export type ChangeVarMetaOption = ChangeMetadataOptionBasic<VarMeta, 'varRely'>
 //   metaAttr: 'varRely'
 // }
 
-export type ChangeMetadataOption = ChangeActionMetaOption | ChangeDSMetaOption | ChangeVarMetaOption | ChangeSchemaMetaOption
+export type ChangeEventMetaOption = ChangeMetadataOptionBasic<VarMeta, 'events'> 
+// {
+//   metaAttr: 'events'
+// }
+
+export type ChangeMetadataOption = ChangeActionMetaOption | ChangeDSMetaOption | ChangeVarMetaOption | ChangeSchemaMetaOption | ChangeEventMetaOption
 
 export type ChangeMetadataOptions = ChangeMetadataOption | ChangeMetadataOption[]

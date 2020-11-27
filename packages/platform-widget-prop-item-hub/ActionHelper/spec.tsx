@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PopModelSelector } from '@infra/ui';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
 import { EventSettingPanel } from './EventSettingPanel';
 import './style.scss';
 const whichAttr = 'eventRef';
-
+export type EventsRef = {[key: string]: string[]}
+export type HandleCreate = (param1: {eventsRef: EventsRef}) => void;
+export type EventConfig = {actList?: string[], condition?: any, stopByUser?: boolean}
+export type HandleUpdate = (param1: {eventID: string, eventConfig: EventConfig}) => void;
+export type HandleRemove = (param1: {eventID: string, eventsRef: EventsRef}) => void;
 @PropItem({
   id: 'prop_action_config',
   name: 'PropActionConfig',
   label: '动作设置',
   whichAttr,
-  useMeta: ['actions'],
+  useMeta: ['events'],
 })
 export class ActionHelperSpec {
   render(ctx: PropItemRenderContext) {
@@ -22,12 +26,11 @@ export class ActionHelperSpec {
       },
       widgetEntity
     } = ctx;
-    console.log(ctx);
-    /** 获取页面全部的动作列表 */
+      /** 获取页面全部的动作列表 */
     const getInterActions = () => {
       const actions = takeMeta({
         metaAttr: 'actions',
-      });
+      }) || {};
       if(!actions) return [];
       const actionList = [];
       for(const key in actions){
@@ -38,30 +41,36 @@ export class ActionHelperSpec {
       }
       return actionList;
     };
-    /** 获取页面全部的事件列表 */
+      /** 获取页面全部的事件列表 */
     const interEvents = takeMeta({
       metaAttr: 'events',
     }) || {};
-    /** 组件所支持的事件列表 */
+      /** 组件所支持的事件列表 */
     const supportEvents = widgetEntity.eventAttr || [];
-    const handleCreate = (param)=>{
+    /** 
+     * 新增事件，补充组件实例的事件映射列表
+     */
+    const handleCreate: HandleCreate = (param)=>{
       const { eventsRef } = param || {};
       changeEntityState({
         attr: whichAttr,
         value: eventsRef
       });
     };
-    const handleUpdate = (param) => {
-      const { event, eventConfig } = param || {};
+      /**
+     * 修改事件，更改 pageMetadata.events 中的事件配置数据
+     */
+    const handleUpdate: HandleUpdate = (param) => {
+      const { eventID, eventConfig } = param || {};
       changePageMeta({
         metaAttr: 'events',
         type: 'update',
         data: eventConfig,
-        metaID: event
+        metaID: eventID
       });
     };
-    const handleRemove = (param) => {
-      const { eventRef, eventID } = param || {};
+    const handleRemove: HandleRemove = (param) => {
+      const { eventsRef, eventID } = param || {};
       changePageMeta({
         metaAttr: 'events',
         type: 'rm',
@@ -69,7 +78,7 @@ export class ActionHelperSpec {
       });
       changeEntityState({
         attr: whichAttr,
-        value: eventRef
+        value: eventsRef
       });
     };
     const handleSubmit = {
@@ -88,19 +97,18 @@ export class ActionHelperSpec {
             maxHeightable: false,
             style:{ maxHeight: '100vh' },
             children: ({ close }) => {
-              return React.useMemo(()=>{
-                return (
-                  <EventSettingPanel
-                    supportEvents = {supportEvents}
-                    interActions={getInterActions()}
-                    interEvents={interEvents}
-                    defaultConfig={editingWidgetState[whichAttr] || {}}
-                    onSubmit={(eventSetting) => {
-                      const { type, ...rest } = eventSetting;
-                      handleSubmit[type](rest);
-                    }}
-                  />
-                );}, [interEvents, editingWidgetState[whichAttr]]);
+              return (
+                <EventSettingPanel
+                  supportEvents = {supportEvents}
+                  interActions={getInterActions()}
+                  interEvents={interEvents}
+                  defaultConfig={editingWidgetState[whichAttr] || {}}
+                  onSubmit={(eventSetting) => {
+                    const { type, ...rest } = eventSetting;
+                    handleSubmit[type](rest);
+                  }}
+                />
+              );
             }
           }}
         >
