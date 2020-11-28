@@ -16,9 +16,9 @@ import { WidgetTypeComp } from './comp';
 })
 export class WidgetTypeSpec {
   render(ctx: PropItemRenderContext) {
-    const { takeMeta } = ctx.platformCtx.meta;
+    const { takeMeta, changeWidgetType } = ctx.platformCtx.meta;
     return (
-      <WidgetTypeComp {...ctx} takeMeta={takeMeta} />
+      <WidgetTypeComp {...ctx} takeMeta={takeMeta} changeWidgetType={changeWidgetType} />
     );
   }
 }

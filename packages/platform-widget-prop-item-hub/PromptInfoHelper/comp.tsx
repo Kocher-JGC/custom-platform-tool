@@ -14,12 +14,12 @@ export const PromptInfoComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextPromptInfo = selectedField?.column?.name;
-    if (!nextPromptInfo || nextPromptInfo === promptInfo) return;
-    changeEntityState({
-      attr: 'promptInfo',
-      value: nextPromptInfo
-    });
+    // const nextPromptInfo = selectedField?.column?.name;
+    // if (!nextPromptInfo || nextPromptInfo === promptInfo) return;
+    // changeEntityState({
+    //   attr: 'promptInfo',
+    //   value: nextPromptInfo
+    // });
   }, [selectedField]);
   return (
     <TextArea

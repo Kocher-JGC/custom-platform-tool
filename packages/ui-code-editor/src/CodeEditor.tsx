@@ -57,6 +57,7 @@ interface IEvent {
  * 编辑器对外暴露属性
  */
 interface ICodeEditorProps extends EditorConfiguration, IEvent {
+  /**  */
   hintOptions: any;
   /** 是否只读 */
   readOnly?: string | boolean;
@@ -72,20 +73,20 @@ interface ICodeEditorProps extends EditorConfiguration, IEvent {
   fullscreen?: boolean;
   /** 自定义资源 */
   cusResourceList: IResources | IResources[];
-  /** 获取 Editor 实例 */
-  getEditor?: (editor: any) => any;
   /** 宽度 */
   width?: string;
   /** 高度 */
   height?: string;
+  /** 获取 Editor 实例 */
+  getEditor?: (editor: any) => any;
   /** 自定义注册 */
-  registerHelper?: (editor: Editor, options: EditorConfiguration) => {};
+  registerHelper?: (editor: Editor, options: EditorConfiguration) => void;
   /** 实例化完成 */
-  ready?: (editor: Editor, codeMirror: any) => {};
+  ready?: (editor: Editor, codeMirror: any) => void;
   renderSelectTheme?: () => ReactElement;
   renderSelectMode?: () => ReactElement;
   renderSelectFontSize?: () => ReactElement;
-  renderToolBar?: () => ReactElement;
+  renderToolBar?: (() => ReactElement) | false;
 }
 interface IICodeEditorState {
   /** 函数输出结果 */
@@ -103,7 +104,7 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   public static defaultProps: ICodeEditorProps = {
     readOnly: false,
     mode: "javascript",
-    theme: "dracula",
+    theme: "neo",
     lint: true,
     hint: true,
     search: false,
@@ -191,7 +192,7 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   }
 
   /**
-   * 默认加载资源列表里mode 和对应的提示 hint 对应主题样式theme
+   * 默认加载资源列表里 mode 和对应的提示 hint 对应主题样式theme
   */
   public async defaultImportCodeMirror() {
     const {
@@ -379,19 +380,23 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
     const cusResources = this.mergeResource();
     return (
       <>
-        {/*  编辑器 */}
         <textarea ref={this.codeRef}></textarea>
-        {/* 操作栏 */}
         {
-          renderToolBar ? renderToolBar() : <ToolBar
-            onThemeChange={this.handleThemeChange}
-            onModeChange={this.handleModeChange}
-            mode={mode}
-            resourceList={cusResources}
-            renderSelectTheme={renderSelectTheme}
-            renderSelectMode={renderSelectMode!}
-            renderSelectFontSize={renderSelectFontSize}
-          />
+          (()=>{
+            if(renderToolBar && typeof renderToolBar === 'function'){
+              return renderToolBar();
+            }else if (renderToolBar !== false) {
+              return <ToolBar
+                onThemeChange={this.handleThemeChange}
+                onModeChange={this.handleModeChange}
+                mode={mode}
+                resourceList={cusResources}
+                renderSelectTheme={renderSelectTheme}
+                renderSelectMode={renderSelectMode}
+                renderSelectFontSize={renderSelectFontSize}
+              />;
+            }
+          })()
         }
       </>
     );

@@ -1,39 +1,38 @@
 import React, { useEffect } from "react";
 import { Select } from "antd";
-import { DATA_TYPE_MENU } from "./constants";
+import { FIELD_TYPE_MENU } from "./constants";
 
 const { Option } = Select;
 
-export const DataTypeComp = ({ changeEntityState, editingWidgetState, widgetEntity, takeMeta }) => {
-  const { dataType, field } = editingWidgetState;
+export const FieldTypeComp = ({ changeEntityState, editingWidgetState, takeMeta }) => {
+  const { fieldType, field } = editingWidgetState;
   const selectedField = takeMeta({
     metaAttr: "schema",
     metaRefID: field
   });
   useEffect(() => {
     if(selectedField?.column){
-      const { colDataType } = selectedField?.column || {};
+      const { fieldType } = selectedField?.column || {};
 
       changeEntityState({
-        attr: "dataType",
-        value: colDataType
+        attr: "fieldType",
+        value: fieldType
       });
     }
   }, [selectedField]);
-
   return (
     <Select
       style={{ width: "100%" }}
-      value={dataType}
+      value={fieldType}
       onChange={(value) =>
         changeEntityState({
-          attr: "dataType",
+          attr: "fieldType",
           value
         })
       }
       disabled={!!selectedField?.column}
     >
-      {(DATA_TYPE_MENU[widgetEntity?.propState?.fieldType] || []).map((item) => (
+      {FIELD_TYPE_MENU.map((item) => (
         <Option key={item.key} value={item.value}>
           {item.label}
         </Option>

@@ -1,24 +1,24 @@
 import React from 'react';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { CheckErrorTooltipComp } from './comp';
+import { FieldTypeComp } from './comp';
 
 /** 属性项编辑的组件属性 */
 // const whichAttr = 'title';
 
 @PropItem({
-  id: 'prop_check_error_tooltip',
-  name: 'PropCheckErrorTooltip',
-  label: '失败提示',
-  whichAttr: ['checkErrorTooltip', 'field'],
+  id: 'prop_field_type',
+  name: 'PropFieldType',
+  label: '字段类型',
+  whichAttr: ['fieldType', 'field'],
   // defaultValues: {
   //   title: '标题'
   // },
 })
-export class CheckErrorTooltipHelperSpec {
+export class FieldTypeSpec {
   render(ctx: PropItemRenderContext) {
     const { takeMeta } = ctx.platformCtx.meta;
     return (
-      <CheckErrorTooltipComp {...ctx} takeMeta={takeMeta} />
+      <FieldTypeComp {...ctx} takeMeta={takeMeta} />
     );
   }
 }
