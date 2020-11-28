@@ -1,4 +1,4 @@
-import 'core-js/es7/reflect';
+import 'core-js/es/reflect';
 
 export * from '@engine/visual-editor/data-structure';
 
