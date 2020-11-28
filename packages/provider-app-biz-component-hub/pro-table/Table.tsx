@@ -1,5 +1,3 @@
-import './index.less';
-
 import React, {
   useEffect,
   useContext,
@@ -10,7 +8,7 @@ import React, {
   useMemo,
 } from 'react';
 import { Table, ConfigProvider, Card, Space, Empty } from 'antd';
-import { useIntl, IntlType, ParamsType, ConfigProviderWarp } from '@ant-design/pro-provider';
+import { useIntl, IntlType, ParamsType, ConfigProviderWrap } from '@ant-design/pro-provider';
 import classNames from 'classnames';
 import get from 'rc-util/lib/utils/get';
 import useMergedState from 'rc-util/lib/hooks/useMergedState';
@@ -35,9 +33,9 @@ import {
   ProSchema,
   ProSchemaComponentTypes,
   LabelIconTip,
-  pickUndefinedAndArray,
+  omitUndefinedAndEmptyArr,
   ProCoreActionType,
-  pickUndefined,
+  omitUndefined,
 } from '@ant-design/pro-utils';
 
 import useFetchData, { RequestData } from './useFetchData';
@@ -59,61 +57,63 @@ import defaultRenderText from './defaultRender';
 import { DensitySize } from './component/ToolBar/DensityIcon';
 import ErrorBoundary from './component/ErrorBoundary';
 
+import './index.less';
+
 type TableRowSelection = TableProps<any>['rowSelection'];
 
 export type ExtraProColumnType<T> = Omit<
-  ColumnType<T>,
-  'render' | 'children' | 'title' | 'filters'
+ColumnType<T>,
+'render' | 'children' | 'title' | 'filters'
 >;
 
 export type ProColumnType<T = unknown> = ProSchema<
-  T,
-  ProFieldValueType | ProFieldValueObjectType,
-  ExtraProColumnType<T> & {
-    index?: number;
+T,
+ProFieldValueType | ProFieldValueObjectType,
+ExtraProColumnType<T> & {
+  index?: number;
 
-    /**
+  /**
      * 搜索表单的默认值
      */
-    initialValue?: any;
+  initialValue?: any;
 
-    /**
+  /**
      * 是否缩略
      */
-    ellipsis?: boolean;
-    /**
+  ellipsis?: boolean;
+  /**
      * 是否拷贝
      */
-    copyable?: boolean;
-    /**
+  copyable?: boolean;
+  /**
      * 在查询表单中隐藏
      */
-    hideInSearch?: boolean;
+  hideInSearch?: boolean;
 
-    /**
+  /**
      * 在 table 中隐藏
      */
-    hideInTable?: boolean;
+  hideInTable?: boolean;
 
-    /**
+  /**
      * 在新建表单中删除
      */
-    hideInForm?: boolean;
+  hideInForm?: boolean;
 
-    /**
+  /**
      * 表头的筛选菜单项
      */
-    filters?: boolean | ColumnFilterItem[];
+  filters?: boolean | ColumnFilterItem[];
 
-    /**
+  /**
      * form 的排序
      */
-    order?: number;
-    /**
+  order?: number;
+  /**
      * 传给 Form.Item 的 props
      */
-    formItemProps?: Partial<Omit<FormItemProps, 'children'>>;
-  }
+  formItemProps?: Partial<Omit<FormItemProps, 'children'>>;
+}
 >;
 
 export interface ProColumnGroupType<RecordType> extends ProColumnType<RecordType> {
@@ -398,7 +398,7 @@ const genColumnList = <T, U = {}>(
   counter: ReturnType<typeof useCounter>,
   columnEmptyText?: ProFieldEmptyText,
 ): (ColumnsType<T>[number] & { index?: number })[] =>
-  (columns
+  (columns && columns
     .map((item, columnsIndex) => {
       const { key, dataIndex, valueEnum, valueType, filters = [] } = item;
       const columnKey = genColumnKey(key, columnsIndex);
@@ -436,13 +436,13 @@ const genColumnList = <T, U = {}>(
         render: (text: any, row: T, index: number) =>
           columnRender<T>({ item, text, row, index, columnEmptyText, counter }),
       };
-      return pickUndefinedAndArray(tempColumns);
+      return omitUndefinedAndEmptyArr(tempColumns);
     })
     .filter((item) => !item.hideInTable) as unknown) as Array<
-      ColumnsType<T>[number] & {
-        index?: number;
-      }
-    >;
+  ColumnsType<T>[number] & {
+    index?: number;
+  }
+  >;
 
 /**
  * 🏆 Use Ant Design Table like a Pro!
@@ -692,30 +692,30 @@ const ProTable = <T extends {}, U extends ParamsType>(
   const className = classNames(defaultClassName, propsClassName);
   const toolbarDom = toolBarRender !== false &&
     (options !== false || headerTitle || toolBarRender) && (
-      // if options= false & headerTitle=== false, hide Toolbar
-      <Toolbar<T>
-        options={options}
-        headerTitle={headerTitle}
-        action={action}
-        onSearch={(keyword) => {
-          if (options && options.search) {
-            const { name = 'keyword' } =
+  // if options= false & headerTitle=== false, hide Toolbar
+    <Toolbar<T>
+      options={options}
+      headerTitle={headerTitle}
+      action={action}
+      onSearch={(keyword) => {
+        if (options && options.search) {
+          const { name = 'keyword' } =
               options.search === true
                 ? {
                   name: 'keyword',
                 }
                 : options.search;
-            setFormSearch({
-              ...formSearch,
-              [name]: keyword,
-            });
-          }
-        }}
-        selectedRows={selectedRows}
-        selectedRowKeys={selectedRowKeys}
-        toolBarRender={toolBarRender}
-      />
-    );
+          setFormSearch({
+            ...formSearch,
+            [name]: keyword,
+          });
+        }
+      }}
+      selectedRows={selectedRows}
+      selectedRowKeys={selectedRowKeys}
+      toolBarRender={toolBarRender}
+    />
+  );
 
   const alertDom = propsRowSelection !== false && (
     <Alert<T>
@@ -762,7 +762,7 @@ const ProTable = <T extends {}, U extends ParamsType>(
           rest.onChange(changePagination, filters, sorter, extra);
         }
         // 制造筛选的数据
-        setProFilter(pickUndefinedAndArray<any>(filters));
+        setProFilter(omitUndefinedAndEmptyArr<any>(filters));
 
         // 制造一个排序的数据
         if (Array.isArray(sorter)) {
@@ -774,9 +774,9 @@ const ProTable = <T extends {}, U extends ParamsType>(
               [`${value.field}`]: value.order,
             };
           }, {});
-          setProSort(pickUndefined<any>(data));
+          setProSort(omitUndefined<any>(data));
         } else {
-          setProSort(pickUndefined({ [`${sorter.field}`]: sorter.order as SortOrder }));
+          setProSort(omitUndefined({ [`${sorter.field}`]: sorter.order as SortOrder }));
         }
       }}
     />
@@ -869,11 +869,11 @@ const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableP
   const { getPrefixCls } = useContext(AntdConfigContext);
   return (
     <Container.Provider initialState={props}>
-      <ConfigProviderWarp>
+      <ConfigProviderWrap>
         <ErrorBoundary>
           <ProTable defaultClassName={getPrefixCls('pro-table')} {...props} />
         </ErrorBoundary>
-      </ConfigProviderWarp>
+      </ConfigProviderWrap>
     </Container.Provider>
   );
 };
