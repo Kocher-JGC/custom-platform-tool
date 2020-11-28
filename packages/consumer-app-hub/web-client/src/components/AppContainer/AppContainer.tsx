@@ -10,12 +10,13 @@ import {
 
 /** Components */
 import IUBDSLParser from "@iub-dsl/engine";
+
 import { Nav } from "./Navigator";
 import { PageContainer } from "../PageContainer";
 
 /** API */
 import {
-  LoadPage, GetMenu, GetPageAuthConfig, AuthUIByUIID
+  LoadPage, GetPageAuthConfig, AuthUIByUIID
 } from "../../services";
 
 interface AppContainerState extends RouterState {
@@ -46,14 +47,14 @@ export class AppContainer extends MultipleRouterManager<AppContainerProps, AppCo
   }
 
   componentDidMount() {
-    GetMenu().then((menuData) => {
-      this.setState({
-        navStore: menuData,
-        ready: true
-      });
+    // GetMenu().then((menuData) => {
+    //   this.setState({
+    //     navStore: menuData,
+    //     ready: true
+    //   });
 
-      this.initRoute();
-    });
+    //   this.initRoute();
+    // });
   }
 
   handleHistoryChange = (pageID) => {
