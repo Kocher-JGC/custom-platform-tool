@@ -33,29 +33,30 @@ interface PageContainerProps {
   };
 }
 
-const parserLoader = (type, appContext, { dsl, pageAuthInfo }) => {
-  switch (type) {
-    case 'config':
-      return IUBDSLRuntimeContainer({
-        // 接口反射，UI 验证
-        // context: {
-        //   setContext: () => ({}),
-        // },
-        // authUI: (UIID) => AuthUIByUIID(UIID, pageAuthInfo),
-        dslParseRes: dsl
-      });
-    case 'embed':
-      return SpecificParser();
-    default:
-      return <div></div>;
-  }
-};
+// const parserLoader = (type, appContext, { dsl, pageAuthInfo }) => {
+//   switch (type) {
+//     case 'config':
+//       return IUBDSLRuntimeContainer({
+//         // 接口反射，UI 验证
+//         // context: {
+//         //   setContext: () => ({}),
+//         // },
+//         // authUI: (UIID) => AuthUIByUIID(UIID, pageAuthInfo),
+//         dslParseRes: dsl
+//       });
+//     case 'embed':
+//       return SpecificParser();
+//     default:
+//       return <div></div>;
+//   }
+// };
 
 /**
  * 1. appContext注入 、 数据调度器
  * 2. pageContext包揽全局、数据可用性统一管理、初始化的时候的解析和IUB解析的关系、运行时候的仓库
  */
 export const PageContainer = (props: PageContainerProps) => {
+  // console.log(props);
   const {
     dsl, pageAuthInfo, appContext, pageID, // type, pageID
   } = props;

@@ -5,7 +5,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import React, { useRef } from 'react';
 import { OpenModalOptions } from '@iub-dsl/definition';
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
-import { queryPageData } from '@consumer-app/web-platform/src/services/page';
+// import { queryPageData } from '@consumer-app/web-platform/src/services/page';
 import D from '@iub-dsl/demo/pd/2';
 import { ActionDoFn } from '../../types';
 
