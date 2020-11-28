@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Select, Input, Form, Button, message,Space } from 'antd';
+import { Table, Select, Input, Form, Button, message as AntMessage } from 'antd';
 import { CloseModal, ShowModal } from "@infra/ui";
 import { nanoid } from 'nanoid';
 import { OpenLink } from './OpenLink';
@@ -9,17 +9,25 @@ import { FormInstance } from 'antd/lib/form';
 import { ChangeVariables } from './ChangeVariables';
 import { CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 
-const tailLayout = {
-  wrapperCol: { offset: 8, span: 16 },
-};
 type ActionItem = {
   id: string
-  name: string
-  actionType: string
-
+  name?: string
+  actionType?: string
+  configCn?:string
 }
-export class PageActionSelector extends React.Component {
-  state = {
+
+export interface IProps {
+  flatLayoutItems
+  pageMetadata
+  platformCtx
+}
+export interface IState {
+  list: ActionItem[]
+  listForShow: ActionItem[]
+  maxIndex: number
+}
+export class PageActionSelector extends React.Component<IProps, IState> {
+  state: IState = {
     list: [],
     listForShow: [],
     maxIndex: -1
@@ -60,7 +68,7 @@ export class PageActionSelector extends React.Component {
       const order = this.getOrderById(key);
       list.push({ order, data });
     }
-    return list.sort((a,b)=>a.order>b.order).map(item=>item.data);
+    return list.sort((a,b)=>a.order-b.order).map(item=>item.data);
   }
   getOrderById = (id) => {
     if(!id) return -1;
@@ -112,7 +120,7 @@ export class PageActionSelector extends React.Component {
         readOnly: true
       }
     };
-    return action && config[action] || {};
+    return (action && config[action]) || {};
   }
 
   getIndexById = (list, id) => {
@@ -125,7 +133,7 @@ export class PageActionSelector extends React.Component {
     return index;
   }
 
-  perfectConfigInModal = ({ width, ModalContent }, actionConfig) => {
+  perfectConfigInModal = ({ width, ModalContent }, actionConfig): Promise<{config, configCn}> => {
     return new Promise((resolve, reject) => {
       const modalID = ShowModal({
         title: '配置动作',
@@ -158,6 +166,9 @@ export class PageActionSelector extends React.Component {
     });
   }
 
+  filterOption = (value: string, option) => {
+    return option.label.toLowerCase().includes(value.toLowerCase());
+  }
   handlePlus = (index) => {
     const { listForShow, list, maxIndex } = this.state;
     const newItem = { id: this.getActionId(maxIndex+1) };
@@ -236,7 +247,7 @@ export class PageActionSelector extends React.Component {
         metaID: id,
         data: {...rest, order},
         });
-      message.success('动作配置成功');
+      AntMessage.success('动作配置成功');
       });    
   };
 
@@ -258,9 +269,7 @@ export class PageActionSelector extends React.Component {
               className="w-full"
               allowClear
               showSearch
-              filterOption={(value, option)=>{
-                return option.label.toLowerCase().includes(value.toLowerCase());
-              }}
+              filterOption={this.filterOption}
               options={this.getTypeList()}
             />
           </Form.Item>
@@ -391,9 +400,7 @@ export class PageActionSelector extends React.Component {
                         }}  
                         allowClear
                         showSearch                        
-                        filterOption={(value, option)=>{
-                          return option.label.toLowerCase().includes(value.toLowerCase());
-                        }}
+                        filterOption={this.filterOption}
                         value={_r.actionType}
                         options={this.getTypeList()}
                       />
@@ -418,7 +425,7 @@ export class PageActionSelector extends React.Component {
                               return Promise.resolve();
                             }
                             const { actionType } = _r;
-                            if(!_r[actionType]) {
+                            if(actionType && !_r[actionType]) {
                               return Promise.reject('需补充动作配置');
                             }
                             return Promise.resolve();

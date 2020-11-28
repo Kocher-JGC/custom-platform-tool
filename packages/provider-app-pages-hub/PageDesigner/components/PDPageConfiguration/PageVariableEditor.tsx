@@ -3,6 +3,8 @@ import { Button, Form, Input, Select, Space, InputNumber, DatePicker, TimePicker
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import locale from 'antd/lib/locale/zh_CN';
+import { GetVariableData } from '@platform-widget-access/spec';
+import { VariableItem } from '@provider-app/page-designer/platform-access';
 
 import zh_CN from 'antd/es/date-picker/locale/zh_CN';
 const tailLayout = {
@@ -20,11 +22,20 @@ const VAR_ATTR_TYPE_MENU = [
   { label: '日期', value: 'date', key: 'date' },
   { label: '日期时间', value: 'dateTime', key: 'dateTime' }
 ];
+
+export type VarListInState = {[key: string]: VariableItem[]}
+export interface IProps {
+  data?: VariableItem
+  getVariableData: GetVariableData
+  mode: string
+  onCancel: () => void
+  onSuccess: (param: VariableItem) => void
+}
 export const VariableEditor = ({
   data, mode, onCancel, onSuccess, getVariableData
-})=>{
+}: IProps)=>{
   const [form] = Form.useForm();
-  const [variableList, setVariableList] = useState([]);
+  const [variableList, setVariableList] = useState<VarListInState>({});
   useEffect(()=>{
     /** 默认数据类型 */
     form.setFieldsValue({ varType: 'string' });

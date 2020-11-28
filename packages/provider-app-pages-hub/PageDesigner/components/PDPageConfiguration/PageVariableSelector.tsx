@@ -4,8 +4,8 @@ import lowerFirst from 'lodash/lowerFirst';
 import { ShowModal, CloseModal } from '@infra/ui';
 import { VariableEditor } from './PageVariableEditor';
 import { nanoid } from 'nanoid';
-import { GetVariableData, VariableItem } from '@provider-app/page-designer/platform-access';
-import { ChangeMetadataOptions } from "@engine/visual-editor/core";
+import { VariableItem } from '@provider-app/page-designer/platform-access';
+import { PlatformCtx } from '@platform-widget-access/spec';
 export enum VarAttrTypeMap {
   string = '字符串',
   number = '数字',
@@ -13,10 +13,10 @@ export enum VarAttrTypeMap {
   dateTime='日期时间'
 }
 interface Props {
-  platformCtx
+  platformCtx: PlatformCtx
 }
-type VariableRecord = {code: string, id: string, children: VariableItem[]}
-type GetVariableList = (options: {[key: string]: VariableItem[]}) => VariableRecord[]
+export type VariableRecord = {title: string, id: string, children: VariableItem[]}
+export type GetVariableList = (options: {[key: string]: VariableItem[]}) => VariableRecord[]
 export const PageVariableSelector = ({
   platformCtx
 }: Props) => {
@@ -25,7 +25,7 @@ export const PageVariableSelector = ({
   /** 
    * 对列表数据进行排序，由于新增按钮在表头，所以按 唯一标识中的索引值 降序处理 
    */
-  const sortList = (list)=>{
+  const sortList = (list: VariableItem[]): VariableItem[] =>{
     return list.sort((a, b)=>{
       return getOrder(b)-getOrder(a);
     });
@@ -74,7 +74,7 @@ export const PageVariableSelector = ({
   /** 
    * 打开编辑变量弹窗（支持新增或编辑）
    */
-  const openModal = (mode:string, record?:VariableRecord):Promise<VariableItem>=>{
+  const openModal = (mode:string, record?:VariableItem):Promise<VariableItem>=>{
     return new Promise((resolve, reject)=>{
       const modalID = ShowModal({
         title: '配置变量',
@@ -122,7 +122,7 @@ export const PageVariableSelector = ({
    * @param record 
    * @param mode 
    */
-  const handlePlus = (record, mode) => {
+  const handlePlus = (record: VariableRecord, mode: string) => {
     const { id: type } = record;
     openModal(mode).then(data=>{
       const metaID = `var.${type}.${newOrder(record)}.${nanoid(8)}`;
@@ -141,7 +141,7 @@ export const PageVariableSelector = ({
    * @param record 
    * @param mode 
    */
-  const handleEdit = (record, mode) => {
+  const handleEdit = (record: VariableRecord, mode: string) => {
     const { id, ...oldData } = record;
     openModal(mode, record).then(data=>{
       platformCtx.meta.changePageMeta({
@@ -157,7 +157,7 @@ export const PageVariableSelector = ({
    * 删除变量
    * @param record 
    */
-  const handleDelete = (record) => {
+  const handleDelete = (record: VariableRecord) => {
     platformCtx.meta.changePageMeta({
       metaAttr: 'varRely',
       rmMetaID: record.id,

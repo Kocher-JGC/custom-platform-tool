@@ -8,7 +8,7 @@ import { getPageDetailService } from "@provider-app/services";
 import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
 import { VarAttrTypeMap } from './PageVariableSelector';
 import { SyncOutlined } from '@ant-design/icons';
-
+import { OpenPageInApp, BasicValueMeta } from '@engine/visual-editor/data-structure';
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 },
@@ -25,7 +25,7 @@ interface IOnSuccessParams {
 interface IProps {
   onSuccess:(item: IOnSuccessParams, name: string) => void;
   onCancel:()=>void
-  config: any
+  config: OpenPageInApp
   platformCtx
 }
 
@@ -49,13 +49,6 @@ type PageItem = {
 type InputVarItem = {
   alias: string, id: string, varType: string
 }
-type InputVarConfig = {
-  [key: string]: {
-    realVal?: null|string
-    expression?: string
-    variable?: string
-  }
-}
 type FormValues = {
   openType: 'replaceCurrentPage'|'openModal'|'newTabInBrowser'|'newTabInApp'
   pageArea: 'pageInApp'|'pageOutApp'
@@ -64,7 +57,7 @@ type FormValues = {
 }
 
 const InputVarList = ({
-  pageId, platformCtx, inputVarConfig, setInputVarConfig
+  pageId, platformCtx, inputVarConfig, setBasicValueMeta
 }) => {
   /** 页面对应入参列表 */
   const [inputVarList, setInputVarList] = useState<InputVarItem[]>([]);
@@ -84,8 +77,8 @@ const InputVarList = ({
     const getInputVarOrder = (item)=>{
       return item.id.split('.')[2]-0;
     };
-    const pageRes = await getPageDetailService(pageId);
-    const { varRely } = pageRes.pageContent?.meta || {};
+    const { pageContent } = await getPageDetailService(pageId); // eslint-disable-line no-unused-vars
+    const varRely = pageContent?.meta?.varRely;
     const { pageInput } = await platformCtx.meta.getVariableData(['widget', 'system', 'page', 'customed'], { varRely });
     setInputVarList(pageInput.sort((a, b)=>getInputVarOrder(b)-getInputVarOrder(a)));
     setListRenderReady(true);
@@ -114,7 +107,7 @@ const InputVarList = ({
             <ValueHelper
               editedState = {inputVarConfig[_t] || {}}
               onChange={(changeArea)=>{
-                setInputVarConfig({
+                setBasicValueMeta({
                   ...inputVarConfig,
                   [_t]: changeArea
                 });
@@ -139,7 +132,7 @@ export const OpenLink = ({
   /** 配置页面列表 */
   const [pageList, setPageList] = useState<PageItem[]>([]);
   /** 输入参数配置 */
-  const [inputVarConfig, setInputVarConfig] = useState<InputVarConfig>({});
+  const [inputVarConfig, setBasicValueMeta] = useState<BasicValueMeta>({});
 
   /** 
    * 提交表单数据
@@ -165,9 +158,13 @@ export const OpenLink = ({
       pageArea: 'pageInApp'
     }, ['openType', 'pageArea', 'pageType', 'link']);
     form.setFieldsValue(values);
-    setInputVarConfig(data?.paramMatch || {});
+    setBasicValueMeta(data?.paramMatch || {});
   }, []);
 
+  const filterOption = (value, option)=>{
+    if(!value) return true;
+    return option?.label?.toLowerCase()?.includes(value.toLowerCase());
+  };
   /** 
    * 获取应用内列表数据 
    */
@@ -194,7 +191,7 @@ export const OpenLink = ({
   };
 
   const updateInputVar = async (value) => {
-    setInputVarConfig({});
+    setBasicValueMeta({});
 
   };
 
@@ -229,7 +226,7 @@ export const OpenLink = ({
             options={PAGE_AREA_MENU} 
             onChange={(value)=>{
               form.setFieldsValue({ 'link': '' });
-              setInputVarConfig({});
+              setBasicValueMeta({});
             }}
           />
         </Form.Item>
@@ -243,10 +240,7 @@ export const OpenLink = ({
               <Form.Item name="link" label="链接页面">
                 <Select 
                   showSearch
-                  filterOption = {(value, option)=>{
-                    if(!value) return true;
-                    return option?.label?.toLowerCase()?.includes(value.toLowerCase());
-                  }}
+                  filterOption = {filterOption}
                   onChange={updateInputVar}
                   options={pageList}
                 />
@@ -283,7 +277,7 @@ export const OpenLink = ({
                 platformCtx={platformCtx}
                 pageId = {getFieldValue('link')}
                 inputVarConfig = {inputVarConfig}
-                setInputVarConfig = {setInputVarConfig}
+                setBasicValueMeta = {setBasicValueMeta}
               />
             ) : null;
           }}

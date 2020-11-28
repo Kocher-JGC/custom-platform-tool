@@ -67,9 +67,9 @@ export interface SchemaMeta {
 }
 
 export interface BasicValueMeta {
-  exp: null|string,
-  realVal: string|null,
-  variable: string|null,
+  exp?: null|string,
+  realVal?: string|null,
+  variable?: string|null,
 }
 /**
  * 基础动作数据
@@ -137,12 +137,15 @@ export interface SubmitData extends BasicActionsMeta {
   configCn: string
   submitData: (InsertSubmitDataItem|DeleteSubmitDataItem|UpdateSubmitDataItem)[]
 }
+export interface DisplayControlConfig {
+  hideControl: string[], showControl: string[]
+}
 /**
  * 控件显示隐藏
  */
 export interface DisplayControl extends BasicActionsMeta {
   actionType: "displayControl"
-  displayControl: {hideControl: string[], showControl: string[]}
+  displayControl: DisplayControlConfig
   configCn: string
 }
 /**

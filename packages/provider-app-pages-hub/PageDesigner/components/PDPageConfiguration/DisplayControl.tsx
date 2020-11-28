@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Form, Button, Select, Space
 } from 'antd';
+import { DisplayControlConfig as DisplayControlProps } from '@engine/visual-editor/data-structure';
 
 const layout = {
   labelCol: { span: 4 },
@@ -17,18 +18,24 @@ interface IOnSuccessParams {
 }
 
 interface IProps {
-  onSuccess:(item: IOnSuccessParams, name: string) => void;
+  onSuccess:(item: IOnSuccessParams|null, name: string) => void;
   onCancel:()=>void
-  config: any
+  config: DisplayControlProps
+  flatLayoutItems
 }
 
+type Control = {
+  label: string
+  key: string
+  value: string  
+}
 export const DisplayControl = ({
   onSuccess, onCancel, config, flatLayoutItems
 }: IProps) => {
   const [form] = Form.useForm();
-  const [allControlList, setAllControlList] = useState([]);
-  const [showContorlList, setShowContorlList] = useState([]);
-  const [hideContorlList, setHideContorlList] = useState([]);
+  const [allControlList, setAllControlList] = useState<Control[]>([]);
+  const [showContorlList, setShowContorlList] = useState<Control[]>([]);
+  const [hideContorlList, setHideContorlList] = useState<Control[]>([]);
 
   const isDataEmpty = (data)=>{
     return Array.isArray(data) ? data.length === 0 : !data;
@@ -44,7 +51,7 @@ export const DisplayControl = ({
   };
 
   const getAllControlList = () => {
-    const allControlListTmpl = [];
+    const allControlListTmpl: Control[] = [];
     for(const key in flatLayoutItems){
       allControlListTmpl.push({
         key, value: key, label: flatLayoutItems[key]?.label || ''
@@ -75,6 +82,9 @@ export const DisplayControl = ({
     return allControlList.filter(item=>!values.includes(item.value));
   };
 
+  const filterOption = (value, option)=>{
+    return option.label.toLowerCase().includes(value.toLowerCase());
+  };
   const onReset = () => {
     form.resetFields();
   };
@@ -93,11 +103,9 @@ export const DisplayControl = ({
           mode="multiple"
           allowClear
           options={showContorlList}
-          filterOption = {(value, option)=>{
-            return option.label.toLowerCase().includes(value.toLowerCase());
-          }}
+          filterOption = {filterOption}
           onChange={(values)=>{
-            setHideContorlList(allControlList.filter(item=>!values.includes(item.value)));
+            setHideContorlList(allControlList.filter(item=>!values.toString().includes(item.value)));
           }}
         />
       </Form.Item>
@@ -108,11 +116,9 @@ export const DisplayControl = ({
           mode="multiple"
           allowClear
           options={hideContorlList}
-          filterOption = {(value, option)=>{
-            return option.label.toLowerCase().includes(value.toLowerCase());
-          }}
+          filterOption = {filterOption}
           onChange={(values)=>{
-            setShowContorlList(allControlList.filter(item=>!values.includes(item.value)));
+            setShowContorlList(allControlList.filter(item=>!values.toString().includes(item.value)));
           }}
         />
       </Form.Item>

@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import lowerFirst from 'lodash/lowerFirst';
-import { ShowModal, CloseModal } from '@infra/ui';
-import { VariableEditor } from './PageVariableEditor';
-import { nanoid } from 'nanoid';
-import { GetVariableData, VariableItem } from '@provider-app/page-designer/platform-access';
-import { ChangeMetadataOptions } from "@engine/visual-editor/core";
+import { VariableItem } from '@provider-app/page-designer/platform-access';
 import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
+import { BasicValueMeta } from '@engine/visual-editor/data-structure';
 export enum VarAttrTypeMap {
   string = '字符串',
   number = '数字',
@@ -15,8 +12,11 @@ export enum VarAttrTypeMap {
 }
 interface Props {
   platformCtx
+  config: {[key: string]: BasicValueMeta}
+  onSuccess: (param1: {[key: string]: BasicValueMeta} | null, param2: string) => void
+  onCancel: () => void
 }
-type VariableRecord = {code: string, id: string, children: VariableItem[]}
+type VariableRecord = {title: string, id: string, children: VariableItem[]}
 type GetVariableList = (options: {[key: string]: VariableItem[]}) => VariableRecord[]
 export const ChangeVariables = ({
   platformCtx, config: changeVariables, onSuccess, onCancel
@@ -24,25 +24,9 @@ export const ChangeVariables = ({
   const varTypeAllowChange = ['customed','widget'];
   const [variableList, setVariableList] = useState<VariableRecord[]>([]);
   /** 当前页面变量数据 */
-  const [variableData, setVariableData] = useState({});
+  const [variableData, setVariableData] = useState<{[key: string]: VariableItem[]}>({});
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [changeArea, setChangeArea] = useState({});
-  /** 
-   * 对列表数据进行排序，由于新增按钮在表头，所以按 唯一标识中的索引值 降序处理 
-   */
-  const sortList = (list)=>{
-    return list.sort((a, b)=>{
-      return getOrder(b)-getOrder(a);
-    });
-  };
-  
-  /**
-   * 获取变量项索引
-   * @param item 变量项
-   */
-  const getOrder = (item)=>{
-    return item.id.split('.')[2]-0;
-  };
 
   /** 
    * 实时读取最新变量列表
@@ -64,7 +48,7 @@ export const ChangeVariables = ({
   },[]);
   const getSubmitTitle = (submitArea) => {
     if(!submitArea) return '';
-    const title = [...variableData.customed, ...variableData.widget]
+    const title = [...(variableData.customed || []), ...(variableData.widget|| [])]
       .filter(item => item.id in submitArea)
       .map(item => item.title)
       .join(',');

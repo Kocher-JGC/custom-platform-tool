@@ -2,7 +2,6 @@ import React from 'react';
 import { Tabs, Tab } from '@infra/ui';
 import { PageVariableSelector } from './PageVariableSelector';
 import { PageActionSelector } from './PageActionSelector';
-import { PlatformContext } from '@provider-app/page-designer/utils';
 
 export interface PageConfigContainerProps {
   flatLayoutItems

@@ -22,6 +22,15 @@ interface ValueHelperProps {
   variableData: {[key: string]: VariableItem[]}
 }
 
+interface VariableItemInState {
+  title: string,
+  value: string,
+  disabled?: boolean
+}
+
+interface VariableListInState extends VariableItemInState{
+  children?: VariableItemInState[]
+}
 /**
  * ValueHelper
  * @param param0
@@ -32,7 +41,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   onChange,
 }) => {
   const [selectedItem, setSelectedItem] = useState('realVal');
-  const [variableList, setVariableList] = useState([]);
+  const [variableList, setVariableList] = useState<VariableListInState[]>([]);
   const { exp, realVal, variable } = editedState;
   let Comp;
   switch (selectedItem) {
@@ -102,10 +111,10 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       break;
   }
   const initVariableList = () => {
-    const constructVarList = (list)=>{
+    const constructVarList = (list: VariableItem[])=>{
       return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
     };
-    const constructVarItem = (item) => {
+    const constructVarItem = (item: VariableItem) => {
       const { id, title } = item;
       return { value: id, title };
     };
@@ -141,10 +150,6 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
           value={selectedItem}
         />
       </span>
-      
-      {/* <Dropdown overlay={menu} className="p-2 cursor-pointer">
-        <EllipsisOutlined  style={{ verticalAlign: '0.125em' }}/>
-      </Dropdown> */}
     </div>
   );
 };
