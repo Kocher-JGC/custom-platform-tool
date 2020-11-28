@@ -102,8 +102,8 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
 
   setUsingColumns = () => {
     const { editingWidgetState } = this.props;
-    const { columns = [] } = editingWidgetState || {};
-    return columns;
+    const { columns } = editingWidgetState || {};
+    return columns || [];
   }
 
   renderColumnSelector = () => {
@@ -139,12 +139,15 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
           );
         }}
       >
-        <PlusOutlined
-          style={{
-            display: 'inline-block',
-            fontSize: 16
-          }}
-        />
+        <span className="title flex items-center">
+          <span>显示字段</span>
+          <PlusOutlined
+            style={{
+              display: 'inline-block',
+              // fontSize: 16
+            }}
+          />
+        </span>
       </DropdownWrapper>
     );
   }
@@ -212,7 +215,6 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
     return (
       <div className="column-selector p-4">
         <div className="mb10">
-          <span className="title">显示字段</span>
           {this.renderColumnSelector()}
         </div>
         {this.renderSelectedColumnEditor()}
