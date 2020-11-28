@@ -18,7 +18,7 @@
     "version-helper": "^1.2.0-beta1.5"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.2.2",
+    "@ant-design/icons": "^4.3.0",
     "unistore": "^3.5.2",
     "tailwindcss": "^1.8.10"
   },
