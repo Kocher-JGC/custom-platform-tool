@@ -29,7 +29,7 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
 export const queryPageData = async (params: API.IPageDataParams) => {
   const pageServerUrl = store.get(UrlConfKey.pageServerUrlForApp);
   const isHttp = /http/.test(pageServerUrl);
-  console.log(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`);
+  // console.log(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`);
   const res = await $A_R(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`, {
     method: 'GET',
     params: mergeParam(params)

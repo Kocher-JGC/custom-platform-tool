@@ -4,6 +4,7 @@ import { Provider, connect } from "unistore/react";
 
 import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
+import store from "store";
 
 import { authStore, authActions, AuthStore, SaaSAuthActionsTypes, AuthStoreState } from "./auth/actions";
 import {
@@ -62,6 +63,24 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     };
   }
 
+  envConfig = {
+    app: '',
+    lessee: '',
+    t: '',
+  }
+
+  setEnvConfig = () => {
+    const app = store.get('app/code');
+    const lessee = store.get('app/lessee');
+    const t = store.get('app/token');
+
+    this.envConfig = {
+      app,
+      lessee,
+      t,
+    };
+  }
+
   componentDidMount() {
     queryMenuList().then((menuDataRes) => {
       // TODO: 过滤成内部菜单数据
@@ -73,6 +92,8 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     });
 
     removeLoadingBG();
+
+    this.setEnvConfig();
   }
 
   footerRender = () => {
@@ -95,11 +116,14 @@ class LoginFilter extends React.Component<LoginFilterProps> {
 
   pageRender = (renderCtx: PageRenderCtx) => {
     // console.log(renderCtx);
-    const { pageRoute } = renderCtx;
+    const { history } = renderCtx;
+    const { location } = history;
     // console.log(renderCtx);
+    const pageID = location.state['pageId'];
     return (
       <PageContainer
-        dsl={{}}
+        pageId={pageID}
+        {...this.envConfig}
         {...renderCtx}
       >
       </PageContainer>

@@ -29,32 +29,48 @@ const getEnvConfigFromRemote = async () => {
 };
 
 /**
+ * 将 query 的 key 映射到 store 的 key
+ */
+const queryKeyMapStoreKey = {
+  t: "app/token",
+  app: "app/code",
+  lessee: "app/lessee",
+};
+
+/**
  * 从 url 获取环境配置
  */
 const getEnvConfigFromLocation = () => {
-  const { query } = history.location;
+  const { state: query } = history.location;
   if(!query) return {};
   const queryKeys = Object.keys(query);
   const params = {};
 
   if (Array.isArray(queryKeys)) {
-    if (
-      queryKeys.includes("mode") &&
-      queryKeys.includes(UrlConfKey.saasServerUrl) &&
-      queryKeys.includes(UrlConfKey.pageServerUrlForApp)
-    ) {
-      queryKeys.forEach((q) => {
-        if (q === "t") {
-          params["app/token"] = query[q];
-        } else if (q === "app") {
-          params["app/code"] = query[q];
-        } else if (q === "lessee") {
-          params["app/lessee"] = query[q];
-        } else if (q !== "redirect") {
-          params[q] = query[q];
+    // if (
+    //   queryKeys.includes("mode") &&
+    //   queryKeys.includes(UrlConfKey.saasServerUrl) &&
+    //   queryKeys.includes(UrlConfKey.pageServerUrlForApp)
+    // ) {
+    // }
+    queryKeys.forEach((q) => {
+      if (q !== "redirect") {
+        // params[q] = query[q];
+        const matchStoreKey = queryKeyMapStoreKey[q];
+        if(matchStoreKey) {
+          params[matchStoreKey] = query[q];
         }
-      });
-    }
+      }
+      // if (q === "t") {
+      //   params["app/token"] = query[q];
+      // } else if (q === "app") {
+      //   params["app/code"] = query[q];
+      // } else if (q === "lessee") {
+      //   params["app/lessee"] = query[q];
+      // } else if (q !== "redirect") {
+      //   params[q] = query[q];
+      // }
+    });
   }
 
   return params;
@@ -74,15 +90,18 @@ const initReq = () => {
  * 2.2 但是第一次进入时, 无 mian.json, 应该直接跳转至安装页面
  */
 export async function render() {
-  // 合并参数
+  // 合并环境配置
   const envConfig = Object.assign(await getEnvConfigFromRemote(), getEnvConfigFromLocation());
-  // 判断参数合法性
+
+  // 判断环境配置的合法性
   const isPass = checkEnvConfig(envConfig);
+  
   if (isPass) {
     Object.keys(envConfig).forEach((field) => {
       store.set(field, envConfig[field]);
     });
   }
+
   initReq();
   
   ReactDOM.render(
