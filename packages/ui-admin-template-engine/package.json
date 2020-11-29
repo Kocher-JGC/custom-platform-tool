@@ -29,10 +29,12 @@
     "version-helper": "^1.2.0-alpha0"
   },
   "dependencies": {
+    "store": "^2.0.12",
     "history": "^4.9.0",
     "mousetrap": "^1.6.3"
   },
   "devDependencies": {
+    "@types/store": "^2.0.2",
     "fs-extra": "^7.0.0"
   },
   "author": "SANGET",

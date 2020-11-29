@@ -6,7 +6,7 @@ import { Provider, connect } from "unistore/react";
 import IUBDSLParser from "@iub-dsl/engine";
 
 import { AdminTemplateEngine } from "@engine/ui-admin-template";
-import { AuthSelector } from "@engine/ui-admin-template/auth-selector";
+import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
 
 import { authStore, authActions, AuthStore, SaaSAuthActionsTypes, AuthStoreState } from "./auth/actions";
 // import { PageContainer } from "../PageContainer";
@@ -46,10 +46,14 @@ function selector(state) {
   return state;
 }
 
-const pageCache = {};
-const pageAuthCache = {};
-
-const appContext = {};
+const removeLoadingBG = () => {
+  const loaderDOM = document.querySelector("#loadingBg");
+  if (!loaderDOM || !loaderDOM.parentNode) return;
+  loaderDOM.classList.add("loaded");
+  loaderDOM.parentNode.removeChild(loaderDOM);
+  // setTimeout(() => {
+  // }, 100);
+};
 
 type LoginFilterProps = AuthStoreState
 
@@ -59,7 +63,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     super(props);
     this.state = {
       ready: false,
-      navStore: []
+      menuData: []
     };
   }
 
@@ -68,14 +72,17 @@ class LoginFilter extends React.Component<LoginFilterProps> {
       // TODO: 过滤成内部菜单数据
       const menuData = menuDataRes;
       this.setState({
-        navStore: menuData,
+        menuData: menuData,
         ready: true
       });
     });
+
+    removeLoadingBG();
   }
 
   render() {
-    const { isLogin, userInfo, menuData } = this.props;
+    const { isLogin, userInfo } = this.props;
+    const { menuData } = this.state;
     return (
       <AuthSelector
         {...this.props}
@@ -87,7 +94,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
       >
         {isLogin ? (
           <AdminTemplateEngine
-            versionUrl="./version.json"
+            // versionUrl="./version.json"
             // {...this.props}
             menuData={menuData}
             // 必须填写的
@@ -100,12 +107,12 @@ class LoginFilter extends React.Component<LoginFilterProps> {
             }
             username={userInfo.username}
             // statusbarConfig={statusbarConfig}
-            menuMappers={{
-              child: "child",
-              code: "code",
-              title: "title",
-              icon: "icon"
-            }}
+            // menuMappers={{
+            //   child: "child",
+            //   code: "code",
+            //   title: "title",
+            //   icon: "icon"
+            // }}
             title="admin-dashboard"
             // i18nConfig={i18nConfig}
             // pluginComponent={{

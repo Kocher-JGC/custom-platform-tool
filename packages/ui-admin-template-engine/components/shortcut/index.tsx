@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { TableColumns } from '@deer-ui/core/table';
 import {
   Table, Menus, ShowModal, Button
-} from '../ui-refs';
+} from '../../ui-refs';
 import dataRows from './data';
 
 const columns: TableColumns = [

@@ -19,7 +19,7 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/icons-svg/-/icons-svg-4.1.0.tgz#480b025f4b20ef7fe8f47d4a4846e4fee84ea06c"
   integrity sha1-SAsCX0sg73/o9H1KSEbk/uhOoGw=
 
-"@ant-design/icons@^4.0.0", "@ant-design/icons@^4.1.0", "@ant-design/icons@^4.2.1", "@ant-design/icons@^4.2.2", "@ant-design/icons@^4.3.0":
+"@ant-design/icons@^4.1.0", "@ant-design/icons@^4.2.1", "@ant-design/icons@^4.2.2", "@ant-design/icons@^4.3.0":
   version "4.3.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/icons/-/icons-4.3.0.tgz#420e0cd527486c0fe57f81310d681950fc4cfacf"
   integrity sha1-Qg4M1SdIbA/lf4ExDWgZUPxM+s8=
@@ -30,16 +30,6 @@
     classnames "^2.2.6"
     insert-css "^2.0.0"
     rc-util "^5.0.1"
-
-"@ant-design/pro-descriptions@1.0.36":
-  version "1.0.36"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-descriptions/-/pro-descriptions-1.0.36.tgz#a1605f4126d0e643cae1f0f48c2280521707046d"
-  integrity sha1-oWBfQSbQ5kPK4fD0jCKAUhcHBG0=
-  dependencies:
-    "@ant-design/pro-field" "1.1.2"
-    "@ant-design/pro-skeleton" "1.0.0-beta.10"
-    "@ant-design/pro-utils" "1.2.0"
-    use-json-comparison "^1.0.5"
 
 "@ant-design/pro-field@1.1.2":
   version "1.1.2"
@@ -97,43 +87,12 @@
     rc-resize-observer "^0.2.3"
     use-media-antd-query "^1.0.3"
 
-"@ant-design/pro-layout@6.5.15":
-  version "6.5.15"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-layout/-/pro-layout-6.5.15.tgz#a5b8fb414ca51deebc8c4214b09699cfc30b60a7"
-  integrity sha1-pbj7QUylHe68jEIUsJaZz8MLYKc=
-  dependencies:
-    "@ant-design/icons" "^4.0.0"
-    "@ant-design/pro-provider" "1.2.1"
-    "@ant-design/pro-utils" "1.2.0"
-    "@umijs/route-utils" "^1.0.33"
-    classnames "^2.2.6"
-    history "^4.10.1"
-    memoize-one "^5.1.1"
-    omit.js "^2.0.2"
-    path-to-regexp "2.4.0"
-    qs "^6.9.0"
-    rc-resize-observer "^0.2.1"
-    react-copy-to-clipboard "^5.0.1"
-    react-responsive "^8.0.1"
-    react-router-dom "5.1.2"
-    unstated-next "^1.1.0"
-    use-json-comparison "^1.0.3"
-    use-media-antd-query "^1.0.3"
-    warning "^4.0.3"
-
 "@ant-design/pro-provider@1.2.1":
   version "1.2.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-provider/-/pro-provider-1.2.1.tgz#1dadd1e196dac363e002390aeb84a1ce0ed67118"
   integrity sha1-Ha3R4Zbaw2PgAjkK64Shzg7WcRg=
   dependencies:
     rc-util "^5.0.1"
-
-"@ant-design/pro-skeleton@1.0.0-beta.10":
-  version "1.0.0-beta.10"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-skeleton/-/pro-skeleton-1.0.0-beta.10.tgz#1746db56a447a5f683ddbf1aa9621e523e24dcdb"
-  integrity sha1-F0bbVqRHpfaD3b8aqWIeUj4k3Ns=
-  dependencies:
-    use-media-antd-query "^1.0.3"
 
 "@ant-design/pro-table@2.11.4":
   version "2.11.4"
@@ -145,28 +104,6 @@
     "@ant-design/pro-form" "1.6.2"
     "@ant-design/pro-provider" "1.2.1"
     "@ant-design/pro-utils" "1.2.0"
-    classnames "^2.2.6"
-    dnd-core "^10.0.2"
-    moment "^2.24.0"
-    omit.js "^2.0.2"
-    rc-resize-observer "^0.2.1"
-    rc-util "^5.0.1"
-    react-dnd "^11.1.3"
-    react-dnd-html5-backend "^11.1.3"
-    unstated-next "^1.1.0"
-    use-json-comparison "^1.0.5"
-    use-media-antd-query "1.0.2"
-
-"@ant-design/pro-table@2.12.0":
-  version "2.12.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ant-design/pro-table/-/pro-table-2.12.0.tgz#850a16b7f16efac6c97fd21b0aeef9a88cf42ba5"
-  integrity sha1-hQoWt/Fu+sbJf9IbCu75qIz0K6U=
-  dependencies:
-    "@ant-design/icons" "^4.1.0"
-    "@ant-design/pro-field" "1.2.0"
-    "@ant-design/pro-form" "1.7.0"
-    "@ant-design/pro-provider" "1.2.1"
-    "@ant-design/pro-utils" "1.3.0"
     classnames "^2.2.6"
     dnd-core "^10.0.2"
     moment "^2.24.0"
@@ -1552,7 +1489,7 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@ctrl/tinycolor/-/tinycolor-3.2.0.tgz#77a8a33edb2fdc02318c828be78f6fb3d6c65eb2"
   integrity sha1-d6ijPtsv3AIxjIKL549vs9bGXrI=
 
-"@deer-ui/core@^4.0.0-rc5.6", "@deer-ui/core@^4.0.8":
+"@deer-ui/core@^4.0.8":
   version "4.0.8"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@deer-ui/core/-/core-4.0.8.tgz#786cdaadaf5fd51d573990336d5d78d360417515"
   integrity sha1-eGzara9f1R1XOZAzbV1402BBdRU=
@@ -2658,7 +2595,7 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@mini-code/base-func/-/base-func-1.1.0.tgz#8c9e2d12074fa824b88312a7a73a4bd3f86f77ef"
   integrity sha1-jJ4tEgdPqCS4gxKnpzpL0/hvd+8=
 
-"@mini-code/request@^1.0.0-alpha2.3", "@mini-code/request@^1.0.5":
+"@mini-code/request@^1.0.5":
   version "1.0.5"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@mini-code/request/-/request-1.0.5.tgz#ef231e3a9db274b069a58ebdcc6b67fa5697f718"
   integrity sha1-7yMeOp2ydLBppY69zGtn+laX9xg=
@@ -2809,11 +2746,6 @@
   integrity sha1-5fBujbISRsoQKqKERM2xOuF6E5s=
   dependencies:
     "@types/node" ">= 8"
-
-"@qixian.cs/path-to-regexp@^6.1.0":
-  version "6.1.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@qixian.cs/path-to-regexp/-/path-to-regexp-6.1.0.tgz#6b84ad01596332aba95fa29d2e70104698cd5c45"
-  integrity sha1-a4StAVljMqupX6KdLnAQRpjNXEU=
 
 "@react-dnd/asap@^4.0.0":
   version "4.0.0"
@@ -3024,11 +2956,6 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/cookiejar/-/cookiejar-2.1.2.tgz#66ad9331f63fe8a3d3d9d8c6e3906dd10f6446e8"
   integrity sha1-Zq2TMfY/6KPT2djG45Bt0Q9kRug=
 
-"@types/eslint-visitor-keys@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/@types/eslint-visitor-keys/download/@types/eslint-visitor-keys-1.0.0.tgz?cache=0&sync_timestamp=1605054323962&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Feslint-visitor-keys%2Fdownload%2F%40types%2Feslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
-  integrity sha1-HuMNeVRMqE1o1LPNsK9PIFZj3S0=
-
 "@types/estree@*":
   version "0.0.45"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/estree/-/estree-0.0.45.tgz#e9387572998e5ecdac221950dab3e8c3b16af884"
@@ -3201,13 +3128,6 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dom@^16.8.4":
-  version "16.9.10"
-  resolved "https://registry.npm.taobao.org/@types/react-dom/download/@types/react-dom-16.9.10.tgz#4485b0bec3d41f856181b717f45fd7831101156f"
-  integrity sha1-RIWwvsPUH4VhgbcX9F/XgxEBFW8=
-  dependencies:
-    "@types/react" "^16"
-
 "@types/react-hyperscript@3.0.4":
   version "3.0.4"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react-hyperscript/-/react-hyperscript-3.0.4.tgz#b7d4b357c018ac9d6b16dd543fb4c0209a23e91d"
@@ -3229,14 +3149,6 @@
   version "17.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/react/-/react-17.0.0.tgz#5af3eb7fad2807092f0046a1302b7823e27919b8"
   integrity sha1-WvPrf60oBwkvAEahMCt4I+J5Gbg=
-  dependencies:
-    "@types/prop-types" "*"
-    csstype "^3.0.2"
-
-"@types/react@^16", "@types/react@^16.8.17":
-  version "16.14.2"
-  resolved "https://registry.npm.taobao.org/@types/react/download/@types/react-16.14.2.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Freact%2Fdownload%2F%40types%2Freact-16.14.2.tgz#85dcc0947d0645349923c04ccef6018a1ab7538c"
-  integrity sha1-hdzAlH0GRTSZI8BMzvYBihq3U4w=
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
@@ -3275,6 +3187,11 @@
   version "2.0.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/stack-utils/-/stack-utils-2.0.0.tgz#7036640b4e21cc2f259ae826ce843d277dad8cff"
   integrity sha1-cDZkC04hzC8lmugmzoQ9J32tjP8=
+
+"@types/store@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@types/store/download/@types/store-2.0.2.tgz#6263d4f1aab225032ea55b17d94f3b725a21c943"
+  integrity sha1-YmPU8aqyJQMupVsX2U87clohyUM=
 
 "@types/superagent@*":
   version "4.1.10"
@@ -3355,16 +3272,6 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^2.3.3":
-  version "2.34.0"
-  resolved "https://registry.npm.taobao.org/@typescript-eslint/eslint-plugin/download/@typescript-eslint/eslint-plugin-2.34.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40typescript-eslint%2Feslint-plugin%2Fdownload%2F%40typescript-eslint%2Feslint-plugin-2.34.0.tgz#6f8ce8a46c7dea4a6f1d171d2bb8fbae6dac2be9"
-  integrity sha1-b4zopGx96kpvHRcdK7j7rm2sK+k=
-  dependencies:
-    "@typescript-eslint/experimental-utils" "2.34.0"
-    functional-red-black-tree "^1.0.1"
-    regexpp "^3.0.0"
-    tsutils "^3.17.1"
-
 "@typescript-eslint/eslint-plugin@^4.7.0":
   version "4.8.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.8.2.tgz#cf9102ec800391caa574f589ffe0623cca1d9308"
@@ -3378,16 +3285,6 @@
     semver "^7.3.2"
     tsutils "^3.17.1"
 
-"@typescript-eslint/experimental-utils@2.34.0":
-  version "2.34.0"
-  resolved "https://registry.npm.taobao.org/@typescript-eslint/experimental-utils/download/@typescript-eslint/experimental-utils-2.34.0.tgz#d3524b644cdb40eebceca67f8cf3e4cc9c8f980f"
-  integrity sha1-01JLZEzbQO687KZ/jPPkzJyPmA8=
-  dependencies:
-    "@types/json-schema" "^7.0.3"
-    "@typescript-eslint/typescript-estree" "2.34.0"
-    eslint-scope "^5.0.0"
-    eslint-utils "^2.0.0"
-
 "@typescript-eslint/experimental-utils@4.8.2":
   version "4.8.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/experimental-utils/-/experimental-utils-4.8.2.tgz#8909a5732f19329cf5ef0c39766170476bff5e50"
@@ -3399,16 +3296,6 @@
     "@typescript-eslint/typescript-estree" "4.8.2"
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
-
-"@typescript-eslint/parser@^2.3.3":
-  version "2.34.0"
-  resolved "https://registry.npm.taobao.org/@typescript-eslint/parser/download/@typescript-eslint/parser-2.34.0.tgz#50252630ca319685420e9a39ca05fe185a256bc8"
-  integrity sha1-UCUmMMoxloVCDpo5ygX+GFola8g=
-  dependencies:
-    "@types/eslint-visitor-keys" "^1.0.0"
-    "@typescript-eslint/experimental-utils" "2.34.0"
-    "@typescript-eslint/typescript-estree" "2.34.0"
-    eslint-visitor-keys "^1.1.0"
 
 "@typescript-eslint/parser@^4.7.0":
   version "4.8.2"
@@ -3433,19 +3320,6 @@
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/types/-/types-4.8.2.tgz#c862dd0e569d9478eb82d6aee662ea53f5661a36"
   integrity sha1-yGLdDladlHjrgtau5mLqU/VmGjY=
 
-"@typescript-eslint/typescript-estree@2.34.0":
-  version "2.34.0"
-  resolved "https://registry.npm.taobao.org/@typescript-eslint/typescript-estree/download/@typescript-eslint/typescript-estree-2.34.0.tgz#14aeb6353b39ef0732cc7f1b8285294937cf37d5"
-  integrity sha1-FK62NTs57wcyzH8bgoUpSTfPN9U=
-  dependencies:
-    debug "^4.1.1"
-    eslint-visitor-keys "^1.1.0"
-    glob "^7.1.6"
-    is-glob "^4.0.1"
-    lodash "^4.17.15"
-    semver "^7.3.2"
-    tsutils "^3.17.1"
-
 "@typescript-eslint/typescript-estree@4.8.2":
   version "4.8.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@typescript-eslint/typescript-estree/-/typescript-estree-4.8.2.tgz#eeec34707d8577600fb21661b5287226cc8b3bed"
@@ -3467,16 +3341,6 @@
   dependencies:
     "@typescript-eslint/types" "4.8.2"
     eslint-visitor-keys "^2.0.0"
-
-"@umijs/route-utils@^1.0.33":
-  version "1.0.34"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@umijs/route-utils/-/route-utils-1.0.34.tgz#663d020669217dd7e8431a1b9ce9abea5fbbb6b8"
-  integrity sha1-Zj0CBmkhfdfoQxobnOmr6l+7trg=
-  dependencies:
-    "@qixian.cs/path-to-regexp" "^6.1.0"
-    hash.js "^1.1.7"
-    lodash.isequal "^4.5.0"
-    memoize-one "^5.1.1"
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
@@ -5574,7 +5438,7 @@ copy-descriptor@^0.1.0:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
-copy-to-clipboard@^3, copy-to-clipboard@^3.2.0:
+copy-to-clipboard@^3.2.0:
   version "3.3.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/copy-to-clipboard/-/copy-to-clipboard-3.3.1.tgz#115aa1a9998ffab6196f93076ad6da3b913662ae"
   integrity sha1-EVqhqZmP+rYZb5MHatbaO5E2Yq4=
@@ -7862,7 +7726,7 @@ glob@7.1.4:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, glob@^7.1.6:
+glob@^7.0.0, glob@^7.0.3, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4:
   version "7.1.6"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
   integrity sha1-FB8zuBp8JJLhJVlDB0gMRmeSeKY=
@@ -8140,7 +8004,7 @@ hash-base@^3.0.0:
     readable-stream "^3.6.0"
     safe-buffer "^5.2.0"
 
-hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
+hash.js@^1.0.0, hash.js@^1.0.3:
   version "1.1.7"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/hash.js/-/hash.js-1.1.7.tgz#0babca538e8d4ee4a0f8988d68866537a003cf42"
   integrity sha1-C6vKU46NTuSg+JiNaIZlN6ADz0I=
@@ -8158,7 +8022,7 @@ hex-color-regex@^1.1.0:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha1-TAb8y0YC/iYCs8k9+C1+fb8aio4=
 
-history@^4.10.1, history@^4.9.0:
+history@^4.9.0:
   version "4.10.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/history/-/history-4.10.1.tgz#33371a65e3a83b267434e2b3f3b1b4c58aad4cf3"
   integrity sha1-MzcaZeOoOyZ0NOKz87G0xYqtTPM=
@@ -8179,7 +8043,7 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
+hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
   integrity sha1-7OCsr3HWLClpwuxZ/v9CpLGoW0U=
@@ -10243,11 +10107,6 @@ lodash.get@^4.4.2:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha1-LRd/ZS+jHpObRDjVNBSZ36OCXpk=
 
-lodash.isequal@^4.5.0:
-  version "4.5.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
-  integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
-
 lodash.ismatch@^4.4.0:
   version "4.4.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/lodash.ismatch/-/lodash.ismatch-4.4.0.tgz#756cb5150ca3ba6f11085a78849645f188f85f37"
@@ -10328,7 +10187,7 @@ longest@^2.0.1:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/longest/-/longest-2.0.1.tgz#781e183296aa94f6d4d916dc335d0d17aefa23f8"
   integrity sha1-eB4YMpaqlPbU2RbcM10NF676I/g=
 
-loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
+loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
   integrity sha1-ce5R+nvkyuwaY4OffmgtgTLTDK8=
@@ -10519,7 +10378,7 @@ mem@^4.0.0:
     mimic-fn "^2.0.0"
     p-is-promise "^2.0.0"
 
-"memoize-one@>=3.1.1 <6", memoize-one@^5.1.1:
+"memoize-one@>=3.1.1 <6":
   version "5.1.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/memoize-one/-/memoize-one-5.1.1.tgz#047b6e3199b508eaec03504de71229b8eb1d75c0"
   integrity sha1-BHtuMZm1COrsA1BN5xIpuOsddcA=
@@ -10708,14 +10567,6 @@ min-indent@^1.0.0:
   version "1.0.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/min-indent/-/min-indent-1.0.1.tgz#a63f681673b30571fbe8bc25686ae746eefa9869"
   integrity sha1-pj9oFnOzBXH76LwlaGrnRu76mGk=
-
-mini-create-react-context@^0.3.0:
-  version "0.3.3"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/mini-create-react-context/-/mini-create-react-context-0.3.3.tgz#b1b2bc6604d3a6c5d9752bad7692615410ebb38e"
-  integrity sha1-sbK8ZgTTpsXZdSutdpJhVBDrs44=
-  dependencies:
-    "@babel/runtime" "^7.12.1"
-    tiny-warning "^1.0.3"
 
 mini-css-extract-plugin@0.5.0:
   version "0.5.0"
@@ -11853,18 +11704,6 @@ path-to-regexp@0.1.7:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
   integrity sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=
 
-path-to-regexp@2.4.0:
-  version "2.4.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/path-to-regexp/-/path-to-regexp-2.4.0.tgz#35ce7f333d5616f1c1e1bfe266c3aba2e5b2e704"
-  integrity sha1-Nc5/Mz1WFvHB4b/iZsOrouWy5wQ=
-
-path-to-regexp@^1.7.0:
-  version "1.8.0"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/path-to-regexp/-/path-to-regexp-1.8.0.tgz#887b3ba9d84393e87a0a0b9f4cb756198b53548a"
-  integrity sha1-iHs7qdhDk+h6CgufTLdWGYtTVIo=
-  dependencies:
-    isarray "0.0.1"
-
 path-type@^1.0.0:
   version "1.1.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/path-type/-/path-type-1.1.0.tgz#59c44f7ee491da704da415da5a4070ba4f8fe441"
@@ -12822,7 +12661,7 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha1-UsQedbjIfnK52TYOAga5ncv/psU=
@@ -12949,11 +12788,6 @@ qs@6.7.0:
   version "6.7.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha1-QdwaAV49WB8WIXdr4xr7KHapsbw=
-
-qs@^6.9.0:
-  version "6.9.4"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/qs/-/qs-6.9.4.tgz#9090b290d1f91728d3c22e54843ca44aea5ab687"
-  integrity sha1-kJCykNH5FyjTwi5UhDykSupatoc=
 
 qs@~6.5.2:
   version "6.5.2"
@@ -13430,14 +13264,6 @@ react-color@^2.18.1:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
-react-copy-to-clipboard@^5.0.1:
-  version "5.0.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-copy-to-clipboard/-/react-copy-to-clipboard-5.0.2.tgz#d82a437e081e68dfca3761fbd57dbf2abdda1316"
-  integrity sha1-2CpDfggeaN/KN2H71X2/Kr3aExY=
-  dependencies:
-    copy-to-clipboard "^3"
-    prop-types "^15.5.8"
-
 react-dev-utils@^9.0.1:
   version "9.1.0"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-dev-utils/-/react-dev-utils-9.1.0.tgz#3ad2bb8848a32319d760d0a84c56c14bdaae5e81"
@@ -13518,7 +13344,7 @@ react-icons@3.11.0:
   dependencies:
     camelcase "^5.0.0"
 
-react-is@^16.12.0, react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.1:
+react-is@^16.12.0, react-is@^16.13.1, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha1-eJcppNw23imZ3BVt1sHZwYzqVqQ=
@@ -13553,35 +13379,6 @@ react-responsive@^8.0.1:
     matchmediaquery "^0.3.0"
     prop-types "^15.6.1"
     shallow-equal "^1.1.0"
-
-react-router-dom@5.1.2:
-  version "5.1.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-router-dom/-/react-router-dom-5.1.2.tgz#06701b834352f44d37fbb6311f870f84c76b9c18"
-  integrity sha1-BnAbg0NS9E03+7YxH4cPhMdrnBg=
-  dependencies:
-    "@babel/runtime" "^7.1.2"
-    history "^4.9.0"
-    loose-envify "^1.3.1"
-    prop-types "^15.6.2"
-    react-router "5.1.2"
-    tiny-invariant "^1.0.2"
-    tiny-warning "^1.0.0"
-
-react-router@5.1.2:
-  version "5.1.2"
-  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/react-router/-/react-router-5.1.2.tgz#6ea51d789cb36a6be1ba5f7c0d48dd9e817d3418"
-  integrity sha1-bqUdeJyzamvhul98DUjdnoF9NBg=
-  dependencies:
-    "@babel/runtime" "^7.1.2"
-    history "^4.9.0"
-    hoist-non-react-statics "^3.1.0"
-    loose-envify "^1.3.1"
-    mini-create-react-context "^0.3.0"
-    path-to-regexp "^1.7.0"
-    prop-types "^15.6.2"
-    react-is "^16.6.0"
-    tiny-invariant "^1.0.2"
-    tiny-warning "^1.0.0"
 
 react-transition-group@^4.4.1:
   version "4.4.1"
@@ -15476,7 +15273,7 @@ tiny-invariant@^1.0.2:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/tiny-invariant/-/tiny-invariant-1.1.0.tgz#634c5f8efdc27714b7f386c35e6760991d230875"
   integrity sha1-Y0xfjv3CdxS384bDXmdgmR0jCHU=
 
-tiny-warning@^1.0.0, tiny-warning@^1.0.3:
+tiny-warning@^1.0.0:
   version "1.0.3"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/tiny-warning/-/tiny-warning-1.0.3.tgz#94a30db453df4c643d0fd566060d60a875d84754"
   integrity sha1-lKMNtFPfTGQ9D9VmBg1gqHXYR1Q=
@@ -15977,7 +15774,7 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-use-json-comparison@^1.0.3, use-json-comparison@^1.0.5:
+use-json-comparison@^1.0.5:
   version "1.0.5"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/use-json-comparison/-/use-json-comparison-1.0.5.tgz#d41a72d65fcf4cf72acc85c8f3980e2173809d63"
   integrity sha1-1Bpy1l/PTPcqzIXI85gOIXOAnWM=

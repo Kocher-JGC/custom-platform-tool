@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import Mousetrap from 'mousetrap';
 import { ToggleBasicFloatLen, EventEmitter, IsFunc } from '@mini-code/base-func';
 import { VersionDisplayer, VersionChecker, VersionCheckerProps } from 'version-helper';
+import { MultipleRouterManager, RouterState } from 'multiple-page-routing';
 
 import { Color } from '@deer-ui/core/utils/props';
 import { $T } from '@deer-ui/core/utils/config';
@@ -15,82 +16,76 @@ import {
   Loading, setUILang, Icon, setLangTranslate
 } from '../ui-refs';
 
-import { showShortcut, ShortcutDesc } from '../shortcut';
-import NavMenu from '../nav-menu';
-// import Posts from './posts';
-import { MultipleRouterManager, RouterState } from 'multiple-page-routing';
-// import { RouterHelper, RouterHelperState } from '../router-multiple';
+import { showShortcut, ShortcutDesc, NavMenuProps, NavMenu } from '../components';
 import {
   Notfound, DashBoardWrapper, DefaultStatusbar, FooterContainer, TabForNavBar, Theme
 } from '../plugins';
 import {
   getThemeConfig, setTheme, setLayout, setDarkMode
 } from '../plugins/theme';
-import { NavMenuProps } from '../nav-menu/nav-menu';
 import StatusbarWrapper, { StatusbarProps } from './statusbar';
+import { AdminTmplMenuItem } from '../types';
 
-export interface ScaffoldLayoutProps {
+export interface AdminLayoutProps {
   /** 用户名，用于在左菜单显示 */
-  username: string;
+  username: string
   /** 用户登录后的信息，会传递给每一个页面 */
-  userInfo?: {};
+  userInfo?: {}
   /** 版本号文件的路径 */
-  versionUrl?: string;
+  versionUrl?: string
   /** 国际化文件存放目录的路径 */
-  i18nMapperUrl?: string;
+  i18nMapperUrl?: string
   /** 退出登录 */
-  logout?: () => void;
+  logout?: () => void
   /** 插件管理 */
   pluginComponent?: {
     /** 顶部状态栏插件 */
-    Statusbar?: any;
+    Statusbar?: any
     /** DashBoard 插件 */
-    DashBoard?: any;
+    DashBoard?: any
     /** 404 页面插件 */
-    NotfoundPage?: any;
+    NotfoundPage?: any
     /** Footer 插件 */
-    Footer?: any;
-  };
+    Footer?: any
+  }
   /** 默认主题 */
-  defaultTheme?: Color;
+  defaultTheme?: Color
   /** 默认布局方式 */
-  defaultLayout?: 'vertical' | 'horizontal';
+  defaultLayout?: 'vertical' | 'horizontal'
   /** 是否黑夜模式 */
-  defaultDarkMode?: boolean;
+  defaultDarkMode?: boolean
   /** 默认的语言 */
-  defaultLang?: Navigator['language'];
+  defaultLang?: Navigator['language']
   // iframeMode?: boolean,
   /** 所有的页面的 mapper 引用 */
-  pageComponents?: {};
+  pageComponents?: {}
   /** 传给所有页面的 props */
-  pageProps?: React.Props<{}>;
+  pageProps?: React.Props<{}>
   /** 国际化配置 */
-  i18nConfig?: {};
+  i18nConfig?: {}
   /** 国际化 Mapper */
-  i18nMapper?: {};
+  i18nMapper?: {}
   /** 最大存在的 tab 路由 */
-  maxRouters?: number;
+  maxRouters?: number
   /** 顶级 tab 是否在 statusbar 中 */
-  tabInStatusbar?: boolean;
+  tabInStatusbar?: boolean
   /** 是否缓存 state */
-  cacheState?: boolean;
+  cacheState?: boolean
   /** 背景 */
-  bgStyle?: React.CSSProperties;
+  bgStyle?: React.CSSProperties
   /** 所有菜单的配置 */
-  menuStore?: {}[];
+  menuData?: AdminTmplMenuItem[]
   /** 菜单的字段映射 */
-  menuMappers?: NavMenuProps['menuMappers'];
-  title?: StatusbarProps['title'];
-  versionInfo?: VersionCheckerProps['versionInfo'];
+  menuMappers?: NavMenuProps['menuMappers']
+  title?: StatusbarProps['title']
+  versionInfo?: VersionCheckerProps['versionInfo']
   /** DashBoard 插件 */
 }
 
-interface ScaffoldLayoutState extends RouterState {
+interface AdminLayoutState extends RouterState {
   menuCodeMapper: {};
-  activeMenu: string;
   layout: string;
   theme: string;
-  menuData: [];
   lang: Navigator['language'];
   showNavMenu: boolean;
   darkMode: boolean;
@@ -100,7 +95,7 @@ interface ScaffoldLayoutState extends RouterState {
 
 const LANG_MAPPER = {};
 
-export default class AdminTemplateEngineLayout extends MultipleRouterManager<ScaffoldLayoutProps, ScaffoldLayoutState> {
+export default class AdminTemplateEngineLayout extends MultipleRouterManager<AdminLayoutProps, AdminLayoutState> {
   static setI18nUrl = (nextUrl) => {
     // i18nMapperUrl = nextUrl;
     console.warn('该接口已废弃，请通过传入 i18nMapperUrl 的 prop 指定');
@@ -112,7 +107,7 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Sca
     defaultTheme: 'blue',
     defaultLayout: 'horizontal',
     versionUrl: './js/version.json',
-    i18nMapperUrl: './i18n/',
+    // i18nMapperUrl: './i18n/',
     defaultDarkMode: false,
     statusbarConfig: [],
     tabInStatusbar: true,
@@ -127,9 +122,7 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Sca
       ...this.initThemeConfig(),
       menuCodeMapper: {},
       showNavMenu: true,
-      activeMenu: '',
       displayFloat: true,
-      menuData: props.menuStore || [],
       lang: props.defaultLang || navigator.language,
       ready: false,
     };
@@ -419,14 +412,14 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Sca
       versionUrl,
       bgStyle,
       tabInStatusbar,
+      menuData,
       children,
       title
     } = this.props;
     const {
       menuCodeMapper,
       showNavMenu,
-      menuData,
-      activeMenu,
+      activeRoute,
       activeRouteIdx,
       routerSnapshot,
       ready,
@@ -465,6 +458,7 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Sca
                 <NavMenu
                   onDidMount={this.onGetMenuCodeMapper}
                   menuData={menuData}
+                  activeRoute={activeRoute}
                   menuMappers={menuMappers}
                   defaultFlowMode={false}
                   show={showNavMenu}

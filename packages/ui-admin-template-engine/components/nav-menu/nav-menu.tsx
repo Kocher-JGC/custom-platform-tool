@@ -1,15 +1,13 @@
-/* eslint-disable no-nested-ternary */
-/* eslint-disable no-prototype-builtins */
 import React, { Component } from 'react';
 
-import Storage from '@mini-code/base-func/storage';
 import { DebounceClass, Call } from '@mini-code/base-func';
 import { $T } from '@deer-ui/core/utils';
-import { ToolTip, Icon, PureIcon } from '../ui-refs';
+import store from 'store';
 
-import { storageHelper } from '../config';
+import { ToolTip, Icon, PureIcon } from '../../ui-refs';
 
-import { Link } from '../router-multiple';
+import { Link, LinkProps } from 'multiple-page-routing';
+import { AdminTmplMenus, AdminTmplMenuItem } from '../../types';
 
 const delayExec = new DebounceClass();
 
@@ -49,7 +47,7 @@ const iconComFilter = ({ icon, pureIcon }, props, other?) => {
 
 const MENU_CODE_MAPPER = 'MENU_CODE_MAPPER';
 
-const menuCodeMapper = storageHelper.get(MENU_CODE_MAPPER, true) || {};
+const menuCodeMapper = store.get(MENU_CODE_MAPPER) || {};
 
 const MenuItem = (props) => {
   const {
@@ -66,42 +64,46 @@ const MenuItem = (props) => {
 };
 
 export interface NavMenuProps {
-  menuData: any;
-  onDidMount?: (menuCodeMapper) => void;
+  activeRoute: string
+  menuData: AdminTmplMenus
+  onDidMount?: (menuCodeMapper) => void
   /** 菜单的字段映射 */
   menuMappers?: {
-    child: string;
-    code: string;
-    title: string;
-    icon?: string;
-    pureIcon?: string;
-  };
+    child: string
+    code: string
+    title: string
+    icon?: string
+    pureIcon?: string
+  }
   /* 是否悬浮模式的菜单模式 */
-  flowMode?: boolean;
-  defaultFlowMode?: boolean;
-  show?: boolean;
-  onClickMenu?: () => void;
+  flowMode?: boolean
+  defaultFlowMode?: boolean
+  show?: boolean
+  onClickMenu?: () => void
 }
 
 export interface NavMenuState {
-  showMenuMapper: {};
+  showMenuMapper: {}
   flowMenuConfig: {
-    activeItem: {};
-    activeIdx: any;
-    isShow: boolean;
+    activeItem: {}
+    activeIdx: any
+    isShow: boolean
     offset: {
-      top: number;
-      left: number;
-      height: number;
-    };
-  };
-  flowMode: boolean;
+      top: number
+      left: number
+      height: number
+    }
+  }
+  flowMode: boolean
 }
 
 /**
- * 左菜单控件, 支持无限嵌套结构，支持“树”模式，支持“悬浮”模式
+ * 左菜单控件
+ * 1. 支持无限嵌套结构
+ * 2. 支持“树”模式
+ * 3. 支持“悬浮”模式
  */
-export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
+export class NavMenu extends Component<NavMenuProps, NavMenuState> {
   static defaultProps = {
     menuMappers: {
       child: 'child',
@@ -120,13 +122,8 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
 
   constructor(props) {
     super(props);
-    let showMenuMapper = Storage.getItem(MENU_ACTIVE_STORAGE) || '';
-    try {
-      showMenuMapper = JSON.parse(showMenuMapper);
-    } catch (e) {
-      showMenuMapper = {};
-    }
-    const storageMode = storageHelper.get(this.flowModeKey);
+    const showMenuMapper = store.get(MENU_ACTIVE_STORAGE) || {};
+    const storageMode = store.get(this.flowModeKey);
     const { defaultFlowMode = false, menuData } = props;
 
     window.MENU_DATA = menuData;
@@ -151,14 +148,13 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
     Call(this.props.onDidMount, menuCodeMapper);
   }
 
-  getNormalMenuChildren = (initDataList) => {
+  getNormalMenuChildren = (initDataList: AdminTmplMenus) => {
     if (!initDataList || !Array.isArray(initDataList)) return null;
-    // if(!initDataList || !Array.isArray(initDataList)) return console.error(initDataList, 'initDataList 参数错误');
     const { onClickMenu } = this.props;
     const { showMenuMapper, flowMode } = this.state;
     let allSet: any[] = [];
     let foldIdx = 0;
-    const recursive = (dataList) => {
+    const recursive = (dataList: AdminTmplMenus) => {
       const currDOMSets: any[] = [];
       dataList.forEach((item, currItemIdx) => {
         if (!item) return;
@@ -192,7 +188,8 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
               <div
                 className="fold-title"
                 onClick={(e) => {
-                  !flowMode && this.toggleFold(e, currFoldIdx);
+                  e.stopPropagation();
+                  !flowMode && this.toggleFold(currFoldIdx);
                 }}
               >
                 <MenuItem {..._item} />
@@ -206,7 +203,7 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
             key,
             to,
             onClick: onClickMenu,
-            menuText: title
+            title
           });
         }
         currDOMSets.push(dom);
@@ -225,36 +222,33 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
     }, 200);
   }
 
-  getMenuLinkerDOM = (options) => {
+  getMenuLinkerDOM = (options: LinkProps & AdminTmplMenuItem & { key: string }) => {
+    const { activeRoute } = this.props;
     const {
-      code, key, to, onClick, menuText, icon, pureIcon
+      code, key, to, onClick, title, icon, pureIcon
     } = options;
-    menuCodeMapper[code] = menuText;
-    storageHelper.set(MENU_CODE_MAPPER, menuCodeMapper, true);
-    const _menuText = $T(menuText);
+    menuCodeMapper[code] = title;
+    store.set(MENU_CODE_MAPPER, menuCodeMapper);
+    const _menuText = $T(title);
+    const isActive = activeRoute === to;
 
     return (
       <Link
         key={key}
-        title={_menuText}
+        isActive={isActive}
         className="menu"
         to={to}
         onClick={() => Call(onClick, key, code)}
       >
         {
-          iconComFilter(options, { classNames: ['menu-icon'] }, null,
-            // (
-            //   <span className="menu-tip">-</span>
-            // )
-          )
+          iconComFilter({ icon, pureIcon }, { classNames: ['menu-icon'] }, null)
         }
-        {/* <span className="menu-tip">-</span> */}
         {_menuText}
       </Link>
     );
   };
 
-  getFlowModeDOM = (initDataList) => {
+  getFlowModeDOM = (initDataList: AdminTmplMenus) => {
     const { flowMenuConfig } = this.state;
     const { onClickMenu } = this.props;
     const {
@@ -281,7 +275,7 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
 
             const overBottom = getScreenHeight() - offsetBottom;
             let finalOffsetTop = expectedOffsetTop;
-            const flowMenuOffsetTopPx = parentHeight == flowContainerHeight ? 0 : parentHeight;
+            const flowMenuOffsetTopPx = parentHeight === flowContainerHeight ? 0 : parentHeight;
 
             if (overBottom < 0) {
               /**
@@ -331,7 +325,7 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
           key,
           to,
           onClick: onClickMenu,
-          menuText: title
+          title
         })
       );
     });
@@ -363,18 +357,17 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
   }
 
   wrapLink = ({ path, code }) => {
-    return path ? `${code}?${path}` : code;
+    return path ? `/${code}?${path}` : `/${code}`;
   }
 
-  changeMenuUIMode = (isFlowMode) => {
+  changeMenuUIMode = (isFlowMode: boolean) => {
     this.setState({
       flowMode: isFlowMode
     });
-    storageHelper.set(this.flowModeKey, isFlowMode ? '1' : '0');
+    store.set(this.flowModeKey, isFlowMode ? '1' : '0');
   }
 
-  toggleFold = (e, idx, isShow?) => {
-    e.stopPropagation();
+  toggleFold = (idx: number, isShow?: boolean) => {
     const { showMenuMapper } = this.state;
     const nextState = Object.assign({}, showMenuMapper);
 
@@ -386,7 +379,7 @@ export default class NavMenu extends Component<NavMenuProps, NavMenuState> {
       nextState[idx] = true;
     }
 
-    Storage.setItem(MENU_ACTIVE_STORAGE, JSON.stringify(nextState));
+    store.set(MENU_ACTIVE_STORAGE, nextState);
     this.setState({
       showMenuMapper: nextState
     });

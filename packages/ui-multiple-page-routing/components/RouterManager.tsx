@@ -119,6 +119,14 @@ class MultipleRouterManager<
 
   }
 
+  changeRoute = (path: string, params) => {
+    onNavigate({
+      type: 'PUSH',
+      path,
+      params
+    });
+  };
+
   /**
    * 设置 location 对象，挂载属性
    * @param location next location

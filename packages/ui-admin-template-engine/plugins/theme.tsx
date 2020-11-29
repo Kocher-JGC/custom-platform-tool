@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Storage from '@mini-code/base-func/storage';
+import store from 'store';
 
 import { $T } from '@deer-ui/core/utils/config';
 import { Switch, Grid } from '../ui-refs';
@@ -12,9 +12,9 @@ const layoutDefined = '_LAYOUT_';
 const darkModeDefined = '_DARK_MODE_';
 
 const getThemeConfig = () => {
-  const theme = Storage.getItem(themeDefined);
-  const layout = Storage.getItem(layoutDefined);
-  const darkMode = Storage.getItem(darkModeDefined);
+  const theme = store.get(themeDefined);
+  const layout = store.get(layoutDefined);
+  const darkMode = store.get(darkModeDefined);
 
   return {
     theme,
@@ -24,18 +24,18 @@ const getThemeConfig = () => {
 };
 
 const setTheme = (theme) => {
-  Storage.setItem(themeDefined, theme);
+  store.set(themeDefined, theme);
 };
 
 const setLayout = (layout) => {
-  Storage.setItem(layoutDefined, layout);
+  store.set(layoutDefined, layout);
 };
 
 const setDarkMode = (darkMode) => {
-  Storage.setItem(darkModeDefined, darkMode);
+  store.set(darkModeDefined, darkMode);
 };
 
-class Theme extends React.PureComponent {
+class ThemeSelector extends React.PureComponent {
   state = {
     activeTheme: this.props.activeTheme
   }
@@ -111,7 +111,8 @@ class Theme extends React.PureComponent {
   }
 }
 
-export default Theme;
+export default ThemeSelector;
+
 export {
   getThemeConfig, setTheme, setLayout, setDarkMode
 };
