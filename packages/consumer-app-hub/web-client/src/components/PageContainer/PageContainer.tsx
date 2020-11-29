@@ -1,99 +1,66 @@
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { history } from "multiple-page-routing";
+import { Skeleton, Result } from "antd";
+import { queryPageData } from "../../services/page";
+import { IUBDSLRenderer } from "@iub-dsl/platform/react";
+import "./index.less";
+// import D from '@iub-dsl/demo/pd/1';
+
+// interface IContainerProps {}
+
+const ResultRender = <Result status="500" title="500" subTitle="页面解析出错" extra={null} />;
+
+const SkeletonRender = <Skeleton active />;
+
+const getPageData = ({ pageId, mode, lessee, app }) => async () => {
+  if (pageId) {
+    // TODO 模式，租户，app 参数来源
+    return queryPageData({
+      id: pageId,
+      mode,
+      lessee,
+      app
+    });
+  }
+  return Promise.resolve({});
+};
+
+
 /**
- * TODO: 引用 redux
+ * 页面加载容器，主要功能：
+ * 1. 根据登录用户是否有权限访问该页面来判断是否显示页面
+ * 2. 提供页面内的 UI 是否可以显示的授权功能
  */
+export const PageContainer = ({
+  children
+}) => {
+  const [data, setData] = useState({});
+  // const [data, setData] = useState(D);
+  const { pageId } = history.location;
 
-import React, { Children } from 'react';
+  const isLoading = useRef(true);
 
-import { TypeOfIUBDSL } from "@iub-dsl/definition";
-import IUBDSLParser from '@iub-dsl/engine';
+  const Renderer = useMemo(() => {
+    if (isLoading.current) {
+      return SkeletonRender;
+    }
+    if (pageId) {
+      return <IUBDSLRenderer dsl={data} />;
+    }
+    return ResultRender;
+  }, [pageId, data]);
 
-import IUBDSLRuntimeContainer from '@iub-dsl/engine/IUBDSLRuntimeContainer';
-import { AuthUIByUIID, $R } from '../../services';
-import { initPageContext } from './context';
-import { Loading } from '../common';
+  // useEffect(() => {
+  //   isLoading.current = true;
+  //   getPageData(().then((d) => {
+  //     isLoading.current = false;
+  //     setData(d);
+  //   });
+  // }, [pageId]);
 
-const SpecificParser = () => {
   return (
-    <div></div>
+    <div className="__page_container">
+      {Renderer}
+    </div>
   );
 };
-
-const validAuth = (pageAuthInfo, pageId) => {
-  // return AuthUIByUIID(pageId, pageAuthInfo);
-  return true;
-};
-
-interface PageContainerProps {
-  // type: 'iub-dsl' | 'specific';
-  dsl: TypeOfIUBDSL;
-  pageID?: string;
-  pageAuthInfo?: {};
-  appContext: {
-    [str: string]: unknown
-  };
-}
-
-// const parserLoader = (type, appContext, { dsl, pageAuthInfo }) => {
-//   switch (type) {
-//     case 'config':
-//       return IUBDSLRuntimeContainer({
-//         // 接口反射，UI 验证
-//         // context: {
-//         //   setContext: () => ({}),
-//         // },
-//         // authUI: (UIID) => AuthUIByUIID(UIID, pageAuthInfo),
-//         dslParseRes: dsl
-//       });
-//     case 'embed':
-//       return SpecificParser();
-//     default:
-//       return <div></div>;
-//   }
-// };
-
-/**
- * 1. appContext注入 、 数据调度器
- * 2. pageContext包揽全局、数据可用性统一管理、初始化的时候的解析和IUB解析的关系、运行时候的仓库
- */
-export const PageContainer = (props: PageContainerProps) => {
-  // console.log(props);
-  const {
-    dsl, pageAuthInfo, appContext, pageID, // type, pageID
-  } = props;
-  if (!dsl) {
-    return <Loading></Loading>;
-  }
-
-  if (dsl.pageID === undefined) {
-    return (<div>IUB-DSL格式错误</div>);
-  }
-
-  const { name, type } = dsl;
-
-  if (validAuth(pageAuthInfo, dsl.pageID)) {
-    // 数据的可用性统一管理  (状态校验: loading、路由鉴权)。
-    const ParserResult = parserLoader(type, appContext, {
-      dsl,
-      pageAuthInfo
-    });
-    // console.log(ParserResult);
-    return (<PageContainerWrapper
-      key={pageID}
-      id={pageID}
-      name={name}
-    >{
-        ParserResult
-      }</PageContainerWrapper>);
-    // return <div></div>;
-  }
-
-  return (<div>Not Permitted</div>);
-};
-
-const PageContainerWrapper = (props) => (
-  <div className="page-container">
-    <h1>{props.id}</h1>
-    <h2>{props.name}</h2>
-    {props.children}
-  </div>
-);

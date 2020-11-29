@@ -2,22 +2,17 @@ import React from "react";
 
 import { Provider, connect } from "unistore/react";
 
-/** Components */
-import IUBDSLParser from "@iub-dsl/engine";
-
-import { AdminTemplateEngine } from "@engine/ui-admin-template";
+import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
 
 import { authStore, authActions, AuthStore, SaaSAuthActionsTypes, AuthStoreState } from "./auth/actions";
-// import { PageContainer } from "../PageContainer";
-
-/** API */
 import {
   LoadPage, queryMenuList, GetPageAuthConfig, AuthUIByUIID
 } from "./services";
+import { PageContainer, Version } from "./components";
 
 import "./style";
-import { AppContainer } from "./components";
+import { DashboardRender } from "./components";
 
 const loginFormOptions = [
   {
@@ -80,49 +75,81 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     removeLoadingBG();
   }
 
+  footerRender = () => {
+    return (
+      <>
+        <Version />
+        <hr/>
+        <span className="copy-right">@{(new Date()).getFullYear()}</span>
+      </>
+    );
+  }
+
+  dashboardRender = () => {
+    return (
+      <div>
+        <DashboardRender />
+      </div>
+    );
+  }
+
+  pageRender = (renderCtx: PageRenderCtx) => {
+    // console.log(renderCtx);
+    const { pageRoute } = renderCtx;
+    // console.log(renderCtx);
+    return (
+      <PageContainer
+        dsl={{}}
+        {...renderCtx}
+      >
+      </PageContainer>
+    );
+  }
+
   render() {
     const { isLogin, userInfo } = this.props;
     const { menuData } = this.state;
+    const appName = '物联网管理系统';
     return (
       <AuthSelector
         {...this.props}
         backgroundImage="url(./images/bg/bg_3.jpg)"
         btnGColor="red"
-        logo={() => <h3>admin-dashboard</h3>}
+        logo={() => <h3>{appName}</h3>}
         isLogin={isLogin}
         formOptions={loginFormOptions}
       >
         {isLogin ? (
           <AdminTemplateEngine
-            // versionUrl="./version.json"
-            // {...this.props}
             menuData={menuData}
-            // 必须填写的
-            bgStyle={
+            // bgStyle={
+            //   {
+            //     // background: `url(./images/bg/bg_1.jpg)`,
+            //     // backgroundColor: '#f3f3f3',
+            //     // opacity: 0.1
+            //   }
+            // }
+            statusbarActions={[
               {
-                // background: `url(./images/bg/bg_1.jpg)`,
-                // backgroundColor: '#f3f3f3',
-                // opacity: 0.1
+                action: () => {
+                  console.log('action');
+                },
+                title: '测试',
+                overlay: () => {
+                  return (
+                    <div className="p20">overlay</div>
+                  );
+                }
               }
-            }
-            username={userInfo.username}
-            // statusbarConfig={statusbarConfig}
-            // menuMappers={{
-            //   child: "child",
-            //   code: "code",
-            //   title: "title",
-            //   icon: "icon"
-            // }}
-            title="admin-dashboard"
-            // i18nConfig={i18nConfig}
-            // pluginComponent={{
-            //   Statusbar: Status,
-            //   DashBoard,
-            //   Footer
-            // }}
-            // pageComponents={pageComponents}
+            ]}
+            appTitle={appName}
+            pluginRenderer={{
+              Footer: this.footerRender,
+              Dashboard: this.dashboardRender
+            }}
+            pageRender={this.pageRender}
           >
-            <AppContainer />
+            {/* <AppContainer /> */}
           </AdminTemplateEngine>
         ) : null}
       </AuthSelector>

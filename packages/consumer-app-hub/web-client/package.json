@@ -1,12 +1,15 @@
 {
   "name": "@consumer-app/web-client",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
+    "set:version": "vh gen",
     "start": "cross-env PORT=6699 minictl start",
-    "build": "minictl build"
+    "build": "npm run set:version && GENERATE_SOURCEMAP=false minictl build",
+    "analyz": "minictl analyz"
   },
   "devDependencies": {
-    "@infra/react-dev-env-scripts": "^0.0.1"
+    "@infra/react-dev-env-scripts": "^0.0.1",
+    "version-helper": "^1.2.0-beta1.5"
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
