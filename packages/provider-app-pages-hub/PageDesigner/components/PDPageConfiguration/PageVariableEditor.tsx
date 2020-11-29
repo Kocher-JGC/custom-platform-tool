@@ -25,7 +25,7 @@ const VAR_ATTR_TYPE_MENU = [
 
 export type VarListInState = {[key: string]: VariableItem[]}
 export interface IProps {
-  data?: VariableItem
+  data: VariableItem
   getVariableData: GetVariableData
   mode: string
   onCancel: () => void

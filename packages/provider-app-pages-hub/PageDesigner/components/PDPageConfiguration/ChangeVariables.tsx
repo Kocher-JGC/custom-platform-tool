@@ -4,6 +4,9 @@ import lowerFirst from 'lodash/lowerFirst';
 import { VariableItem } from '@provider-app/page-designer/platform-access';
 import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
 import { BasicValueMeta } from '@engine/visual-editor/data-structure';
+/**
+ * 数据类型的对应中文显示
+ */
 export enum VarAttrTypeMap {
   string = '字符串',
   number = '数字',
@@ -18,15 +21,21 @@ interface Props {
 }
 type VariableRecord = {title: string, id: string, children: VariableItem[]}
 type GetVariableList = (options: {[key: string]: VariableItem[]}) => VariableRecord[]
+type GetSubmitTitle = (param: {[key: string]: BasicValueMeta}|null) => string
+type GetSubmitArea = () => {[key: string]: BasicValueMeta}|null
 export const ChangeVariables = ({
   platformCtx, config: changeVariables, onSuccess, onCancel
 }: Props) => {
+  /** 只有自定义变量和控件变量允许被赋值 */
   const varTypeAllowChange = ['customed','widget'];
+  /** 自定义变量和控件变量数据 */
   const [variableList, setVariableList] = useState<VariableRecord[]>([]);
   /** 当前页面变量数据 */
   const [variableData, setVariableData] = useState<{[key: string]: VariableItem[]}>({});
+  /** 展开数据 */
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
-  const [changeArea, setChangeArea] = useState({});
+  /** 被记录的变更数据 */
+  const [changeArea, setChangeArea] = useState<{[key: string]: BasicValueMeta}>({});
 
   /** 
    * 实时读取最新变量列表
@@ -38,6 +47,16 @@ export const ChangeVariables = ({
     ].filter(item=>item.children?.length > 0);
   };
 
+  /** 
+   * 初始化变量列表 
+   */
+  const initVariableList = () => {
+    platformCtx.meta.getVariableData(['page', 'pageInput']).then(res=>{
+      setVariableList(getVariableList(res));
+      setExpandedKeys(varTypeAllowChange);
+    });
+  };
+
   useEffect(()=>{
     initVariableList();
     setChangeArea(changeVariables || {});
@@ -46,7 +65,12 @@ export const ChangeVariables = ({
       setVariableData(res);
     });    
   },[]);
-  const getSubmitTitle = (submitArea) => {
+
+  /**
+   * 获取提交标题
+   * @param submitArea 
+   */
+  const getSubmitTitle: GetSubmitTitle= (submitArea) => {
     if(!submitArea) return '';
     const title = [...(variableData.customed || []), ...(variableData.widget|| [])]
       .filter(item => item.id in submitArea)
@@ -54,7 +78,10 @@ export const ChangeVariables = ({
       .join(',');
     return title;
   }; 
-  const getSubmitArea = () => {
+  /**
+   * 获取待提交数据，用户手动清楚配置则视为无配置
+   */
+  const getSubmitArea: GetSubmitArea = () => {
     const hasItemChanged = (item) => {
       return ['exp', 'realVal', 'variable'].some(key=>!!item[key]);
     };
@@ -68,26 +95,27 @@ export const ChangeVariables = ({
     }
     return Object.keys(result).length > 0 ? result : null;
   };
+  /**
+   * 提交数据
+   */
   const handleSubmit = () => {
     const submitArea = getSubmitArea();
     const submitTitle = getSubmitTitle(submitArea);
     typeof onSuccess === 'function' && onSuccess(submitArea, `更改：${submitTitle}`);
   };
+
+  /**
+   * 清空
+   */
   const handleReset = () => {
     setChangeArea({});
   };
+
+  /**
+   * 取消
+   */
   const handleCancel = () => {
     onCancel();
-  };
-
-  /** 
-   * 初始化变量列表 
-   */
-  const initVariableList = () => {
-    platformCtx.meta.getVariableData(['page', 'pageInput']).then(res=>{
-      setVariableList(getVariableList(res));
-      setExpandedKeys(varTypeAllowChange);
-    });
   };
   return (
     <div className="page-change-variables">
