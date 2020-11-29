@@ -1,27 +1,27 @@
-import React, { SFC } from 'react';
+import React, { FC } from 'react';
 import { $T } from '@deer-ui/core/utils';
 import { Icon, ToolTip } from '../ui-refs';
 
 export interface TabForNavProps {
-  routers;
-  routersLen;
-  activeRouteIdx;
-  closeAll;
-  hasRouter;
-  routerSnapshot;
-  menuCodeMapper;
-  closeTab;
-  changeRoute;
-  defaultTitle;
+  routers
+  routersLen
+  activeRouteIdx
+  closeAll
+  hasRouter
+  routerSnapshot
+  menuCodeMapper
+  closeTab
+  changeRoute
+  defaultTitle
 }
 
-const TabForNav: SFC<TabForNavProps> = (props) => {
+export const TabForNavBar: FC<TabForNavProps> = (props) => {
   const {
     routers, routersLen, activeRouteIdx, closeAll, hasRouter,
     routerSnapshot, menuCodeMapper, closeTab, changeRoute, defaultTitle
   } = props;
   return (
-    <div className="tabs-for-multiple-router">
+    <div className="__tabs_for_multiple_routing">
       <div className="tabs-items">
         {
           hasRouter ? (
@@ -68,5 +68,3 @@ const TabForNav: SFC<TabForNavProps> = (props) => {
     </div>
   );
 };
-
-export default TabForNav;

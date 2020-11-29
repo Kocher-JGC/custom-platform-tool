@@ -13,7 +13,7 @@ $userInfoItemOverBgColor: #f7f7f7;
   // background-color: $main-bg-color;
 }
 
-.__admin_scaffold_main-container {
+.__admin_template_layout_main_container {
   background-color: rgba($main-bg-color, 0.5);
   height: 100vh;
   max-width: $admin-main-container-max-width;
@@ -24,7 +24,7 @@ $userInfoItemOverBgColor: #f7f7f7;
   @include themeGen();
 }
 
-.pages-container {
+.__pages_container {
   >.common-mode {
     // padding: 0 10px;
     position: relative;
@@ -32,7 +32,7 @@ $userInfoItemOverBgColor: #f7f7f7;
   }
 }
 
-.__main-wrapper {
+.__main_wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -47,7 +47,7 @@ $userInfoItemOverBgColor: #f7f7f7;
   height: 100%;
 }
 
-.pages-container {
+.__pages_container {
   overflow-y: auto;
   @include fill();
   left: $nav-menu-width;
@@ -213,6 +213,11 @@ $userInfoItemOverBgColor: #f7f7f7;
   }
 }
 
+.__system_setting {
+  width: 400px;
+  padding: 20px;
+}
+
 .theme-changer {
 
   // padding: 8px 20px;
@@ -233,7 +238,7 @@ $userInfoItemOverBgColor: #f7f7f7;
 }
 
 @media screen and (max-width: 1441px) {
-  .pages-container .admin-status-bar .user-info-group {
+  .__pages_container .admin-status-bar .user-info-group {
     max-width: 46%;
     overflow-x: auto;
     white-space: nowrap;
@@ -241,13 +246,13 @@ $userInfoItemOverBgColor: #f7f7f7;
 }
 
 @media screen and (max-width: 1300px) {
-  .pages-container .admin-status-bar .user-info-group {
+  .__pages_container .admin-status-bar .user-info-group {
     max-width: 38%;
   }
 }
 
 // @media screen and (min-width: $admin-main-container-max-width) {
-//   .__admin_scaffold_main-container {
+//   .__admin_template_layout_main_container {
 //     transform: translateY(30px);
 //     height: cula(100vh - 30);
 //   }

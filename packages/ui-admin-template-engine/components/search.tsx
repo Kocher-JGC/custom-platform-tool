@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 import Mousetrap from 'mousetrap';
 import { Call } from '@mini-code/base-func';
 import { $T } from '@deer-ui/core/utils';
+import { Link } from 'multiple-page-routing';
 
 import {
   ClickAway, ToolTip, DropdownWrapper, Icon
-} from './ui-refs';
-import { Link } from './router-multiple';
+} from '../ui-refs';
 
 export interface SearchBoxProps {
   onChangeMenu?: (route: string) => void;
@@ -28,7 +28,7 @@ const ShortcutTipDesc = ({ $T }) => {
   );
 };
 
-export default class SearchBox extends Component<SearchBoxProps> {
+export class SearchBox extends Component<SearchBoxProps> {
   constructor(props) {
     super(props);
 

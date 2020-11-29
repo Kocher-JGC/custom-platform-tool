@@ -17,7 +17,7 @@ $darkTextColor: #EEE;
     
   }
   &.dark {
-    .nav-menu-wrapper {
+    .__admin_nav_menu_container {
       background-color: $darkBgColor;
     }
     .flow-menu-container {
@@ -48,7 +48,7 @@ $darkTextColor: #EEE;
         color: $darkTextColor;
       }
     }
-    .tabs-for-multiple-router .tab-item {
+    .__tabs_for_multiple_routing .tab-item {
       border-color: darken($darkBgColor, 10%);
     }
   }
@@ -82,7 +82,7 @@ $darkTextColor: #EEE;
       }
     }
   }
-  .tabs-for-multiple-router .tab-item {
+  .__tabs_for_multiple_routing .tab-item {
     &.active, &:hover {
       ._btn {
         color: $basicBgColor;

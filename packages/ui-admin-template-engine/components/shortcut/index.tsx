@@ -20,7 +20,7 @@ const ShortcutHelp = () => {
   return <Table columns={columns} dataRows={dataRows} />;
 };
 
-const showShortcut = () => {
+export const showShortcut = () => {
   ShowModal({
     children: <ShortcutHelp />,
     title: '键盘快捷键说明',
@@ -28,7 +28,7 @@ const showShortcut = () => {
   });
 };
 
-const ShortcutDesc = () => {
+export const ShortcutDesc = () => {
   return (
     <Button
       color="default"
@@ -49,9 +49,3 @@ const ShortcutDesc = () => {
   //     ]} />
   // );
 };
-
-export {
-  showShortcut, ShortcutDesc
-};
-
-export default ShortcutHelp;

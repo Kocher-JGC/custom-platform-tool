@@ -1,52 +1,56 @@
-/**
- * 主要布局文件, 不需要单独修改, 以后统一修改
- */
-
-import React, { Component } from 'react';
+import React from 'react';
 
 import Mousetrap from 'mousetrap';
-import { ToggleBasicFloatLen, EventEmitter, IsFunc } from '@mini-code/base-func';
 import { VersionDisplayer, VersionChecker, VersionCheckerProps } from 'version-helper';
-import { MultipleRouterManager, RouterState } from 'multiple-page-routing';
+import { MultipleRouterManager, OnNavigate, RouterHelperProps, RouterState } from 'multiple-page-routing';
 
 import { Color } from '@deer-ui/core/utils/props';
 import { $T } from '@deer-ui/core/utils/config';
 import {
-  ShowModal, Tabs, Tab, DropdownMenu, ToolTip, Menus,
+  ShowModal, Tabs, Tab, Menus,
   Loading, setUILang, Icon, setLangTranslate
 } from '../ui-refs';
 
-import { showShortcut, ShortcutDesc, NavMenuProps, NavMenu } from '../components';
+import { showShortcut, ShortcutDesc, NavMenu, ThemeSelector, TabForNavBar } from '../components';
 import {
-  Notfound, DashBoardWrapper, DefaultStatusbar, FooterContainer, TabForNavBar, Theme
-} from '../plugins';
+  // Notfound, 
+  DashboardLoader, FooterLoader, StatusbarLoader, StatusbarLoaderProps, StatusbarRenderCtx
+} from '../plugins/loader';
 import {
   getThemeConfig, setTheme, setLayout, setDarkMode
-} from '../plugins/theme';
-import StatusbarWrapper, { StatusbarProps } from './statusbar';
+} from '../components/theme-selector';
 import { AdminTmplMenuItem } from '../types';
 
-export interface AdminLayoutProps {
-  /** 用户名，用于在左菜单显示 */
-  username: string
-  /** 用户登录后的信息，会传递给每一个页面 */
-  userInfo?: {}
+
+export interface PageRenderCtx {
+  $T: (t: string) => string
+  isActive: boolean
+  pageRoute: string
+  onNavigate: OnNavigate
+  history
+}
+
+export type PluginRenderer<C> = (ctx: C) => JSX.Element
+
+export interface AdminLayoutProps extends RouterHelperProps {
+  /** 菜单数据 */
+  menuData: AdminTmplMenuItem[]
+  /** 渲染每个页面的渲染器 */
+  pageRender: (renderCtx: PageRenderCtx) => JSX.Element
   /** 版本号文件的路径 */
-  versionUrl?: string
+  getVersionUrl?: string
   /** 国际化文件存放目录的路径 */
   i18nMapperUrl?: string
-  /** 退出登录 */
-  logout?: () => void
-  /** 插件管理 */
-  pluginComponent?: {
+  /** 插件渲染集合 */
+  pluginRenderer?: {
     /** 顶部状态栏插件 */
-    Statusbar?: any
-    /** DashBoard 插件 */
-    DashBoard?: any
+    Statusbar?: PluginRenderer<StatusbarRenderCtx>
+    /** Dashboard 插件 */
+    Dashboard?: PluginRenderer<{}>
     /** 404 页面插件 */
-    NotfoundPage?: any
+    NotfoundPage?: PluginRenderer<{}>
     /** Footer 插件 */
-    Footer?: any
+    Footer?: PluginRenderer<{}>
   }
   /** 默认主题 */
   defaultTheme?: Color
@@ -57,45 +61,53 @@ export interface AdminLayoutProps {
   /** 默认的语言 */
   defaultLang?: Navigator['language']
   // iframeMode?: boolean,
-  /** 所有的页面的 mapper 引用 */
-  pageComponents?: {}
-  /** 传给所有页面的 props */
-  pageProps?: React.Props<{}>
   /** 国际化配置 */
-  i18nConfig?: {}
-  /** 国际化 Mapper */
-  i18nMapper?: {}
+  i18nConfig?: {
+    [lang: string]: string
+  }
   /** 最大存在的 tab 路由 */
   maxRouters?: number
   /** 顶级 tab 是否在 statusbar 中 */
   tabInStatusbar?: boolean
-  /** 是否缓存 state */
-  cacheState?: boolean
   /** 背景 */
   bgStyle?: React.CSSProperties
-  /** 所有菜单的配置 */
-  menuData?: AdminTmplMenuItem[]
-  /** 菜单的字段映射 */
-  menuMappers?: NavMenuProps['menuMappers']
-  title?: StatusbarProps['title']
+  appTitle?: StatusbarLoaderProps['appTitle']
+  /** 给 statusbar 的更多操作选项 */
+  statusbarActions?: StatusbarLoaderProps['statusbarActions']
   versionInfo?: VersionCheckerProps['versionInfo']
-  /** DashBoard 插件 */
 }
 
 interface AdminLayoutState extends RouterState {
-  menuCodeMapper: {};
-  layout: string;
-  theme: string;
-  lang: Navigator['language'];
-  showNavMenu: boolean;
-  darkMode: boolean;
-  displayFloat: boolean;
-  ready: boolean;
+  /** 用于搜索菜单的页面导航 + 页面名称 mapper */
+  menuCodeMapper: {
+    [pagePath: string]: string
+  }
+  /** 应用的布局 */
+  layout: string
+  /** 应用的主题 */
+  theme: string
+  /** 应用的语言 */
+  lang: Navigator['language']
+  /** 是否展示菜单 */
+  showNavMenu: boolean
+  /** 是否黑夜模式 */
+  darkMode: boolean
+  /** 应用是否已经准备完成 */
+  ready: boolean
 }
 
+/**
+ * 语言配置，格式为：
+ * @example
+ * LANG_MAPPER = {
+ *   'zh-CN': {
+ *     'app': '应用'
+ *   }
+ * }
+ */
 const LANG_MAPPER = {};
 
-export default class AdminTemplateEngineLayout extends MultipleRouterManager<AdminLayoutProps, AdminLayoutState> {
+export class AdminTemplateEngine extends MultipleRouterManager<AdminLayoutProps, AdminLayoutState> {
   static setI18nUrl = (nextUrl) => {
     // i18nMapperUrl = nextUrl;
     console.warn('该接口已废弃，请通过传入 i18nMapperUrl 的 prop 指定');
@@ -106,10 +118,10 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
     maxRouters: 10,
     defaultTheme: 'blue',
     defaultLayout: 'horizontal',
-    versionUrl: './js/version.json',
+    // getVersionUrl: './js/version.json',
     // i18nMapperUrl: './i18n/',
     defaultDarkMode: false,
-    statusbarConfig: [],
+    statusbarActions: [],
     tabInStatusbar: true,
     cacheState: true,
   }
@@ -122,13 +134,15 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
       ...this.initThemeConfig(),
       menuCodeMapper: {},
       showNavMenu: true,
-      displayFloat: true,
       lang: props.defaultLang || navigator.language,
       ready: false,
     };
     this.initApp();
   }
 
+  /**
+   * 初始化主题配置
+   */
   initThemeConfig = () => {
     // const THEME = Storage.getItem()
     const themeConfig = getThemeConfig();
@@ -139,57 +153,20 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
     }, themeConfig);
   }
 
+  /**
+   * 获取国际化配置文件
+   * @param lang 
+   */
   geti18nUrl = (lang) => {
     const { i18nMapperUrl } = this.props;
     if (!i18nMapperUrl) return null;
     return `${i18nMapperUrl + lang}.json`;
   }
 
-  initApp = async () => {
-    const { i18nMapper } = this.props;
-    const { lang } = this.state;
-    await this.fetchLangMapper(lang);
-    this._setUILang(lang);
-    this.setState({
-      ready: true
-    });
-  }
-
-  changeLang = async (lang) => {
-    if (!lang) return;
-    await this.fetchLangMapper(lang);
-    this._setUILang(lang);
-    this.setState({
-      lang,
-    });
-  }
-
-  _setUILang = (lang) => {
-    setLangTranslate(LANG_MAPPER);
-    setUILang(lang);
-  }
-
-  changeTheme = (nextTheme) => {
-    this.setState({
-      theme: nextTheme,
-    });
-    setTheme(nextTheme);
-  }
-
-  changeDarkMode = (nextDarkMode) => {
-    this.setState({
-      darkMode: nextDarkMode,
-    });
-    setDarkMode(nextDarkMode);
-  }
-
-  changeLayout = (nextLayout) => {
-    this.setState({
-      layout: nextLayout,
-    });
-    setLayout(nextLayout);
-  }
-
+  /**
+   * 从远端获取语言配置
+   * @param lang 
+   */
   fetchLangMapper = async (lang) => {
     const url = this.geti18nUrl(lang);
     if (!url) return null;
@@ -208,6 +185,75 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
     // 设置 UI 库的 columns
   }
 
+  /**
+   * 启动应用运行容器
+   */
+  initApp = async () => {
+    const { lang } = this.state;
+    await this.fetchLangMapper(lang);
+    this._setUILang(lang);
+    this.setState({
+      ready: true
+    });
+  }
+
+  /**
+   * 更改应用运行容器的语言
+   * @param lang 
+   */
+  changeLang = async (lang) => {
+    if (!lang) return;
+    await this.fetchLangMapper(lang);
+    this._setUILang(lang);
+    this.setState({
+      lang,
+    });
+  }
+
+  /**
+   * 设置 UI 库的语言
+   * @param lang 
+   */
+  private _setUILang = (lang) => {
+    setLangTranslate(LANG_MAPPER);
+    setUILang(lang);
+  }
+
+  /**
+   * 修改主题颜色
+   * @param nextTheme 
+   */
+  changeTheme = (nextTheme) => {
+    this.setState({
+      theme: nextTheme,
+    });
+    setTheme(nextTheme);
+  }
+
+  /**
+   * 更改为 dark 模式
+   * @param nextDarkMode 
+   */
+  changeDarkMode = (nextDarkMode) => {
+    this.setState({
+      darkMode: nextDarkMode,
+    });
+    setDarkMode(nextDarkMode);
+  }
+
+  /**
+   * 更改布局，未完成
+   */
+  changeLayout = (nextLayout) => {
+    this.setState({
+      layout: nextLayout,
+    });
+    setLayout(nextLayout);
+  }
+
+  /**
+   * 广播 UI 的 resize 事件
+   */
   triggerResize = () => {
     setTimeout(() => {
       const evt = window.document.createEvent('UIEvents');
@@ -231,25 +277,29 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
     this.unlisten();
   }
 
+  /**
+   * 处理来自快捷键的关闭页面
+   */
   handleCloseFormShortcut = () => {
     const { activeRouteIdx } = this.state;
     this.closeTab(activeRouteIdx);
   }
 
-  toggleFloat = () => {
-    const isDisplay = ToggleBasicFloatLen();
-    this.setState(({ displayFloat }) => ({
-      displayFloat: !displayFloat
-    }));
-  }
-
-  onGetMenuCodeMapper = (menuCodeMapper) => {
+  /**
+   * 菜单组件处理好数据后的后处理，用于设置 menuCodeMapper，menuCodeMapper 用于菜单搜索
+   * @param menuCodeMapper 
+   */
+  private onGetMenuCodeMapper = (menuCodeMapper) => {
     this.setState({
       menuCodeMapper
     });
-    window.MenuCodeMapper = menuCodeMapper;
+    window.__MenuCodeMapper = menuCodeMapper;
   }
 
+  /**
+   * 菜单的收起/展开开关
+   * @param nextShow 
+   */
   toggleNavMenu = (nextShow) => {
     this.setState(({
       showNavMenu
@@ -262,46 +312,48 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
     this.triggerResize();
   }
 
-  getRouteProps(isActive, pageName) {
-    const { userInfo, username, pageProps } = this.props;
+  /**
+   * 包装应用传入每个页面实例的上下文
+   * @param isActive 
+   * @param pageRoute 
+   */
+  getAppCtx(isActive, pageRoute): PageRenderCtx {
     return {
-      ...pageProps,
       $T,
-      userInfo,
-      username,
       isActive,
-      pageName,
+      pageRoute,
       onNavigate: this.onNavigate,
       history: this.history,
     };
   }
 
-  loadPlugin = (Plugin, props?) => {
-    let P = IsFunc(Plugin) ? <Plugin /> : Plugin;
-
-    const defaultProps = {
-      onNavigate: this.onNavigate,
-      onLogout: this.props.logout,
-      showShortcut,
-      $T,
-      displayFloat: this.state.displayFloat,
-      toggleFloat: this.toggleFloat,
+  /**
+   * 获取系统信息的操作
+   */
+  getSystemInfoActions = () => {
+    return {
+      icon: "ellipsis-v",
+      overlay: () => {
+        return this.renderSystemSetting();
+      }
     };
-
-    P = React.cloneElement(P, defaultProps, props);
-
-    return P;
   }
 
-  statusbarConfigFilter = () => {
-    const { statusbarConfig = [], i18nConfig } = this.props;
+  /**
+   * 合并状态栏的默认操作配置，最终数据给到系统设置中
+   */
+  combindStatusbarDefaultActions = () => {
+    const { statusbarActions = [], i18nConfig } = this.props;
     return [
-      ...statusbarConfig,
+      ...statusbarActions,
       ...(i18nConfig ? [this.getI18nConfig()] : []),
-      this.getSystemInfoConfig()
+      this.getSystemInfoActions()
     ];
   }
 
+  /**
+   * 获取国际化配置
+   */
   getI18nConfig = () => {
     const { i18nConfig } = this.props;
     const { lang } = this.state;
@@ -329,92 +381,47 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
     };
   }
 
+  /**
+   * 渲染系统设置
+   */
   renderSystemSetting = () => {
-    const { Footer, versionInfo } = this.props;
+    const { versionInfo, pluginRenderer } = this.props;
     const { theme, darkMode, layout } = this.state;
+    const { Footer } = pluginRenderer || {};
     return (
-      <div className="system-setting">
-        <Theme
+      <div className="__system_setting">
+        <ThemeSelector
           onChangeDarkMode={this.changeDarkMode}
           onChangeTheme={this.changeTheme}
-          onChangeLayout={this.changeLayout}
-          layout={layout}
+          // onChangeLayout={this.changeLayout}
+          // layout={layout}
           darkMode={darkMode}
           activeTheme={theme}
         />
         <hr />
         <ShortcutDesc />
         <hr />
-        <FooterContainer>
-          {
-            Footer && this.loadPlugin(Footer)
-          }
+        <FooterLoader plugin={Footer}>
           {
             versionInfo ? (
               <VersionDisplayer $T={$T} versionInfo={versionInfo} />
             ) : null
           }
-        </FooterContainer>
+        </FooterLoader>
       </div>
     );
   }
 
-  getSystemInfoConfig = () => {
-    return {
-      icon: "ellipsis-v",
-      overlay: () => {
-        return this.renderSystemSetting();
-      }
-    };
-  }
-
-  renderSystemInfo = () => {
-    const { Footer, versionInfo } = this.props;
-    const { theme, darkMode, layout } = this.state;
-    ShowModal({
-      type: 'side',
-      position: 'right',
-      title: '系统设置',
-      children: () => (
-        <>
-          <ShortcutDesc />
-          <Theme
-            onChangeDarkMode={this.changeDarkMode}
-            onChangeTheme={this.changeTheme}
-            onChangeLayout={this.changeLayout}
-            layout={layout}
-            darkMode={darkMode}
-            activeTheme={theme}
-          />
-          <FooterContainer>
-            {
-              Footer && this.loadPlugin(Footer)
-            }
-            {
-              versionInfo ? (
-                <VersionDisplayer $T={$T} versionInfo={versionInfo} />
-              ) : null
-            }
-          </FooterContainer>
-        </>
-      )
-    });
-  }
-
   render() {
     const {
-      username,
-      logout,
-      pageComponents = [],
-      pluginComponent = {},
-      menuMappers,
+      pluginRenderer = {},
       versionInfo,
-      versionUrl,
+      getVersionUrl,
       bgStyle,
       tabInStatusbar,
       menuData,
-      children,
-      title
+      pageRender,
+      appTitle
     } = this.props;
     const {
       menuCodeMapper,
@@ -429,43 +436,39 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
       darkMode,
     } = this.state;
     const {
-      NotfoundPage, DashBoard = this.props.DashBoard,
-    } = pluginComponent;
+      NotfoundPage, Dashboard, Statusbar
+    } = pluginRenderer;
     const routersLen = routers.length;
     const hasRouter = routersLen > 0;
-    const statusbarConfig = this.statusbarConfigFilter();
+    const statusbarActions = this.combindStatusbarDefaultActions();
 
     return (
       <div
-        id="managerApp"
-        className={`__admin_scaffold_main-container ${theme} ${layout} ${darkMode ? 'dark' : 'light'}`}
+        id="AdminTemplateEngine"
+        className={`__admin_template_layout_main_container ${theme} ${layout} ${darkMode ? 'dark' : 'light'}`}
       >
         {
           ready ? (
-            <div className="__main-wrapper">
-              <StatusbarWrapper
-                title={title}
-                logout={logout}
-                loadPlugin={this.loadPlugin}
+            <div className="__main_wrapper">
+              <StatusbarLoader
+                appTitle={appTitle}
                 showNavMenu={showNavMenu}
                 menuCodeMapper={menuCodeMapper}
-                StatusbarPlugin={pluginComponent.Statusbar}
-                toggleFloat={this.toggleFloat}
+                StatusbarPlugin={Statusbar}
                 onToggleNav={this.toggleNavMenu}
-                statusbarConfig={statusbarConfig}
+                statusbarActions={statusbarActions}
               />
               <div className="__content">
                 <NavMenu
                   onDidMount={this.onGetMenuCodeMapper}
                   menuData={menuData}
                   activeRoute={activeRoute}
-                  menuMappers={menuMappers}
                   defaultFlowMode={false}
                   show={showNavMenu}
                 />
                 <div
                   className={
-                    `pages-container ${showNavMenu ? 'show-menu' : 'hide-menu'}`
+                    `__pages_container ${showNavMenu ? 'show-menu' : 'hide-menu'}`
                   }
                 >
                   <TabForNavBar
@@ -487,11 +490,11 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
                     closeTip={`${$T('快捷键')}: alt + w`}
                     className="top-tab-wrapper tabs-container"
                     activeTabIdx={hasRouter ? activeRouteIdx : 0}
-                    onClose={(idx) => this.closeTab(idx, routerSnapshot)}
+                    onClose={(idx) => this.closeTab(idx)}
                   >
                     {
                       hasRouter ? routers.map((route, idx) => {
-                        const C = pageComponents[route];
+                        // const C = pageComponents[route];
                         const currInfo = routerSnapshot[route];
                         const { params } = currInfo;
                         const key = route + JSON.stringify(params);
@@ -504,13 +507,15 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
                             onChange={(e) => this.changeRoute(route, params)}
                           >
                             {
-                              // eslint-disable-next-line no-nested-ternary
+                              pageRender?.(this.getAppCtx(isActive, route))
+                            }
+                            {/* {
                               C ? (
-                                <C {...this.getRouteProps(isActive, route)}/>
+                                <C {...this.getAppCtx(isActive, route)}/>
                               ) : NotfoundPage ? this.loadPlugin(NotfoundPage) : (
                                 <Notfound key={`${route}404`}/>
                               )
-                            }
+                            } */}
                           </Tab>
                         );
                       }) : (
@@ -519,10 +524,9 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
                           label={$T('仪表盘')}
                           key="dashboard"
                         >
-                          <DashBoardWrapper
-                            CustomerComponent={DashBoard}
-                            loadPlugin={this.loadPlugin}
-                            {...this.getRouteProps(true, 'dashboard')}
+                          <DashboardLoader
+                            CustomerComponent={Dashboard}
+                            {...this.getAppCtx(true, 'dashboard')}
                           />
                         </Tab>
                       )
@@ -539,7 +543,9 @@ export default class AdminTemplateEngineLayout extends MultipleRouterManager<Adm
             zIndex: -1
           }}
         />
-        {/* <VersionChecker versionUrl={versionUrl} versionInfo={versionInfo} /> */}
+        {
+          getVersionUrl && <VersionChecker getVersionUrl={getVersionUrl} versionInfo={versionInfo} />
+        }
       </div>
     );
   }

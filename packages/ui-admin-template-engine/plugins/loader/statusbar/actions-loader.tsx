@@ -1,8 +1,16 @@
-/* eslint-disable default-case */
-import React, { Component } from 'react';
-import { DropdownWrapperProps } from '@deer-ui/core/dropdown-wrapper';
+import React from 'react';
 
-import { Icon, PureIcon, DropdownWrapper } from '../ui-refs';
+import { Icon, PureIcon, DropdownWrapper } from '@engine/ui-admin-template/ui-refs';
+import { DropdownWrapperProps } from '@deer-ui/core/dropdown-wrapper/dropdown-wrapper';
+
+
+export interface StatusbarConfigItem {
+  title: string;
+  icon?: string;
+  pureIcon?: string;
+  overlay: DropdownWrapperProps['overlay'];
+  action: () => void;
+}
 
 interface DisplayDOMProps {
   onClick?;
@@ -33,36 +41,26 @@ const DisplayDOM = ({
   );
 };
 
-export interface StatusbarConfigItem {
-  title: string;
-  icon?: string;
-  pureIcon?: string;
-  overlay: DropdownWrapperProps['overlay'];
-  component: JSX.Element;
-  action: Function;
+
+export interface StatusbarActionsLoaderProps {
+  statusbarActions: StatusbarConfigItem[];
 }
 
-export interface StatsbarProps {
-  statusbarConfig: StatusbarConfigItem[];
-}
-
-const Statusbar: React.SFC<StatsbarProps> = (props) => {
-  const { statusbarConfig, ...otherProps } = props;
+export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (props) => {
+  const { statusbarActions, ...otherProps } = props;
   return (
     <div className="status-container">
       {
-        statusbarConfig.map((item) => {
+        statusbarActions.map((item) => {
           const {
-            title, icon, pureIcon, overlay, component, action
+            title, icon, pureIcon, overlay, action
           } = item;
           let con;
           switch (true) {
-            case !!component:
-              con = <DisplayDOM>{component}</DisplayDOM>;
-              break;
             case typeof overlay === 'function':
               con = (
-                <DropdownWrapper position="right"
+                <DropdownWrapper
+                  position="right"
                   overlay={(options) => overlay({
                     ...otherProps,
                     ...options,
@@ -98,5 +96,3 @@ const Statusbar: React.SFC<StatsbarProps> = (props) => {
     </div>
   );
 };
-
-export default Statusbar;

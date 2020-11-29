@@ -130,7 +130,7 @@ const menuStore = [{
     },
   ]
 }];
-const statusbarConfig = [
+const statusbarActions = [
   {
     title: '',
     icon: 'user',
@@ -198,7 +198,7 @@ const Example = () => {
         title="管理系统"
         menuStore={menuStore}
         i18nConfig={i18nConfig}
-        statusbarConfig={statusbarConfig}
+        statusbarActions={statusbarActions}
         pluginComponent={{
           Statusbar: <Status />,
           Footer

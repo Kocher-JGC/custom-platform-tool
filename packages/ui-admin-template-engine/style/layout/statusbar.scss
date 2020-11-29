@@ -1,4 +1,4 @@
-@include scrollBar(5px, 5px, '.nav-menu-wrapper');
+@include scrollBar(5px, 5px, '.__admin_nav_menu_container');
 
 .admin-status-bar {
   display: flex;
@@ -8,6 +8,7 @@
   background-color: $main-bg-color;
   position: relative;
   z-index: 111;
+  min-height: 46px;
 
   .title {
     font-weight: bold;

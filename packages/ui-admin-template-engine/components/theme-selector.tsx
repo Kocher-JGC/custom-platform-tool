@@ -19,7 +19,7 @@ const getThemeConfig = () => {
   return {
     theme,
     layout,
-    darkMode: darkMode == 'true'
+    darkMode: darkMode === 'true'
   };
 };
 
@@ -35,7 +35,22 @@ const setDarkMode = (darkMode) => {
   store.set(darkModeDefined, darkMode);
 };
 
-class ThemeSelector extends React.PureComponent {
+export interface ThemeSelectorProps {
+  /** 激活的主题 */
+  activeTheme?: string
+  /** 是否黑夜模式 */
+  darkMode?: boolean
+  // /** 布局模式 */
+  // layout
+  /** 响应切换成黑夜模式 */
+  onChangeDarkMode?: (isDark: boolean) => void
+  /** 响应切换主题 */
+  onChangeTheme?: (color: string) => void
+  // /** 响应切换布局 */
+  // onChangeLayout?
+}
+
+export class ThemeSelector extends React.PureComponent<ThemeSelectorProps> {
   state = {
     activeTheme: this.props.activeTheme
   }
@@ -48,8 +63,11 @@ class ThemeSelector extends React.PureComponent {
 
   render() {
     const {
-      darkMode, layout,
-      onChangeDarkMode, onChangeTheme, onChangeLayout
+      // onChangeLayout,
+      // layout,
+      darkMode, 
+      onChangeDarkMode, 
+      onChangeTheme, 
     } = this.props;
     const { activeTheme } = this.state;
     return (
@@ -69,7 +87,7 @@ class ThemeSelector extends React.PureComponent {
                     className={`tile ${isActive ? 'active' : ''} bg_${color} p10`}
                     onClick={(e) => {
                       this.setTheme(color);
-                      onChangeTheme(color);
+                      onChangeTheme?.(color);
                     }}
                   />
                 </Grid>
@@ -110,8 +128,6 @@ class ThemeSelector extends React.PureComponent {
     );
   }
 }
-
-export default ThemeSelector;
 
 export {
   getThemeConfig, setTheme, setLayout, setDarkMode

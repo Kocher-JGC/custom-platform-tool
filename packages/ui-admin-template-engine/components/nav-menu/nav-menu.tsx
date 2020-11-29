@@ -68,13 +68,13 @@ export interface NavMenuProps {
   menuData: AdminTmplMenus
   onDidMount?: (menuCodeMapper) => void
   /** 菜单的字段映射 */
-  menuMappers?: {
-    child: string
-    code: string
-    title: string
-    icon?: string
-    pureIcon?: string
-  }
+  // menuMappers?: {
+  //   child: string
+  //   code: string
+  //   title: string
+  //   icon?: string
+  //   pureIcon?: string
+  // }
   /* 是否悬浮模式的菜单模式 */
   flowMode?: boolean
   defaultFlowMode?: boolean
@@ -104,15 +104,16 @@ export interface NavMenuState {
  * 3. 支持“悬浮”模式
  */
 export class NavMenu extends Component<NavMenuProps, NavMenuState> {
-  static defaultProps = {
-    menuMappers: {
-      child: 'child',
-      code: 'code',
-      title: 'title',
-      icon: 'icon',
-      pureIcon: 'pureIcon',
-    },
-  }
+  // static defaultProps = {
+  //   menuMappers: {
+  //     child: 'child',
+  //     code: 'code',
+  //     title: 'title',
+  //     path: 'path',
+  //     icon: 'icon',
+  //     pureIcon: 'pureIcon',
+  //   },
+  // }
 
   flowModeKey = 'IS_FLOW_MODA';
 
@@ -158,13 +159,13 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
       const currDOMSets: any[] = [];
       dataList.forEach((item, currItemIdx) => {
         if (!item) return;
-        const _item = this.menuItemFilter(item);
-        const { child, title, code } = _item;
-        const key = code + title;
-        const to = this.wrapLink(_item);
+        // const _item = this.menuItemFilter(item);
+        const { child, title, path } = item;
+        const key = path + title;
+        const to = this.wrapLink(path);
 
         const hasChildren = child && child.length > 0;
-        const isFold = !code || hasChildren;
+        const isFold = hasChildren;
 
         const currFoldIdx = foldIdx;
 
@@ -173,7 +174,7 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
         let dom;
         if (isFold) {
           let childDOM;
-          if (hasChildren) {
+          if (child) {
             childDOM = recursive.call(this, child);
           }
           dom = (
@@ -192,14 +193,14 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
                   !flowMode && this.toggleFold(currFoldIdx);
                 }}
               >
-                <MenuItem {..._item} />
+                <MenuItem {...item} />
               </div>
               <div className="children">{childDOM}</div>
             </div>
           );
         } else {
           dom = this.getMenuLinkerDOM({
-            ..._item,
+            ...item,
             key,
             to,
             onClick: onClickMenu,
@@ -225,9 +226,9 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
   getMenuLinkerDOM = (options: LinkProps & AdminTmplMenuItem & { key: string }) => {
     const { activeRoute } = this.props;
     const {
-      code, key, to, onClick, title, icon, pureIcon
+      code, key, to, onClick, title, icon, pureIcon, params
     } = options;
-    menuCodeMapper[code] = title;
+    menuCodeMapper[to] = title;
     store.set(MENU_CODE_MAPPER, menuCodeMapper);
     const _menuText = $T(title);
     const isActive = activeRoute === to;
@@ -238,6 +239,7 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
         isActive={isActive}
         className="menu"
         to={to}
+        params={params}
         onClick={() => Call(onClick, key, code)}
       >
         {
@@ -293,11 +295,11 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
 
     const allSet = initDataList.map((item, idx) => {
       if (!item) return null;
-      const _item = this.menuItemFilter(item);
-      const { child, title, code } = _item;
-      const to = this.wrapLink(_item);
-      const isFold = !code || (child && child.length > 0);
-      const key = code + title;
+      // const _item = this.menuItemFilter(item);
+      const { child, title, path } = item;
+      const to = this.wrapLink(path);
+      const isFold = (child && child.length > 0);
+      const key = path + title;
       const isHovering = activeIdx === idx;
       return isFold ? (
         <div
@@ -308,7 +310,7 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
             if (e.currentTarget !== target) return;
             this.setFlowMenu({
               targetElem: target,
-              activeItem: _item,
+              activeItem: item,
               idx
             });
           }}
@@ -317,11 +319,11 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
           }}
           className={`fold${isHovering ? ' hover' : ''}`}
         >
-          <MenuItem {..._item} />
+          <MenuItem {...item} />
         </div>
       ) : (
         this.getMenuLinkerDOM({
-          ..._item,
+          ...item,
           key,
           to,
           onClick: onClickMenu,
@@ -338,26 +340,27 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
     );
   };
 
-  menuItemFilter = (item) => {
-    const { menuMappers } = this.props;
-    const {
-      child, code, title, icon = ''
-    } = menuMappers;
-    return {
-      ...item,
-      child: item[child],
-      code: item[code],
-      title: item[title],
-      icon: item[icon],
-    };
-  }
+  // menuItemFilter = (item): AdminTmplMenuItem => {
+  //   const { menuMappers } = this.props;
+  //   const {
+  //     child, code, title, icon = '', path
+  //   } = menuMappers;
+  //   return {
+  //     ...item,
+  //     child: item[child],
+  //     code: item[code],
+  //     path: item[path],
+  //     title: item[title],
+  //     icon: item[icon],
+  //   };
+  // }
 
   showSearch = () => {
 
   }
 
-  wrapLink = ({ path, code }) => {
-    return path ? `/${code}?${path}` : `/${code}`;
+  wrapLink = (path: string) => {
+    return `/${path}`.replace(/\/+/, '/');
   }
 
   changeMenuUIMode = (isFlowMode: boolean) => {
@@ -427,7 +430,7 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
     );
 
     const renderRes = (
-      <div className={`nav-menu-wrapper ${show ? 'show' : 'collapse'}`}>
+      <div className={`__admin_nav_menu_container ${show ? 'show' : 'collapse'}`}>
         <div
           ref={(navMenuDOM) => {
             if (navMenuDOM) this.navMenuDOM = navMenuDOM;

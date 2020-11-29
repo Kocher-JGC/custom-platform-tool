@@ -43,9 +43,9 @@ export interface AgentOptions<APIRetrue = ReqAgentReturn> {
   actingRef?: string;
 }
 
-export interface ReqAgentAPI extends Function {}
+export type ReqAgentAPI = Function
 
-class ActionAgent<P = {}, S = {}> extends Component<P, S> {
+export class ActionAgent<P = {}, S = {}> extends Component<P, S> {
   T
 
   formBtns!: FormLayoutProps['formBtns']
@@ -170,5 +170,3 @@ class ActionAgent<P = {}, S = {}> extends Component<P, S> {
     if (!this.__unmount && this.setState) this.setState(state);
   }
 }
-
-export default ActionAgent;
