@@ -1,29 +1,13 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React from "react";
 import { IUBDSLRenderer } from "@iub-dsl/platform/react";
 import { PageRenderCtx } from "@engine/ui-admin-template";
 
 import { queryPageData } from "../../services/page";
 import "./index.less";
-// import D from '@iub-dsl/demo/pd/1';
-
-// interface IContainerProps {}
-
-const getPageData = ({ pageId, mode, lessee, app }) => async () => {
-  if (pageId) {
-    // TODO 模式，租户，app 参数来源
-    return queryPageData({
-      id: pageId,
-      mode,
-      lessee,
-      app
-    });
-  }
-  return Promise.resolve({});
-};
 
 export interface PageContainerProps extends PageRenderCtx {
   /** 页面 id */
-  pageId: string
+  pageID: string
   /** 访问的应用 */
   app: string
   /** 租户 */
@@ -48,9 +32,9 @@ export class PageContainer extends React.Component<PageContainerProps> {
   }
 
   componentDidMount() {
-    const { pageId, app, lessee, mode, t } = this.props;
+    const { pageID, app, lessee, mode, t } = this.props;
     queryPageData({
-      id: pageId,
+      id: pageID,
       app,
       lessee,
       mode,

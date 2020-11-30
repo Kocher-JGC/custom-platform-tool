@@ -11,15 +11,17 @@ const path = require('path');
 const port = process.env.PORT || config.post;
 const consul = new ConsulConfig();
 
-export function logger(req, res, next) {
-  console.log(`Request...`);
-  next();
-}
+// export function logger(req, res, next) {
+//   console.log(`Request...`);
+//   next();
+// }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    // logger: new PlatformLogger()
+  });
   app.setGlobalPrefix(config.globalPrefix);
-  app.use(logger);
+  // app.use(logger);
   app.enableCors();
   await app.listen(port).then(async () => {
     // 根据环境变量注册对应的 consul
