@@ -1,4 +1,4 @@
-import { PageManageInstance } from "@consumer-app/web-platform/src/page-manage";
+// import { PageManageInstance } from "@consumer-app/web-platform/src/page-manage";
 import {
   DispatchModuleActionManage, TDispatchMethodNameOfActionManage,
   DispatchModuleCondition, TDispatchMethodNameOfCondition,

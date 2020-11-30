@@ -13,7 +13,7 @@ export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
   // console.log(columns, dataSource);
   return (
     <div>
-      <ProTable columns={columns} dataSource={dataSource} {...other} />
+      <ProTable columns={columns || []} dataSource={dataSource} {...other} />
     </div>
   );
 };

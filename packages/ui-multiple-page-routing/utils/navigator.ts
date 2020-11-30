@@ -1,6 +1,6 @@
-import { createBrowserHistory, Location } from "history";
+import { createBrowserHistory, Location, History } from "history";
 import produce from "immer";
-import { urlParamsToQuery } from "@mini-code/request/url-resolve";
+import { urlParamsToQuery, getUrlSearchParams } from "@mini-code/request/url-resolve";
 import { wrapPathWithSeperator } from ".";
 
 export interface NavParams {
@@ -26,7 +26,27 @@ export interface NavigateConfig {
   state?: unknown
 }
 
-export const history = createBrowserHistory<any>();
+interface HistoryExtends extends History {
+  location: History['location'] & {
+    query: {}
+  }
+}
+
+/**
+ * 通过监听 history change 来动态将所有 query string 插入到 history.location.query 中
+ */
+export const history = (() => {
+  const h = createBrowserHistory<any>() as HistoryExtends;
+  const query = getUrlSearchParams({ href: h.location.hash, fromBase64: true });
+  h.location.query = query;
+  h.listen((location) => {
+    // console.log(location);
+    // console.log();
+    const query = getUrlSearchParams({ href: location.hash, fromBase64: true });
+    location.query = query;
+  });
+  return h;
+})();
 
 // export interface HistoryLocation {}
 

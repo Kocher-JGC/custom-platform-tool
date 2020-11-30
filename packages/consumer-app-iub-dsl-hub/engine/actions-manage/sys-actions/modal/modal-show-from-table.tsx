@@ -3,7 +3,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import React from 'react';
 import { OpenModalOptions } from '@iub-dsl/definition';
 import { IUBDSLRenderer } from '@iub-dsl/platform/react';
-import { queryPageData } from '@consumer-app/web-platform/src/services/page';
+// import { queryPageData } from '@consumer-app/web-platform/src/services/page';
 import D from '@iub-dsl/demo/pd/2';
 import { PageVariable } from '@iub-dsl/definition/page-variable';
 import { ActionDoFn } from '../../types';

@@ -15,13 +15,15 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_action_config',
           'prop_datasource_selector',
           'prop_widget_type',
+          'prop_field_type',
           'prop_data_type',
           'prop_string_length',
           'prop_prompt_info',
           'prop_note_info',
           'prop_start_search',
           'prop_dropdown_multiple',
-
+          'prop_table_ds_helper',
+          'prop_unit_value',
         ]
       },
       {
@@ -42,7 +44,7 @@ export const propItemGroupingData: GroupPanelData[] = [
         items: [
           'prop_check_fixed_rule',
           'prop_check_custom_rule',
-          'prop_check_tooltip'
+          'prop_check_error_tooltip'
         ]
       },
     ]

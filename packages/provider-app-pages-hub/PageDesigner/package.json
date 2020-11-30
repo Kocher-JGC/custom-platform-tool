@@ -6,7 +6,8 @@
     "start": "cross-env PORT=6689 minictl start"
   },
   "devDependencies": {
-    "@infra/react-dev-env-scripts": "^0.0.1"
+    "@infra/react-dev-env-scripts": "^0.0.1",
+    "moment": "^2.25.3"
   },
   "dependencies": {
   },

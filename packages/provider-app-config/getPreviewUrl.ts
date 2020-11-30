@@ -1,3 +1,4 @@
+import { toBase64Str } from '@mini-code/request/url-resolve';
 import { getAppConfig } from "./config-manager";
 
 interface Options {
@@ -15,7 +16,8 @@ const toQueryString = (params) => {
     if (Object.prototype.hasOwnProperty.call(params, key)) {
       const val = params[key];
       if (val) {
-        res += `&${key}=${val}`;
+        // 这里将传入应用端的参数都转 base64，避免中文编码的问题
+        res += `&${key}=${toBase64Str(val)}`;
       }
     }
   }
@@ -46,7 +48,7 @@ export const getAppPreviewUrl = (options?: Options) => {
     t: $R_P.config.commonHeaders?.Authorization,
     saasServerUrl,
     pageServerUrlForApp,
-    menuid: defaultPath ? `menuid=/${defaultPath}` : ''
+    menuid: defaultPath ? `/${defaultPath}` : ''
   });
   // console.log(`${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`);
   return `${appEntryUrl}/#/${defaultPath ? 'page' : ''}?${queryParamUrl}`;

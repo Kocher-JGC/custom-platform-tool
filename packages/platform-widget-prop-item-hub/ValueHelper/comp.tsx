@@ -3,7 +3,7 @@ import {
   CloseModal, Input, Selector, ShowModal
 } from '@infra/ui';
 import { ChangeEntityState } from '@platform-widget-access/spec';
-import { ExpEditor } from './ExpEditor';
+import { Expression } from './Expression';
 
 /**
  * 可用的值的类型
@@ -52,23 +52,20 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
           className="px-4 py-2 border"
           onClick={(e) => {
             const modalID = ShowModal({
-              title: '设置表达式',
+              title: '表达式编辑',
               width: 900,
               children: () => {
                 return (
-                  <div>
-                    <ExpEditor
-                      defaultValue={exp}
-                      onSubmit={(val) => {
-                        onChange([
-                          { value: val, attr: 'exp' },
-                          /** 需要将 value 清空 */
-                          { attr: 'realVal', value: null }
-                        ]);
-                        CloseModal(modalID);
-                      }}
-                    />
-                  </div>
+                  <Expression
+                    defaultValue={exp}
+                    onSubmit={(val) => {
+                      onChange([
+                        { value: val, attr: 'exp' },
+                        { attr: 'realVal', value: null }
+                      ]);
+                      CloseModal(modalID);
+                    }}
+                  />
                 );
               }
             });

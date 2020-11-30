@@ -118,10 +118,10 @@ git clone https://github.com/SANGET/custom-platform-tool.git
 yarn
 ```
 
-### 4.2. 启动「生产工具 - 配置前端」
+### 4.2. 启动「配置前端」
 
 ```shell
-sh ./scripts/start-provider-app.sh
+yarn start:provider-app
 ```
 
 ### 4.3. 启动「应用前端」
@@ -130,11 +130,10 @@ sh ./scripts/start-provider-app.sh
 yarn start:consumer-app
 ```
 
-### 4.4. 启动「web 资源服务」
+### 4.4. 启动「平台 web 资源服务」
 
 ```shell
-cd ./web-server
-yarn start:dev
+yarn start:platform-web-server
 ```
 
 ## 5. 部署说明
@@ -143,25 +142,27 @@ yarn start:dev
 
 ---
 
-## 6. 进阶（Advance）
+## 6. 平台组件接入
 
-- [搭建独立应用](./docs/工程/write-sub-app.md)
+- [平台组件接入](./docs/接入平台组件和属性.md)
 
 ---
 
-## 7. 配置端接入
+## 7. 配置端业务模块接入
 
-[配置端接入参考文档](./packages/provider-app-hub/README.md)
+- [配置端接入应用](./docs/工程/write-sub-app.md)
 
 ---
 
 ## 8. 应用端接入
 
----
+- [IUB-DSL 引擎接入](TODO)
 
-## 9. 共用 UI
+## 9. 错误处理
 
-如何编写共用的 UI？[点击查看](./packages/infrastructure/ui/README.md)
+### 9.1. 依赖错误
+
+`duplicate-identifier-LibraryManagedAttributes` 重复的标识 `LibraryManagedAttributes`。由于 @types/react 重复引用了不同版本导致的错误。解决方法是依赖同一个 @types/react 包。
 
 ---
 

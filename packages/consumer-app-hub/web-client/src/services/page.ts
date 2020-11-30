@@ -1,5 +1,5 @@
 import store from 'store';
-import { UrlConfKey } from '@/utils/env';
+import { UrlConfKey } from '../utils/env';
 
 /**
  * 获取页面数据
@@ -22,14 +22,14 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
   return {
     ...params,
     id: params.id,
-    t: store.get("app/providerAppToken")
+    t: store.get("app/token")
   };
 };
 
 export const queryPageData = async (params: API.IPageDataParams) => {
   const pageServerUrl = store.get(UrlConfKey.pageServerUrlForApp);
   const isHttp = /http/.test(pageServerUrl);
-  console.log(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`);
+  // console.log(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`);
   const res = await $A_R(`${(!isHttp ? 'http://' : '') + pageServerUrl}/node-web/page-data`, {
     method: 'GET',
     params: mergeParam(params)

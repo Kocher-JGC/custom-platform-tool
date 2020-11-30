@@ -2,7 +2,7 @@ import {
   SELECT_ENTITY, INIT_ENTITY_STATE,
   SelectEntityAction, INIT_APP, UNSELECT_ENTITY,
   UnselectEntityAction, InitAppAction, ADD_ENTITY, AddEntityAction,
-  SORTING_ENTITY, SortingEntityAction
+  SORTING_ENTITY, SortingEntityAction, DelEntityAction, DEL_ENTITY
 } from "../actions";
 import { SelectEntityState } from "../types";
 
@@ -18,6 +18,7 @@ type SelectedEntitiesActions =
   UnselectEntityAction |
   InitAppAction |
   AddEntityAction |
+  DelEntityAction |
   SortingEntityAction
 
 /**
@@ -34,6 +35,8 @@ export function selectedInfoReducer(
       return defaultSelectedEntities;
     case SORTING_ENTITY:
       return state;
+    case DEL_ENTITY:
+      return defaultSelectedEntities;
     case ADD_ENTITY:
     case SELECT_ENTITY:
       const { entity, idx, nestingInfo } = action;

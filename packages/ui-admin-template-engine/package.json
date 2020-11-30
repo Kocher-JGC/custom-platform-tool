@@ -1,0 +1,42 @@
+{
+  "name": "@engine/ui-admin-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "publish:build": "npm publish ./dist --access public",
+    "release": "npm run build:src; npm run publish:build",
+    "build:src": "rm -rf ./dist; tsc; npm run copy:files; npm run copy:style",
+    "copy:files": "node ./scripts/copy-files-ts",
+    "copy:style": "cp -R ./src/style ./dist/",
+    "gen:version": "vh gen",
+    "test": "jest",
+    "start": "cd website-dev; yarn; yarn start",
+    "build": "cd website-dev; yarn; yarn build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/minimal-studio/admin-scaffold.git"
+  },
+  "peerDependencies": {
+    "@deer-ui/core": "^4.0.x",
+    "@mini-code/base-func": "^1.1.x",
+    "@mini-code/request": "^1.0.x",
+    "cross-env": "^5.1.6",
+    "mousetrap": "^1.6.1",
+    "prop-types": "^15.5.10",
+    "react-transition-group": "^2.5.0",
+    "version-helper": "^1.2.0-alpha0"
+  },
+  "dependencies": {
+    "store": "^2.0.12",
+    "history": "^4.9.0",
+    "mousetrap": "^1.6.3"
+  },
+  "devDependencies": {
+    "@types/store": "^2.0.2",
+    "fs-extra": "^7.0.0"
+  },
+  "author": "SANGET",
+  "license": "MIT"
+}

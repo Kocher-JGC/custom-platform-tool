@@ -9,7 +9,7 @@ import { Provider, connect } from "unistore/react";
 import AuthSelector from "@infra/auth-selector/selector";
 import { redirectToRoot } from "multiple-page-routing";
 import {
-  authStore, authActions, AuthStore, AuthActionsTypes, AuthStoreState
+  authStore, authActions, AuthStore, PaaSAuthActionsTypes, AuthStoreState
 } from "./auth/actions";
 import Style from './style/style';
 import App from "./app";
@@ -86,7 +86,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     );
   }
 }
-const LoginFilterWithStore = connect<AuthStore, any, AuthActionsTypes, any>(
+const LoginFilterWithStore = connect<AuthStore, any, PaaSAuthActionsTypes, any>(
   selector,
   authActions
 )((userStore) => <LoginFilter {...userStore} />);

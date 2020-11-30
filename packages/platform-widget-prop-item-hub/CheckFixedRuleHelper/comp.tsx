@@ -16,12 +16,12 @@ export const CheckFixedRuleComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextCheckFixedRule = selectedField?.column?.name;
-    if (!nextCheckFixedRule || nextCheckFixedRule === checkFixedRule) return;
-    changeEntityState({
-      attr: 'checkFixedRule',
-      value: nextCheckFixedRule
-    });
+    // const nextCheckFixedRule = selectedField?.column?.name;
+    // if (!nextCheckFixedRule || nextCheckFixedRule === checkFixedRule) return;
+    // changeEntityState({
+    //   attr: 'checkFixedRule',
+    //   value: nextCheckFixedRule
+    // });
   }, [selectedField]);
   return (
     <Select
@@ -30,6 +30,7 @@ export const CheckFixedRuleComp = ({
         attr: 'checkFixedRule',
         value
       })}
+      allowClear
     >
       {FIELD_TYPE_MENU.map((item)=><Option key={item.value} value={item.value}>{item.label}</Option>)}
     </Select>

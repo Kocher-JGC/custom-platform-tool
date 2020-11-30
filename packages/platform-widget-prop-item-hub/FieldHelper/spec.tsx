@@ -1,7 +1,7 @@
-import React from 'react';
-import { PopModelSelector } from '@infra/ui';
-import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { FieldSelector, SelectedField } from './comp';
+import React from "react";
+import { PopModelSelector } from "@infra/ui";
+import { PropItem, PropItemRenderContext } from "@platform-widget-access/spec";
+import { FieldSelector, SelectedField } from "./comp";
 
 const takeBindColumnInfo = (selectedField: SelectedField) => {
   const { column, tableInfo } = selectedField;
@@ -9,19 +9,19 @@ const takeBindColumnInfo = (selectedField: SelectedField) => {
 };
 
 /** 属性项编辑的组件属性 */
-const whichAttr = 'field';
+const whichAttr = "field";
 
-const metaAttr = 'schema';
+const metaAttr = "schema";
 
 /**
  * 绑定数据列
  */
 @PropItem({
-  id: 'prop_field',
-  name: 'PropField',
-  label: '列',
-  whichAttr: 'field',
-  useMeta: metaAttr,
+  id: "prop_field",
+  name: "PropField",
+  label: "列",
+  whichAttr: "field",
+  useMeta: metaAttr
 })
 export class FieldHelperSpec {
   /**
@@ -41,30 +41,22 @@ export class FieldHelperSpec {
     });
   };
 
-  render({
-    editingWidgetState,
-    changeEntityState,
-    platformCtx
-  }: PropItemRenderContext) {
-    const {
-      changePageMeta,
-      takeMeta,
-      genMetaRefID,
-    } = platformCtx.meta;
+  render({ editingWidgetState, changeEntityState, platformCtx }: PropItemRenderContext) {
+    const { changePageMeta, takeMeta, genMetaRefID } = platformCtx.meta;
     const currMetaRefID = editingWidgetState.field;
     const selectedField = takeMeta({
-      metaAttr: 'schema',
+      metaAttr: "schema",
       metaRefID: currMetaRefID
     }) as SelectedField;
 
     const schema = takeMeta({
-      metaAttr: 'schema',
+      metaAttr: "schema"
     }) as {
-      [sID: string]: SelectedField
+      [sID: string]: SelectedField;
     };
 
     const datasource = takeMeta({
-      metaAttr: 'dataSource',
+      metaAttr: "dataSource"
     });
 
     const interDatasources = Object.values(datasource);
@@ -72,7 +64,7 @@ export class FieldHelperSpec {
     return (
       <PopModelSelector
         modelSetting={{
-          title: '绑定列',
+          title: "绑定列",
           width: 900,
           children: ({ close }) => {
             return (
@@ -85,7 +77,7 @@ export class FieldHelperSpec {
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
                         const nextMetaRefID = changePageMeta({
-                          type: 'create/rm',
+                          type: "create/rm",
                           data: _selectedField,
                           metaAttr: 'schema',
                           // metaID: currMetaRefID,
@@ -94,7 +86,7 @@ export class FieldHelperSpec {
                         });
 
                         changeEntityState({
-                          attr: 'field',
+                          attr: "field",
                           value: nextMetaRefID
                         });
 
@@ -102,8 +94,8 @@ export class FieldHelperSpec {
                       })
                       .catch(() => {
                         platformCtx.ui.showMsg({
-                          msg: '已被其他控件绑定',
-                          type: 'error'
+                          msg: "已被其他控件绑定",
+                          type: "error"
                         });
                       });
                   }}
@@ -113,7 +105,7 @@ export class FieldHelperSpec {
           }
         }}
       >
-        {currMetaRefID && selectedField ? takeBindColumnInfo(selectedField) : '点击绑定字段'}
+        {currMetaRefID && selectedField ? takeBindColumnInfo(selectedField) : "点击绑定字段"}
       </PopModelSelector>
     );
   }

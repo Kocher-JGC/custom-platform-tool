@@ -1,6 +1,3 @@
-import {
-  history
-} from 'umi';
 import { parse } from 'querystring';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
@@ -9,19 +6,6 @@ const reg = /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(
 export const isUrl = (path: string): boolean => reg.test(path);
 
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
-
-export const getQueryByParams = (params: string[]) => {
-  const { query } = history.location;
-  let result = "";
-  params.map((item) => {
-    if (query[item]) {
-      result === "" ? result += `${item}=${query[item]}` : result += `&${item}=${query[item]}`;
-    }
-    return item;
-  });
-
-  return result;
-};
 
 // export const parsePathToOpenKeys = (path: string) => {
 //   const openKeys: string[] = [];

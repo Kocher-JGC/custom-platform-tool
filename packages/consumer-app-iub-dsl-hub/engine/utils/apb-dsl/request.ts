@@ -1,4 +1,4 @@
-import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
+// import { getAPBDSLtestUrl } from '@consumer-app/web-platform/src/utils/gen-url';
 import { notification } from 'antd';
 import { AxiosResponse } from 'axios';
 

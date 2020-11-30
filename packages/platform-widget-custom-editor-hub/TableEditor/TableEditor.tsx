@@ -3,15 +3,17 @@ import { Button, Input, DropdownWrapper } from '@infra/ui';
 import { RegisterEditor } from '@engine/visual-editor/spec';
 import { GeneralTableComp } from '@platform-widget/general-table';
 import { PlusOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
-import { CustomEditor } from '@platform-widget-access/spec';
+import { CustomEditor, PTColumn } from '@platform-widget-access/spec';
 import Sortable from "sortablejs";
 import { genRenderColumn, genRowData } from './utils';
+import { TextChanger } from './TextChanger';
 
 import './index.less';
+import { ColumnEditableItems } from './ColumnEditableItems';
 
 interface TableEditorState {
   datasourceMeta: PD.Datasource
-  usingColumns: PD.Column[]
+  usingColumns: PTColumn[]
 }
 
 // @CustomEditor({
@@ -107,15 +109,25 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
           );
         }}
       >
-        <span 
-          onClick={e => {
-          
+        <PlusOutlined
+          style={{
+            display: 'inline-block',
+            fontSize: 16
           }}
-        >
-          <PlusOutlined />
-        </span>
+        />
       </DropdownWrapper>
     );
+  }
+
+  setUsingColumn = (colIdx, state, replace = false) => {
+    this.setState(({ usingColumns }) => {
+      const nextUsingColumns = [...usingColumns];
+      const mergeState = replace ? state : Object.assign({}, nextUsingColumns[colIdx], state);
+      nextUsingColumns.splice(colIdx, 1, mergeState);
+      return {
+        usingColumns: nextUsingColumns
+      };
+    });
   }
 
   renderSelectedColumnEditor = () => {
@@ -127,7 +139,8 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
           usingColumns.map((col, idx) => {
             if(!col) return null;
             // console.log(col);
-            const { name, id } = col;
+            const { name, id, title, alias, conditionStrategy, rowRenderStrategy } = col;
+            const displayName = title || name || alias;
             const isActive = usingColumns.find((item) => item && item.id === id);
             return (
               <DropdownWrapper
@@ -136,9 +149,25 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
                 overlay={(helper) => {
                   return (
                     <div className="column-setting-helper-container">
-                      <div className="item">
-                          修改显示名
-                      </div>
+                      <TextChanger
+                        defaultValue={displayName}
+                        onChange={val => {
+                          // console.log(val);
+                          helper.hide();
+                          this.setUsingColumn(idx, {
+                            title: val
+                          });
+                        }}
+                      />
+                      <ColumnEditableItems 
+                        defaultValue={conditionStrategy}
+                        onChange={val => {
+                          helper.hide();
+                          this.setUsingColumn(idx, {
+                            conditionStrategy: val
+                          });
+                        }}
+                      />
                     </div>
                   );
                 }}
@@ -147,7 +176,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
                   <DownOutlined 
                     className="selection __action"
                   />
-                  {name}
+                  {displayName}
                   <CloseOutlined
                     className="close __action"
                     onClick={e => {
@@ -172,7 +201,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     if(!datasourceMeta) return null;
     return (
       <div className="column-selector p-4 flex flex-wrap">
-        <div>
+        <div className="mr20">
           <span className="title">显示字段</span>
           {this.renderColumnSelector()}
         </div>
@@ -186,6 +215,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     const { usingColumns } = this.state;
     const targetData = {
       ...entityState,
+      search: true,
       columns: usingColumns
     };
     const resData = [];
@@ -225,25 +255,27 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
       }
     } = this.props;
     const { usingColumns } = this.state;
+    // console.log(usingColumns);
 
     const rowData = genRowData(usingColumns);
     // const colRender = genRenderColumn();
     
     return (
-      <div className="px-4 py-2">
-        {this.renderSetColumn()}
-        {/* <div className="p10">
-          <Button>变量</Button>
-        </div> */}
-        <GeneralTableComp 
-          rowKey="id" 
-          columns={usingColumns} 
-          dataSource={rowData}
-        />
-        <div className="action-area p10">
+      <div className="table-editor-container">
+        <div>
+          {this.renderSetColumn()}
+          <GeneralTableComp 
+            rowKey="id"
+            // search={false}
+            columns={usingColumns} 
+            dataSource={rowData}
+          />
+        </div>
+        <div className="action-area">
           <Button
             onClick={(e) => {
-              changeEntityState(this.getChangeValue());
+              const nextState = this.getChangeValue();
+              changeEntityState(nextState);
               // this.props.modalOptions?.close();
               onSubmit?.();
             }}

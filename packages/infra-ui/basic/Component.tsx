@@ -10,7 +10,7 @@ type CompPropsType = BasicComponent
  * @param Comp 需要被包装的组件
  */
 export function basicComponentFac<C>(Comp: CompType<C>) {
-  return <P extends (CompPropsType & C)>(props: P) => {
+  return React.forwardRef<any, C & CompPropsType>((props, ref) => {
     const {
       onMount, onUnmount, wrapper,
       className, classnames,
@@ -32,12 +32,11 @@ export function basicComponentFac<C>(Comp: CompType<C>) {
     const child = (
       <Comp
         className={classes}
+        ref={ref}
         {...otherProps}
       />
     );
 
     return child;
-    // return typeof wrapper === 'function'
-    //   ? wrapper(child) : child;
-  };
+  });
 }

@@ -57,6 +57,10 @@ export interface AppLocationState {
 export type AppLocationType = Location<AppLocationState> & DefaultLocationState & AppLocationState
 
 export default class App extends MultipleRouterManager<AppContainerProps, AppContainerState, AppLocationState> {
+  static defaultProps = {
+    fromBase64: true
+  }
+  
   state: AppContainerState = defaultRouteState
 
   // appLocation!: AppLocationType
@@ -204,12 +208,12 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
     const isEntryApp = this.isEntryApp();
 
     return (
-      <div id="provider_app_container" className="bg-gray-100">
+      <div id="__provider_app_container" className="bg-gray-100">
         {
           ready ? (
             <>
               <header
-                id="provider_app_header"
+                id="__provider_app_header"
                 className={`provider-app-header bg-white flex items-center content-center shadow ${isEntryApp ? 'has-app' : ''}`}
               >
                 <Logo
@@ -230,7 +234,7 @@ export default class App extends MultipleRouterManager<AppContainerProps, AppCon
                   <Version />
                 </div>
               </header>
-              <div id="provider_app_content">
+              <div id="__provider_app_content">
                 {
                   !isEntryApp ? (
                     <Dashboard

@@ -13,12 +13,12 @@ export const NumberRadixPointComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextRadixPoint = selectedField?.column?.name;
-    if (!nextRadixPoint) return;
-    changeEntityState({
-      attr: 'radixPoint',
-      value: nextRadixPoint
-    });
+    // const nextRadixPoint = selectedField?.column?.name;
+    // if (!nextRadixPoint) return;
+    // changeEntityState({
+    //   attr: 'radixPoint',
+    //   value: nextRadixPoint
+    // });
   }, [selectedField]);
   return (
     <InputNumber

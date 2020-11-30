@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable } from "@nestjs/common";
 import axios from "axios";
-import { PageDataService } from "../page-data/page-data.service";
+// import { PageDataService } from "../page-data/page-data.service";
 import config from "../../config";
 import * as env from "../../env.json";
 
@@ -17,10 +17,13 @@ const { pageDataStorePath } = config;
  */
 const runExec = (shell: string): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    if (!shell) reject(new Error("命令不存在"));
+    if (!shell) {
+      reject(new Error(`${shell}命令不存在`));
+    }
     exec(shell, (error) => {
       if (error) {
-        reject(error);
+        console.log(`执行${shell}命令失败`, error);
+        reject(new Error(`执行${shell}命令失败`));
       } else {
         resolve(true);
       }
@@ -30,7 +33,7 @@ const runExec = (shell: string): Promise<boolean> => {
 
 @Injectable()
 export class ReleaseAppService {
-  constructor(private readonly pageDataService: PageDataService) {}
+  // constructor(private readonly pageDataService: PageDataService) {}
 
   /**
    *
@@ -46,7 +49,8 @@ export class ReleaseAppService {
         path.join(__dirname, pageDataStorePath, releaseId, "page", folderName),
         (err) => {
           if (err) {
-            reject(err);
+            console.log("生成页面 json 存放文件夹失败", err);
+            reject(new Error("生成页面 json 存放文件夹失败"));
             return;
           }
           resolve(true);
@@ -76,7 +80,8 @@ export class ReleaseAppService {
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
-            reject(err);
+            console.log("生成应用配置信息失败", err);
+            reject(new Error("生成应用配置信息失败"));
             return;
           }
           resolve(true);
@@ -106,7 +111,8 @@ export class ReleaseAppService {
         pageContent,
         (err) => {
           if (err) {
-            reject(err);
+            console.log("生成页面 json 文件失败", pageId, err);
+            reject(new Error(`生成页面 json 文件失败 ${pageId}`));
             return;
           }
           resolve(true);
@@ -152,7 +158,8 @@ export class ReleaseAppService {
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {
-      throw new Error(resData?.data?.msg);
+      console.log("object", resData);
+      throw new Error("获取应用已发布页面失败");
     }
     return resData?.data?.result || [];
   }

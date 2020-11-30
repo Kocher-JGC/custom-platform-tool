@@ -12,12 +12,12 @@ export const StartSearchComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextStartSearch = selectedField?.column?.name;
-    if (!nextStartSearch || nextStartSearch === startSearch) return;
-    changeEntityState({
-      attr: 'startSearch',
-      value: nextStartSearch
-    });
+    // const nextStartSearch = selectedField?.column?.name;
+    // if (!nextStartSearch || nextStartSearch === startSearch) return;
+    // changeEntityState({
+    //   attr: 'startSearch',
+    //   value: nextStartSearch
+    // });
   }, [selectedField]);
   return (
     <Radio.Group

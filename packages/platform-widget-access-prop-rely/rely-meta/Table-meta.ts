@@ -4,11 +4,11 @@ export const TableMeta = CreateWidgetPropItemRely({
   id: 'widget-id-3',
   label: '表格',
   widgetRef: 'NormalTable',
-  propEditor: 'TableEditor',
+  // propEditor: 'TableEditor',
   propItemsRely: {
     propItemRefs: [
       {
-        propID: 'prop_datasource_selector',
+        propID: 'prop_table_ds_helper',
         defaultValues: {
 
         }

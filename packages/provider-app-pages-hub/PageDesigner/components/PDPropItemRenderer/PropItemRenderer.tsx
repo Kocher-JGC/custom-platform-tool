@@ -2,6 +2,7 @@ import React from 'react';
 import { PropItemRendererProps } from '@engine/visual-editor/components/PropertiesEditor';
 import { Unexpect } from '../WidgetRenderer';
 import { PlatformCtx } from '../../platform-access';
+import { Factory } from './utils';
 
 interface PDPropItemRendererProps extends PropItemRendererProps {
   pageMetadata

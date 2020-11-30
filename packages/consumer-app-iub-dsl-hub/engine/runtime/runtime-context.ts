@@ -1,8 +1,8 @@
 import { isSchema } from './../IUBDSL-mark';
 /* eslint-disable no-shadow */
 import { notification } from 'antd';
-import { useEffect, useMemo } from 'react';
-import { getAPBDSLtestUrl, SYS_MENU_BUSINESSCODE } from '@consumer-app/web-platform/src/utils/gen-url';
+import React, { useEffect, useMemo } from 'react';
+// import { getAPBDSLtestUrl, SYS_MENU_BUSINESSCODE } from '@consumer-app/web-platform/src/utils/gen-url';
 import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
 import { useCacheState } from '../utils';
 import { APBDSLrequest as originReq } from '../utils/apb-dsl';

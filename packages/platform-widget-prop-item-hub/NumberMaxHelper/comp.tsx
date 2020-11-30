@@ -13,12 +13,12 @@ export const NumberMaxComp = ({
     metaRefID: field
   });
   useEffect(() => {
-    const nextMax = selectedField?.column?.name;
-    if (!nextMax) return;
-    changeEntityState({
-      attr: 'max',
-      value: nextMax
-    });
+    // const nextMax = selectedField?.column?.name;
+    // if (!nextMax) return;
+    // changeEntityState({
+    //   attr: 'max',
+    //   value: nextMax
+    // });
   }, [selectedField]);
   return (
     <InputNumber

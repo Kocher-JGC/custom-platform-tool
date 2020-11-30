@@ -3,7 +3,13 @@ import React, {
   Fragment, useEffect, useMemo, useRef
 } from 'react';
 import { LayoutRenderer } from '@engine/layout-renderer';
-import { pageManage } from '@consumer-app/web-platform/src/page-manage';
+
+// import { pageManage } from '@consumer-app/web-platform/src/page-manage';
+
+import Modal from 'antd/lib/modal/Modal';
+import { widgetRenderer, genCompRenderFC } from './component-manage/component-store/render-component';
+import { getWidget } from './component-manage/UI-factory/all-UI';
+import { FromWrapFactory } from './component-manage/UI-factory';
 import { createIUBStore } from './state-manage';
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 import { effectRelationship as genEffectRelationship } from './relationship';
