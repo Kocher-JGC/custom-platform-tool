@@ -35,9 +35,10 @@ export interface LoginPanelProps {
   /** 是否沾满屏幕 */
   fixed?: boolean;
 }
+
 const gradientColorFilter = (color) => gradientColorMapper[color] || color;
 
-export default class LoginPanel extends Component<LoginPanelProps> {
+export class LoginPanel extends Component<LoginPanelProps> {
   static defaultProps = {
     logging: false,
     autoLoging: false,
@@ -75,7 +76,8 @@ export default class LoginPanel extends Component<LoginPanelProps> {
         break;
     }
     return (
-      <div className={`login-panel fixbg ${fixed ? 'fixed' : ''}`}
+      <div
+        className={`login-panel fixbg ${fixed ? 'fixed' : ''}`}
         style={{
           backgroundImage
         }}

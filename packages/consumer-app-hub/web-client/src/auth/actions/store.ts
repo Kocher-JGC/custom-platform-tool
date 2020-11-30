@@ -8,7 +8,7 @@ import * as AUTH_APIS from "./apis";
 
 export interface SaaSAuthActionsTypes {
   autoLogin: () => void;
-  login: (state, form, onSuccess: () => void) => void;
+  login: (form, onSuccess?: () => void) => void;
   logout: () => void;
 }
 
@@ -40,7 +40,8 @@ const defaultAuthStore: AuthStore = {
   autoLoging: !!getPrevLoginToken(),
   logging: false,
   logouting: false,
-  isLogin: process.env.NODE_ENV === 'development',
+  isLogin: false,
+  // isLogin: process.env.NODE_ENV === 'development',
   token: "",
   menuStore: []
 };
