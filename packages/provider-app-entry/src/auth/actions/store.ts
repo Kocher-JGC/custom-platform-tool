@@ -50,8 +50,8 @@ const defaultAuthStore: AuthStore = {
 const authStore = createStore(defaultAuthStore);
 
 export interface PaaSAuthActionsTypes {
-  autoLogin: () => void;
-  login: (state, form, onSuccess: () => void) => void;
+  autoLogin: (onSuccess) => void;
+  login: (form, onSuccess: () => void) => void;
   logout: () => void;
 }
 
@@ -79,9 +79,9 @@ function onLoginSuccess({ resData, originForm = {} }) {
   const userInfo = {
     username: userName
   };
-  // let menuStore = (userInfo.Menus || {}).Child;
+
   const { token } = resData.loginSuccessInfo || {};
-  // delete userInfo['Menus'];
+
   const resultStore = {
     logging: false,
     autoLoging: false,
@@ -90,7 +90,6 @@ function onLoginSuccess({ resData, originForm = {} }) {
     username: userName,
     prevLoginRes,
     userInfo
-    // menuStore
   };
 
   /** 设置 Authorization */
@@ -135,7 +134,7 @@ function getPrevLoginData(): AuthStore | undefined {
  */
 const authActions: AuthActions = (store) => ({
   /** 自动登录 */
-  async autoLogin() {
+  async autoLogin(onSuccess) {
     // const token = getPrevLoginToken();
     /** TODO: 是否有做 token 是否有效的接口验证 */
     const prevLoginState = getPrevLoginData();
@@ -149,6 +148,7 @@ const authActions: AuthActions = (store) => ({
     // if (isLogin) {
     onLoginSuccess({ resData: prevLoginState.prevLoginRes });
     store.setState(prevLoginState);
+    Call(onSuccess, form);
     // }
   },
 

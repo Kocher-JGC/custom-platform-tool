@@ -62,14 +62,14 @@ export const initRequest = (baseURL, token) => {
   });
 
   // TODO: 临时解决发布应用请求头没有 token
-  request.interceptors.request.use(function (config) {
-    const code = store.get(`app/code`);
-    if(code){
-      const token = store.get(`app/${code}/token`);
-      config.headers.Authorization= token.indexOf("Bearer") !== -1 ? token: `Bearer ${token}`;
-    }
-    return config;
-  });
+  // request.interceptors.request.use(function (config) {
+  //   const code = store.get(`app/code`);
+  //   if(code) {
+  //     const token = store.get(`app/${code}/token`);
+  //     config.headers.Authorization= token.indexOf("Bearer") !== -1 ? token: `Bearer ${token}`;
+  //   }
+  //   return config;
+  // });
 
   /**
    * 定义不可被更改的 $R_P 属性

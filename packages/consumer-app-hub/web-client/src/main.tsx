@@ -34,19 +34,20 @@ type LoginFilterProps = AuthStoreState
 
 class LoginFilter extends React.Component<LoginFilterProps> {
 
+  envConfig = {
+    app: '',
+    lessee: '',
+    t: '',
+    appName: '',
+  }
+  
   constructor(props) {
     super(props);
     this.state = {
       ready: false,
       menuData: []
     };
-  }
-
-  envConfig = {
-    app: '',
-    lessee: '',
-    t: '',
-    appName: '',
+    this.setEnvConfig();
   }
 
   setEnvConfig = () => {
@@ -64,18 +65,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   componentDidMount() {
-    // queryMenuList().then((menuDataRes) => {
-    //   // TODO: 过滤成内部菜单数据
-    //   const menuData = remoteMenu2AppMenu(menuDataRes.result);
-    //   this.setState({
-    //     menuData: menuData,
-    //     ready: true
-    //   });
-    // });
-
     removeLoadingBG();
-
-    // this.setEnvConfig();
   }
 
   footerRender = () => {
@@ -126,6 +116,17 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     return <SelectApp selectAppInfo={selectAppInfo}/>;
   }
 
+  onLoginSuccess = () => {
+    queryMenuList().then((menuDataRes) => {
+      // TODO: 过滤成内部菜单数据
+      const menuData = remoteMenu2AppMenu(menuDataRes.result);
+      this.setState({
+        menuData: menuData,
+        ready: true
+      });
+    });
+  }
+
   loginPanelRender = () => {
     const { login, autoLogin, logging, autoLoging } = this.props;
     const appName = this.envConfig.appName;
@@ -148,18 +149,9 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     return (
       <LoginPanel
         backgroundImage="url(./images/bg_1.jpg)"
-        login={(value)=>{login(value, () => {
-          queryMenuList().then((menuDataRes) => {
-            // TODO: 过滤成内部菜单数据
-            const menuData = remoteMenu2AppMenu(menuDataRes.result);
-            this.setState({
-              menuData: menuData,
-              ready: true
-            });
-          });
-
-          this.setEnvConfig();
-        });}}
+        login={(value)=>{
+          login(value, this.onLoginSuccess);
+        }}
         autoLogin={autoLogin}
         btnGColor="red"
         logo={() => <h3>{appName}</h3>}
