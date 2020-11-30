@@ -4,6 +4,7 @@ import { Provider, connect } from "unistore/react";
 
 import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
+import { LoginPanel } from "@engine/ui-admin-template/plugins/default-renderer/login-panel";
 import store from "store";
 
 import { authStore, authActions, AuthStore, SaaSAuthActionsTypes, AuthStoreState } from "./auth/actions";
@@ -14,29 +15,6 @@ import { PageContainer, Version } from "./components";
 
 import "./style";
 import { DashboardRender } from "./components";
-
-const loginFormOptions = [
-  {
-    ref: "AdminName",
-    type: "input",
-    title: "账号",
-    iconName: "account",
-    required: true
-  },
-  {
-    ref: "Password",
-    type: "password",
-    title: "密码",
-    iconName: "lock",
-    required: true
-  },
-  {
-    ref: "GooglePassword",
-    type: "input",
-    iconName: "security",
-    title: "Google认证码"
-  }
-];
 
 function selector(state) {
   return state;
@@ -133,23 +111,49 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     );
   }
 
+  loginPanelRender = () => {
+    const { login, logging, autoLoging } = this.props;
+    const appName = this.envConfig.appName;
+    const formOptions = [
+      {
+        ref: "AdminName",
+        type: "input",
+        title: "账号",
+        iconName: "account",
+        required: true
+      },
+      {
+        ref: "Password",
+        type: "password",
+        title: "密码",
+        iconName: "lock",
+        required: true
+      },
+    ];
+    return (
+      <LoginPanel 
+        backgroundImage="url(./images/bg_1.jpg)"
+        login={login}
+        btnGColor="red"
+        logo={() => <h3>{appName}</h3>}
+        logging={logging}
+        autoLoging={autoLoging}
+        formOptions={formOptions}
+      />
+    );
+  }
+
   render() {
     const { isLogin, userInfo } = this.props;
     const { menuData } = this.state;
-    const appName = this.envConfig.appName;
-    console.log(appName);
     return (
       <AuthSelector
-        {...this.props}
-        backgroundImage="url(./images/bg/bg_3.jpg)"
-        btnGColor="red"
-        logo={() => <h3>{appName}</h3>}
         isLogin={isLogin}
-        formOptions={loginFormOptions}
+        loginPanelRender={this.loginPanelRender}
       >
         {isLogin ? (
           <AdminTemplateEngine
-            fromBase64={false}
+            // fromBase64={false}
             menuData={menuData}
             // bgStyle={
             //   {
@@ -171,7 +175,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
                 }
               }
             ]}
-            appTitle={appName}
+            appTitle={this.envConfig.appName}
             pluginRenderer={{
               Footer: this.footerRender,
               Dashboard: this.dashboardRender
