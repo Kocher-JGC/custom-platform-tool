@@ -44,7 +44,6 @@ export const pageData2IUBDSL = async (pageData, processCtx: ProcessCtx) => {
 
   const { pageContent, dataSources, businessCodes } = pageData;
   const contentData = JSON.parse(pageContent);
-  console.log(contentData);
   const transfromCtx: TransfromCtx = {
     extralDsl: { 
       tempAction: [], 

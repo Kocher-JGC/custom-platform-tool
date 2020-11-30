@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 import axios from 'axios';
 import { omit } from 'lodash';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
@@ -10,9 +12,9 @@ const { mockToken } = config;
 
 @Injectable()
 export class PageDataService {
-
   constructor(
-    private readonly previewAppService: PreviewAppService
+    private readonly previewAppService: PreviewAppService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   /**
@@ -24,33 +26,27 @@ export class PageDataService {
     token = mockToken,
     id
   }): Promise<any> {
-    console.log('token', token);
-    // const token = this.previewAppService.getToken(lessee);
     const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
-    console.log('reqUrl', reqUrl);
+
+    this.logger.info(`准备发起请求`);
+    this.logger.info(`token: ${token}`);
+    this.logger.info(`reqUrl: ${reqUrl}`);
+
     const processCtx = {
       token, lessee, app
     };
-    try {
-      const resData = await axios
-        .get(reqUrl, {
-          headers: {
-            Authorization: token
-          }
-        });
-      const data = resData?.data?.result;
-      if(!data) {
-        console.error('页面输出存在问题?', data);
-        throw Error(resData?.data?.msg);
-      } else {
-        console.log('resDataMsg', resData?.data);
-        return await pageData2IUBDSL(data, processCtx);
-      }
-    } catch(e) {
-      console.error('error', e);
-      throw Error(e);
-      // return e;
-    }
+    const resData = await axios
+      .get(reqUrl, {
+        headers: {
+          Authorization: token
+        }
+      });
+    const data = resData?.data?.result;
+    if(!data) {
+      this.logger.error(`没有页面数据: ${data}`);
+      throw Error('没有页面数据');
+    } 
+    this.logger.info(`请求页面数据成功`);
+    return await pageData2IUBDSL(data, processCtx);
   }
 }
-// `http://192.168.14.140:6090/paas/hy/app/page/v1/pages/1308242886768336896`

@@ -1,4 +1,6 @@
-import { Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query, UseGuards , Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 import { ResHelperService } from 'src/res-helper/res-helper.service';
 import { Roles } from 'src/roles/roles.decorator';
 import { PageDataService } from './page-data.service';
@@ -9,6 +11,7 @@ export class PageDataController {
   constructor(
     private readonly pageDataService: PageDataService,
     private readonly resHelperService: ResHelperService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {
   }
 
@@ -59,17 +62,20 @@ export class PageDataController {
 
   @Get()
   async getPage(@Query() queryString) {
-    // console.log(queryString)
+    this.logger.info(`请求获取页面数据`);
+
     const { isPass, msg } = this.validGetPageParam(queryString);
-    if(!isPass) return msg;
+    if(!isPass) {
+      this.logger.error(`页面参数验证不通过`);
+      return msg;
+    }
     const { id, mode, lessee, app, t } = queryString;
-    // if (mode === 'preview') {
-    // }
     try {
       const pageData = await this.pageDataService.getPageDataFromRemote({ lessee, app, id, token: t });
       const resData = this.resHelperService.wrapResStruct({ data: pageData });
       return resData;
     } catch(e) {
+      console.log(e);
       return {
         err: JSON.stringify(e.message),
         code: '10000'
