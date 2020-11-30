@@ -70,8 +70,8 @@ const defaultAuthStore: AuthStore = {
   autoLoging: !!getPrevLoginToken(),
   logging: false,
   logouting: false,
-  // isLogin: false,
-  isLogin: process.env.NODE_ENV === 'development',
+  isLogin: false,
+  // isLogin: process.env.NODE_ENV === 'development',
   token: "",
   menuStore: [],
   app: getAppInfo()

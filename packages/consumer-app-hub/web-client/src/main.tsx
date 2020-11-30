@@ -52,7 +52,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   setEnvConfig = () => {
     const app = store.get('app/code');
     const lessee = store.get('app/lessee');
-    const t = store.get('app/token');
+    const t = store.get(`app/${app}/token`);
     const appName = store.get('app/name');
 
     this.envConfig = {
@@ -64,18 +64,18 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   componentDidMount() {
-    queryMenuList().then((menuDataRes) => {
-      // TODO: 过滤成内部菜单数据
-      const menuData = remoteMenu2AppMenu(menuDataRes.result);
-      this.setState({
-        menuData: menuData,
-        ready: true
-      });
-    });
+    // queryMenuList().then((menuDataRes) => {
+    //   // TODO: 过滤成内部菜单数据
+    //   const menuData = remoteMenu2AppMenu(menuDataRes.result);
+    //   this.setState({
+    //     menuData: menuData,
+    //     ready: true
+    //   });
+    // });
 
     removeLoadingBG();
 
-    this.setEnvConfig();
+    // this.setEnvConfig();
   }
 
   footerRender = () => {
@@ -148,7 +148,18 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     return (
       <LoginPanel
         backgroundImage="url(./images/bg_1.jpg)"
-        login={login}
+        login={(value)=>{login(value, () => {
+          queryMenuList().then((menuDataRes) => {
+            // TODO: 过滤成内部菜单数据
+            const menuData = remoteMenu2AppMenu(menuDataRes.result);
+            this.setState({
+              menuData: menuData,
+              ready: true
+            });
+          });
+
+          this.setEnvConfig();
+        });}}
         autoLogin={autoLogin}
         btnGColor="red"
         logo={() => <h3>{appName}</h3>}
@@ -162,7 +173,6 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   render() {
     const { isLogin, switchUser, switchApp } = this.props;
     const { menuData } = this.state;
-
     return (
       <AuthSelector
         isLogin={isLogin}
@@ -182,7 +192,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
             statusbarActions={[
               {
                 action: () => {
-                  console.log('action');
+                  // console.log('action');
                 },
                 title: '测试',
                 overlay: () => {
