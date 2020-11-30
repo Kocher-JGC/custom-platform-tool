@@ -15,6 +15,7 @@ import { PageContainer, Version } from "./components";
 
 import "./style";
 import { DashboardRender } from "./components";
+import { remoteMenu2AppMenu } from "./utils";
 
 function selector(state) {
   return state;
@@ -65,7 +66,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   componentDidMount() {
     queryMenuList().then((menuDataRes) => {
       // TODO: 过滤成内部菜单数据
-      const menuData = menuDataRes;
+      const menuData = remoteMenu2AppMenu(menuDataRes.result);
       this.setState({
         menuData: menuData,
         ready: true
@@ -98,14 +99,14 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   pageRender = (renderCtx: PageRenderCtx) => {
     // console.log(renderCtx);
     const { history } = renderCtx;
-    const { location } = history;
+    const { query } = history.location;
     // console.log(renderCtx);
-    const pageID = location.state['pageId'];
+    const pageID = query.pageId;
     return (
       <PageContainer
-        pageId={pageID}
         {...this.envConfig}
         {...renderCtx}
+        pageID={pageID}
       >
       </PageContainer>
     );

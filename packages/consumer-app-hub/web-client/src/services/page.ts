@@ -22,7 +22,7 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
   return {
     ...params,
     id: params.id,
-    t: store.get("app/providerAppToken")
+    t: store.get("app/token")
   };
 };
 
