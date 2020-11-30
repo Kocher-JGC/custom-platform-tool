@@ -1,5 +1,5 @@
 import { FoundationType, ComplexType, TypeOfIUBDSL } from '@iub-dsl/definition';
-import { locationFromWidget } from "./location-from-widget";
+import { locationFromWidget, widgetFlowCollection } from "./location-from-widget";
 import { locationInterface } from "./location-interface";
 import { actionCollection, actionCond, interCollection, interSetDataCollection } from './location-form-action';
 
@@ -16,16 +16,15 @@ export const locationForm: TypeOfIUBDSL = {
   },
   schema: {
     id: {
-      fieldRef: "@(interMeta).1330690108524994560.1330690108566937616",
+      fieldRef: "@(interMeta).1330690108524994560/1330690108566937616",
       type: FoundationType.string,
       defaultVal: '$ID()',
       desc: 'id'
     },
     mIEF110a: {
-      fieldRef: "@(interMeta).1330690108524994560.1330690108566937616",
+      fieldRef: "@(interMeta).1330690108524994560/1330690108566937616",
       type: FoundationType.string,
-      desc: '位置名称',
-      
+      desc: '位置名称',    
     },
     wnlmddk6: {
       type: ComplexType.structObject,
@@ -34,22 +33,22 @@ export const locationForm: TypeOfIUBDSL = {
       struct: {
         wnlmddk6_id1: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690108524994560.1330690108566937616",
+          fieldRef: "@(interMeta).1330690108524994560/1330690108566937616",
           desc: '主键',
         },
         wnlmddk6_id2: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690108524994560.1330690108566937605",
+          fieldRef: "@(interMeta).1330690108524994560/1330690108566937605",
           desc: '上级位置id',
         },
         wnlmddk6_id3: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690108524994560.1330690108566937614",
+          fieldRef: "@(interMeta).1330690108524994560/1330690108566937614",
           desc: '位置名称',
         },
         wnlmddk6_id4: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690108524994560.1330692953483649025",
+          fieldRef: "@(interMeta).1330690108524994560/1330692953483649025",
           desc: '位置类型',
         }
       }
@@ -61,12 +60,12 @@ export const locationForm: TypeOfIUBDSL = {
         hZuHwTTk_id1: {
           type: FoundationType.string,
           // TODO 
-          fieldRef: "@(interMeta).1330690535979098112.code",
+          fieldRef: "@(interMeta).1330690535979098112/code",
           desc: 'code'
         },
         hZuHwTTk_id2: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690535979098112.name",
+          fieldRef: "@(interMeta).1330690535979098112/name",
           desc: 'name'
         },
       }
@@ -77,19 +76,19 @@ export const locationForm: TypeOfIUBDSL = {
       struct: {
         hZuHwTTk_id1: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690535979098112.code",
+          fieldRef: "@(interMeta).1330690535979098112/code",
           desc: 'code'
         },
         hZuHwTTk_id2: {
           type: FoundationType.string,
-          fieldRef: "@(interMeta).1330690535979098112.name",
+          fieldRef: "@(interMeta).1330690535979098112/name",
           desc: 'name'
         },
       }
     },
   },
   actionsCollection: Object.assign({}, actionCollection),
-  flowCollection: {},
+  flowCollection: Object.assign({}, widgetFlowCollection),
   /** hub数据 */
   conditionCollection: Object.assign({}, actionCond),
   ref2ValueCollection: Object.assign({}, interSetDataCollection),

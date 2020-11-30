@@ -1,4 +1,13 @@
-import { WidgetCollection, AllWidgetType } from "@iub-dsl/definition";
+import { WidgetCollection, AllWidgetType, FlowCollection } from "@iub-dsl/definition";
+
+export const widgetFlowCollection: FlowCollection = {
+  mIEF110a: {
+    id: 'mIEF110a',
+    actionId: '@(action).mIEF110a',
+    flowOutCondition: [],
+    flowOut: [],
+  }
+};
 
 export const locationFromWidget: WidgetCollection = {
   mIEF110a: {
@@ -12,8 +21,8 @@ export const locationFromWidget: WidgetCollection = {
     },
     eventHandlers: {
       onChange: {
-        type: 'eventHandler',
-        flowItemId: `@(flow).mIEF110a`
+        type: 'flowEventHandler',
+        flowItemIds: [`@(flow).mIEF110a`]
       }
     }
   },
@@ -27,9 +36,9 @@ export const locationFromWidget: WidgetCollection = {
       title: "上级位置",
     },
     eventHandlers: {
-      onClick: {
-        type: 'eventHandler',
-        flowItemId: `@(flow).wnlmddk6`
+      onChange: {
+        type: 'flowEventHandler',
+        flowItemIds: [`@(flow).wnlmddk6`]
       }
     }
   },

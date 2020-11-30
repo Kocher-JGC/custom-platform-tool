@@ -10,23 +10,94 @@ export const interSetDataCollection: Ref2ValueCollection = {
     type: ComplexType.structArray,
     struct: [
       {
-        key: '@(interMeta).1330690108524994560.1330690108566937616',
+        key: '@(interMeta).1330690108524994560/1330690108566937616',
         value: '@(schema).id',
       },
       {
-        key: '@(interMeta).1330690108524994560.1330690108566937605',
+        key: '@(interMeta).1330690108524994560/1330690108566937605',
         value: '@(schema).mIEF110a' // 名称
       },
       {
-        key: '@(interMeta).1330690108524994560.1330690108566937614',
-        value: '@(schema).wnlmddk6.wnlmddk6_id1' // 上级位置id
+        key: '@(interMeta).1330690108524994560/1330690108566937614',
+        value: '@(schema).wnlmddk6/wnlmddk6_id1' // 上级位置id
       },
       {
-        key: '@(interMeta).1330690108524994560.1330692953483649025',
-        value: '@(schema).hZuHwTTk.code' // 位置类型
+        key: '@(interMeta).1330690108524994560/1330692953483649025',
+        value: '@(schema).hZuHwTTk/code' // 位置类型
       }
     ]
   },
+  mIEF110a: {
+    type: ComplexType.structObject,
+    struct: [
+      {
+        value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
+        key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
+      }
+    ]
+  },
+  wnlmddk6_set: {
+    type: ComplexType.structObject,
+    struct: [
+      {
+        // 需要根据打开目标{页面输出回填, 如何对应问题}
+        value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
+        key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
+      }
+    ]
+  },
+  hZuHwTTk_s: {
+    type: ComplexType.structArray,
+    struct: [
+      // {
+      //   value: '@(payload).', // 根据meta转换成schema
+      //   key: '@(schema).hZuHwTTk_Arr',
+      // },
+      {
+        value: '固定值',
+        key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
+      },
+      {
+        value: '@(payload).[#(idx)]/code',
+        key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id1',
+      },
+      {
+        value: '@(payload).[#(idx)]/name',
+        key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
+      },
+      {
+        key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id3',
+        value: {
+          type: ComplexType.structArray,
+          /** 树形结构, 结构一致 */
+          struct: []
+        }
+      }
+    ]
+  },
+  hZuHwTTk_onchange: {
+    type: ComplexType.structObject,
+    struct: [
+      {
+        /** 第一种, 整个表转换的 */
+        value: '@(payload).', // 根据meta转换成schema
+        key: '@(schema).hZuHwTTk', // TODO onChange仅拿到单个值, 需要转换、 可以在event统一转换
+      }
+      /** 
+       * 第二种, 一对一, 这种其实也是和元数据强绑定
+       * 第三种, 纯配置的一一对应, 其实也跟元数据对应, 仅是多了配置工作而言
+       * 反思: 弹窗传值, 同理 其实也无法脱离元数据, 如果是赋值其他, 那么, 可以同时赋值给多个, 也可以验证复杂赋值
+       */
+      // {
+      //   from: '@(payload)..code',
+      //   : '@(schema).hZuHwTTk/hZuHwTTk_id1',
+      // },
+      // {
+      //   from: '@(payload)..name',
+      //   : '@(schema).hZuHwTTk/hZuHwTTk_id2',
+      // }
+    ]
+  }
 };
 
 export const interCollection: InterCollection = {
@@ -82,16 +153,7 @@ export const actionCollection: ActionCollection = {
     actionName: 'changeState',
     actionType: 'changeState',
     actionOptions: {
-      changeMapping: {
-        type: ComplexType.structObject,
-        struct: [
-          {
-            value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
-            key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
-          }
-        ]
-      },
-      // changeTarget: '@(schema).mIEF110a'
+      changeMapping: '@(ref2Value).mIEF110a',
     },
   },
   wnlmddk6: { // 打开页面, 传入配置
@@ -118,21 +180,11 @@ export const actionCollection: ActionCollection = {
     actionName: 'changeState',
     actionType: 'changeState',
     actionOptions: {
-      changeMapping: {
-        type: ComplexType.structObject,
-        struct: [
-          {
-            // 需要根据打开目标{页面输出回填, 如何对应问题}
-            value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
-            key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
-          }
-        ]
-      },
+      changeMapping: '@(ref2Value).wnlmddk6_set'
     },
   },
   // 1. 弹窗页面的配置告诉本页面如何回填
   // 2. 动作配置中就有配置说明如何回填
-
 
   // -----------------------------
   // 获取下拉框数据源, 数据源填入
@@ -151,15 +203,7 @@ export const actionCollection: ActionCollection = {
     actionName: 'changeState',
     actionType: 'changeState',
     actionOptions: {
-      changeMapping: {
-        type: ComplexType.structObject,
-        struct: [
-          {
-            value: '@(payload).', // 根据meta转换成schema
-            key: '@(schema).hZuHwTTk_Arr',
-          }
-        ]
-      } 
+      changeMapping: '@(ref2Value).hZuHwTTk_s'
     },
   },
   // 下拉框onchange
@@ -168,33 +212,7 @@ export const actionCollection: ActionCollection = {
     actionName: 'changeState',
     actionType: 'changeState',
     actionOptions: {
-      changeMapping: {
-        type: ComplexType.structObject,
-        struct: [
-          {
-            value: '@(payload).', // 根据meta转换成schema
-            key: '@(schema).hZuHwTTk', // TODO onChange仅拿到单个值, 需要转换、 可以在event统一转换
-          }
-          // {
-          //   /** 第一种, 整个表转换的 */
-          //   from: '@(payload).',
-          //   target: '@(schema).hZuHwTTk', 
-          // },
-          /** 
-           * 第二种, 一对一, 这种其实也是和元数据强绑定
-           * 第三种, 纯配置的一一对应, 其实也跟元数据对应, 仅是多了配置工作而言
-           * 反思: 弹窗传值, 同理 其实也无法脱离元数据, 如果是赋值其他, 那么, 可以同时赋值给多个, 也可以验证复杂赋值
-           */
-          // {
-          //   from: '@(payload)..code',
-          //   target: '@(schema).hZuHwTTk.hZuHwTTk_id1',
-          // },
-          // {
-          //   from: '@(payload)..name',
-          //   target: '@(schema).hZuHwTTk.hZuHwTTk_id2',
-          // }
-        ]
-      }
+      changeMapping: '@(ref2Value).hZuHwTTk_onchange'
     },
   },
   writeBack: {
