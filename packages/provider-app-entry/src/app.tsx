@@ -57,6 +57,10 @@ export interface AppLocationState {
 export type AppLocationType = Location<AppLocationState> & DefaultLocationState & AppLocationState
 
 export default class App extends MultipleRouterManager<AppContainerProps, AppContainerState, AppLocationState> {
+  static defaultProps = {
+    fromBase64: true
+  }
+  
   state: AppContainerState = defaultRouteState
 
   // appLocation!: AppLocationType

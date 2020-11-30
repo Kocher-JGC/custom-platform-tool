@@ -1,6 +1,6 @@
 import { createBrowserHistory, Location } from "history";
 import produce from "immer";
-import { urlParamsToQuery } from "@mini-code/request/url-resolve";
+import { urlParamsToQuery, getUrlSearchParams } from "@mini-code/request/url-resolve";
 import { wrapPathWithSeperator } from ".";
 
 export interface NavParams {
@@ -26,7 +26,17 @@ export interface NavigateConfig {
   state?: unknown
 }
 
-export const history = createBrowserHistory<any>();
+export const history = (() => {
+  const h = createBrowserHistory<any>();
+  h.listen((location) => {
+    // console.log(location);
+    // console.log();
+    const query = getUrlSearchParams({ href: location.hash, fromBase64: true });
+    location.query = query;
+  });
+  console.log(h);
+  return h;
+})();
 
 // export interface HistoryLocation {}
 
