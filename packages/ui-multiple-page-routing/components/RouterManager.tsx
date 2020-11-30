@@ -119,6 +119,14 @@ class MultipleRouterManager<
 
   }
 
+  changeRoute = (path: string, params) => {
+    onNavigate({
+      type: 'PUSH',
+      path,
+      params
+    });
+  };
+
   /**
    * 设置 location 对象，挂载属性
    * @param location next location
@@ -278,7 +286,7 @@ class MultipleRouterManager<
     const { defaultPath } = this;
     // console.log(this.location);
     const pagePath = resolvePagePath(this.appLocation.hash);
-    const initRouteInfo = getUrlSearchParams({
+    const initQueryInfo = getUrlSearchParams({
       fromBase64: true
     });
     const initRoute = pagePath;
@@ -292,7 +300,7 @@ class MultipleRouterManager<
       && onNavigate({
         type: "PUSH",
         path: initRoute,
-        params: initRouteInfo
+        params: initQueryInfo
       });
     // if (!initRoute && defaultPath) {
     //   onNavigate({

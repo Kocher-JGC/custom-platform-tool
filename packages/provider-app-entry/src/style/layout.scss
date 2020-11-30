@@ -1,7 +1,7 @@
 $provider-header-height: 60px;
 $provider-nav-tabbar-height: 38px;
 
-#provider_app_container {
+#__provider_app_container {
   position: absolute;
   top: 0;
   right: 0;
@@ -32,7 +32,7 @@ $provider-nav-tabbar-height: 38px;
   }
 }
 
-#provider_app_content {
+#__provider_app_content {
   position: fixed;
   top: $provider-header-height;
   right: 0;

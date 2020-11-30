@@ -146,9 +146,9 @@ const ToolBar = <T, U = {}>({
   const options =
     propsOptions !== false
       ? {
-          ...defaultOptions,
-          ...(propsOptions || {}),
-        }
+        ...defaultOptions,
+        ...(propsOptions || {}),
+      }
       : false;
 
   const intl = useIntl();

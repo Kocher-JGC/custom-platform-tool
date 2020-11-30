@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { LayoutRenderer } from '@engine/layout-renderer';
 
-import { pageManage } from '@consumer-app/web-platform/src/page-manage';
+// import { pageManage } from '@consumer-app/web-platform/src/page-manage';
 
 import Modal from 'antd/lib/modal/Modal';
 import { widgetRenderer, genCompRenderFC } from './component-manage/component-store/render-component';

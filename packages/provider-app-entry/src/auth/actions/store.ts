@@ -49,20 +49,20 @@ const defaultAuthStore: AuthStore = {
 };
 const authStore = createStore(defaultAuthStore);
 
-export interface AuthActionsTypes {
+export interface PaaSAuthActionsTypes {
   autoLogin: () => void;
   login: (state, form, onSuccess: () => void) => void;
   logout: () => void;
 }
 
-export interface AuthStoreState extends AuthStore, AuthActionsTypes {
+export interface AuthStoreState extends AuthStore, PaaSAuthActionsTypes {
 
 }
 
 /**
  * AuthActions 的类型
  */
-export type AuthActions = (store: typeof authStore) => AuthActionsTypes
+export type AuthActions = (store: typeof authStore) => PaaSAuthActionsTypes
 
 /**
  * 处理登录成功的回调

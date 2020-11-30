@@ -1,6 +1,6 @@
 import {
   history
-} from 'umi';
+} from 'multiple-page-routing';
 import { parse } from 'querystring';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
@@ -11,7 +11,7 @@ export const isUrl = (path: string): boolean => reg.test(path);
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
 
 export const getQueryByParams = (params: string[]) => {
-  const { query } = history.location;
+  const { state: query } = history.location;
   let result = "";
   params.map((item) => {
     if (query[item]) {

@@ -1,6 +1,9 @@
-import { originGenUrl, SYS_MENU_BUSINESSCODE } from "@/utils/gen-url";
-import { getPageQuery } from '@/utils/utils';
 import store from 'store';
+
+import { originGenUrl, SYS_MENU_BUSINESSCODE } from "../utils/gen-url";
+import { getPageQuery } from '../utils/utils';
+import { menuMockData } from './menu.mock';
+
 /**
  * 获取用户菜单
  * @param params
@@ -9,6 +12,7 @@ export async function queryMenuList(params: API.IMeunParams) {
   let { lessee, app } = getPageQuery();
   if (!lessee) lessee = store.get("app/lessee");
   if (!app) app = store.get("app/code");
+  return menuMockData;
   return $A_R(originGenUrl(lessee, app, SYS_MENU_BUSINESSCODE), {
     method: 'POST',
     data: {
