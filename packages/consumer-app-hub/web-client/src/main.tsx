@@ -5,14 +5,14 @@ import { Provider, connect } from "unistore/react";
 import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
 import { LoginPanel } from "@engine/ui-admin-template/plugins/default-renderer/login-panel";
+import SelectApp from "./components/SelectApp";
 import store from "store";
 
 import { authStore, authActions, AuthStore, SaaSAuthActionsTypes, AuthStoreState } from "./auth/actions";
-import {
-  LoadPage, queryMenuList, GetPageAuthConfig, AuthUIByUIID
-} from "./services";
+import { queryMenuList } from "./services";
 import { PageContainer, Version } from "./components";
 
+import 'antd/dist/antd.css';
 import "./style";
 import { DashboardRender } from "./components";
 import { remoteMenu2AppMenu } from "./utils";
@@ -112,6 +112,20 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     );
   }
 
+  checkAppInfo = () => {
+    const { app } = this.props;
+    if(app?.code){
+      return this.loginPanelRender();
+    }else{
+      return this.selectAppPanelRender();
+    }
+  }
+
+  selectAppPanelRender = () => {
+    const { selectAppInfo } = this.props;
+    return <SelectApp selectAppInfo={selectAppInfo}/>;
+  }
+
   loginPanelRender = () => {
     const { login, autoLogin, logging, autoLoging } = this.props;
     const appName = this.envConfig.appName;
@@ -146,12 +160,13 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   render() {
-    const { isLogin, userInfo } = this.props;
+    const { isLogin, switchUser, switchApp } = this.props;
     const { menuData } = this.state;
+
     return (
       <AuthSelector
         isLogin={isLogin}
-        loginPanelRender={this.loginPanelRender}
+        loginPanelRender={this.checkAppInfo}
       >
         {isLogin ? (
           <AdminTemplateEngine
@@ -172,7 +187,12 @@ class LoginFilter extends React.Component<LoginFilterProps> {
                 title: '测试',
                 overlay: () => {
                   return (
-                    <div className="p20">overlay</div>
+                    <div style={{ width: 120 }}>
+                      <div className="p10" onClick={switchUser}>切换账号</div>
+                      <hr style={{ margin: 0 }} />
+                      <div className="p10" onClick={switchApp}>切换应用</div>
+                      {/* <div className="p20">修改密码</div> */}
+                    </div>
                   );
                 }
               }
