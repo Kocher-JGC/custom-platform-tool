@@ -23,7 +23,7 @@ export type Ref2ValueOfFoundation  = string;
  */
 export interface Ref2ValueOfArr {
   type:  ComplexType.structArray;
-  struct: (Ref2ValueOfFoundation | TransfMapping)[];
+  struct: Ref2ValueOfFoundation[] | TransfMapping[];
 }
 /**
  * 对象结构的引用值转换「set仅使用Obj类型」

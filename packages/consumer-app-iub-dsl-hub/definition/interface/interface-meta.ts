@@ -1,5 +1,5 @@
 
-export enum InterType {
+export enum InterMetaType {
   /** 字典表 */
   DICT_TABLE = 'DICT_TABLE',
   /** 树形表 */
@@ -55,7 +55,7 @@ export interface FieldMeta {
   name?: string;
 }
 export interface BaseInterfaceMeta {
-  type: InterType;
+  type: InterMetaType;
   id: string;
   code: string;
   name: string;
@@ -63,7 +63,7 @@ export interface BaseInterfaceMeta {
 }
 
 export interface TreeInterfaceMeta extends BaseInterfaceMeta {
-  type: InterType.TREE_TABLE;
+  type: InterMetaType.TREE_TABLE;
   maxLevel: number;
 }
 
