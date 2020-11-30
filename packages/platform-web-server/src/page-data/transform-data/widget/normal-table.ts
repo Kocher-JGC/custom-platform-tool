@@ -1,7 +1,7 @@
 import { genFormButtonDefaltAction } from './normal-button';
 import { TransfromCtx } from "../types";
 import { genFormInput } from "./form-input";
-import { updateStateAction, genDefalutFlow, DEFALUT_FLOW_MARK } from "../task";
+import { changeStateAction, genDefalutFlow, DEFALUT_FLOW_MARK } from "../task";
 import { genExtralSchema, findTableMetadata } from "../metadata-fn";
 
 
@@ -88,7 +88,7 @@ const addSearchBuntton = (transfromCtx: TransfromCtx, extralSchema) => {
       },
       actionOutput: 'string', // TODO
     },
-    updateStateAction(transfromCtx, updId, `@(schema).${id}`)
+    changeStateAction(transfromCtx, updId, `@(schema).${id}`)
   );
   tempFlow.push(
     genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
