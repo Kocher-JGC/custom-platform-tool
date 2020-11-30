@@ -14,16 +14,9 @@ import App from './main';
  */
 const getEnvConfigFromRemote = async () => {
   try {
-    const appEnvConfig = await getAppEnvConfig();
-    // const mainConf = await getMainConf(appEnvConfig.currentApp);
-    // TODO 租户信息的来源
-    return {
-      ...appEnvConfig
-      // "app/code": appEnvConfig.currentApp,
-      // "app/lessee": mainConf.lessee
-    };
+    return await getAppEnvConfig();
   } catch (err) {
-    console.log("获取后端 config", err);
+    console.log("获取后端 config 失败", err);
     return {};
   }
 };
@@ -32,7 +25,7 @@ const getEnvConfigFromRemote = async () => {
  * 将 query 的 key 映射到 store 的 key
  */
 const queryKeyMapStoreKey = {
-  t: "app/token",
+  // t: "app/token",
   app: "app/code",
   lessee: "app/lessee",
   appName: "app/name",
@@ -51,38 +44,25 @@ const getEnvConfigFromLocation = () => {
   const params = {};
 
   if (Array.isArray(queryKeys)) {
-    // if (
-    //   queryKeys.includes("mode") &&
-    //   queryKeys.includes(UrlConfKey.saasServerUrl) &&
-    //   queryKeys.includes(UrlConfKey.pageServerUrlForApp)
-    // ) {
-    // }
     queryKeys.forEach((q) => {
       if (q !== "redirect") {
-        // params[q] = query[q];
-        const matchStoreKey = queryKeyMapStoreKey[q];
-        if(matchStoreKey) {
-          params[matchStoreKey] = query[q];
+        if( q === "t" && query.app){
+          params[`app/${query.app}/token`] = query.t;
+        }else{
+          const matchStoreKey = queryKeyMapStoreKey[q];
+          if(matchStoreKey) {
+            params[matchStoreKey] = query[q];
+          }
         }
       }
-      // if (q === "t") {
-      //   params["app/token"] = query[q];
-      // } else if (q === "app") {
-      //   params["app/code"] = query[q];
-      // } else if (q === "lessee") {
-      //   params["app/lessee"] = query[q];
-      // } else if (q !== "redirect") {
-      //   params[q] = query[q];
-      // }
     });
   }
-
   return params;
 };
 
-const initReq = () => {
+const initReq = (token?: string) => {
   const saasServerUrl = store.get(UrlConfKey.saasServerUrl);
-  initRequest(saasServerUrl);
+  initRequest(saasServerUrl, token);
 };
 
 /**
@@ -99,15 +79,19 @@ export async function render() {
 
   // 判断环境配置的合法性
   const isPass = checkEnvConfig(envConfig);
-  
+
   if (isPass) {
     Object.keys(envConfig).forEach((field) => {
       store.set(field, envConfig[field]);
     });
   }
 
+  // if(envConfig["app/code"] && envConfig[`app/${envConfig["app/code"]}/token`]){
+  //   initReq(envConfig[`app/${envConfig["app/code"]}/token`]);
+  // }
+
   initReq();
-  
+
   ReactDOM.render(
     <App />,
     document.querySelector("#Main")

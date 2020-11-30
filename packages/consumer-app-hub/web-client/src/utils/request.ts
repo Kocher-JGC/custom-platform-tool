@@ -46,7 +46,7 @@ const errorHandler = (error: { response: Response }): Response => {
   return response;
 };
 
-export const initRequest = (baseURL) => {
+export const initRequest = (baseURL, token) => {
   if (window.$A_R) return;
   /**
    * 配置request请求时的默认参数
@@ -55,9 +55,20 @@ export const initRequest = (baseURL) => {
     baseURL,
     // errorHandler, // 默认错误处理
     // credentials: 'same-origin', // 默认请求是否带上cookie
-    headers: {
-      Authorization: `${store.get("app/token")}`
-    },
+    headers: Object.assign({}, token && {
+      // Authorization: `${store.get("app/token")}`
+      Authorization: token.indexOf("Bearer") !== -1 ? token: `Bearer ${token}`
+    }),
+  });
+
+  // TODO: 临时解决发布应用请求头没有 token
+  request.interceptors.request.use(function (config) {
+    const code = store.get(`app/code`);
+    if(code){
+      const token = store.get(`app/${code}/token`);
+      config.headers.Authorization= token.indexOf("Bearer") !== -1 ? token: `Bearer ${token}`;
+    }
+    return config;
   });
 
   /**
