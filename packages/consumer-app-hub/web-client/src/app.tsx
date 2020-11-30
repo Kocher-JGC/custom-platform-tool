@@ -35,13 +35,17 @@ const queryKeyMapStoreKey = {
   t: "app/token",
   app: "app/code",
   lessee: "app/lessee",
+  appName: "app/name",
+  mode: "app/mode",
+  [UrlConfKey.saasServerUrl]: "saasServerUrl",
+  [UrlConfKey.pageServerUrlForApp]: "pageServerUrlForApp",
 };
 
 /**
  * 从 url 获取环境配置
  */
 const getEnvConfigFromLocation = () => {
-  const { state: query } = history.location;
+  const { query } = history.location;
   if(!query) return {};
   const queryKeys = Object.keys(query);
   const params = {};

@@ -19,6 +19,8 @@ import {
 export interface RouterHelperProps {
   /** 是否缓存 state */
   cacheState?: boolean;
+  /** url 是否 base64 */
+  fromBase64?: boolean;
   /** 最大共存路由 */
   maxRouters?: number;
 }
@@ -65,9 +67,9 @@ export const defaultState: RouterState = {
 
 let cachedState = Object.assign({}, defaultState);
 
-const getAllUrlParams = () => {
+const getAllUrlParams = (fromBase64) => {
   const res = getUrlSearchParams({
-    fromBase64: true
+    fromBase64: fromBase64
   });
   return res;
 };
@@ -136,7 +138,7 @@ class MultipleRouterManager<
     const { hash } = location;
     const pagePath = resolvePagePath(hash);
     const pagePathWithDetail = resolvePagePathWithSeperator(hash);
-    const params = getAllUrlParams();
+    const params = getAllUrlParams(this.props.fromBase64);
     this.appLocation = produce(location, (draft) => {
       return {
         ...draft,
@@ -246,7 +248,7 @@ class MultipleRouterManager<
       const currComIdx = routers.indexOf(activeRoute);
       let nextRouters = [...routers];
       const nextRouterInfo = { ...routerSnapshot };
-      const currParams = getAllUrlParams();
+      const currParams = getAllUrlParams(this.props.fromBase64);
       const pathSnapshot = window.location.hash;
       const pathname = resolvePagePathWithSeperator(pathSnapshot);
       nextRouterInfo[activeRoute] = {

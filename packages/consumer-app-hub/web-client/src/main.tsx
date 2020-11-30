@@ -67,17 +67,20 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     app: '',
     lessee: '',
     t: '',
+    appName: '',
   }
 
   setEnvConfig = () => {
     const app = store.get('app/code');
     const lessee = store.get('app/lessee');
     const t = store.get('app/token');
+    const appName = store.get('app/name');
 
     this.envConfig = {
       app,
       lessee,
       t,
+      appName,
     };
   }
 
@@ -133,7 +136,8 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   render() {
     const { isLogin, userInfo } = this.props;
     const { menuData } = this.state;
-    const appName = '物联网管理系统';
+    const appName = this.envConfig.appName;
+    console.log(appName);
     return (
       <AuthSelector
         {...this.props}
@@ -145,6 +149,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
       >
         {isLogin ? (
           <AdminTemplateEngine
+            fromBase64={false}
             menuData={menuData}
             // bgStyle={
             //   {

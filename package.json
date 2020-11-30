@@ -32,6 +32,7 @@
     "commit": "git-cz"
   },
   "dependencies": {
+    "dayjs": "^1.9.6",
     "core-js": "3.8.0"
   },
   "devDependencies": {

@@ -75,6 +75,7 @@ export interface AdminLayoutProps extends RouterHelperProps {
   /** 给 statusbar 的更多操作选项 */
   statusbarActions?: StatusbarLoaderProps['statusbarActions']
   versionInfo?: VersionCheckerProps['versionInfo']
+  fromBase64?: boolean
 }
 
 interface AdminLayoutState extends RouterState {

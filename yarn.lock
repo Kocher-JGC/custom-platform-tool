@@ -5915,7 +5915,7 @@ dateformat@^3.0.0:
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha1-puN0maTZqc+F71hyBE1ikByYia4=
 
-dayjs@^1.8.30, dayjs@^1.9.0:
+dayjs@^1.8.30, dayjs@^1.9.0, dayjs@^1.9.6:
   version "1.9.6"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/dayjs/-/dayjs-1.9.6.tgz#6f0c77d76ac1ff63720dd1197e5cb87b67943d70"
   integrity sha1-bwx312rB/2NyDdEZfly4e2eUPXA=
