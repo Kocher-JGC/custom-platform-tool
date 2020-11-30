@@ -69,7 +69,9 @@ export const eventParser = (wE: WidgetEvents, ctx: EventParserCtx) => {
         break;
       case 'direct':
       default:
-        eventHandlers[eKey] = typeof eConf.func === 'function' ? eConf.func : () => { console.error(`未知事件类型！:  ${eConf.type}`); };
+        eventHandlers[eKey] = typeof eConf.func === 'function' ? eConf.func : () => { 
+          // console.error(`未知事件类型！:  ${eConf.type}`); 
+        };
         break;
     }
   });

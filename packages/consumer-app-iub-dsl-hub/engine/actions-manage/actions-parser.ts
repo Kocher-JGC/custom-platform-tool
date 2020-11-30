@@ -96,7 +96,7 @@ const getActionFn = (actionConf: ActionDef) => {
       if (typeof actionConf === 'function') {
         return actionConf;
       }
-      console.error(`未知动作类型！：${JSON.stringify(actionConf)}`);
+      // console.error(`未知动作类型！：${JSON.stringify(actionConf)}`);
       return () => noopError;
   }
 };

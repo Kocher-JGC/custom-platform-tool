@@ -9,7 +9,7 @@ import { getWidgetRender } from "./widget-parser";
  * @param originProp 配置的props
  */
 const defaultWidgetPropParse = (originProp: { [str: string]: any }) => {
-  const propKeys = Object.keys(originProp);
+  const propKeys = Object.keys(originProp || {});
   const staticProps = {};
   const dynamicProps = {};
   /**

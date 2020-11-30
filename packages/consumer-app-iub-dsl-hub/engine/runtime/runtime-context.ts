@@ -139,7 +139,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
       flowsRun
     },
     sys: {
-      APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || SYS_MENU_BUSINESSCODE))
+      APBDSLrequest: () => {}
+      // APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || SYS_MENU_BUSINESSCODE))
     },
   };
 

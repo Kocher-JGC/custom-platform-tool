@@ -146,9 +146,9 @@ const IUBDSLParser = ({ dsl }) => {
   /**
    * hub Parser
    */
-  const ref2ValueParseRes = ref2ValueParser(ref2ValueCollection);
-  const conditionParseRes = conditionParser(conditionCollection);
-  const interParseRes = interParser(interCollection);
+  const ref2ValueParseRes = ref2ValueParser(ref2ValueCollection || {});
+  const conditionParseRes = conditionParser(conditionCollection || {});
+  const interParseRes = interParser(interCollection || {});
   
 
   parseRes = {

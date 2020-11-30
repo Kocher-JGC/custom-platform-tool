@@ -10,7 +10,8 @@ export enum AllWidgetType {
   TreeSelector = "TreeSelector",
   NormalTable = "NormalTable",
   NormalButton = "NormalButton",
-  WidgetError = "WidgetError"
+  WidgetError = "WidgetError",
+  FormButton = "FormButton"
 }
 
 export interface BaseForm {
