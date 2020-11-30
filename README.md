@@ -30,6 +30,15 @@
 
 [参考文章](https://blog.csdn.net/i10630226/article/details/99702447)
 
+### 查看 npm 包的依赖关系
+
+通过 npm 自带的工具 `npm ls [package name]` 可以查看包的依赖关系，例如：
+
+```shell
+# 分析整个工程对于 react 的依赖关系
+npm ls react
+```
+
 #### 2.1.1. 核心概念
 
 `import` 的依赖是针对 `package.json` 中的 name 字段，而不是文件目录名称。
