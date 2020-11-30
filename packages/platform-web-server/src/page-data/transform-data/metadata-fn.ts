@@ -69,7 +69,7 @@ const genMetadataFromRemoteTableMeta = (tableMeta: RemoteTableMeta, extralData =
     code: tableMeta.code,
     type: 'general',
     moduleId: tableMeta.moduleId,
-    columns: transformCols(tableMeta.columns),
+    fields: transformCols(tableMeta.columns),
     ...extralData
   };
 };
@@ -118,6 +118,7 @@ const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promise<Remo
 };
 
 export const findTableMetadata = (tableMetadata: MetadataFromTable[], idOrRef: string) => {
+  console.log(tableMetadata);
   return tableMetadata.find(d => d.id === idOrRef || d.tableRefId === idOrRef);
 
 };
@@ -166,7 +167,8 @@ export const genExtralSchema = (transfromCtx: TransfromCtx, tableMetadata: Metad
   return null;
 };
 
-export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx): Promise<MetadataFromTable[]> => {
+export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx): Promise<any[]> => {
+  console.log(dataSource);
   if (Array.isArray(dataSource)) {
     const remoteTableMeta = Promise.all(dataSource.map((info) => {
       return getRemoteTableMeta({ ...processCtx, tableId: info.datasourceId });
@@ -187,7 +189,7 @@ export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx):
           return genMetadataFromRemoteTableMeta(remoteTableMeta, { tableRefId, tableType: type });
         } 
       } else if (Array.isArray(columns)) {
-        info.columns = transformCols(info.columns);
+        info.fileds = transformCols(info.columns);
         return info;
       }
       return null;
