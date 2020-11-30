@@ -1,9 +1,9 @@
-import config from "../config";
-import * as p from "../package.json";
+import config from "../../config";
+import * as p from "../../package.json";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Consul = require("consul");
 
-export default class ConsulConfig {
+export class ConsulConfig {
   consul: any;
 
   register() {

@@ -86,7 +86,12 @@ export class ReleaseAppController {
   async genFileFromPageData(pageData, { folderName, releaseId, token, lessee, app }) {
     const { generatePageDataJSONFile } = this.releaseAppService;
     const { id } = pageData;
-    const dsl = await pageData2IUBDSL(pageData, { token, lessee, app });
+    let dsl;
+    try {
+      dsl = await pageData2IUBDSL(pageData, { token, lessee, app });
+    } catch(e) {
+      console.error(e);
+    }
     const createJSONFileRes = await generatePageDataJSONFile(
       folderName,
       releaseId,
