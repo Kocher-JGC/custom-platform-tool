@@ -47,7 +47,8 @@ const condOrCondStructRun = async (
     if (typeof condOrStruct === 'string') {
       /** 单个条件处理 */
       return await condItemHandle(condOrStruct);
-    } if (condOrStruct) {
+    } 
+    if (condOrStruct) {
       /** 条件struct的条件生成 */
       return condControlResHandle(
         await condControlRun(condOrStruct, condEngineRunCtx)
