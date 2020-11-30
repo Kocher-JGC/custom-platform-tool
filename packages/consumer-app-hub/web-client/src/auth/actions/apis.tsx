@@ -1,9 +1,13 @@
-export function login(data) {
+// TODO 登录不是真实的
+export function login(data): Promise<{ code: number, message: string, data?: any }> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         code: 0,
-        message: 'success'
+        message: 'success',
+        data: {
+          token: "123456"
+        }
       });
     }, 1000);
   });

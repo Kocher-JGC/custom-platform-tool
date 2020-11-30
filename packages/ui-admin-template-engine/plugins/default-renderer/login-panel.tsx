@@ -16,6 +16,8 @@ const gradientColorMapper = {
 export interface LoginPanelProps {
   /** login API */
   login: (loginForm) => void;
+  /** autoLogin API */
+  autoLogin: () => void;
   /** FormOptions, 参考 @deer-ui/core 的 formOptions 配置 */
   formOptions: FormLayoutProps['formOptions'];
   /** 是否登陆中 */
@@ -50,6 +52,9 @@ export class LoginPanel extends Component<LoginPanelProps> {
   formHelper
 
   componentDidMount() {
+    if(this.props.autoLoging){
+      this.props.autoLogin();
+    }
     Call(this.props.didMount);
   }
 

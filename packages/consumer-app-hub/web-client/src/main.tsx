@@ -113,7 +113,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   loginPanelRender = () => {
-    const { login, logging, autoLoging } = this.props;
+    const { login, autoLogin, logging, autoLoging } = this.props;
     const appName = this.envConfig.appName;
     const formOptions = [
       {
@@ -132,9 +132,10 @@ class LoginFilter extends React.Component<LoginFilterProps> {
       },
     ];
     return (
-      <LoginPanel 
+      <LoginPanel
         backgroundImage="url(./images/bg_1.jpg)"
         login={login}
+        autoLogin={autoLogin}
         btnGColor="red"
         logo={() => <h3>{appName}</h3>}
         logging={logging}
