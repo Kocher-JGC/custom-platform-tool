@@ -1,7 +1,7 @@
 import { genFormButtonDefaltAction } from './normal-button';
 import { TransfromCtx } from "../types";
-import { genFormInput } from ".";
-import { updateStateAction, genDefalutFlow, DEFALUT_FLOW_MARK } from "../task";
+import { genFormInput } from "./form-input";
+import { changeStateAction, genDefalutFlow, DEFALUT_FLOW_MARK } from "../task";
 import { genExtralSchema, findTableMetadata } from "../metadata-fn";
 
 
@@ -88,7 +88,7 @@ const addSearchBuntton = (transfromCtx: TransfromCtx, extralSchema) => {
       },
       actionOutput: 'string', // TODO
     },
-    updateStateAction(transfromCtx, updId, `@(schema).${id}`)
+    changeStateAction(transfromCtx, updId, `@(schema).${id}`)
   );
   tempFlow.push(
     genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),
@@ -99,20 +99,21 @@ const addSearchBuntton = (transfromCtx: TransfromCtx, extralSchema) => {
 
 export const genNormanTable = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
   const { extralDsl, tableMetadata } = transfromCtx;
-  const { optDS } = propState;
-  const usedTableMetadata = findTableMetadata(tableMetadata, optDS);
-  const tableExtralD = genExtralSchema(transfromCtx, usedTableMetadata, true);
-  let usedColums = [];
-  if (tableExtralD) {
-    const { columns, id: tableId } = tableExtralD;
-    usedColums = genTableColumns(columns);
-    addSearchWieght(transfromCtx, { columns, id: tableId });
-    addSearchBuntton(transfromCtx, { columns, id: tableId });
-    extralDsl.isSearch = true;
-  }
+  const { optDS, widgetCode } = propState;
+  // const usedTableMetadata = findTableMetadata(tableMetadata, optDS);
+  // const tableExtralD = genExtralSchema(transfromCtx, usedTableMetadata, true);
+  const usedColums = [];
+  // if (tableExtralD) {
+  //   const { columns, id: tableId } = tableExtralD;
+  //   usedColums = genTableColumns(columns);
+  //   addSearchWieght(transfromCtx, { columns, id: tableId });
+  //   addSearchBuntton(transfromCtx, { columns, id: tableId });
+  //   extralDsl.isSearch = true;
+  // }
   return {
-    id, widgetId: id, widgetRef,
+    widgetId: id, widgetRef,
     columns: usedColums,
-    dataSource: optDS ? `@(schema).${usedTableMetadata.id}` : '',
+    dataSource: [],
+    // dataSource: optDS ? `@(schema).${usedTableMetadata.id}` : '',
   };
 };

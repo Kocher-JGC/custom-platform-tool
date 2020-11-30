@@ -1,147 +1,175 @@
 import { TypeOfIUBDSL } from "@iub-dsl/definition";
-import { tableExtralAction, tableExtralFlow } from "../demo/base-reference/user/usertable/index";
 /** dont Overengineering */
-
-import SchemasParser from "./state-manage/schemas";
-import widgetParser from "./component-manage/widget-parser";
+import { schemaParser } from "./state-manage";
+// import widgetParser from "./component-manage/widget-parser";
 import { actionsCollectionParser } from "./actions-manage/actions-parser";
 import { flowParser } from './flow-engine';
-import { isPageState } from "./state-manage";
-import { eventPropsHandle } from "./event-manage";
-import { actionsCollectConstor } from "./relationship/depend-collet/action-depend";
-import { metadataManage } from "./metadata-manage";
+import { interMetaManage } from "./inter-meta-manage";
+import { widgetParser } from "./widget-manage";
+import { noopError } from "./utils";
+import { ref2ValueParser, conditionParser, interParser } from "./hub";
 
-const extralUpdateStateConfParser = (actionConf, actionConfParseRes, parseContext) => {
-  const { changeTarget } = actionConf;
-  const { changeStateToUse, getStateToUse } = actionConfParseRes;
-  if (changeTarget) {
-    changeStateToUse.push(actionConf.changeTarget);
-  }
-  return actionConfParseRes;
+/**
+ * 不推荐使用的默认解析
+ */
+export const defaultExtralParser = (any) => any;
+
+const noopTrueFn = () => true;
+
+const pickObj = (obj, keys: string[]) => {
+  return keys.reduce((res, k) => ({ ...res, [k]: obj[k] }), {});
 };
 
-const extralAPBDSLCURDOfConfParser = (actionConf, actionConfParseRes, parseContext) => {
-  const { changeStateToUse, getStateToUse } = actionConfParseRes;
-  getStateToUse.push("@(schema).entity_25", "@(schema).entity_26", "@(schema).entity_28");
-  return actionConfParseRes;
-};
+const pickKeys = ['layoutContent', 'pageID', 'name', 'type', 'isSearch', 'businessCode', 'openPageUrl'];
+/**
+ * 扩展解析
+ * 1. 公共依赖 + 依赖分析
+ * 2. 动作 + 依赖分析
+ * 3. 流程 「注入动作+条件」
+ * 4. 事件 「注入流程函数」
+ */
 
-const genIUBDSLParserCtx = (parseRes) => {
-  /** param: 内部暴露功能或参数到外部 */
-  const propsParser = (originHandle, ctx?) => {
-    const { getStructItemInfo } = ctx;
-    return (key, conf) => {
-      let tempRes;
-      if (isPageState(conf)) {
-        return {
-          type: 'dynamicProps',
-          result: originHandle(key, conf),
-          deps: [conf]
-        };
-      }
+const composeParser = (parseRes) => {
+  const { 
+    actionParseRes, widgetParseRes,
+    flowParseRes, ref2ValueParseRes: { bindRef2Value }
+  } = parseRes;
 
-      if ((
-        // 需要递归
-        tempRes = eventPropsHandle(key, conf, {
-          compTag: getStructItemInfo('compTag')
-        })
-      )) {
-        return tempRes;
-      }
+  const { actionIds, actionList, bindAction } = actionParseRes;
 
-      return originHandle(key, conf);
+  const { flowIds, flowItemList, bindFlows, bindFlow } = flowParseRes;
+
+  /** AOP */
+  const actionExtralParser = (conf) => {
+    console.log(conf);
+    const { actionBaseConf, actionOpts } = conf;
+    if (actionBaseConf.actionType === 'changeState') {
+      actionOpts.changeMapping = bindRef2Value(actionOpts.changeMapping);
+    }
+    return conf;
+  };
+
+  const flowExtralParser = (conf) => {
+    const {  actionId, flowOutCondition, flowOut, condition } = conf;
+    /** 解析和绑定 */
+    const actionRunFn = bindAction(actionId);
+    const flowOutFns = flowOut.map(bindFlows);
+    const condRunFn = noopTrueFn;
+    const flowOutCondFns = flowOutCondition.map(() => noopTrueFn);
+
+    return  { 
+      actionRunFn, condRunFn,
+      flowOutFns, flowOutCondFns,
     };
   };
 
-  const actionConfParser = (actionConf, actionConfParseRes, parseContext) => {
-    switch (actionConf.actionType) {
-      case 'updateState':
-        return extralUpdateStateConfParser(actionConf, actionConfParseRes, parseContext);
-      case 'APBDSLCURD':
-        return extralAPBDSLCURDOfConfParser(actionConf, actionConfParseRes, parseContext);
-      default:
-        return actionConfParseRes;
-    }
-  };
-  const {
-    actionDependCollect,
-    flowToUseCollect,
-    findEquMetadata
-  } = actionsCollectConstor();
-  return {
-    propsParser,
-    actionConfParser,
-    actionDependCollect,
-    flowToUseCollect,
-    findEquMetadata,
-  };
-};
+  /**
+   * 事件扩展解析, 在外部绑定实际调用函数
+   * @param conf 事件配置
+   */
+  const eventExtralParser = (conf) => {
+    const { flowItemIds, pageID /** 跨页面扩展 */ } = conf;
 
-const IUBDSLParser = ({ dsl }) => {
-  const {
-    actionsCollection, sysRtCxtInterface,
-    widgetCollection, schemas,
-    metadataCollection, relationshipsCollection,
-    layoutContent, pageID, name, type,
-    flowCollection, openPageUrl, isSearch,
-    businessCode
-  } = dsl as TypeOfIUBDSL;
+    /**
+     * 1. 事件处理函数绑定流程处理 flowEngine
+     * 2. 事件处理函数绑定低代码 lowcodeEngine
+     * 3. ...
+     */
+    /** 绑定真实的事件处理函数 */
+    const eventHandlerFn =  bindFlows(flowItemIds);
 
-  let parseRes: any = {
-    sysRtCxtInterface,
-    relationshipsCollection,
-    layoutContent,
-    pageID,
-    name,
-    type,
-    schemas,
-    isSearch,
-    businessCode
+    return eventHandlerFn;
   };
 
-  /** TODO: 有问题 */
-  const parseContext = genIUBDSLParserCtx(parseRes);
-
-  const renderComponentKeys = Object.keys(widgetCollection);
-
-  /** 数据源元数据解析和实体 */
-  const datasourceMetaEntity = metadataManage({ metadata: metadataCollection.metadata });
-
-  /** 页面模型解析 */
-  const schemasParseRes = SchemasParser(schemas);
-  /** 每个动作解析成函数「流程将其连起来」 */
-  const actionParseRes = actionsCollectionParser(Object.assign(actionsCollection, tableExtralAction), parseContext);
-
-  parseRes = {
-    ...parseRes,
-    findEquMetadata: parseContext.findEquMetadata,
-    schemasParseRes,
-    datasourceMetaEntity,
-    actionParseRes
-  };
-
-  /** 组件解析 TODO: propsMap有问题, 上下文没有对其进行干预 */
-  const componentParseRes = widgetParser(widgetCollection, {
-    parseContext,
-    openPageUrl
+  /** 所有action的额外的解析 */
+  actionIds.forEach(actId => {
+    const actionFnWrap = actionList[actId];
+    actionList[actId] = actionFnWrap(actionExtralParser);
   });
 
-  const flowParseRes = flowParser(Object.assign(flowCollection, tableExtralFlow), { parseContext, parseRes });
+  /** 所有flow的额外的解析 */
+  flowIds.forEach(actId => {
+    const flowFnWrap = flowItemList[actId];
+    flowItemList[actId] = flowFnWrap(flowExtralParser);
+  });
+
+  /** 所有widgetEvent的额外解析 */
+  const widgetIds = Object.keys(widgetParseRes);
+  widgetIds.forEach(id => {
+    const onceWidgetPRes = widgetParseRes[id];
+    const { eventHandlers, eventKeys = [] } = onceWidgetPRes;
+    eventKeys.forEach(eKey => {
+      eventHandlers[eKey] = eventHandlers[eKey]?.(eventExtralParser);
+      /** 断言 */
+      if (typeof eventHandlers[eKey] !== 'function') {
+        console.error('事件绑定失败!!!', onceWidgetPRes, eventHandlers, eKey);
+        eventHandlers[eKey] = noopError;
+      }
+    });
+  });
+  
+};
+
+
+const IUBDSLParser = ({ dsl }) => {
+  console.log(dsl);
+  
+  const {
+    schema, interMetaCollection,
+    actionsCollection, flowCollection,
+    ref2ValueCollection, conditionCollection, interCollection,
+    widgetCollection,
+  } = dsl as TypeOfIUBDSL;
+
+  let parseRes: any = pickObj(dsl, pickKeys);
+
+  /** 临时代码 */
+  const renderWidgetIds = Object.keys(widgetCollection);
+
+  /** 数据源元数据解析和实体 */
+  const interMetaEntity = interMetaManage(interMetaCollection);
+  /** 页面模型解析 */
+  const schemaParseRes = schemaParser(schema);
+  /** 每个动作解析成函数「流程将其连起来」 */
+  const actionParseRes = actionsCollectionParser(actionsCollection);
+  /** widget的解析 */
+  const widgetParseRes = widgetParser(widgetCollection);
+  /** 流程解析 */
+  const flowParseRes = flowParser(flowCollection);
+
   // const { getFlowItemInfo } = flowParseRes;
   // const { flowItemRun } = getFlowItemInfo('flow1');
   // console.log(flowItemRun({
   //   getFlowItemInfo
   // })?.then());
 
+  /**
+   * hub Parser
+   */
+  const ref2ValueParseRes = ref2ValueParser(ref2ValueCollection || {});
+  const conditionParseRes = conditionParser(conditionCollection || {});
+  const interParseRes = interParser(interCollection || {});
+  
+
   parseRes = {
     ...parseRes,
-    ...flowParseRes,
-    componentParseRes,
-    renderComponentKeys,
-    getCompParseInfo: (compId) => componentParseRes[compId]
+    flowParseRes,
+    widgetParseRes,
+    getWidgetParseInfo: (widgetId: string) => widgetParseRes[widgetId],
+    interMetaEntity,
+    schemaParseRes,
+    actionParseRes,
+    ref2ValueParseRes,
+    renderWidgetIds,
+    // getCompParseInfo: (compId) => componentParseRes[compId]
   };
 
   console.log(parseRes);
+
+  /**  
+   * 注意: 都是引用改变, 不改变结构Key, 可以扩展更多key
+   */
+  composeParser(parseRes);
 
   return parseRes;
 };

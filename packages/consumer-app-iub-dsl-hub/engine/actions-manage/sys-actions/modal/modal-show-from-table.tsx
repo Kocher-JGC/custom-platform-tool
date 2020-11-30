@@ -27,71 +27,71 @@ export const openModelFromTable = (conf: OpenModalOptions, baseActionInfo): Acti
   return async ({
     pageId, action, pageMark, dispatchOfIUBEngine
   }) => {
-    const {
-      type, payload: { schemasPatch, pageStatus, openPageUrl }
-    } = action;
-    const variableData: PageVariable[] = [];
+    // const {
+    //   type, payload: { schemasPatch, pageStatus, openPageUrl }
+    // } = action;
+    // const variableData: PageVariable[] = [];
 
-    /** 获取相应的元数据 */
-    const metadataToUse = dispatchOfIUBEngine({
-      dispatch: {
-        module: DispatchModuleName.IUBStore,
-        method: DispatchMethodNameOfIUBStore.getSchemaMetadata,
-        params: [schemasPatch]
-      }
-    });
-    console.log(metadataToUse);
-    // TODO:
-    const PK = metadataToUse[0].PKInfo?.fieldCode;
-    /** 事件变量 */
-    if (type === 'antTableRowClick') {
-      variableData.push(
-        genPageVariableOfTable(action.payload, { PK, metaDataRef: [0] })
-      );
-    }
-    // 1. 获取和转换数据
-    /** 页面通讯, 配置的变量 */
-    // TODO:
-    const pageCommunication = genPageCommunication({
-      pageInfo: { pageId, pageMark },
-      metadata: metadataToUse,
-      variableData
-    });
-    console.log(pageCommunication);
+    // /** 获取相应的元数据 */
+    // const metadataToUse = dispatchOfIUBEngine({
+    //   dispatch: {
+    //     module: DispatchModuleName.IUBStore,
+    //     method: DispatchMethodNameOfIUBStore.getSchemaMetadata,
+    //     params: [schemasPatch]
+    //   }
+    // });
+    // console.log(metadataToUse);
+    // // TODO:
+    // const PK = metadataToUse[0].PKInfo?.fieldCode;
+    // /** 事件变量 */
+    // if (type === 'antTableRowClick') {
+    //   variableData.push(
+    //     genPageVariableOfTable(action.payload, { PK, metaDataRef: [0] })
+    //   );
+    // }
+    // // 1. 获取和转换数据
+    // /** 页面通讯, 配置的变量 */
+    // // TODO:
+    // const pageCommunication = genPageCommunication({
+    //   pageInfo: { pageId, pageMark },
+    //   metadata: metadataToUse,
+    //   variableData
+    // });
+    // console.log(pageCommunication);
 
-    const IUBRendererHooks = {
-      // 2. 弹窗, 传输数据 「钩子+ctx」
-      mounted({
-        pageMark: newPageMark,
-        runTimeCtxToBusiness: {
-          current
-        }
-      }) {
-        // 3. 数据传输指定处理
-        pageCommunicationReceiver(current, pageCommunication);
-      }
-    };
-    if (openPageUrl) {
-      try {
-        const pageData = await queryPageData({ id: openPageUrl });
-        const m = Modal.confirm({
-          title: <div style={{ textAlign: 'right' }}><CloseOutlined onClick={() => {
-            m.destroy();
-          }}
-          /></div>,
-          icon: false,
-          cancelButtonProps: { style: { display: 'none' } },
-          okButtonProps: { style: { display: 'none' } },
-          content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} pageStatus={pageStatus}/>
-        });
-      } catch (e) {
-        console.error(e);
-      }
-    } else {
-      Modal.error({
-        content: <div>未获取页面ID</div>
-      });
-      console.error('无pageUrl');
-    }
+    // const IUBRendererHooks = {
+    //   // 2. 弹窗, 传输数据 「钩子+ctx」
+    //   mounted({
+    //     pageMark: newPageMark,
+    //     runTimeCtxToBusiness: {
+    //       current
+    //     }
+    //   }) {
+    //     // 3. 数据传输指定处理
+    //     pageCommunicationReceiver(current, pageCommunication);
+    //   }
+    // };
+    // if (openPageUrl) {
+    //   try {
+    //     const pageData = await queryPageData({ id: openPageUrl });
+    //     const m = Modal.confirm({
+    //       title: <div style={{ textAlign: 'right' }}><CloseOutlined onClick={() => {
+    //         m.destroy();
+    //       }}
+    //       /></div>,
+    //       icon: false,
+    //       cancelButtonProps: { style: { display: 'none' } },
+    //       okButtonProps: { style: { display: 'none' } },
+    //       content: <IUBDSLRenderer hooks={IUBRendererHooks} dsl={pageData} pageStatus={pageStatus}/>
+    //     });
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // } else {
+    //   Modal.error({
+    //     content: <div>未获取页面ID</div>
+    //   });
+    //   console.error('无pageUrl');
+    // }
   };
 };

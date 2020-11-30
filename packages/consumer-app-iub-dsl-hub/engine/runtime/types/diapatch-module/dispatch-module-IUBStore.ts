@@ -1,5 +1,5 @@
 import { DispatchModuleName } from "..";
-import { IUBStoreMethod } from "../../../state-manage";
+import { IUBStoreMethod } from "../../../state-manage/types";
 
 export interface DispatchModuleIUBStore {
   module: DispatchModuleName.IUBStore;
@@ -7,16 +7,13 @@ export interface DispatchModuleIUBStore {
 }
 
 export type TDispatchMethodNameOfIUBStore = IUBStoreMethod;
-// "updatePageState" | "isPageState" | "pickPageStateKeyWord" | "targetUpdateState" | "getPageState" | "getWatchDeps" | "getSchemaMetadata"
 export enum DispatchMethodNameOfIUBStore {
   targetUpdateState = 'targetUpdateState',
-  updatePageState = 'updatePageState',
+  mappingUpdateState = 'mappingUpdateState',
   getPageState = 'getPageState',
-  isPageState = 'isPageState',
-  pickPageStateKeyWord = 'pickPageStateKeyWord',
   getWatchDeps = 'getWatchDeps',
   getSchemaMetadata = 'getSchemaMetadata',
   updatePageStateFromTableRecord = 'updatePageStateFromTableRecord'
 }
 
-type A = keyof typeof DispatchMethodNameOfIUBStore;
+// type A = keyof typeof DispatchMethodNameOfIUBStore;

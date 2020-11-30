@@ -11,7 +11,8 @@ export interface SchemasAnalysisRes {
   levelRelation: {
     [str: string]: string[];
   },
-  baseStruct: CommonObjStruct
+  pathMapMetaId: { [str: string]: string; };
+  baseStruct: CommonObjStruct;
 }
 
 export interface SchemaItemAnalysisCtx<T extends SchemaItem = SchemaItem> {

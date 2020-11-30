@@ -1,7 +1,6 @@
-import {
-  DataCollectionOptions,
-  BaseCollectionStruct,
-} from "@iub-dsl/definition/actions";
+// import {
+//   BaseCollectionStruct,
+// } from "@iub-dsl/definition/actions";
 import {
   DispatchModuleName,
   DispatchMethodNameOfIUBStore,
@@ -9,7 +8,7 @@ import {
 } from "../../runtime/types";
 import { ActionDoFn } from "../types";
 
-export const dataCollectionAction = (conf: DataCollectionOptions, baseActionInfo: any = {}): ActionDoFn => {
+export const dataCollectionAction = (conf: any, baseActionInfo: any = {}): ActionDoFn => {
   const { collectionType, struct } = conf;
   if (collectionType === 'structArray') {
     return async ({ action, asyncDispatchOfIUBEngine }) => {
@@ -42,8 +41,8 @@ export const dataCollectionAction = (conf: DataCollectionOptions, baseActionInfo
   };
 };
 
-const genGetPagetStateStruct = (struct: (string | BaseCollectionStruct)[], dispatchOfIUBEngine) => {
-  return struct.reduce(((result, sInfo: (string | BaseCollectionStruct)) => {
+const genGetPagetStateStruct = (struct: (string | any)[], dispatchOfIUBEngine) => {
+  return struct.reduce(((result, sInfo: (string | any)) => {
     if (typeof sInfo === 'string') {
       result[sInfo] = sInfo;
     } else {

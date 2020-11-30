@@ -1,130 +1,107 @@
-import { ActionsDefinition, ActionCollection } from "@iub-dsl/definition/actions/action";
+import { ActionDef, ActionCollection } from "@iub-dsl/definition/actions/action";
 import { openModelFromTable } from './sys-actions/modal/modal-show-from-table';
-
-import { updateStateAction, dataCollectionAction, openModal } from "./sys-actions";
+import { changeStateAction, openModal } from "./sys-actions";
 import { APBDSLCURDAction } from "./business-actions";
 
-import {
-  ExtralActionParseRes, ActionParserRes, ActionInfoParseRes
-} from "./types";
-
-const getExtralActionParserRes = (): ExtralActionParseRes => ({ changeStateToUse: [], getStateToUse: [] });
-const actionRegExp = /^@\(actions\)\./;
-
-export const pickActionId = (str: string) => str.replace(actionRegExp, '');
-
-const noop = () => {};
+import { ActionParserRes } from "./types";
+import { pickActionMark } from "../IUBDSL-mark";
+import { RunTimeCtxToBusiness } from "../runtime/types";
+import { noopError } from "../utils";
+import { defaultExtralParser } from "../IUBDSLParser";
 
 /**
  * 动作集合解析器
  * @param actionCollection 动作集合
- * @param parsrContext 解析上下文 TODO:
  */
 export const actionsCollectionParser = (
-  actionCollection: ActionCollection,
-  parsrContext
+  actionCollection: ActionCollection
 ): ActionParserRes => {
-  const actionParseRes = {};
+  const actionList = {};
   const actionIds = Object.keys(actionCollection);
-  const { actionDependCollect } = parsrContext;
   actionIds.forEach((key) => {
-    /** TODO: 待修改 */
-    if (actionDependCollect) {
-      actionDependCollect(key, actionCollection[key]);
-    }
-    actionParseRes[key] = {
-      /** 原始逻辑必要的 */
-      actionHandle: getActionFn(actionCollection[key]),
-      /** 额外逻辑, 充分的 TODO: 终究对逻辑有侵入 */
-      ...commonActionConfParser(
-        actionCollection[key],
-        getExtralActionParserRes(),
-        parsrContext
-      )
-    };
+    const actionFn = getActionFn(actionCollection[key]);
+    actionList[key] = actionParseWrapFn(actionCollection[key], actionFn);
   });
 
-  /** 对外暴露获取的函数 */
-  const getActionParseRes = (actionID: string): ActionInfoParseRes => {
-    actionID = pickActionId(actionID);
-    if (actionID === '') {
-      return {
-        actionHandle: noop,
-        changeStateToUse: [],
-        getStateToUse: []
-      };
-    }
-    if (actionIds.includes(actionID)) {
-      return actionParseRes[actionID];
-    }
-    return {
-      actionHandle: () => { console.error('未获取Actions'); },
-      changeStateToUse: [],
-      getStateToUse: []
+  /**
+   * 绑定真实处理动作的函数
+   * @param actionId 动作id
+   */
+  const bindAction = (actionId: string) => {
+    /** 预留: 非actionId, 绑定时候可以做额外的判断或处理 */
+    actionId = pickActionMark(actionId);
+
+    /**
+     * 最后一层包装函数
+     */
+    return (context: RunTimeCtxToBusiness) => { 
+      let actionRunFn = actionList[actionId];
+      
+      if (typeof actionRunFn !== 'function') {
+        console.error(`获取流程失败!: ${actionId}`);
+        actionRunFn = noopError;
+      }
+      
+      return actionRunFn(context);
     };
   };
 
   return {
-    actionParseRes,
+    actionList,
     actionIds,
-    getActionParseRes
+    bindAction
   };
 };
 
-/** TODO: 待修改 */
-const commonActionConfParser = (
-  actionConf,
-  actionConfParseRes: ExtralActionParseRes,
-  parsrContext
-): ExtralActionParseRes => {
-  const { actionConfParser } = parsrContext;
-
-  if (actionConfParser) {
-    return actionConfParser(actionConf, actionConfParseRes, parsrContext);
-  }
-
-  return actionConfParseRes;
-};
-
-/** 生成动作的基本信息 */
-const genBaseActionInfo = (conf: ActionsDefinition) => ({ actionId: conf.actionId, actionName: conf.actionName, actionType: conf.actionType });
-
 /**
- * 动作包装器
+ * 动作解析包装器
  * @description 包装挟持. 1.处理when、condition以确定动作是否可以被执行
  * @param conf 原始动作配置
  * @param originFn 原始生成实际运行动作的函数
  */
-const actionWrapFn = (conf: ActionsDefinition, originFn) => {
-  const baseActionInfo = genBaseActionInfo(conf);
-  const { when, condition, actionOptions } = conf;
-  const extralConf = {
-    ...baseActionInfo
+const actionParseWrapFn = (conf: ActionDef, actionFn) => {
+  const actionBaseConf = genActionBaseInfo(conf);
+  /** 扩展的动作解析 */
+  return (exrtalActionParser = defaultExtralParser) => {
+    /**
+     * originFn: 原始处理函数
+     * actOpts: 动作配置
+     * actConf: 基础的动作配置信息
+     */
+    const { actionFn: fn, actionOpts, actionBaseConf: confToUse } = exrtalActionParser({ actionFn, actionOpts: conf.actionOptions, actionBaseConf });
+
+    const runFn = fn(actionOpts, confToUse);
+    return runFn;
   };
-  return originFn(actionOptions, extralConf);
 };
+
 
 /**
  * 根据动作类型,获取动作处理函数并返回可以运行的动作函数
  * @param actionConf 动作配置
  */
-const getActionFn = (actionConf: ActionsDefinition) => {
+const getActionFn = (actionConf: ActionDef) => {
   switch (actionConf.actionType) {
-    case 'updateState':
-      return actionWrapFn(actionConf, updateStateAction);
-    case 'dataCollection':
-      return actionWrapFn(actionConf, dataCollectionAction);
+    case 'changeState':
+      return changeStateAction;
+    case 'openPage':
+      return openModal;
+    case 'interfaceRequest':
+      return () => noopError;
     case 'APBDSLCURD':
-      return actionWrapFn(actionConf, APBDSLCURDAction);
-    case 'openModal':
-      return actionWrapFn(actionConf, openModal);
-    case 'openModalFromTableClick':
-      return actionWrapFn(actionConf, openModelFromTable);
+      return APBDSLCURDAction;
+    // case 'openModalFromTableClick':
+    //   return actionParseWrapFn(actionConf, openModelFromTable);
     default:
       if (typeof actionConf === 'function') {
         return actionConf;
       }
-      console.error('err action');
-      return () => {};
+      // console.error(`未知动作类型！：${JSON.stringify(actionConf)}`);
+      return () => noopError;
   }
 };
+
+/**
+ * 生成动作的基本信息
+ */
+const genActionBaseInfo = (conf: ActionDef) => ({ actionId: conf.actionId, actionName: conf.actionName, actionType: conf.actionType });

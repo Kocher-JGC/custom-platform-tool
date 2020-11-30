@@ -1,3 +1,4 @@
+import { CommonConditionRef } from './../../definition/hub/condition/condition';
 /** TODO: 流程上下文运行不是特别规范 */
 
 import { FlowCollection, FlowItemInfo, FlowOutItemWires } from '@iub-dsl/definition/flow';
@@ -18,7 +19,7 @@ const noopError = () => { console.error('函数不存在~!'); return true; };
  * @param flows 流程集合的描述
  * @param param1 TODO: 解析上下文的信息 「如何传递和处理」
  */
-export const flowParser = (flows: FlowCollection, { parseContext, parseRes }): FlowParseRes => {
+export const flowParser2 = (flows: FlowCollection, { parseContext, parseRes }): FlowParseRes => {
   const flowIds = Object.keys(flows);
 
   let flowId: string;
@@ -133,7 +134,8 @@ const onceFlowOutRun = async (flowCtx, { flowIds, getFlowItemInfo }: { flowIds: 
 };
 
 /** 单项流程运行函数生成的参数 */
-interface FlowItemRunWrapParam<C = any> extends CommonCondition {
+interface FlowItemRunWrapParam<C = any> {
+  condition: CommonConditionRef;
   /** TODO: 实际动作运行的interface如何写? */
   actionHandle: (ctx: C, ...args) => unknown;
   flowOutRun: OnceFlowOutRun<C>
@@ -147,7 +149,7 @@ interface FlowItemRunWrapParam<C = any> extends CommonCondition {
 const flowItemRunWrap = ({
   actionHandle, flowOutRun: actualFlowOutRun,
   /** 控制当前项流程是否可以运行 */
-  when, condition
+  condition
 }: FlowItemRunWrapParam) => {
   return (flowRunOptions: FlowRunOptions) => { // flowRunOptions
     return async (context = {}) => {
@@ -176,7 +178,7 @@ const mergeActionRunRes = (originContext, actionRes) => {
  * @param flowOut: FlowOutItemWires、
  */
 const flowOutRunWrap = (
-  { flowOut, flowOutCondition }: { flowOut: FlowOutItemWires[], flowOutCondition: CommonCondition[]}
+  { flowOut, flowOutCondition }: { flowOut: FlowOutItemWires[], flowOutCondition: any[]}
 ) => {
   const flowOutNum = flowOut?.length || 0;
   const flowOutFns: OnceFlowOutRun[] = [];
@@ -230,7 +232,7 @@ const flowOutRunWrap = (
  */
 const flowItemParser = (flowItem: FlowItemInfo, { parseContext, parseRes }): FlowItemParseRes => {
   const {
-    id, flowOut, flowOutCondition, actionId, when, condition
+    id, flowOut, flowOutCondition, actionId, condition
   } = flowItem;
   /** TODO: 待修改 */
   const { actionParseRes: { getActionParseRes } } = parseRes;
@@ -242,7 +244,7 @@ const flowItemParser = (flowItem: FlowItemInfo, { parseContext, parseRes }): Flo
 
   const flowOutRun = flowOutRunWrap({ flowOutCondition, flowOut });
   const flowItemRun = flowItemRunWrap({
-    actionHandle, flowOutRun, when, condition
+    actionHandle, flowOutRun, condition
   });
   return {
     flowItemRun,

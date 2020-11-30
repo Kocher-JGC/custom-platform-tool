@@ -33,6 +33,9 @@ export const genPageCommunication = ({
   };
 };
 
+/**
+ * 页面通讯, 单条记录的回填
+ */
 const handleF = ({ asyncDispatchOfIUBEngine }: RunTimeCtxToBusiness, pageVar: PageVariableOfTable, metadata) => {
   const { metaDataRef, valueInfo: { rowData } } = pageVar;
   console.log(metadata, metaDataRef);

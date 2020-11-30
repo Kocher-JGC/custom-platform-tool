@@ -51,7 +51,8 @@ export interface PageVariableOfConf extends BasePageVaribale {
   /** 值传递 「与:  数据收集关系差不多」 */
   valueMapping: { // 「仅能配置人员配置产生」
     from: string; // 固定值, 表达式, 页面变量{@(schema).dId1[#($index)].sdId2}
-    to: string; // @(pageVar).dId1
+    // to: string; // @(pageVar).dId1
+    target: string; // @(pageVar).dId1
   }[]
   // valueMapping2?: {
   //   '@(schema).dId1[#($index)].sdId2': '@(refValue).id1'

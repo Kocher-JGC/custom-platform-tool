@@ -2,13 +2,11 @@
  * @description 转换含有特殊标示的字符串
  */
 
-import { isPageState } from "../../state-manage";
 import {
   DispatchMethodNameOfIUBStore, DispatchMethodNameOfMetadata,
   RunTimeCtxToBusiness, DispatchModuleName,
 } from "../types";
-import { } from "../types/dispatch-types";
-import { isPageDatasoruceMeta } from "../../metadata-manage";
+import { isSchema, isInterMeta } from "../../IUBDSL-mark";
 
 /**
  * 将含有特殊标示的值进行转换转换值
@@ -18,7 +16,7 @@ import { isPageDatasoruceMeta } from "../../metadata-manage";
  */
 const transformMarkValue = (ctx: RunTimeCtxToBusiness, value: string) => {
   const { dispatchOfIUBEngine } = ctx;
-  if (isPageState(value)) {
+  if (isSchema(value)) {
     return dispatchOfIUBEngine({
       dispatch: {
         module: DispatchModuleName.IUBStore,
@@ -27,7 +25,7 @@ const transformMarkValue = (ctx: RunTimeCtxToBusiness, value: string) => {
       }
     });
   }
-  if (isPageDatasoruceMeta(value)) {
+  if (isInterMeta(value)) {
     return dispatchOfIUBEngine({
       dispatch: {
         module: DispatchModuleName.metadata,

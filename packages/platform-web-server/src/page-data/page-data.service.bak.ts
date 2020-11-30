@@ -60,7 +60,7 @@ const pickObjFromKeyArr = (obj, keyArr: string[]) => {
   }, {});
 };
 
-const updateStateAction = (widgetId: string, schemas) => ({
+const changeStateAction = (widgetId: string, schemas) => ({
   actionId: widgetId,
   actionName: 'updateState',
   actionType: 'updateState',
@@ -207,7 +207,7 @@ export class PageDataService {
   genFormInput(widgetData) {
     const { compType, field, id, title, defValue, type } = widgetData;
     /** 更改状态的动作 */
-    this.tempAction.push(updateStateAction(id, `@(schema).${field}`));
+    this.tempAction.push(changeStateAction(id, `@(schema).${field}`));
     /** 更改状态的流程项 */
     this.tempFlow.push(genDefalutFlow(id));
     return {
@@ -517,7 +517,7 @@ export class PageDataService {
         },
         actionOutput: 'string', // TODO
       },
-      updateStateAction(updId, `@(schema).${id}`)
+      changeStateAction(updId, `@(schema).${id}`)
     );
     this.tempFlow.push(
       genDefalutFlow(weightId, [DEFALUT_FLOW_MARK+updId]),

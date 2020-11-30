@@ -10,16 +10,15 @@ export const genFormButtonDefaltAction = (widgetId: string) => ({
 
 /** 生成按钮widget */
 export const genFromButton = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
-  const { title, type, actionRef } = propState;
+  const { title, type, actionRef, widgetCode } = propState;
   const { 
     extralDsl: { tempAction, tempFlow, tempBusinessCode }
   } = transfromCtx;
   tempBusinessCode.push(`__${id}`);
   return {
-    id, widgetId: id, widgetRef: 'NormalButton', 
-    title, label: title, text: title, type,
-    actions: {
+    widgetId: id, widgetRef, propState, widgetCode,
+    eventHandlers: {
       ...genFormButtonDefaltAction(actionRef)
-    }
+    },
   };
 };

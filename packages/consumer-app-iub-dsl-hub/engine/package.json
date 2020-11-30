@@ -9,12 +9,7 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "antd": "^4.7.1",
-    "lodash": "^4.17.20",
-    "react-hyperscript": "^3.2.0",
-    "redux-observable": "^1.2.0",
-    "rxjs": "^6.6.3",
-    "rxjs-compat": "^6.6.3"
+    "lodash": "^4.17.20"
   },
   "author": "SANGET",
   "license": "MIT"

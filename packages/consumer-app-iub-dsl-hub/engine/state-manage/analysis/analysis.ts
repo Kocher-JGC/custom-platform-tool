@@ -1,5 +1,5 @@
 import {
-  Schemas, FoundationTypeSchemas, ComplexType, ComplexTypeSchemas, FoundationType, SchemaItem
+  Schema, FoundationTypeSchemas, ComplexType, ComplexTypeSchemas, FoundationType, SchemaItem
 } from "@iub-dsl/definition";
 import { SchemasAnalysisRes, SchemasAnalysisCommonFn, SchemaItemAnalysisCtx } from "../types";
 import { SCHEMAS_DEFAULT_KEY, PATH_SPLIT_MARK_ARR, PATH_SPLIT_MARK } from "../const";
@@ -9,11 +9,13 @@ const initAnalysisRes = (): SchemasAnalysisRes => {
   const pathMapInfo = {};
   const levelRelation = {};
   const baseStruct = {};
+  const pathMapMetaId = {};
 
   return {
     pathMapInfo,
     levelRelation,
     baseStruct,
+    pathMapMetaId
   };
 };
 
@@ -72,7 +74,7 @@ const foundationAnalysis: SchemasAnalysisCommonFn<FoundationTypeSchemas> = (sche
     schemaBasePath, schemaPath,
     schemaItem, parentPath
   } = schemaItemAnalysisCtx;
-  const { pathMapInfo, baseStruct } = schemasAnalysisRes;
+  const { pathMapInfo, baseStruct, pathMapMetaId } = schemasAnalysisRes;
 
   /** 路径映射信息添加 */
   pathMapInfo[schemaPath] = {
@@ -83,6 +85,7 @@ const foundationAnalysis: SchemasAnalysisCommonFn<FoundationTypeSchemas> = (sche
 
   /** 结构的构建 */
   baseStruct[schemaBasePath] = schemaItem.defaultVal || ''; // 上下文临时结构赋值
+  pathMapMetaId[schemaBasePath] = schemaItem.fieldRef || '';
 };
 
 /**
@@ -95,7 +98,7 @@ const complexAnalysis: SchemasAnalysisCommonFn<ComplexTypeSchemas> = (schemaItem
     schemaBasePath, schemaPath,
     schemaItem: { struct, type }, parentPath,
   } = schemaItemAnalysisCtx;
-  const { pathMapInfo, baseStruct } = schemasAnalysisRes;
+  const { pathMapInfo, baseStruct, pathMapMetaId } = schemasAnalysisRes;
   const parentMark = (
     type === ComplexType.structArray ? PATH_SPLIT_MARK_ARR : PATH_SPLIT_MARK
   );
@@ -117,12 +120,12 @@ const complexAnalysis: SchemasAnalysisCommonFn<ComplexTypeSchemas> = (schemaItem
 
 /**
  * schemas结构分析
- * @param schemas Schemas
+ * @param schemas Schema
  * @param option { parentPath: '递归: 父级的路径' }
  * @param schemasAnalysisRes 每一级的返回结果
  */
 const schemasStructAnalysis = (
-  schemas: Schemas,
+  schemas: Schema,
   { parentPath }: { parentPath: string },
   schemasAnalysisRes = initAnalysisRes(),
   // schemasAnalysisRes: SchemasAnalysisRes
@@ -152,7 +155,7 @@ const schemasStructAnalysis = (
  * @param originSchemas 原始的页面数据模型
  */
 const schemasAnalysis = (
-  originSchemas: Schemas
+  originSchemas: Schema
 ) => {
   const options = {
     parentPath: '',

@@ -5,11 +5,13 @@ type FieldHook = {
 
 export enum AllWidgetType {
   FormInput = "FormInput",
+  DropdownSelector = "DropdownSelector",
   Selector = "Selector",
   TreeSelector = "TreeSelector",
   NormalTable = "NormalTable",
   NormalButton = "NormalButton",
-  WidgetError = "WidgetError"
+  WidgetError = "WidgetError",
+  FormButton = "FormButton"
 }
 
 export interface BaseForm {

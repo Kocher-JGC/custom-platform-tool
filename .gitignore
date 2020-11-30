@@ -40,3 +40,5 @@ dist-all
 # umi
 .umi
 .umi-production
+
+packages/consumer-app-iub-dsl-hub/engine/.bak/*

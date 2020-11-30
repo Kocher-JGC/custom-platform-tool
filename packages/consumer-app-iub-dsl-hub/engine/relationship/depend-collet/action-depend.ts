@@ -1,16 +1,16 @@
-import { ActionsDefinition, AllActionType, } from "@iub-dsl/definition/actions/action";
-import { APBDSLCURD, DataCollection, EnumCURD } from "@iub-dsl/definition";
+import { ActionDef, AllActionType, } from "@iub-dsl/definition/actions/action";
+import { APBDSLCURD } from "@iub-dsl/definition";
 import {
   ActionDependCollection, ActionDepend, DependInfo
 } from "../types";
-import { pickActionId } from "../../actions-manage/actions-parser";
 import { DispatchModuleName, DispatchMethodNameOfMetadata, RunTimeCtxToBusiness } from "../../runtime/types";
+import { pickActionMark } from "../../IUBDSL-mark";
 
 /**
  * 收集表名, 数据元数据描述的, 收集的信息是详细的描述
  */
 
-const dataCollectDependCollect = (conf: DataCollection): ActionDepend => {
+const dataCollectDependCollect = (conf: any /** DataCollection */): ActionDepend => {
   const { actionOptions: { struct, collectionType }, actionId } = conf;
   const metadataToUse: DependInfo[] = [];
   const schemasToUse: DependInfo[] = [];
@@ -72,7 +72,7 @@ export const actionsCollectConstor = () => {
   const actionDependId: string[] = [];
   console.log(actionDependCollection);
 
-  const actionDependCollect = (actionId: string, actionConf: ActionsDefinition, context) => {
+  const actionDependCollect = (actionId: string, actionConf: ActionDef, context) => {
     const collectFn = actionCollectScheduler(actionConf.actionType);
     if (collectFn) {
       actionDependCollection.push(collectFn(actionConf as APBDSLCURD));
@@ -81,7 +81,7 @@ export const actionsCollectConstor = () => {
   };
 
   const flowToUseCollect = ({ flowId, actionId }: flowToUseCollectParam) => {
-    actionId = pickActionId(actionId || '');
+    actionId = pickActionMark(actionId || '');
     const idx = actionDependId.indexOf(actionId);
     const actionDepend = actionDependCollection[idx];
     if (actionDepend) {

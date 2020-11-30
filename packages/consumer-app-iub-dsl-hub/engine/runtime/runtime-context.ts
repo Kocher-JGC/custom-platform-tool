@@ -1,9 +1,9 @@
+import { isSchema } from './../IUBDSL-mark';
 /* eslint-disable no-shadow */
 import { notification } from 'antd';
 import React, { useEffect, useMemo } from 'react';
 // import { getAPBDSLtestUrl, SYS_MENU_BUSINESSCODE } from '@consumer-app/web-platform/src/utils/gen-url';
 import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
-import { genEventWrapFnList, useEventProps } from '../event-manage';
 import { useCacheState } from '../utils';
 import { APBDSLrequest as originReq } from '../utils/apb-dsl';
 import { conditionEngine } from '../condition-engine/condition-engine';
@@ -15,6 +15,8 @@ import {
 } from './types';
 import { whenHandle } from '../condition-engine/when-handle';
 import { GRCtx } from './types/runtime-context';
+import { useEventProps } from '../event-manage';
+import { error } from 'console';
 
 const useUU = (setListConf: any[] = []) => {
   const [prop, setProp] = useCacheState({});
@@ -68,10 +70,8 @@ const getDispatchMethod = (
 
 export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   const {
-    // layoutContent, componentParseRes, getCompParseInfo,
-    // schemas, mappingEntity, getActionFn,
-    // renderComponentKeys,
-    // schemasParseRes,
+    interMetaEntity,
+    /************* */
     findEquMetadata,
     getFlowItemInfo,
     datasourceMetaEntity,
@@ -81,17 +81,17 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   const {
     IUBStoreEntity, // IUB页面仓库实例
     runTimeCtxToBusiness, // useRef
-    effectRelationship, // 副作用关系的实例
+    // effectRelationship, // 副作用关系的实例
     businessCode
   } = runtimeCtx;
   const {
     getPageState,
     // getWatchDeps,
     // updatePageState, targetUpdateState,
-    // IUBPageStore, pickPageStateKeyWord
+    // IUBPageStore
   } = IUBStoreEntity;
 
-  const { effectAnalysis, effectDispatch } = effectRelationship;
+  // const { effectAnalysis, effectDispatch } = effectRelationship;
 
   /** 事件运行调度中心的函数 */
   /**
@@ -110,8 +110,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     },
     relationship: {
       findEquMetadata,
-      ...effectRelationship,
-    },
+      // ...effectRelationship,
+    } as any,
   };
   /**
    * ?!性能:区分静态上下文和动态上下文
@@ -129,8 +129,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     },
     relationship: {
       findEquMetadata,
-      ...effectRelationship,
-    },
+      // ...effectRelationship,
+    } as any,
     condition: {
       ConditionHandleOfAPBDSL: conditionEngine,
       ConditionHandle: conditionEngine
@@ -139,7 +139,8 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
       flowsRun
     },
     sys: {
-      APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || SYS_MENU_BUSINESSCODE))
+      APBDSLrequest: () => {}
+      // APBDSLrequest: APBDSLrequest(getAPBDSLtestUrl(businessCode[0] || SYS_MENU_BUSINESSCODE))
     },
   };
 
@@ -160,7 +161,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     }
 
     /** 生成副作用信息 */
-    const shouldUseEffect = effectAnalysis(runTimeCtxToBusiness.current, ctx);
+    // const shouldUseEffect = effectAnalysis(runTimeCtxToBusiness.current, ctx);
     // 临时代码
     // shouldUseEffect();
 
@@ -190,11 +191,11 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     const runRes = await dispatchMethod(...params);
 
     // /** 确定副作用信息可以被使用 */
-    const effectInfo = shouldUseEffect();
+    // const effectInfo = shouldUseEffect();
     /** 执行需要立即执行的副作用 */
-    if (effectInfo && effectInfo.isImmed) {
-      effectDispatch(runTimeCtxToBusiness.current, { pageIdOrMark: runTimeCtxToBusiness.current.pageMark });
-    }
+    // if (effectInfo && effectInfo.isImmed) {
+    // effectDispatch(runTimeCtxToBusiness.current, { pageIdOrMark: runTimeCtxToBusiness.current.pageMark });
+    // }
 
     return runRes;
   };
@@ -229,27 +230,26 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
    *  「最根本问题: props, 没有根据state正常更新「学习参考redux」」
    * 3.
    */
-  const useDynamicPropHandle = (dynamicProps: any = {}) => {
-    const { value, dataSource } = dynamicProps;
+  const useDynamicProps = (dynamicProps: any = {}) => {
 
-    const list: any[] = [];
-    if (value) {
-      const newState = getPageState(runTimeCtxToBusiness.current, value);
-      list.push({
-        deps: [newState],
-        handle: () => ({ value: newState })
-      });
-    }
+    const propKeys = Object.keys(dynamicProps);
 
-    if (dataSource) {
-      const newDataSource = getPageState(runTimeCtxToBusiness.current, dataSource);
-      list.push({
-        deps: [newDataSource],
-        handle: () => ({
-          dataSource: newDataSource
-        })
-      });
-    }
+    const list = propKeys.map(key => {
+      const propValue = dynamicProps[key];
+      if (isSchema(propValue)) {
+        const actualPropValue = getPageState(runTimeCtxToBusiness.current, propValue);
+        return {
+          deps: [actualPropValue],
+          handle: () => ({ [key]: actualPropValue })
+        };
+      } else {
+        console.error('错误prop绑定!');
+        return {
+          deps: [],
+          handle: () => ({ [key]: propValue })
+        };
+      }
+    });
     const propp = useUU(list);
 
     return useMemo(() => {
@@ -273,22 +273,16 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
 
   /**
    * 生成运行时事件绑定的props
-   * @param dynamicProps 动态的props
    */
-  const useRunTimeEventProps = (dynamicProps = {}, renderCompInfo) => {
-    /** 载入上下文,生成实际的fn */
-    // watch 事件 用到的state
-    const eventWrapFnList = useMemo(() => genEventWrapFnList(dynamicProps, { getFlowItemInfo, renderCompInfo }), []);
-
-    const eventProps = useEventProps(eventWrapFnList, runTimeCtxToBusiness);
-    // const eventProps = {};
-    return eventProps;
+  const acturlUseEventProps = (eventHandlers) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useEventProps(runTimeCtxToBusiness, eventHandlers);
   };
 
   return {
     pageStatus: runTimeCtxToBusiness.current.pageStatus,
-    useDynamicPropHandle,
-    useRunTimeEventProps,
+    useDynamicProps,
+    useEventProps: acturlUseEventProps,
     runTimeCtxToBusiness
   };
 };

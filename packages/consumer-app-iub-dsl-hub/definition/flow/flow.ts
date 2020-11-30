@@ -1,4 +1,4 @@
-import { CommonCondition } from "..";
+import { CommonConditionRef } from "../hub";
 
 /**
  * 条件:
@@ -117,10 +117,14 @@ const flowCollection: FlowCollection = {
 };
 
 export interface FlowCollection {
-  [flowItemId: string]: FlowItemInfo
+  /** subProgram 子程序项 */
+  [flowItemId: string]: FlowItemInfo;
 }
 
 /**
+ * 参考概念:
+ * https://en.wikipedia.org/wiki/Control_flow
+ * https://zh.wikipedia.org/wiki/%E6%8E%A7%E5%88%B6%E6%B5%81%E7%A8%8B
  * 规则: 「参考Node-Red」
  * 1. 流程开始仅有一个入口和一个出口. 每个流程节点仅有一个入口.
  * 2. 一个出口可以有多条线连接到不同入口.
@@ -129,17 +133,17 @@ export interface FlowCollection {
  * 1. 不同的FlowItemInfo 看作不同的入口
  * 2. flowOutCondition 和 flowOut 的每一项一一对应, 条件控制该出口是否可用 「特殊的流控有多个出口, 如,prmoise.All, switchCase」
  * 3. FlowOutItemWires 一个出口所连接的下一项流程节点的id「FlowItemInfoId」
- * @extends CommonCondition 该项流程执行的条件
  */
-export interface FlowItemInfo extends CommonCondition{
+export interface FlowItemInfo {
   /** flowItemId */
   id: string;
   /** 该项流程执行的动作 */
   actionId: string;
   /** 条件控制某个出口是否可以使用 */
-  flowOutCondition: CommonCondition[];
+  flowOutCondition: (CommonConditionRef)[];
   /** 流程的出口个数 */
   flowOut: FlowOutItemWires[];
+  condition?: CommonConditionRef;
 }
 
 /**

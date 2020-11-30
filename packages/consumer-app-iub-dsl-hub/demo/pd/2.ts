@@ -4,11 +4,11 @@ export default {
   sysRtCxtInterface: {},
   schemas: {
     "1321031025366802436": {
-      schemaId: "1321031025366802436", name: "主键", type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
+      schemaId: "1321031025366802436", name: "主键", type: "string", fieldRef: "@(interMeta).1321031025329053696.1321031025366802436", isPk: true, fieldCode: "id", defaultVal: "$ID()"
     },
-    "schema_ss-paFCD": { type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031261006995466" },
-    schema_lMYnJ6Hj: { type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031261006995456" },
-    schema_gcl50wFr: { type: "string", fieldMapping: "@(metadata).1321031025329053696.1321031261006995461" }
+    "schema_ss-paFCD": { type: "string", fieldRef: "@(interMeta).1321031025329053696.1321031261006995466" },
+    schema_lMYnJ6Hj: { type: "string", fieldRef: "@(interMeta).1321031025329053696.1321031261006995456" },
+    schema_gcl50wFr: { type: "string", fieldRef: "@(interMeta).1321031025329053696.1321031261006995461" }
   },
   metadataCollection: [{
     id: "1321031025329053696",
@@ -65,14 +65,14 @@ export default {
         actionList: {
           apbId1: {
             type: "TableInsert",
-            table: "@(metadata).1321031025329053696",
-            fieldMapping: {
+            table: "@(interMeta).1321031025329053696",
+            fieldRef: {
               collectionType: "structObject",
               struct: [
-                { field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
-                { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
-                { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
-                { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
+                { field: "@(interMeta).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
+                { field: "@(interMeta).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
+                { field: "@(interMeta).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
+                { field: "@(interMeta).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
               ]
             }
           }
@@ -90,19 +90,19 @@ export default {
         actionList: {
           apbId1: {
             type: "TableUpdate",
-            table: "@(metadata).1321031025329053696",
-            fieldMapping: {
+            table: "@(interMeta).1321031025329053696",
+            fieldRef: {
               collectionType: "structObject",
               struct: [
-                { field: "@(metadata).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
-                { field: "@(metadata).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
-                { field: "@(metadata).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
-                { field: "@(metadata).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
+                { field: "@(interMeta).1321031025329053696.1321031025366802436", collectField: "@(schemas).1321031025366802436" },
+                { field: "@(interMeta).1321031025329053696.1321031261006995466", collectField: "@(schemas).schema_ss-paFCD" },
+                { field: "@(interMeta).1321031025329053696.1321031261006995456", collectField: "@(schemas).schema_lMYnJ6Hj" },
+                { field: "@(interMeta).1321031025329053696.1321031261006995461", collectField: "@(schemas).schema_gcl50wFr" }
               ]
             },
             condition: {
               conditionControl: { and: ["0_0"] },
-              conditionList: { "0_0": { operator: "equ", exp1: "@(metadata).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
+              conditionList: { "0_0": { operator: "equ", exp1: "@(interMeta).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
             }
           }
         },
@@ -119,10 +119,10 @@ export default {
         actionList: {
           apbId1: {
             type: "TableDelete",
-            table: "@(metadata).1321031025329053696",
+            table: "@(interMeta).1321031025329053696",
             condition: {
               conditionControl: { and: ["0_0"] },
-              conditionList: { "0_0": { operator: "equ", exp1: "@(metadata).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
+              conditionList: { "0_0": { operator: "equ", exp1: "@(interMeta).1321031025329053696.1321031025366802436", exp2: '@(schemas).1321031025366802436' } }
             }
           }
         },
@@ -133,13 +133,13 @@ export default {
   },
   flowCollection: {
     f_KDfToAMw: {
-      id: "f_KDfToAMw", actionId: "@(actions).KDfToAMw", flowOutCondition: [], flowOut: [[]]
+      id: "f_KDfToAMw", actionId: "@(action).KDfToAMw", flowOutCondition: [], flowOut: [[]]
     },
     f_e0BeGVs_: {
-      id: "f_e0BeGVs_", actionId: "@(actions).e0BeGVs_", flowOutCondition: [], flowOut: [[]]
+      id: "f_e0BeGVs_", actionId: "@(action).e0BeGVs_", flowOutCondition: [], flowOut: [[]]
     },
     f_6jBAxlGp: {
-      id: "f_6jBAxlGp", actionId: "@(actions).6jBAxlGp", flowOutCondition: [], flowOut: [[]]
+      id: "f_6jBAxlGp", actionId: "@(action).6jBAxlGp", flowOutCondition: [], flowOut: [[]]
     },
     f_middle: {
       id: "f_middle",
@@ -165,13 +165,13 @@ export default {
       ]
     },
     f_actions_ckK0BdL8: {
-      id: "f_actions_ckK0BdL8", actionId: "@(actions).actions_ckK0BdL8", flowOutCondition: [], flowOut: [[]]
+      id: "f_actions_ckK0BdL8", actionId: "@(action).actions_ckK0BdL8", flowOutCondition: [], flowOut: [[]]
     },
     f_actions_ckK0BdL9: {
-      id: "f_actions_ckK0BdL9", actionId: "@(actions).actions_ckK0BdL9", flowOutCondition: [], flowOut: [[]]
+      id: "f_actions_ckK0BdL9", actionId: "@(action).actions_ckK0BdL9", flowOutCondition: [], flowOut: [[]]
     },
     f_actions_ckK0BdL0: {
-      id: "f_actions_ckK0BdL0", actionId: "@(actions).actions_ckK0BdL0", flowOutCondition: [], flowOut: [[]]
+      id: "f_actions_ckK0BdL0", actionId: "@(action).actions_ckK0BdL0", flowOutCondition: [], flowOut: [[]]
     },
 
   },

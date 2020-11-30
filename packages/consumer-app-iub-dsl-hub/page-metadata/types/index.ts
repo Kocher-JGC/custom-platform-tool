@@ -18,7 +18,7 @@ export interface PageMetadata {
   /** 页面名称 */
   name: string
   /** 页面标准接口接口 */
-  pageInterface: {
+  pageInterface?: {
     /** 标准输入 */
     stdout: any
     /** 标准输出 */

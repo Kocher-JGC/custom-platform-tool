@@ -69,13 +69,36 @@ const genMetadataFromRemoteTableMeta = (tableMeta: RemoteTableMeta, extralData =
     code: tableMeta.code,
     type: 'general',
     moduleId: tableMeta.moduleId,
-    columns: transformCols(tableMeta.columns),
+    fields: transformCols(tableMeta.columns),
     ...extralData
   };
 };
 
+/**
+ * post获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/tableWithAux
+ * {
+  "tables":[
+     {
+        "tableId":"1330688851571777536",
+        "addWithAuxTable":false
+     },{
+        "tableId":"1330688706906038272",
+        "addWithAuxTable":false
+     }  
+    ]
+  }
+ */
+/**
+ * list获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/list
+ * 默认100条一页
+ */
+/**
+ * get获取
+ */
 const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promise<RemoteTableMeta | false> => {
   const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
+  console.log(reqUrl);
+  
   const resData = await axios
     .get(reqUrl, {
       headers: {
@@ -95,6 +118,7 @@ const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promise<Remo
 };
 
 export const findTableMetadata = (tableMetadata: MetadataFromTable[], idOrRef: string) => {
+  console.log(tableMetadata);
   return tableMetadata.find(d => d.id === idOrRef || d.tableRefId === idOrRef);
 
 };
@@ -143,7 +167,8 @@ export const genExtralSchema = (transfromCtx: TransfromCtx, tableMetadata: Metad
   return null;
 };
 
-export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx): Promise<MetadataFromTable[]> => {
+export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx): Promise<any[]> => {
+  console.log(dataSource);
   if (Array.isArray(dataSource)) {
     const remoteTableMeta = Promise.all(dataSource.map((info) => {
       return getRemoteTableMeta({ ...processCtx, tableId: info.datasourceId });
@@ -156,14 +181,20 @@ export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx):
     const tableRefIdx = Object.keys(dataSource);
     const r = tableRefIdx.map(async (tableRefId) => {
       const info = dataSource[tableRefId];
-      const { tableInfo, type } = info;
-      const remoteTableMeta = await getRemoteTableMeta({ ...processCtx, tableId: tableInfo.id });
-      if (remoteTableMeta) {
-        return genMetadataFromRemoteTableMeta(remoteTableMeta, { tableRefId, tableType: type });
-      } 
+      const { tableInfo, type, columns, id } = info;
+      const tableId = tableInfo?.id || id;
+      if (tableId) {
+        const remoteTableMeta = await getRemoteTableMeta({ ...processCtx, tableId });
+        if (remoteTableMeta) {
+          return genMetadataFromRemoteTableMeta(remoteTableMeta, { tableRefId, tableType: type });
+        } 
+      } else if (Array.isArray(columns)) {
+        info.fileds = transformCols(info.columns);
+        return info;
+      }
       return null;
     });
-    return Promise.all(r);
+    return (await Promise.all(r)).filter(v => v);
   }
   return [];
 };
