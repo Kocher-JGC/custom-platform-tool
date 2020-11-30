@@ -1,7 +1,7 @@
 /// //////////////// widget ///////////////////
 // import { PropItemCompAccessSpec } from ".";
 
-import { VarAttrType } from "./page-metadata";
+import { VarAttrType, EventAttrType } from "./page-metadata";
 
 export type EditAttr = string | string[]
 
@@ -56,6 +56,7 @@ export interface EditableWidgetMeta {
    * 2. 通过字符串找到对应的自定义编辑器
    */
   propEditor?: string
+  eventAttr?: EventAttrType[]
 }
 
 /// //////////////// widget entity ///////////////////

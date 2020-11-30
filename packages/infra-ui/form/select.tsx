@@ -1,5 +1,5 @@
-import { Dropdown as Selector } from '@deer-ui/core/dropdown';
+import { Select } from 'antd';
 
 export {
-  Selector
+  Select
 };

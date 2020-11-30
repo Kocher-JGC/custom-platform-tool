@@ -102,3 +102,14 @@
     z-index: 3;
   }
 }
+
+/** 页面设置弹窗 */
+.page-config-container .page-action-selector, .page-action-submit-data {
+  .search-area {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .ant-table-cell .ant-form-item {
+    margin-bottom: 0;
+  }
+}

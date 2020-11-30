@@ -29,6 +29,22 @@ export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) =>
 
 export type ChangeWidgetType = (widgetType: string) => void
 
+export type VariableType = 'system'|'page'|'pageInput'|'widget'
+export type VariableItem = {
+  title: string
+  code: string
+  id: string
+  alias?: string
+  varType: 'number'|'string'|'date'|'dateTime'
+  realVal?: number|string
+  type: VariableType
+}
+export type VariableOptions = {
+  varRely?
+  flatLayoutItems?
+}
+export type GetVariableData = (filter: VariableType[], options?: VariableOptions) => Promise<{[key: string]: VariableItem[]}>
+
 /**
  * 平台提供的 UI 上下文，提供以下能力
  * 1. 使用平台的 UI
@@ -54,6 +70,8 @@ export interface PlatformCtx {
     genMetaRefID: GenMetaRefID
     /** 更改组件的类型 */
     changeWidgetType: ChangeWidgetType
+    /** 获取变量数据 */
+    getVariableData: GetVariableData
     /** 更改 widget state */
     changeEntityState: ChangeEntityState
   }
