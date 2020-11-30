@@ -23,7 +23,7 @@ const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
     ) {
       result[key] = [];
     } else {
-      result[key] = getFullInitStruct(baseStruct[key]);
+      result[key] = getFullInitStruct({ baseStruct: baseStruct[key], pathMapInfo });
     }
     return result;
   }, {});
@@ -46,7 +46,6 @@ const collectFieldMapping = (schemaInfo: any) => {
 export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   const { levelRelation, pathMapInfo, baseStruct } = analysisData;
   const schemaMarkArr = Object.keys(pathMapInfo);
-
   const fullStruct = getFullInitStruct({ baseStruct, pathMapInfo });
 
   const getSchemaInfo = (schemaPath: string) => {
@@ -59,8 +58,13 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   return (): IUBStoreEntity => {
     const [IUBPageStore, setIUBPageStore] = useCacheState(fullStruct);
 
+    console.log(IUBPageStore);
+    
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
     const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
+      if (strOrStruct === '') {
+        return IUBPageStore;
+      }
       if (typeof strOrStruct === 'string') {
         if (isSchema(strOrStruct)) {
           // _.at(object, [paths])
@@ -80,7 +84,6 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
           return result;
         }, {});
       }
-      return IUBPageStore;
     };
     const getWatchDeps = getPageState;
 

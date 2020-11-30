@@ -1,7 +1,7 @@
 // import { 
 //   InterMeta, FieldMeta, 
 //   BaseInterfaceMeta, TreeInterfaceMeta, 
-//   InterType, FieldType, FieldDataType,
+//   InterMetaType, FieldType, FieldDataType,
 //   RefType, InterRefRelation
 // } from '@iub-dsl/definition';
 

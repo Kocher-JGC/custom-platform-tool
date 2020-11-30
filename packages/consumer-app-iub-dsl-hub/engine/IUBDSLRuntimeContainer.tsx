@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, {
-  Fragment,
-  useEffect, useMemo, useCallback, useContext, useRef, useState
+  Fragment, useEffect, useMemo, useRef
 } from 'react';
 import { LayoutRenderer } from '@engine/layout-renderer';
 import { pageManage } from '@consumer-app/web-platform/src/page-manage';
@@ -13,10 +12,10 @@ import { widgetRenderer } from "./widget-manage";
 
 const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
   const {
+    schemaParseRes,
     getWidgetParseInfo,
-    schemas, mappingEntity,
     renderWidgetIds,
-    schemasParseRes, pageID: pageId, businessCode, isSearch
+    pageID: pageId, businessCode, isSearch
   } = dslParseRes;
 
   /** 获取单例的页面管理 */
@@ -54,40 +53,36 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
     };
   }, []);
 
-  // const useIUBStore = useMemo(() => createIUBStore(schemasParseRes), [schemasParseRes]);
-  // const IUBStoreEntity = useIUBStore();
-  // const {
-  //   getPageState
-  // } = IUBStoreEntity;
-
-  // TODO: 未加入布局结构, 仅是一层使用
-  console.log(renderWidgetIds);
+  const useIUBStore = useMemo(() => createIUBStore(schemaParseRes), [schemaParseRes]);
+  const IUBStoreEntity = useIUBStore();
   
-  const actualRenderComponentList = renderWidgetIds.map((id) => {
-    const widgetConf = getWidgetParseInfo(id);
-    const render = widgetRenderer(widgetConf);
-    return render;
-  });
-
-  console.log(actualRenderComponentList);
+  // TODO: 未加入布局结构, 仅是一层使用  
+  const renderWidgetList = useMemo(() => 
+    renderWidgetIds.map((id: string) => {
+      const widgetConf = getWidgetParseInfo(id);
+      const render = widgetRenderer(widgetConf);
+      return render;
+    })
+  , []);
   
-  // const defaultCtx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
-  //   IUBStoreEntity,
-  //   runTimeCtxToBusiness,
-  //   // effectRelationship,
-  //   businessCode,
-  // }), [IUBStoreEntity]);
+  const defaultCtx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
+    IUBStoreEntity,
+    runTimeCtxToBusiness,
+    // effectRelationship,
+    businessCode,
+  }), [IUBStoreEntity]);
 
   const extralProps = useMemo(() => ({ extral: '扩展props', isSearch }), []);
+  const renderList = renderWidgetList.map((Render, i) => <Render key={renderWidgetIds[i] || i} extralProps={extralProps}/>);
 
   hooks?.beforeMount?.();
 
   return (
-    <DefaultCtx.Provider value={{}}>
+    <DefaultCtx.Provider value={defaultCtx}>
       <LayoutRenderer
-        layoutNode={actualRenderComponentList}
+        layoutNode={renderList}
         componentRenderer={({ layoutNodeItem, idx, id, }) => {
-          return <Fragment key={idx}>{layoutNodeItem}</Fragment>;
+          return <Fragment key={idx}><div style={{ margin: 10 }}>{layoutNodeItem}</div></Fragment>;
         }}
         // RootRender={(child) => {
         //   return child;

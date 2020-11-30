@@ -12,10 +12,10 @@ import { tableMetaParser } from './table-meta-parser';
 const interMetaParserScheduler = (meta: InterMeta, res: InterMetaParseRes) => {
   tableMetaParser(meta, res);
   // switch (meta.type) {
-  //   case InterType.NORMAL_TABLE:
-  //   case InterType.TREE_TABLE:
-  //   case InterType.DICT_TABLE:
-  //   case InterType.AUX_TABLE:
+  //   case InterMetaType.NORMAL_TABLE:
+  //   case InterMetaType.TREE_TABLE:
+  //   case InterMetaType.DICT_TABLE:
+  //   case InterMetaType.AUX_TABLE:
   //   default:
   //     break;
   // }
