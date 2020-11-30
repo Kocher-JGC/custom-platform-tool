@@ -12,6 +12,6 @@ app_target_env_config_path=/usr/share/consumer-app/web-client/config.json
 # app_target_env_config_path=/usr/share/nginx/html/config.json
 
 app_port=5020
-app_source_port=3000
+app_source_port=5020
 
 . ./cd.sh

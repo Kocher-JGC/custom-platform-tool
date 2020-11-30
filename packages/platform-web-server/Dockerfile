@@ -1,4 +1,4 @@
-FROM node:lts-alpine as build-stage
+FROM reg.hydevops.com/base_images/node:14.4-alpine3.12 as build-stage
 
 WORKDIR  /var/node-web-server
 
