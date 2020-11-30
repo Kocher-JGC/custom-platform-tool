@@ -2,7 +2,7 @@ import { BasicActionConf } from "../action";
 
 type FeedBackStatus = 'success' | 'faile'
 
-export type FeedBackType = 'openModal'
+export type FeedBackType = 'feedBack'
 /** 动作更新运行时状态、 控件赋值 */
 export interface FeedBack extends BasicActionConf {
   actionType: FeedBackType;
