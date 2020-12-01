@@ -25,7 +25,7 @@ const getEnvConfigFromRemote = async () => {
  * 将 query 的 key 映射到 store 的 key
  */
 const queryKeyMapStoreKey = {
-  // t: "app/token",
+  t: "paas/token",
   app: "app/code",
   lessee: "app/lessee",
   appName: "app/name",
@@ -46,13 +46,9 @@ const getEnvConfigFromLocation = () => {
   if (Array.isArray(queryKeys)) {
     queryKeys.forEach((q) => {
       if (q !== "redirect") {
-        if( q === "t" && query.app){
-          params[`app/${query.app}/token`] = query.t;
-        }else{
-          const matchStoreKey = queryKeyMapStoreKey[q];
-          if(matchStoreKey) {
-            params[matchStoreKey] = query[q];
-          }
+        const matchStoreKey = queryKeyMapStoreKey[q];
+        if(matchStoreKey) {
+          params[matchStoreKey] = query[q];
         }
       }
     });

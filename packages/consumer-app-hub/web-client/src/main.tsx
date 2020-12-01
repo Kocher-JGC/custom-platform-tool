@@ -40,7 +40,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     t: '',
     appName: '',
   }
-  
+
   constructor(props) {
     super(props);
     this.state = {
@@ -53,7 +53,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   setEnvConfig = () => {
     const app = store.get('app/code');
     const lessee = store.get('app/lessee');
-    const t = store.get(`app/${app}/token`);
+    const t = store.get(`paas/token`);
     const appName = store.get('app/name');
 
     this.envConfig = {
@@ -103,11 +103,11 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   checkAppInfo = () => {
-    const { app } = this.props;
-    if(app?.code){
-      return this.loginPanelRender();
-    }else{
+    // const { app } = this.props;
+    if (!store.get("app/code")) {
       return this.selectAppPanelRender();
+    } else {
+      return this.loginPanelRender();
     }
   }
 
@@ -149,10 +149,12 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     return (
       <LoginPanel
         backgroundImage="url(./images/bg_1.jpg)"
-        login={(value)=>{
+        login={(value )=> {
           login(value, this.onLoginSuccess);
         }}
-        autoLogin={autoLogin}
+        autoLogin={() => {
+          autoLogin(this.onLoginSuccess);
+        }}
         btnGColor="red"
         logo={() => <h3>{appName}</h3>}
         logging={logging}
@@ -163,8 +165,9 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   render() {
-    const { isLogin, switchUser, switchApp } = this.props;
+    const { isLogin, username, switchUser, switchApp } = this.props;
     const { menuData } = this.state;
+
     return (
       <AuthSelector
         isLogin={isLogin}
@@ -186,7 +189,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
                 action: () => {
                   // console.log('action');
                 },
-                title: '测试',
+                title: username,
                 overlay: () => {
                   return (
                     <div style={{ width: 120 }}>

@@ -6,6 +6,7 @@ export function login(data): Promise<{ code: string, message: string, data?: any
         code: 'C0000',
         message: 'success',
         data: {
+          username: data.AdminName,
           token: "123456"
         }
       });

@@ -135,7 +135,7 @@ function getPrevLoginData(): AuthStore | undefined {
  */
 const authActions: AuthActions = (store) => ({
   /** 自动登录 */
-  async autoLogin(onSuccess) {
+  async autoLogin(state, form, onSuccess) {
     // const token = getPrevLoginToken();
     /** TODO: 是否有做 token 是否有效的接口验证 */
     const prevLoginState = getPrevLoginData();
