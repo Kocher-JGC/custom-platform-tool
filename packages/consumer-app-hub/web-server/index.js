@@ -95,7 +95,6 @@ app.get("/app-list", (req, res) => {
 
 // 安装后端应用转发
 app.post("/appManager/installApp", (req, res) => {
-  console.log(req);
   readJson(path.join(__dirname, projectFolder, `config.json`), (err, json) => {
     if (err || !json || !json.saasServerUrl) {
       res.json({

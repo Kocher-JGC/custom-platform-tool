@@ -74,7 +74,7 @@ exports.removeFolder = function removeFolder(removePath) {
   });
 };
 
-exports.saveInstallAppInfo = function saveInstallAppInfo(appConfig) {
+function saveInstallAppInfo(appConfig) {
   return new Promise((resolve, reject) => {
     readJson(path.join(__dirname, "installApp.json"), (err, installApp = {}) => {
       installApp[appConfig.applicationCode] = appConfig;

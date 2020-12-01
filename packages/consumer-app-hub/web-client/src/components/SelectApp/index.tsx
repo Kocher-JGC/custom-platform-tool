@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import store from "store";
 import { PlusOutlined } from "@ant-design/icons";
-import { List, Card, Button } from "antd";
+import { List, Card, Button, message } from "antd";
 import { UrlConfKey } from "../../utils/env";
 import {
   queryInstallApp
@@ -16,7 +16,13 @@ const SelectApp: React.FC<IProps> = (props) => {
   const [appList, setAppList] = useState<any[]>([]);
   useEffect(() => {
     queryInstallApp().then((res)=>{
-      setAppList(Object.values(res?.data || {}));
+      if(res?.data?.code){
+        message.info(res?.data?.err || "获取已安装应用失败");
+      } else {
+        setAppList(Object.values(res?.data || {}));
+      }
+    }).catch((err)=>{
+      message.error(err.message || "获取已安装应用失败");
     });
   }, []);
 
@@ -40,7 +46,7 @@ const SelectApp: React.FC<IProps> = (props) => {
                   <Button
                     type="link"
                     className="selectAppItemHandle"
-                    href={`${process?.env?.NODE_ENV === "development" ? "http://localhost:5020" : ""}/app-installation?api=${store.get(UrlConfKey.saasServerUrl)}`}
+                    href={`${process?.env?.NODE_ENV === "development" ? "http://localhost:5020" : ""}/app-installation`}
                     target="_blank"
                   >
                     <PlusOutlined className="selectAppItemIcon" title="安装应用" />
