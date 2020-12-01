@@ -1,2 +1,2 @@
-export * from './prepareAppData';
+// export * from './prepareAppData';
 export * from './loadWidget';

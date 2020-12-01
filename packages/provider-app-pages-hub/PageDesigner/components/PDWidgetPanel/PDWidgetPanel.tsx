@@ -6,9 +6,12 @@ import { Tab, Tabs } from '@infra/ui';
 import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/components/GroupPanel';
 import { LoadingTip } from '@provider-ui/loading-tip';
 import { PageMetadata } from '@engine/visual-editor/data-structure';
+import { getWidgetMetadata } from '@platform-widget-access/loader';
+
 import { DataSourceDragItem } from '../PDDataSource';
-import { PlatformContext, useWidgetMeta, useWidgetPanelData } from '../../utils';
+import { useWidgetMeta, useWidgetPanelData } from '../../utils';
 import { DataSourceTitle } from './DataSourceTitle';
+import { groupWidget } from './group-shape';
 
 export interface PageDesignerComponentPanelProps {
   pageMetadata: PageMetadata
@@ -62,6 +65,14 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
   // widgetPanelData,
   ...other
 }) => {
+  // const [widgetPanelData, setWidgetPanelData] = React.useState(null);
+  // React.useEffect(() => {
+  //   getWidgetMetadata().then((res) => {
+  //     const widgetGroupingData = groupWidget(res);
+  //     // console.log(res);
+  //     setWidgetPanelData(widgetGroupingData);
+  //   });
+  // }, []);
   const [ready, widgetPanelData] = useWidgetPanelData();
   if (!ready) {
     return (

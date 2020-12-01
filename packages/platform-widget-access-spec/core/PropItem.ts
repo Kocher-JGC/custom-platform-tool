@@ -1,9 +1,14 @@
 import { PropItemMeta } from '@engine/visual-editor/data-structure';
 import { mergeDeep } from '@infra/utils/tools';
+import { PropItemGroupingTypes } from '../grouping-register';
 
 // export type PropItemRender = Pick<PropItemCompAccessSpec, 'render'>
 
-export const PropItem = (propItemMeta: PropItemMeta): ClassDecorator => {
+/**
+ * 定义属性项的 decorator
+ * @param propItemMeta 
+ */
+export const PropItem = (propItemMeta: PropItemMeta<PropItemGroupingTypes>): ClassDecorator => {
   const resData = { ...propItemMeta };
   // return target => {};
   return (SrouceClass): any => {

@@ -38,7 +38,7 @@ const defaultAuthStore: AuthStore = {
   userInfo: {},
   username: "",
   loginResDesc: "",
-  autoLoging: false,
+  autoLoging: !!getPrevLoginToken(),
   logging: false,
   logouting: false,
   // isLogin: !!getPrevLoginToken(),
@@ -136,10 +136,17 @@ function getPrevLoginData(): AuthStore | undefined {
 const authActions: AuthActions = (store) => ({
   /** 自动登录 */
   async autoLogin(state, form, onSuccess) {
+    store.setState({
+      autoLoging: true
+    });
     // const token = getPrevLoginToken();
     /** TODO: 是否有做 token 是否有效的接口验证 */
     const prevLoginState = getPrevLoginData();
-    if (!prevLoginState) return;
+    if (!prevLoginState) {
+      return store.setState({
+        autoLoging: false
+      });
+    }
     $R_P.urlManager.setLessee(prevLoginState.prevLoginRes.lesseeAccessName);
     // const loginRes = await AUTH_APIS.login({
     //   token
@@ -147,8 +154,8 @@ const authActions: AuthActions = (store) => ({
     /** 判断是否登录成功的逻辑 */
     // const isLogin = handleLoginSuccess(loginRes);
     // if (isLogin) {
-    onLoginSuccess({ resData: prevLoginState.prevLoginRes });
-    store.setState(prevLoginState);
+    const nextState = onLoginSuccess({ resData: prevLoginState.prevLoginRes });
+    store.setState(nextState);
     Call(onSuccess);
     // }
   },

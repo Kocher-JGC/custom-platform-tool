@@ -2,9 +2,10 @@ import React from 'react';
 import Editor, { 
   PropertiesEditorProps
 } from '@engine/visual-editor/components/PropertiesEditor';
-import { PropItemRenderer } from './PDPropItemRenderer';
-import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } from '../services';
-import { PlatformContext } from '../utils';
+import { PropItemRenderer } from '../PDPropItemRenderer';
+import { loadPlatformWidgetMeta, loadPropItemData, loadPropItemGroupingData } from '../../services';
+import { PlatformContext } from '../../utils';
+import { groupPropItem } from './prop-item-group-shape';
 
 // TODO: 完善属性检查
 interface PropsEditorProps {
@@ -17,10 +18,30 @@ interface PropsEditorProps {
   changeEntityState: PropertiesEditorProps['changeEntityState']
 }
 
+const prepareData = async (widgetRef) => {
+  const [
+    widgetMeta,
+    propItemGroupingData,
+    propItemData
+  ] = await Promise.all([
+    loadPlatformWidgetMeta(widgetRef),
+    loadPropItemGroupingData(),
+    loadPropItemData(),
+  ]);
+
+  // const propItemGroupingData = groupPropItem(propItemData);
+
+  return {
+    widgetMeta,
+    propItemGroupingData,
+    propItemData
+  };
+};
+
 /**
  * Page design prop editor
  */
-class PDPropertiesEditor extends React.Component<PropsEditorProps> {
+export class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   // TODO: 完成 state 的 interface
   state = {
     ready: false,
@@ -32,15 +53,11 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   componentDidMount = async () => {
     const { selectedEntity } = this.props;
     
-    const [
-      widgetMeta,
+    const {
       propItemGroupingData,
+      widgetMeta,
       propItemData
-    ] = await Promise.all([
-      loadPlatformWidgetMeta(selectedEntity.widgetRef),
-      loadPropItemGroupingData(),
-      loadPropItemData(),
-    ]);
+    } = await prepareData(selectedEntity.widgetRef);
 
     this.setState({
       propItemGroupingData,
@@ -112,5 +129,3 @@ class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     ) : null;
   }
 }
-
-export default PDPropertiesEditor;

@@ -4,6 +4,7 @@ export const FormTimeTickerMeta = CreateWidgetPropItemRely({
   id: 'widget-form-time-ticker',
   label: '时间框',
   widgetRef: 'FormTimeTicker',
+  wGroupType: 'formController',
   varAttr: [{
     alias: '实际值',
     attr: 'realVal',

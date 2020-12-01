@@ -10,7 +10,7 @@ import pick from "lodash/pick";
 import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
-import PropertiesEditor from './components/PDPropertiesEditor';
+import { PDPropertiesEditor } from './components/PDPropertiesEditor';
 import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext } from "./utils";
 
 import { ChangeEntityState, GenMetaRefID, NextEntityState, NextEntityStateType } from "@engine/visual-editor/data-structure";
@@ -557,7 +557,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
             >
               {
                 activeEntity && (
-                  <PropertiesEditor
+                  <PDPropertiesEditor
                     key={activeEntityID}
                     pageMetadata={pageMetadata}
                     interDatasources={this.getDatasources()}

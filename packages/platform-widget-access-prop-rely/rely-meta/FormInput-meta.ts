@@ -4,6 +4,7 @@ export const FormInputMeta = CreateWidgetPropItemRely({
   id: 'widget-id-1',
   label: '文本框',
   widgetRef: 'FormInput',
+  wGroupType: 'formController',
   varAttr: [{
     alias: '实际值',
     attr: 'realVal',
