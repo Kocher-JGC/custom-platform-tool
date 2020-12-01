@@ -6,7 +6,8 @@
 import React from "react";
 import { Provider, connect } from "unistore/react";
 
-import AuthSelector from "@infra/auth-selector/selector";
+import { AuthSelector } from "@infra/auth-selector/selector";
+import { LoginPanelThemeMinimal } from "@infra/auth-selector/login-panel";
 import { redirectToRoot } from "multiple-page-routing";
 import {
   authStore, authActions, AuthStore, PaaSAuthActionsTypes, AuthStoreState
@@ -65,17 +66,32 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     removeLoadingBG();
   }
 
+  onLoginSuccess = () => {}
+
+  loginPanelRender = () => {
+    const { login, logging, autoLoging } = this.props;
+    return (
+      <LoginPanelThemeMinimal
+        backgroundImage="url(./images/bg/bg_3.jpg)"
+        login={(value)=>{
+          login(value, this.onLoginSuccess);
+        }}
+        btnGColor="blue"
+        logo={() => <h3 style={{ fontSize: 24 }}>自定义平台 3.0</h3>}
+        logging={logging}
+        autoLoging={autoLoging}
+        formOptions={loginFormOptions}
+      />
+    );
+  }
+
   render() {
     const { isLogin } = this.props;
     // isLogin = process.env.NODE_ENV === "development" ? true : isLogin;
     return (
       <AuthSelector
-        {...this.props}
-        backgroundImage="url(./images/bg/bg_3.jpg)"
-        btnGColor="red"
-        logo={() => <div className="font-bold text-2xl py-2">自定义平台 3.0</div>}
         isLogin={isLogin}
-        formOptions={loginFormOptions}
+        loginPanelRender={this.loginPanelRender}
       >
         {
           isLogin ? (

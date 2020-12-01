@@ -27,7 +27,7 @@
     "prettier:base": "prettier --parser typescript",
     "format": "npm run prettier:base -- --write \"packages/**/*.{ts,tsx}\"",
     "test": "jest --coverage",
-    "lint": "eslint packages",
+    "lint": "eslint packages --fix",
     "setup:registry": "sh scripts/set-npm-yarn-registry.sh",
     "commit": "git-cz"
   },
@@ -49,6 +49,7 @@
     "cz-customizable": "^6.3.0",
     "eslint": "^7.14.0",
     "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-react-app": "^6.0.0",
     "eslint-loader": "4.0.2",
