@@ -86,6 +86,12 @@ export const initRequest = (baseURL, token) => {
   });
 };
 
+export const setRequestHeader = (headers) => {
+  Object.keys(headers).forEach((key)=>{
+    $A_R.defaults.headers.common[key] = headers[key];
+  });
+};
+
 declare global {
   /** 应用端的请求对象，application request */
   const $A_R: AxiosInstance;

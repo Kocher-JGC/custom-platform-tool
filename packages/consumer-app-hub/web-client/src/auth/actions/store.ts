@@ -6,11 +6,12 @@ import storage from "store";
 import { Call, EventEmitter } from "@mini-code/base-func";
 
 import * as AUTH_APIS from "./apis";
+import { setRequestHeader } from "../../utils/request";
 
 const PREV_LOGIN_DATA = 'prev/login/data';
 
 export interface SaaSAuthActionsTypes {
-  autoLogin: () => void;
+  autoLogin: (onSuccess?: () => void) => void;
   switchUser: () => void;
   switchApp: () => void;
   selectAppInfo: (app: { code: string, lessee: string }) => void;
@@ -44,6 +45,10 @@ export interface IApp {
 export function getPrevLoginToken() {
   const res = getPrevLoginData();
   return res ? res.token : null;
+}
+
+export function checkAppInfo() {
+  return storage.get("app/code") && storage.get(`app/${storage.get("app/code")}/token`);
 }
 
 export function getAppInfo() {
@@ -86,33 +91,38 @@ function onLoginSuccess(store, { resData = {}, originForm = {} }) {
   const { app } = store.getState();
 
   /** TODO: 提取页面需要的信息 */
-  const { userName } = resData;
-
+  const { username } = resData;
   /**
    * 提取用户信息
    */
   const userInfo = {
-    username: userName
+    username
   };
 
-  const { token } = resData || {};
-  
+  let { token } = resData || {};
+
+  if(token.indexOf("Bearer") === -1){
+    token = `Bearer ${token}`;
+  }
+
   const resultStore = {
     logging: false,
     autoLoging: false,
     isLogin: true,
     token,
-    username: userName,
+    username,
     prevLoginRes,
     userInfo
   };
 
-  storage.set(`app/${app.code}/token`, token);
+  storage.set(`app/${storage.get("app/code")}/token`, token);
+
+  setRequestHeader({ Authorization: token });
 
   EventEmitter.emit("LOGIN_SUCCESS", { userInfo, loginRes: resData });
   storage.set(PREV_LOGIN_DATA, resData);
   // initRequest(saasServerUrl, token);
-  
+
   return resultStore;
 }
 

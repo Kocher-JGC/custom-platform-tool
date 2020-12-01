@@ -32,13 +32,5 @@ export async function getMainConf(currentApp: string) {
   };
 }
 
-/**
- * 获取已安装应用信息
- */
-export async function getAppList() {
-  const appList = await fetch(`http://localhost:5020/app-list?t=${new Date().getTime()}`).then((res) => res.json());
-  return Object.values(appList);
-}
-
 /** 所有配置的key */
 export const usedConfKeys = [...Object.keys(UrlConfKey), ...Object.keys(MainConfKey)];
