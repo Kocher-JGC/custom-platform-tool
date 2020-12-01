@@ -1,4 +1,5 @@
 const express = require("express");
+const request = require('request');
 const path = require("path");
 const multer = require("multer");
 const axios = require("axios");
@@ -88,6 +89,21 @@ app.get("/app-list", (req, res) => {
       });
     } else {
       res.json(json);
+    }
+  });
+});
+
+// 安装后端应用转发
+app.post("/appManager/installApp", (req, res) => {
+  console.log(req);
+  readJson(path.join(__dirname, projectFolder, `config.json`), (err, json) => {
+    if (err || !json || !json.saasServerUrl) {
+      res.json({
+        err: "获取 SaaS 地址失败",
+        code: "10000"
+      });
+    } else {
+      req.pipe(request(`${json.saasServerUrl}${req.url}`)).pipe(res);
     }
   });
 });
