@@ -38,11 +38,12 @@ const defaultAuthStore: AuthStore = {
   userInfo: {},
   username: "",
   loginResDesc: "",
-  autoLoging: !!getPrevLoginToken(),
+  autoLoging: false,
   logging: false,
   logouting: false,
   // isLogin: !!getPrevLoginToken(),
-  isLogin: process.env.NODE_ENV === 'development',
+  isLogin: false,
+  // isLogin: process.env.NODE_ENV === 'development',
   prevLoginRes: {},
   token: "",
   // menuStore: NAV_MENU_CONFIG
@@ -148,7 +149,7 @@ const authActions: AuthActions = (store) => ({
     // if (isLogin) {
     onLoginSuccess({ resData: prevLoginState.prevLoginRes });
     store.setState(prevLoginState);
-    Call(onSuccess, form);
+    Call(onSuccess);
     // }
   },
 
