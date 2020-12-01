@@ -2,7 +2,7 @@ import { IFakeWindow } from "./interfaces";
 
 export function uniq(array: PropertyKey[]) {
   return array.filter(function filter(this: string[], element) {
-    return element in this ? false : ((this as any)[element] = true);
+    return this.includes(element) ? false : ((this as any)[element] = true);
   }, {});
 }
 
