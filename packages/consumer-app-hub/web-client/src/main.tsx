@@ -53,7 +53,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   setEnvConfig = () => {
     const app = store.get('app/code');
     const lessee = store.get('app/lessee');
-    const t = store.get(`app/${app}/token`);
+    const t = store.get(`paas/token`);
     const appName = store.get('app/name');
 
     this.envConfig = {
