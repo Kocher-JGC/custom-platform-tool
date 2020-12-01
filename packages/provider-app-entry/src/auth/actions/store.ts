@@ -51,7 +51,7 @@ const defaultAuthStore: AuthStore = {
 const authStore = createStore(defaultAuthStore);
 
 export interface PaaSAuthActionsTypes {
-  autoLogin: (onSuccess) => void;
+  autoLogin: (onSuccess?) => void;
   login: (form, onSuccess: () => void) => void;
   logout: () => void;
 }

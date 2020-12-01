@@ -37,7 +37,7 @@ export interface LoginPanelProps {
 }
 const gradientColorFilter = (color) => gradientColorMapper[color] || color;
 
-export default class LoginPanel extends Component<LoginPanelProps> {
+export class LoginPanelThemeMinimal extends Component<LoginPanelProps> {
   static defaultProps = {
     logging: false,
     autoLoging: false,

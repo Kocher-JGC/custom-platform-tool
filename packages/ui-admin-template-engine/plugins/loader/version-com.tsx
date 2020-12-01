@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import {
   Tip, ShowModal, Alert, Notify
-} from '../ui-refs';
+} from '../../ui-refs';
 
 export interface VersionInfo {
   packageVersion: string;
@@ -100,7 +100,7 @@ class VersionChecker extends Component<VersionCheckerProps> {
       title: '是否更新版本？',
       type: 'confirm',
       width: 400,
-      confirmText: (
+      children: () => (
         <div>
           <div>
             <h4>更新内容:</h4>
@@ -109,7 +109,8 @@ class VersionChecker extends Component<VersionCheckerProps> {
           <hr />
           <Alert
             type="success"
-            text="请确保已保存工作内容，页面即将刷新" />
+            text="请确保已保存工作内容，页面即将刷新"
+          />
         </div>
       ),
       onConfirm: (isSure) => {

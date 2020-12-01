@@ -22,7 +22,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 440px;
-    padding: 10px 30px 30px;
+    padding: 30px 30px 30px;
     // background-color: #f9f9f9;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
@@ -51,7 +51,7 @@
         display: none;
       }
       .form-control {
-        min-height: 36px;
+        min-height: 40px;
         // width: 100%;
         // background-color: rgba(255,255,255,0);
         // color: #FFF;
@@ -72,6 +72,7 @@
       background-color: $btnColor;
       border-color: $btnColor;
       border: none;
+      height: 40px;
       // padding: 10px 0;
       box-shadow: 0 6px 12px rgba(#000, 0.2);
       &:hover {
