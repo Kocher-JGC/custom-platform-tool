@@ -23,22 +23,22 @@ export interface AuthStoreState extends AuthStore, SaaSAuthActionsTypes {
 }
 
 export interface AuthStore {
-  userInfo: {};
-  username: string;
-  loginResDesc: string;
-  autoLoging: boolean;
-  logging: boolean;
-  logouting: boolean;
-  isLogin: boolean;
-  token: string;
+  userInfo: Record<string, unknown>
+  username: string
+  loginResDesc: string
+  autoLoging: boolean
+  logging: boolean
+  logouting: boolean
+  isLogin: boolean
+  token: string
 
-  app: IApp | null;
+  app: IApp | null
 }
 export interface IApp {
-  name: string;
-  code: string;
-  lessee: string;
-  token: string;
+  name: string
+  code: string
+  lessee: string
+  token: string
 }
 
 export function getPrevLoginToken() {

@@ -1,7 +1,8 @@
 module.exports = {
   "extends": [
     "plugin:@typescript-eslint/recommended",
-    "react-app"
+    "react-app",
+    "prettier",
   ],
   "plugins": [
     "react", "@typescript-eslint"

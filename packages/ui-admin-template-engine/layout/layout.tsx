@@ -46,11 +46,11 @@ export interface AdminLayoutProps extends RouterHelperProps {
     /** 顶部状态栏插件 */
     Statusbar?: PluginRenderer<StatusbarRenderCtx>
     /** Dashboard 插件 */
-    Dashboard?: PluginRenderer<{}>
+    Dashboard?: PluginRenderer<Record<string, unknown>>
     /** 404 页面插件 */
-    NotfoundPage?: PluginRenderer<{}>
+    NotfoundPage?: PluginRenderer<Record<string, unknown>>
     /** Footer 插件 */
-    Footer?: PluginRenderer<{}>
+    Footer?: PluginRenderer<Record<string, unknown>>
   }
   /** 默认主题 */
   defaultTheme?: Color

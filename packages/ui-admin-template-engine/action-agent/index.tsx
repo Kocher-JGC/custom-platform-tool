@@ -24,9 +24,9 @@ export interface AgentOptions<APIRetrue = ReqAgentReturn> {
   /** 当前请求的 id */
   id?: string;
   /** 在请求发起前设置组件的 state */
-  before?: () => {};
+  before?: () => void;
   /** 在请求发起后设置组件的 state */
-  after?: <T = {}>(response: APIRetrue, ...args) => T | {};
+  after?: <T = any>(response: APIRetrue, ...args) => T | void;
   /** response 的过滤器，用于过滤并返回 ActionAgent 的返回值
    *
    * @example
@@ -45,7 +45,7 @@ export interface AgentOptions<APIRetrue = ReqAgentReturn> {
 
 export type ReqAgentAPI = Function
 
-export class ActionAgent<P = {}, S = {}> extends Component<P, S> {
+export class ActionAgent<P = Record<string, any>, S = Record<string, any>> extends Component<P, S> {
   T
 
   formBtns!: FormLayoutProps['formBtns']

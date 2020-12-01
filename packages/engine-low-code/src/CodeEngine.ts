@@ -82,7 +82,6 @@ export default class CodeCompiler {
   }
 
   public codeIsExpression(code: string): boolean {
-    // @ts-ignore
     const { expression } = parse(code).program.body[0];
     return (
       expression
@@ -113,11 +112,9 @@ export default class CodeCompiler {
           path.node.async = true;
         }
         if (path.node.type === 'MemberExpression') {
-          // @ts-ignore
           path.node.object.name = `await ${path.node.object.name}`;
         }
         if (path.node.type === 'CallExpression') {
-          // @ts-ignore
           path.node.callee.name = `await ${path.node.callee.name}`;
         }
         if (path.node.type === 'Identifier') {

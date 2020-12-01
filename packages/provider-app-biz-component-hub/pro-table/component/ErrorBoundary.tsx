@@ -1,7 +1,7 @@
 import React, { ErrorInfo } from 'react';
 import { Result } from 'antd';
 
-class ErrorBoundary extends React.Component<{}, { hasError: boolean; errorInfo: string }> {
+class ErrorBoundary extends React.Component<Record<string, unknown>, { hasError: boolean; errorInfo: string }> {
   state = { hasError: false, errorInfo: '' };
 
   static getDerivedStateFromError(error: Error) {

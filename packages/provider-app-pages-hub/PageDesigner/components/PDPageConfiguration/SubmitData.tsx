@@ -51,7 +51,7 @@ export class SubmitData extends React.Component {
       listForShow: [],
       maxIndex: -1
     }, ()=> {
-      this.listFormRef.current?.setFieldsValue({list: this.state.listForShow});
+      this.listFormRef.current?.setFieldsValue({ list: this.state.listForShow });
     });
   }
   constructActions = () => {
@@ -80,7 +80,7 @@ export class SubmitData extends React.Component {
       listForShow: list,
       maxIndex: list.length > 0 ? list[list.length-1].index : this.state.maxIndex
     });
-    this.listFormRef.current?.setFieldsValue({list});
+    this.listFormRef.current?.setFieldsValue({ list });
   }
   getTableList = () => {
     getTableListAPI().then(res=>{
@@ -129,7 +129,7 @@ export class SubmitData extends React.Component {
       list: [newItem, ...list],
       maxIndex: maxIndex+1
     });
-    this.listFormRef.current?.setFieldsValue({list: newListForShow});
+    this.listFormRef.current?.setFieldsValue({ list: newListForShow });
   }
 
   handleMinus = (id) => {
@@ -143,7 +143,7 @@ export class SubmitData extends React.Component {
       list,
       listForShow
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
 
   handleMoveUp = (index) => {
@@ -177,7 +177,7 @@ export class SubmitData extends React.Component {
       list,
       listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
 
   handleSearch = () => {
@@ -186,7 +186,7 @@ export class SubmitData extends React.Component {
     this.setState({ 
       listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
   handleClear = () => {
     this.searchFormRef.current?.resetFields();

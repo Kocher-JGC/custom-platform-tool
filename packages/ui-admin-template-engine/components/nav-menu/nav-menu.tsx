@@ -83,9 +83,9 @@ export interface NavMenuProps {
 }
 
 export interface NavMenuState {
-  showMenuMapper: {}
+  showMenuMapper: Record<string, string>
   flowMenuConfig: {
-    activeItem: {}
+    activeItem: Record<string, AdminTmplMenuItem>
     activeIdx: any
     isShow: boolean
     offset: {

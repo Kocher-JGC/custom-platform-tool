@@ -14,7 +14,7 @@ export interface SearchBoxProps {
   onChangeMenu?: (route: string) => void;
   onToggleNav?: (nextShow?: boolean) => void;
   // showMenu: boolean;
-  codeMapper: {};
+  codeMapper: Record<string, string>;
 }
 
 const ESC_KEY = 27;
@@ -28,7 +28,10 @@ const ShortcutTipDesc = ({ $T }) => {
   );
 };
 
-export class SearchBox extends Component<SearchBoxProps> {
+export class SearchBox extends Component<SearchBoxProps, {
+  searchMap: string
+  isShow: boolean
+}> {
   constructor(props) {
     super(props);
 

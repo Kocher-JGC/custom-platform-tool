@@ -29,7 +29,7 @@ const defaultAlertOptionRender = (props: { intl: IntlType; onCleanSelected: () =
   ];
 };
 
-const TableAlert = <T, U = {}>({
+const TableAlert = <T, U = Record<string, unknown>>({
   selectedRowKeys = [],
   onCleanSelected,
   selectedRows = [],

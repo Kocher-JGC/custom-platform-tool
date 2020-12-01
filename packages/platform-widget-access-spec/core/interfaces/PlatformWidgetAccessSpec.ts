@@ -5,8 +5,8 @@ import { WidgetEditableProps, WidgetEntityState } from "@engine/visual-editor/da
  * TODO: 蒋国才 ，完善应用传入的内容
  */
 export interface WidgetActions {
-  onClick: Function
-  onChange: Function
+  onClick: () => void
+  onChange: () => void
 }
 
 export type PlatformWidgetRender = (
