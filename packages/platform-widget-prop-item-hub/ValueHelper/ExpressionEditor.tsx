@@ -10,22 +10,8 @@ export const ExpressionEditor: React.FC<{ defaultValue: string, ref: any }>= Rea
   const [ready, setReady] = useState<boolean>(false);
 
   useImperativeHandle(ref, () => ({
-    addFunction, addVariable
+    addFunction, addVariable, generateExpression
   }));
-
-  // const insertValue = (code: string, pos = 0) => {
-  //   const cur = editor.getCursor();
-  //   editor.replaceRange(code, cur, cur, '+insert');
-  //   setTimeout(() => {
-  //     const cur = editor.getCursor();
-  //     editor.setCursor({ line: cur.line, ch: cur.ch - pos });
-  //     editor.focus();
-  //   }, 50);
-  // };
-
-  // const markText = () => {
-  //   editor.doc.markText({ line:0, ch:0 }, { line:0, ch:2 }, { className: "cm-test" });
-  // };
 
   const delay = async (s: number) => new Promise((resolve) => { setTimeout(resolve, s); });
 
@@ -37,13 +23,14 @@ export const ExpressionEditor: React.FC<{ defaultValue: string, ref: any }>= Rea
     const preCur = editor.getCursor();
     editor.replaceRange(label, preCur, preCur, '+insert');
     const cur = editor.getCursor();
-    // editor.doc.markText(preCur, cur, { className: "cm-field cm-field-value", attributes: { "data-value": value }, atomic: true });
-    // editor.focus();
-    const widget = document.createElement("span");
-    widget.className = "cm-field cm-field-value";
-    widget.innerHTML = label;
-    editor.doc.markText(preCur, cur, { className: "cm-field cm-field-value", attributes: { "data-value": value }, atomic: true, replacedWith: widget });
+    editor.doc.markText(preCur, cur, { className: "cm-field cm-field-value", attributes: { "data-value": value }, atomic: true });
     editor.focus();
+    // const widget = document.createElement("span");
+    // widget.className = "cm-field cm-field-value";
+    // widget.innerHTML = label;
+    // widget.setAttribute("data-value", value);
+    // editor.doc.markText(preCur, cur, { atomic: true, replacedWith: widget });
+    // editor.focus();
   };
 
   /**
@@ -70,6 +57,11 @@ export const ExpressionEditor: React.FC<{ defaultValue: string, ref: any }>= Rea
     editor.focus();
   };
 
+  const generateExpression = () => {
+    console.log("marks: ", editor.doc.getAllMarks());
+    return "test";
+  };
+
   return (
 
     <Suspense fallback={<span></span>}>
@@ -82,6 +74,9 @@ export const ExpressionEditor: React.FC<{ defaultValue: string, ref: any }>= Rea
             // ref={editorRef.current}
             // theme="dracula"
             getEditor={(editor) => setEditor(editor)}
+            onBeforeChange={(instance, changeObj)=>{
+              console.log("改变之前", changeObj);
+            }}
             onChange={(instance) => {
               // const value = instance.getValue();
               // setEditingVal(value);
@@ -89,7 +84,8 @@ export const ExpressionEditor: React.FC<{ defaultValue: string, ref: any }>= Rea
             ready={()=>{
               setReady(true);
             }}
-          /></div>
+          />
+        </div>
       </Spin>
     </Suspense>
 

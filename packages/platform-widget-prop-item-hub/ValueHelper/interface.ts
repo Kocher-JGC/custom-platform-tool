@@ -1,3 +1,8 @@
+export interface IExpressionVariableOptions {
+  label: string;
+  value: string;
+}
+
 export interface IExpressionFunctionOptions {
   title: string;
   name: string;
@@ -5,6 +10,7 @@ export interface IExpressionFunctionOptions {
   usage: string;
   example: string;
 }
+
 export interface IExpressionFunction {
   title: string;
   name: string;
