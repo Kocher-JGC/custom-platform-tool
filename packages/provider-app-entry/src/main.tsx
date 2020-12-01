@@ -59,10 +59,6 @@ type LoginFilterProps = AuthStoreState
 
 class LoginFilter extends React.Component<LoginFilterProps> {
   componentDidMount = () => {
-    const { autoLogin, isLogin } = this.props;
-    if (!isLogin) redirectToRoot();
-    autoLogin();
-    // Call(window.OnLuanched);
     removeLoadingBG();
   }
 
@@ -86,11 +82,13 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   render() {
-    const { isLogin } = this.props;
+    const { autoLogin, autoLoging, isLogin } = this.props;
     // isLogin = process.env.NODE_ENV === "development" ? true : isLogin;
     return (
       <AuthSelector
         isLogin={isLogin}
+        autoLoging={autoLoging}
+        didMount={() => autoLogin()}
         loginPanelRender={this.loginPanelRender}
       >
         {

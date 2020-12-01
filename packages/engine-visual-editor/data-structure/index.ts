@@ -6,3 +6,4 @@ export * from './prop-item';
 export * from './widget';
 // export * from './widget-access-spec';
 export * from './meta-helper-ctx';
+export * from './grouping';

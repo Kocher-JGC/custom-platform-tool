@@ -4,6 +4,7 @@ export const DropdownSelectorMeta = CreateWidgetPropItemRely({
   id: 'widget-id-5',
   label: '下拉选择器',
   widgetRef: 'DropdownSelector',
+  wGroupType: 'formController',
   propItemsRely: {
     propItemRefs: [
       { propID: 'prop_widget_coding' },

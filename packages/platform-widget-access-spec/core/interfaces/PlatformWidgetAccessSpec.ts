@@ -20,7 +20,11 @@ export type PlatformWidgetRender = (
 export interface PlatformWidgetMeta {
   /** 组件的名称 */
   name: string
-  /** 可编辑的属性, TODO: 需要一套校验可编辑属性的规则的工具 */
+  /** 
+   * 可编辑的属性，用于告诉平台，该组件有多少属性可以被编辑
+   * 1. 暂时未开放
+   * 2. TODO: 需要一套校验可编辑属性的规则的工具 
+   */
   editableProps: WidgetEditableProps
 }
 

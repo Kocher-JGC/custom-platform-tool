@@ -4,6 +4,10 @@ import { PlatformWidgetMeta } from ".";
 
 // export type PropItemRender = Pick<PropItemCompAccessSpec, 'render'>
 
+/**
+ * 定义平台组件的 decorator
+ * @param widgetMeta 
+ */
 export const PlatformWidget = (widgetMeta: PlatformWidgetMeta) => {
   const resData = { ...widgetMeta };
   return (SrouceClass): any => {

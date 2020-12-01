@@ -4,6 +4,7 @@ export const FormButtonMeta = CreateWidgetPropItemRely({
   id: 'widget-form-button',
   widgetRef: 'FormButton',
   label: '动作按钮',
+  wGroupType: 'formController',
   eventAttr: [
     { alias: '单击事件', type: 'onClick' },
     { alias: '双击事件', type: 'onDbClick' },

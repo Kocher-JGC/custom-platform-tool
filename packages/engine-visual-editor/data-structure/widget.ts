@@ -37,13 +37,15 @@ export interface WidgetRelyPropItems {
  * 1. 可被编辑属性的组件的定义
  * 2. 用于存储组件的元数据信息
  */
-export interface EditableWidgetMeta {
+export interface EditableWidgetMeta<G = string> {
   /** 组件类型 id */
   id: string
   /** 组件类面板的显示名 */
   label: string;
   /** 组件类面板的显示名 */
   desc?: string;
+  /** widget 的分组信息 */
+  wGroupType?: G
   /** 绑定可编辑的属性 */
   propItemsRely: WidgetRelyPropItems
   /** 引用定义了的组件，对应组件的 name */
