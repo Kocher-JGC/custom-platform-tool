@@ -23,7 +23,11 @@ export interface VersionDisplayerProps {
   versionInfo: VersionInfo;
 }
 
-class VersionChecker extends Component<VersionCheckerProps> {
+class VersionChecker extends Component<VersionCheckerProps, {
+  currVersion
+  updateLog
+  lastVersion
+}> {
   __unmount
 
   timer
@@ -67,9 +71,9 @@ class VersionChecker extends Component<VersionCheckerProps> {
     fetch(`${versionUrl}?t=${Date.now()}`)
       .then((res) => res.json())
       .then((remoteVersion) => {
-        let { numberVersion, updateLog } = remoteVersion;
-        numberVersion = numberVersion.trim();
-        if (numberVersion != this.state.lastVersion) {
+        const { numberVersion, updateLog } = remoteVersion;
+        const _numberVersion = numberVersion.trim();
+        if (_numberVersion !== this.state.lastVersion) {
           this._clear();
           Notify({
             config: {
@@ -84,7 +88,7 @@ class VersionChecker extends Component<VersionCheckerProps> {
             }
           });
           !this.__unmount && this.setState({
-            lastVersion: numberVersion,
+            lastVersion: _numberVersion,
             updateLog
           });
         }
@@ -115,7 +119,7 @@ class VersionChecker extends Component<VersionCheckerProps> {
       ),
       onConfirm: (isSure) => {
         if (isSure) {
-          location.reload();
+          window.location.reload();
         }
       },
     });

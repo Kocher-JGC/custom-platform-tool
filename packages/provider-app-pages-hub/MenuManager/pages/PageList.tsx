@@ -838,7 +838,7 @@ class MenuList extends React.Component {
     children?.forEach((item) => {
       const { [MENU_KEY.ID]: id, [MENU_KEY.CHILDREN]: chlidren } = item;
       list.push(id);
-      list.push.apply(list, this.getKeyOfChild(chlidren));
+      Array.push.apply(list, this.getKeyOfChild(chlidren));
     });
     return list;
   }
@@ -984,7 +984,7 @@ class MenuList extends React.Component {
                 type="selectPage"
                 onOk={({ pageName, pageLink }) => {
                   this.setState({ visibleModalSelectPage: false });
-                this.editMenuFormRef.current?.setFieldsValue({ pageName, pageLink });
+                  this.editMenuFormRef.current?.setFieldsValue({ pageName, pageLink });
                 }}
                 onCancel={() => this.setState({ visibleModalSelectPage: false })}
               />
@@ -1004,7 +1004,7 @@ class MenuList extends React.Component {
                 type="selectIcon"
                 onOk={(icon) => {
                   this.setState({ visibleModalSelectIcon: false });
-                this.editMenuFormRef.current?.setFieldsValue({ [MENU_KEY.ICON]: icon });
+                  this.editMenuFormRef.current?.setFieldsValue({ [MENU_KEY.ICON]: icon });
                 }}
                 onCancel={() => this.setState({ visibleModalSelectIcon: false })}
               />

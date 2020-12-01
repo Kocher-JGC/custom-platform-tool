@@ -7,7 +7,7 @@ import { StatusbarActionsLoader, StatusbarConfigItem } from './actions-loader';
 export interface StatusbarLoaderProps {
   /** 导航栏的配置 */
   onToggleNav: SearchBoxProps['onToggleNav']
-  menuCodeMapper: {}
+  menuCodeMapper: Record<string, string>
   StatusbarPlugin?: () => JSX.Element
   showNavMenu: boolean
   appTitle?: string
@@ -15,7 +15,7 @@ export interface StatusbarLoaderProps {
 }
 
 export interface StatusbarRenderCtx {
-
+  [key: string]: any
 }
 
 export const StatusbarLoader: React.FC<StatusbarLoaderProps> = (props) => {

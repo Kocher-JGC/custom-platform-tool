@@ -6,7 +6,7 @@ import Container from '../../container';
 
 export type DensitySize = 'middle' | 'small' | 'large' | undefined;
 
-const DensityIcon: React.ForwardRefRenderFunction<any, {}> = (_, ref) => {
+const DensityIcon: React.ForwardRefRenderFunction<any, Record<string, unknown>> = (_, ref) => {
   const counter = Container.useContainer();
   const intl = useIntl();
   return (

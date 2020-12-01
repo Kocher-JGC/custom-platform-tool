@@ -43,7 +43,7 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       listForShow: list,
       maxIndex: list.length > 0 ? this.getOrderById(list[0].id) : this.state.maxIndex
     });
-    this.listFormRef.current?.setFieldsValue({list});
+    this.listFormRef.current?.setFieldsValue({ list });
   }
 
   initActions = () => {
@@ -178,7 +178,7 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       list: [newItem, ...list],
       maxIndex: maxIndex+1
     });
-    this.listFormRef.current?.setFieldsValue({list: newListForShow});
+    this.listFormRef.current?.setFieldsValue({ list: newListForShow });
   }
 
   handleMinus = (id) => {
@@ -192,7 +192,7 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       list,
       listForShow
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
   handleSetValue = (id, data) => {
     const list = this.state.list.slice();
@@ -203,7 +203,7 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       list,
       listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
   handlePerfectActionConfig = (index, record, modalProps) => {
     return new Promise((resolve, reject)=>{
@@ -227,7 +227,7 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     this.setState({ 
       listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
 
   handleClear = () => {
@@ -245,10 +245,10 @@ export class PageActionSelector extends React.Component<IProps, IState> {
         type: 'update',
         metaAttr: 'actions',
         metaID: id,
-        data: {...rest, order},
-        });
+        data: { ...rest, order },
+      });
       AntMessage.success('动作配置成功');
-      });    
+    });    
   };
 
   render () {

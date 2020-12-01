@@ -58,14 +58,14 @@ const BatchCreateAuth = (props) => {
     AuthShowTreeRef?.onBatchAdd?.(checkedAuthItemsTmpl, checkedShowAuths);
     AuthItemTreeRef?.onUpdateCheckedNodes?.((node) => {
       node.disabled = true;
-      });
+    });
   };
   const handleDelteShowItem = (nodes, keys) => {
     AuthItemTreeRef?.onUpdateCheckedNodes?.((node, key) => {
       if (keys.includes(key)) {
-      node.disabled = false;
+        node.disabled = false;
       }
-      });
+    });
     AuthItemTreeRef?.onCancelCheckedKeys?.(keys);
     setCheckedAuthItem(checkedAuthItems.filter((item) => !keys.includes(item.uniqueId)));
   };

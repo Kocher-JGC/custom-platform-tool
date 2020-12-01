@@ -69,9 +69,10 @@ function HOCReportRender<P = HOCReportRenderClass>(
         if (isActive && isEnabled) {
           // if(!__btns[Action.name][id]) __btns[Action.name][id] = config;
           res.push(
-            <span className={`link-btn mr5 t_${color}`} key={text} onClick={(e) => {
-              action(contentResult, record, mapper, rowIdx, ...other);
-            }}
+            <span
+              className={`link-btn mr5 t_${color}`} key={text} onClick={(e) => {
+                action(contentResult, record, mapper, rowIdx, ...other);
+              }}
             >
               {this.props.$T(text)}
             </span>

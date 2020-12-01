@@ -19,7 +19,7 @@ const ReleaseBtn = ({
         setLoading(true);
         onReleasePage?.().finally(() => {
           setTimeout(() => setLoading(false), 800);
-          });
+        });
       }}
     >
       保存

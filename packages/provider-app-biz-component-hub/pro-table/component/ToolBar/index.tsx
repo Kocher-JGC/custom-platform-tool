@@ -41,42 +41,24 @@ export interface ToolBarProps<T = unknown> {
   onSearch?: (keyWords: string) => void;
 }
 
-const getButtonText = <T, U = {}>({
+const getButtonText = <T, U = Record<string, unknown>>({
   intl,
 }: OptionConfig<T> & {
   intl: IntlType;
-}) => ({
-  reload: {
-    text: intl.getMessage('tableToolBar.reload', '刷新'),
-    icon: <ReloadOutlined />,
-  },
-  density: {
-    text: intl.getMessage('tableToolBar.density', '表格密度'),
-    icon: <DensityIcon />,
-  },
-  setting: {
-    text: intl.getMessage('tableToolBar.columnSetting', '列设置'),
-    icon: <SettingOutlined />,
-  },
-  fullScreen: {
-    text: intl.getMessage('tableToolBar.fullScreen', '全屏'),
-    icon: <FullScreenIcon />,
-  },
-});
+}) => ({ reload: { text: intl.getMessage('tableToolBar.reload', '刷新'),icon: <ReloadOutlined />, },density: { text: intl.getMessage('tableToolBar.density', '表格密度'),icon: <DensityIcon />, },setting: { text: intl.getMessage('tableToolBar.columnSetting', '列设置'),icon: <SettingOutlined />, },fullScreen: { text: intl.getMessage('tableToolBar.fullScreen', '全屏'),icon: <FullScreenIcon />, }, });
 
 /**
  * 渲染默认的 工具栏
  * @param options
  * @param className
  */
-const renderDefaultOption = <T, U = {}>(
+const renderDefaultOption = <T, U = Record<string, unknown>>(
   options: ToolBarProps<T>['options'],
   className: string,
   defaultOptions: OptionConfig<T> & {
     intl: IntlType;
   },
-) =>
-  options &&
+) => options &&
   Object.keys(options)
     .filter((item) => item)
     .map((key) => {
@@ -122,7 +104,7 @@ const renderDefaultOption = <T, U = {}>(
     })
     .filter((item) => item);
 
-const ToolBar = <T, U = {}>({
+const ToolBar = <T, U = Record<string, unknown>>({
   headerTitle,
   tip,
   toolBarRender,

@@ -439,11 +439,12 @@ export default class ReportTemplate<
           height: _tableH,
         };
         this.templateDOM = (
-          <div className="table-container" ref={(e) => {
-            if (!calculateHeight || height || !e || dataRows.length === 0) return;
-            this.tableContainerRef = e;
-            this.setTableContainerHeight();
-          }}
+          <div
+            className="table-container" ref={(e) => {
+              if (!calculateHeight || height || !e || dataRows.length === 0) return;
+              this.tableContainerRef = e;
+              this.setTableContainerHeight();
+            }}
           >
             <div className="table-scroll">
               <Loading loading={!!querying} inrow />
