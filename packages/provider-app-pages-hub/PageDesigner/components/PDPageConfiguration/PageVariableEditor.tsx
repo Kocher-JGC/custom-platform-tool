@@ -5,6 +5,7 @@ import 'moment/locale/zh-cn';
 import locale from 'antd/lib/locale/zh_CN';
 import { GetVariableData } from '@platform-widget-access/spec';
 import { VariableItem } from '@provider-app/page-designer/platform-access';
+import { VariableRecord } from './PageVariableSelector';
 
 import zh_CN from 'antd/es/date-picker/locale/zh_CN';
 const tailLayout = {
@@ -24,13 +25,20 @@ const VAR_ATTR_TYPE_MENU = [
 ];
 
 export type VarListInState = {[key: string]: VariableItem[]}
-export interface IProps {
-  data: VariableItem
+type BasicProps = {
   getVariableData: GetVariableData
-  mode: string
   onCancel: () => void
-  onSuccess: (param: VariableItem) => void
+  onSuccess: (param: VariableRecord) => void
 }
+type InsertProps = {
+  mode: 'INSERT'
+  data?
+}
+type UpdateProps = {
+  mode: 'UPDATE'
+  data: VariableRecord
+}
+export type IProps = BasicProps & (InsertProps | UpdateProps)
 export const VariableEditor = ({
   data, mode, onCancel, onSuccess, getVariableData
 }: IProps)=>{
@@ -98,14 +106,14 @@ export const VariableEditor = ({
           locale={zh_CN}
           value={getMonentValue((realVal || '').split(' ')[0], 'YYYY-MM-DD')}
           onChange={(_m, dateString)=>{
-            const [_d, time] = (realVal || '').split(' ');
+            const time = (realVal || '').split(' ')[1];
             setFieldsValue({ realVal: `${dateString || ''} ${time || ''}` });
           }} 
         />
         <TimePicker 
           value={getMonentValue((realVal || '').split(' ')[1], 'HH:mm:ss')}
           onChange={(_m, timeString)=>{
-            const [date, _t] = (realVal || '').split(' ');
+            const date = (realVal || '').split(' ')[0];
             setFieldsValue({ realVal: `${date || ''} ${timeString || ''}` });
           }}
         />
@@ -154,7 +162,7 @@ export const VariableEditor = ({
           name="code" label="变量编码"
           rules={[
             { required: true, message: '请填写变量编码' },
-            { pattern: /^[a-zA-Z0-9\._]+$/, message: '只能填写字母、数字、下划线和 .' },
+            { pattern: /^[a-zA-Z0-9._]+$/, message: '只能填写字母、数字、下划线和 .' },
             { validator: (_r, value)=>{
               const amIDuplicated = isDuplicated(value, 'code');
               if(amIDuplicated){
