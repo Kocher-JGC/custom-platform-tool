@@ -14,6 +14,7 @@ import {
 } from '../../data-structure';
 import { GroupPanel, GroupPanelData } from '../GroupPanel';
 import { entityStateMergeRule } from '../../utils';
+import { Debounce } from '@mini-code/base-func';
 
 
 /**
@@ -52,11 +53,14 @@ export interface PropertiesEditorProps {
   entityState?: WidgetEntityState
   /** 保存属性 */
   changeEntityState: ChangeEntityState
+  updateEntityState: (nextState) => void
   /** 初始化实例 */
   initEntityState: InitEntityStateOfEditor
   /** 每个属性项的渲染器 */
   propItemRenderer: (props: PropItemRendererProps) => JSX.Element
 }
+
+const debounce = new Debounce();
 
 function makeArray<T>(item: T | T[]): T[] {
   return Array.isArray(item) ? item : [item];
@@ -75,7 +79,7 @@ const wrapDefaultValues = (propItemMeta: PropItemMeta): NextEntityState[] => {
 };
 
 interface PropertiesEditorState {
-  entityState: WidgetEntityState | null
+  selfEntityState?: WidgetEntityState
   ready: boolean
 }
 
@@ -87,17 +91,17 @@ PropertiesEditorProps, PropertiesEditorState
 > {
   state: PropertiesEditorState = {
     ready: false,
-    // entityState: null
+    selfEntityState: undefined
   }
 
   bindPropItemsMap: PropItemMetaMap | null = null
 
   constructor(props) {
     super(props);
-    // const { entityState } = props;
-    // if (entityState) {
-    //   this.state.entityState = entityState;
-    // }
+    const { entityState } = props;
+    if (entityState) {
+      this.state.selfEntityState = entityState;
+    }
   }
 
   componentDidMount = async () => {
@@ -115,7 +119,7 @@ PropertiesEditorProps, PropertiesEditorState
         initEntityState(_defaultEntityState);
       }
       this.setState({
-        // entityState: _defaultEntityState,
+        selfEntityState: _defaultEntityState,
         ready: true
       });
     });
@@ -152,15 +156,15 @@ PropertiesEditorProps, PropertiesEditorState
    *
    * TODO: 做更强的状态管理工具
    */
-  // updateEntityStateForSelf = (nextValue: NextEntityStateType) => {
-  //   this.setState(({ entityState }) => {
-  //     const _nextValue = makeArray(nextValue);
-  //     const nextState = entityStateMergeRule(entityState, _nextValue);
-  //     return {
-  //       entityState: nextState
-  //     };
-  //   });
-  // }
+  updateEntityStateForSelf = (nextValue: NextEntityStateType) => {
+    this.setState(({ selfEntityState }) => {
+      const _nextValue = makeArray(nextValue);
+      const nextState = entityStateMergeRule(selfEntityState, _nextValue);
+      return {
+        selfEntityState: nextState
+      };
+    });
+  }
 
   /**
    * 将组件绑定的属性项转换成 PropItemMetaMap
@@ -219,15 +223,15 @@ PropertiesEditorProps, PropertiesEditorState
     return res;
   }
 
-  changeEntityState: ChangeEntityState = (nextValue) => {
+  changeEntityStateInEditor: ChangeEntityState = (nextValue) => {
     /** 更新自身的数据 */
-    // this.updateEntityStateForSelf(nextValue);
+    this.updateEntityStateForSelf(nextValue);
 
     /** 延后更新整个应用的数据 */
-    nextValue && this.props.changeEntityState(nextValue);
-    // debounce.exec(() => {
-    //   const { entityState } = this.state;
-    // }, 100);
+    debounce.exec(() => {
+      const { selfEntityState } = this.state;
+      nextValue && this.props.updateEntityState(selfEntityState);
+    }, 100);
   }
 
   /**
@@ -237,11 +241,15 @@ PropertiesEditorProps, PropertiesEditorState
    */
   propItemRendererSelf = (propItemID, groupType) => {
     // const { selectedEntity } = this.props;
-    const { entityState } = this.props;
+    // const { entityState } = this.props;
+    /** 
+     * 为了确保值的更新是准确的，需要内部维护一次数据
+     */
+    const { selfEntityState } = this.state;
     const propItemMeta = this.takePropItemMeta(propItemID);
 
     /** 如果组件没有绑定该属性项，则直接返回 */
-    if (!entityState || !propItemMeta) return null;
+    if (!selfEntityState || !propItemMeta) return null;
 
     const {
       propItemRenderer, 
@@ -250,7 +258,7 @@ PropertiesEditorProps, PropertiesEditorState
     const editingAttr = propItemMeta.whichAttr;
 
     /** 将实例状态回填到属性项 */
-    const activeState = this.getPropItemValue(entityState, editingAttr);
+    const activeState = this.getPropItemValue(selfEntityState, editingAttr);
     return (
       <div
         key={propItemID}
@@ -258,7 +266,7 @@ PropertiesEditorProps, PropertiesEditorState
         {
           propItemRenderer({
             propItemMeta,
-            changeEntityState: this.changeEntityState,
+            changeEntityState: this.changeEntityStateInEditor,
             editingWidgetState: activeState,
           })
         }
@@ -267,9 +275,8 @@ PropertiesEditorProps, PropertiesEditorState
   }
 
   render() {
-    const { propItemGroupingData, entityState } = this.props;
+    const { propItemGroupingData } = this.props;
     const { bindPropItemsMap } = this;
-    // console.log(entityState);
 
     return bindPropItemsMap ? (
       <div

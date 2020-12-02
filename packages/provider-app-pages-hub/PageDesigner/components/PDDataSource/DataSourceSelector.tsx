@@ -28,6 +28,7 @@ interface TableList {
   }
   list: any[]
 }
+
 const useTableList = (type, defaultPaging = {
   offset: 0,
   size: 10
@@ -114,11 +115,19 @@ const getDefaultDataSourceData = (bindedDataSources: any[] = []) => {
   };
 };
 
-
 interface SelectedRowInfo {
   keys: string[]
   rowItems: any[]
 }
+
+const setItemsType = (items: Record<string, string>[], type) => {
+  if(!items) return [];
+
+  const _item = [...items];
+  _item.forEach((item) => item.type = type);
+
+  return _item;
+};
 // const interDatasources = await takeDatasources(addingDataFormRemote);
 // const nextDSState = {};
 // interDatasources.forEach((dsItem, idx) => {
@@ -182,7 +191,7 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
           onChange: (rowKeys, rowItems) => {
             onSelectChange({
               keys: rowKeys,
-              rowItems
+              rowItems: setItemsType(rowItems, type)
             });
           },
         }}
