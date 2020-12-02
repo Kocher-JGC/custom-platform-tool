@@ -40,7 +40,7 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
     <div className="field-selector p-5">
       <div className="flex flex-wrap card-container">
         {
-          interDatasources && interDatasources.map((datasourceItem) => {
+          interDatasources?.map((datasourceItem) => {
             const {
               id,
               name, type,
@@ -52,7 +52,7 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
                 <div className="title font-bold text-md">{name}</div>
                 <div className="list p-2">
                   {
-                    columns.map((col) => {
+                    columns?.map((col) => {
                       const { id: colID, name: colName } = col;
                       const isSelected = selectColInfo?.column?.id === colID;
                       const colItemClassname = classnames([
