@@ -1,7 +1,7 @@
 /**
  * 在 form 表单中有标题的 Input 组件
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Input } from 'antd';
 
 /**
@@ -12,6 +12,7 @@ export interface FormInputCompProps {
   /** 默认值 */
   realVal: string
   labelColor: string
+  onChange: any;
 }
 
 export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
@@ -19,7 +20,10 @@ export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
     title,
     labelColor,
     realVal,
+    onChange
   } = props;
+
+  const actualOnChange = useCallback((e) => { onChange?.(e); }, []);
 
   return (
     <div>
@@ -30,7 +34,10 @@ export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
       >
         {title}
       </div>
-      <Input value={realVal} style={{ width: 300 }} />
+      <Input 
+        value={realVal} style={{ width: 300 }}
+        onChange={actualOnChange}
+      />
     </div>
   );
 };
