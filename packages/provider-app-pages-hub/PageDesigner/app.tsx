@@ -463,7 +463,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    */
   changeEntityState: ChangeEntityState = (nextEntityState: NextEntityStateType) => {
     const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
-    const { entity: activeEntity } = selectedInfo;
+    const { entity: activeEntity, nestingInfo } = selectedInfo;
 
     /** 
      * 这里做批量更新操作，将多个并发的更新 state 操作推入待更新队列中
@@ -472,10 +472,16 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     debounce.exec(() => {
       const entityState = entityStateMergeRule(activeEntity?.propState, this.consumUpdateQueue());
       UpdateEntityState({
-        nestingInfo: selectedInfo.nestingInfo,
+        nestingInfo: nestingInfo,
         entity: activeEntity
       }, entityState);
     }, 50);
+  }
+
+  updateEntityState = (nextState) => {
+    const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
+    const { entity, nestingInfo } = selectedInfo;
+    UpdateEntityState({ entity, nestingInfo }, nextState);
   }
 
   /**
@@ -505,7 +511,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
     const {
-      InitEntityState,
+      InitEntityState, UpdateEntityState,
     } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
@@ -567,6 +573,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                       // TODO: 属性项更改属性追踪器
                       InitEntityState(selectedInfo, entityState);
                     }}
+                    updateEntityState={this.updateEntityState}
                     changeEntityState={this.changeEntityState}
                   />
                 )

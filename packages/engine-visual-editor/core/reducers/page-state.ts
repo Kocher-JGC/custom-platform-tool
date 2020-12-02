@@ -106,6 +106,12 @@ export function pageMetadataReducer(
               data, metaID, relyID
               // data, datas, metaAttr, metaID, rmMetaID, replace, relyID
             } = changeData;
+
+            if(changeData.type === 'create/rm') {
+              const { rmMetaID } = changeData;
+              Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+            }
+
             let _metaID;
             if (metaID) {
               _metaID = metaID;
@@ -119,11 +125,6 @@ export function pageMetadataReducer(
             relyAnalysis(_metaID, relyID);
             
             draft[metaAttr][_metaID] = data;
-
-            if(changeData.type === 'create/rm') {
-              const { rmMetaID } = changeData;
-              Reflect.deleteProperty(draft[metaAttr], rmMetaID);
-            }
           }
 
           if(changeData.type === 'replace') {

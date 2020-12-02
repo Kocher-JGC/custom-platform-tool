@@ -16,6 +16,7 @@ interface PropsEditorProps {
   entityState: PropertiesEditorProps['entityState']
   initEntityState: PropertiesEditorProps['initEntityState']
   changeEntityState: PropertiesEditorProps['changeEntityState']
+  updateEntityState: PropertiesEditorProps['updateEntityState']
 }
 
 const prepareData = async (widgetRef) => {
@@ -109,6 +110,7 @@ export class PDPropertiesEditor extends React.Component<PropsEditorProps> {
     const {
       initEntityState,
       changeEntityState,
+      updateEntityState,
       entityState,
     } = this.props;
     const { widgetMeta, propItemGroupingData, ready } = this.state;
@@ -119,6 +121,7 @@ export class PDPropertiesEditor extends React.Component<PropsEditorProps> {
           // {...otherProps}
           getPropItem={this.getPropItem}
           entityState={entityState}
+          updateEntityState={updateEntityState}
           initEntityState={initEntityState}
           changeEntityState={changeEntityState}
           propItemGroupingData={propItemGroupingData}
