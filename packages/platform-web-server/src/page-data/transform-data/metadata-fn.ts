@@ -1,6 +1,5 @@
-import axios from 'axios';
-import { genUrl } from '../utils';
-import { ProcessCtx, TransfromCtx } from './types';
+import { ProcessCtx, TransfromCtx } from '../types/types';
+import { getRemoteTableMeta } from '../remote/get-remote';
 
 const sysFieldKey = [
   'create_user_id', 'last_update_time', 'last_update_user_id', 
@@ -74,48 +73,6 @@ const genMetadataFromRemoteTableMeta = (tableMeta: RemoteTableMeta, extralData =
   };
 };
 
-/**
- * post获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/tableWithAux
- * {
-  "tables":[
-     {
-        "tableId":"1330688851571777536",
-        "addWithAuxTable":false
-     },{
-        "tableId":"1330688706906038272",
-        "addWithAuxTable":false
-     }  
-    ]
-  }
- */
-/**
- * list获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/list
- * 默认100条一页
- */
-/**
- * get获取
- */
-const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promise<RemoteTableMeta | false> => {
-  const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
-  console.log(reqUrl);
-  
-  const resData = await axios
-    .get(reqUrl, {
-      headers: {
-        Authorization: token
-      }
-    });
-  const data = resData?.data?.result;
-  // console.log('------------ Table Data -----------');
-  // console.log(data);
-  if (data) {
-    return data;
-  } 
-  // return {
-  //   err: JSON.stringify(resData.data)
-  // };
-  return false;
-};
 
 export const findTableMetadata = (tableMetadata: MetadataFromTable[], idOrRef: string) => {
   console.log(tableMetadata);
@@ -175,7 +132,7 @@ export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx):
     }));
     return (await remoteTableMeta)
       .filter(v => v)
-      .map(d => genMetadataFromRemoteTableMeta(d as RemoteTableMeta));
+      .map(d => genMetadataFromRemoteTableMeta(d as any));
   }
   if (typeof dataSource === 'object') {
     const tableRefIdx = Object.keys(dataSource);
@@ -186,7 +143,7 @@ export const genTableMetadata = async (dataSource: any, processCtx: ProcessCtx):
       if (tableId) {
         const remoteTableMeta = await getRemoteTableMeta({ ...processCtx, tableId });
         if (remoteTableMeta) {
-          return genMetadataFromRemoteTableMeta(remoteTableMeta, { tableRefId, tableType: type });
+          return genMetadataFromRemoteTableMeta(remoteTableMeta as any, { tableRefId, tableType: type });
         } 
       } else if (Array.isArray(columns)) {
         info.fileds = transformCols(info.columns);

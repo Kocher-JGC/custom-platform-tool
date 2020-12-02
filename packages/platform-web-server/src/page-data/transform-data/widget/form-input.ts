@@ -1,5 +1,5 @@
 import { DEFALUT_FLOW_MARK, changeStateAction, genDefalutFlow } from "../task";
-import { TransfromCtx } from "../types";
+import { TransfromCtx } from "../../types/types";
 
 export const genFormInputDefaltAction = (widgetId: string) => ({
   onChange: {

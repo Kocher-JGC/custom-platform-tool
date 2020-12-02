@@ -1,5 +1,7 @@
-import { genAPBDSLAction, genOpenPageAction, genDefalutFlow } from ".";
-import { TransfromCtx } from "../types";
+import { genOpenPageAction } from './genAction-open-model';
+import { TransfromCtx } from "../../types/types";
+import { genAPBDSLAction } from "./genAction-APB";
+import { genDefalutFlow } from './flow';
 
 export const genAction = (transfromCtx: TransfromCtx, actions, { pageSchema })  => {
   const { extralDsl: { tempFlow } } = transfromCtx;

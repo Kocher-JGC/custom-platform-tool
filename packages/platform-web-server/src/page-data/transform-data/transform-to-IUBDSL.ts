@@ -1,8 +1,8 @@
-import { ProcessCtx, TransfromCtx } from "./types";
-import { genTableMetadata, genMetadataPkSchema } from "./metadata-fn";
+import { TransfromCtx } from "../types";
 import { genWidgetFromPageData } from "./widget-fn";
 import { genAction } from './task';
 import { genSchema } from "./schema";
+import { genInterMeta } from "./gen-inter-meta";
 
 const mergeMetadata = (ds1: any[], ds2: any[]) => {
   const res: any[] = ds1;
@@ -40,7 +40,7 @@ const genIUBDSLBaseData = (pageData, contentData) => {
   };
 };
 
-export const pageData2IUBDSL = async (pageData, processCtx: ProcessCtx) => {
+export const pageData2IUBDSL = async (pageData, transfCtx) => {
 
   const { pageContent, dataSources, businessCodes } = pageData;
   const contentData = JSON.parse(pageContent);
@@ -61,17 +61,17 @@ export const pageData2IUBDSL = async (pageData, processCtx: ProcessCtx) => {
   
   /** 页面widget */
   /** 生成元数据 */
-  // const metadata1 = await genTableMetadata(dataSources, processCtx);
-  // const tableMetadata: any[] = await genTableMetadata(dataSource, processCtx);
-  // const tableMetadata = mergeMetadata(metadata1, metadata2);
-
+  const interMeta = await genInterMeta(dataSource, transfCtx);
+  const { interMetas, interRefRelations } = interMeta;
+  console.log(interMeta);
+  console.log('------------------ inter metadata -----------------');
+  
+  /** 额外逻辑 */
   // genMetadataPkSchema(transfromCtx, tableMetadata);
   // transfromCtx.tableMetadata = tableMetadata;
-  // console.log(tableMetadata);
-  console.log('------------------ table metadata -----------------');
   /** 转换schema */
   const tranSchema = genSchema(schema);
-  
+
   /** 生成widget数据 */
   const widgets = genWidgetFromPageData(transfromCtx, contentData.content);
   console.log(widgets);
@@ -115,8 +115,8 @@ export const pageData2IUBDSL = async (pageData, processCtx: ProcessCtx) => {
     schema: actualSchema,
     interMetaCollection: { 
       // metaList: tableMetadata.reduce((res, val) => ({ ...res, [val.id]: val }), {}), 
-      metaList: {}, 
-      refRelation: {} 
+      metaList: interMetas.reduce((res, val) => ({ ...res, [val.refId]: val }), {}), 
+      refRelation: interRefRelations.reduce((res, val) => ({ ...res, [val.refId]: val }), {}), 
     },
     relationshipsCollection: {},
     widgetCollection: actualWidget,

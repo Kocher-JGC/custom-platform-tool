@@ -1,6 +1,6 @@
 import { genEquCond } from "../utils";
 import { genDefalutFlow, DEFALUT_FLOW_MARK } from "./flow";
-import { TransfromCtx } from "../types";
+import { TransfromCtx } from "../../types/types";
 
 /**  TODO: 临时的生成schema和condition的函数 */
 const getDataCollectionFromSchema = (schema) => {

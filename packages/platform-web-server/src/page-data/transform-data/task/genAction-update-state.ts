@@ -1,4 +1,4 @@
-import { TransfromCtx } from "../types";
+import { TransfromCtx } from "../../types/types";
 
 export const changeStateAction = (transfromCtx: TransfromCtx, widgetId: string, schemas) => ({
   actionId: widgetId,

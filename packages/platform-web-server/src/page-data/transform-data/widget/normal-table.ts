@@ -1,5 +1,5 @@
 import { genFormButtonDefaltAction } from './normal-button';
-import { TransfromCtx } from "../types";
+import { TransfromCtx } from "../../types/types";
 import { genFormInput } from "./form-input";
 import { changeStateAction, genDefalutFlow, DEFALUT_FLOW_MARK } from "../task";
 import { genExtralSchema, findTableMetadata } from "../metadata-fn";

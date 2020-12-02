@@ -1,5 +1,5 @@
 import { genNormanTable, genFromButton, genFormInput, defaultGen } from "./widget";
-import { TransfromCtx } from "./types";
+import { TransfromCtx } from "../types/types";
 
 const genOnceWidgetConf = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
   let widgetConf = null;
