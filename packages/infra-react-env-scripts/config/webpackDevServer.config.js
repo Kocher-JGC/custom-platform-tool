@@ -23,6 +23,7 @@ module.exports = function (proxy, allowedHost) {
     quiet: true,
     watchOptions: {
       ignored: ignoredFiles(paths.appSrc),
+      "info-verbosity": "info"
     },
     https: protocol === 'https',
     host,
