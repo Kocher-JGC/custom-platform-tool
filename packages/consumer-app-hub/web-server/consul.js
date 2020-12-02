@@ -7,8 +7,9 @@ class ConsulConfig {
     const host = process.env.CONSUL_HOST;
     const port = process.env.CONSUL_PORT;
     const address = process.env.CONSUMER_HOST;
+    const addressPort = process.env.CONSUMER_PORT;
 
-    if (!host || !port || !address) {
+    if (!host || !port || !address || !addressPort) {
       console.error("consul 注册失败", "缺少参数");
       return;
     }
@@ -19,7 +20,7 @@ class ConsulConfig {
       address,
       port: config.port,
       check: {
-        http: `http://${address}:${config.port}/health`,
+        http: `http://${address}:${addressPort}/health`,
         interval: '10s',
         timeout: '5s',
       }
