@@ -1,0 +1,28 @@
+{
+  "name": "@docs/website",
+  "version": "1.0.0",
+  "description": "工程文档",
+  "license": "MIT",
+  "scripts": {
+    "start": "docz dev",
+    "build": "docz build"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "docz": "^2.3.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
