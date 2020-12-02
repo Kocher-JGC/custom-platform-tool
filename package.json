@@ -17,6 +17,7 @@
     "start:consumer-app": "yarn && sh ./scripts/start-consumer-app.sh",
     "start:provider-app": "yarn && cd ./packages/provider-app-entry && npm start",
     "start:platform-web-server": "sh ./scripts/start-platform-web-server.sh",
+    "start:doc-website": "cd ./docs-website && npm run start",
     "build:all": "sh ./scripts/build-all.sh",
     "build:provider-app-entry": "sh ./scripts/build-provider-app.sh",
     "build:consumer-app": "sh ./scripts/build-consumer-app.sh",
