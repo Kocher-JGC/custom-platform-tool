@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import store from "store";
 import { PlusOutlined } from "@ant-design/icons";
-import { List, Card, Button, message } from "antd";
-import { UrlConfKey } from "../../utils/env";
-import {
-  queryInstallApp
-} from "../../services";
+import { Card, Button, Row, Col, message } from "antd";
+import { queryInstallApp } from "../../services";
 import "./style.css";
 
 interface IProps {
@@ -28,18 +24,9 @@ const SelectApp: React.FC<IProps> = (props) => {
 
   return (
     <div className="selectAppContainer">
-      <List
-        grid={{
-          gutter: 16,
-          xs: 1,
-          sm: 2,
-          md: 2,
-          lg: 2,
-          xl: 4
-        }}
-        dataSource={(appList).concat({ type: "add" })}
-        renderItem={(item) => (
-          <List.Item>
+      <Row gutter={16}>
+        {
+          (appList).concat({ type: "add" }).map((item)=><Col key={item.applicationCode || item.type} className="gutter-row" span={6}>
             <Card>
               <div className="selectAppItemWrap">
                 {item.type === "add" ? (
@@ -67,9 +54,9 @@ const SelectApp: React.FC<IProps> = (props) => {
                 )}
               </div>
             </Card>
-          </List.Item>
-        )}
-      />
+          </Col>)
+        }
+      </Row>
     </div>
   );
 };
