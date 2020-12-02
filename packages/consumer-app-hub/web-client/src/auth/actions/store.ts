@@ -139,6 +139,7 @@ const authActions = (store) => ({
     const { app } = store.getState();
     store.setState({
       isLogin: false,
+      logging: false,
       app: {
         name: app.name,
         code: app.code,
@@ -150,6 +151,7 @@ const authActions = (store) => ({
   switchApp(){
     store.setState({
       isLogin: false,
+      logging: false,
       app: null
     });
     storage.clearAll();
@@ -172,6 +174,9 @@ const authActions = (store) => ({
   async autoLogin(state, onSuccess) {
     const prevLoginState = getPrevLoginData();
     if (!prevLoginState) return;
+    store.setState({
+      autoLoging: true,
+    });
     /** 判断是否登录成功的逻辑 */
     const nextStore = onLoginSuccess(store, { resData: prevLoginState });
     store.setState(nextStore);

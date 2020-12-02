@@ -126,7 +126,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   loginPanelRender = () => {
-    const { login, autoLogin, logging, autoLoging } = this.props;
+    const { login, logging, autoLoging } = this.props;
     const appName = this.envConfig.appName;
     const formOptions = [
       {
@@ -150,9 +150,6 @@ class LoginFilter extends React.Component<LoginFilterProps> {
         login={(value )=> {
           login(value, this.onLoginSuccess);
         }}
-        autoLogin={() => {
-          autoLogin(this.onLoginSuccess);
-        }}
         btnGColor="red"
         logo={() => <h3>{appName}</h3>}
         logging={logging}
@@ -163,12 +160,14 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   render() {
-    const { isLogin, username, switchUser, switchApp } = this.props;
+    const { isLogin, autoLoging, username, switchUser, switchApp, autoLogin } = this.props;
     const { menuData } = this.state;
 
     return (
       <AuthSelector
         isLogin={isLogin}
+        autoLoging={autoLoging}
+        didMount={() => {autoLogin(this.onLoginSuccess);}}
         loginPanelRender={this.checkAppInfo}
       >
         {isLogin ? (
