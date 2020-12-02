@@ -7,6 +7,6 @@ export interface DispatchModuleFlowManage {
 
 export type TDispatchMethodNameOfFlowManage = keyof typeof DispatchMethodNameOfFlowManage
 
-export enum DispatchMethodNameOfFlowManage {
+export const enum DispatchMethodNameOfFlowManage {
   flowsRun = 'flowsRun'
 }

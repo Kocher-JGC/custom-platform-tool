@@ -2,7 +2,7 @@ import { InterDef } from './interface-def';
 /**
  * 接口请求的类型
  */
-export enum InterReqType {
+export const enum InterReqType {
   APBDSL = 'APBDSL',
 }
 
@@ -39,4 +39,19 @@ export type InterReqDef =  InterReqOfAPBDSL;
 
 export interface InterCollection {
   [interId: string]: InterReqDef;
+}
+
+/**
+ * 对于IUBDSL, 请求并不属于IUBDSL
+ * 收集数据 1
+ * 拼装数据 2ref
+ * 转换数据 0
+ * 发起请求 0
+ * 转换数据 0 2
+ * 写入数据 1
+ */
+
+interface APIRes {
+  reqType: '',
+
 }

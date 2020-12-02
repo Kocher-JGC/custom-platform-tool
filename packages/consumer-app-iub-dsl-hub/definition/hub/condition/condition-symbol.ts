@@ -1,10 +1,10 @@
-export enum ConditionSymbol {
+export const enum ConditionSymbol {
   OR = 'or',
   AND = 'and'
 }
 
 /** APB 的条件操作符 */
-export enum ConditionOperator {
+export const enum ConditionOperator {
   EQU = 'equ', // =
   N_EQU = 'not_equ', // <>
   GERATER = 'gerater', // >

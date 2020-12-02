@@ -4,7 +4,7 @@ import { RunTimeCtxToBusiness, DispatchCtxOfIUBEngine } from '../../runtime/type
 /** TODO: 改善这些描述, 使其使用的时候可以知道, 如何写 */
 
 /** 动作的触发类型 */
-export enum TriggerType {
+export const enum TriggerType {
   tableUpdate = 'tableUpdate',
   tableSet = 'tableSet',
   tableDelete = 'tableDelete',
@@ -12,7 +12,7 @@ export enum TriggerType {
 }
 
 /** 动作的影响类型 */
-export enum EffectType {
+export const enum EffectType {
   tableSelect = 'tableSelect'
 }
 

@@ -84,7 +84,7 @@ export const conditionParser = (condC: ConditionCollection) => {
   const condCParseRes = {};
 
   condCKeys.forEach((condId) => {
-    console.log(condC[condId]);
+    // console.log(condC[condId]);
     const condConf = condC[condId]?.condition;
     if (condConf) {
       // condition

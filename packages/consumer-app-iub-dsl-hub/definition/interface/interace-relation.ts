@@ -1,4 +1,4 @@
-export enum RefType {
+export const enum RefType {
   /** (引用字段) 实际一种引用 */
   QUOTE = 'QUOTE', 
   /** (字典字段) */
@@ -9,7 +9,7 @@ export enum RefType {
   TREE_Q = 'TREE_Q',
 }
 
-export enum RelationType {
+export const enum RelationType {
   /** (一对一) */
   ONE_TO_ONE = 'ONE_TO_ONE', 
   /** (一对多) */
@@ -49,4 +49,8 @@ export interface InterRefRelation {
   refFieldId: string;
   /** 被引用接口的字段code标识 */
   refFieldCode: string;
+  /** 关联字段显示字段Code */ 
+  refShowFieldCode: string;
+  /** 关联字段显示字段id */
+  refShowFieldId: string;
 }

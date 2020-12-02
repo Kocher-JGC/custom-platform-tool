@@ -21,7 +21,7 @@ export interface APBDSLCURD extends BasicActionConf {
 }
 
 /** APB的功能码 */
-export enum ApbFunction {
+export const enum ApbFunction {
   /** 插入 */
   SET = 'TABLE_INSERT',
   /** 更新 */

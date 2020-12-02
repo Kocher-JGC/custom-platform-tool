@@ -10,11 +10,11 @@ import { BasicActionConf } from '../action';
 import { CommonConditionRef } from '../../hub';
 
 /** 打开类型「model/page/_blank」 */
-export enum OpenType {
+export const enum OpenType {
   modal = 'modal',
 }
 /** 打开的页面类型 */
-export enum PageType {
+export const enum PageType {
   IUBDSL = 'IUBDSL'
 }
 

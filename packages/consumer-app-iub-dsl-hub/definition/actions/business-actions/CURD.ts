@@ -4,7 +4,7 @@ import { CommonCondition } from '@iub-dsl/definition/public/index';
  * @description 对应原型上的库表操作
 */
 
-export enum EnumCURD {
+export const enum EnumCURD {
   TableInsert = 'TableInsert',
   TableUpdate = 'TableUpdate',
   TableSelect = 'TableSelect',

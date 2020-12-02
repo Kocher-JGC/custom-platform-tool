@@ -70,7 +70,7 @@ export const createIUB = (schemasParseRes: SchemasAnalysisRes, metadataParseRes:
   };
 };
 
-enum StateKeyType {
+const enum StateKeyType {
   metaMark = 'metaMark',
   metaCode = 'metaCode',
   schemaMark = 'schemaMark'

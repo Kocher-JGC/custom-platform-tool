@@ -1,6 +1,6 @@
 import { CommonConditionRef, Ref2ValueOfArr } from "../../hub";
 
-export enum InterType {
+export const enum InterType {
   C = 'C',
   U = 'U',
   R = 'R',
@@ -33,7 +33,7 @@ export interface UInterDef extends BaseInterDef {
   condition: CommonConditionRef;
 }
 
-enum CountFn {
+const enum CountFn {
   count = 'count()',
   sum = 'sum()',
   avg = 'avg()',

@@ -1,5 +1,5 @@
 
-export enum InterMetaType {
+export const enum InterMetaType {
   /** 字典表 */
   DICT_TABLE = 'DICT_TABLE',
   /** 树形表 */
@@ -10,7 +10,7 @@ export enum InterMetaType {
   AUX_TABLE = 'AUX_TABLE',
 }
 
-export enum FieldType {
+export const enum FieldType {
   /** (字符串) */
   STRING = 'STRING',  
   /** (整型) */
@@ -25,7 +25,9 @@ export enum FieldType {
   TEXT = 'TEXT', 
 }
 
-export enum FieldDataType {
+export const enum FieldDataType {
+  /** (系统字段) */
+  SYS = 'SYS',
   /** (普通字段) */
   NORMAL = 'NORMAL', 
   /** (主键字段) */
@@ -47,7 +49,7 @@ export enum FieldDataType {
 }
 
 export interface FieldMeta {
-  id: string;
+  fieldId: string;
   fieldCode: string;
   fieldSize: number;
   fieldType: FieldType;
@@ -56,6 +58,7 @@ export interface FieldMeta {
 }
 export interface BaseInterfaceMeta {
   type: InterMetaType;
+  refId: string;
   id: string;
   code: string;
   name: string;

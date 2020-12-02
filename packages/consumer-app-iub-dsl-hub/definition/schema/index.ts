@@ -2,11 +2,11 @@
 // import PageSchemas from "./page-schemas";
 // import FlowSchemas from "./flow-schemas";
 
-export enum ComplexType {
+export const enum ComplexType {
   structArray = 'structArray',
   structObject = 'structObject',
 }
-export enum FoundationType {
+export const enum FoundationType {
   number = 'number',
   string = 'string',
   boolean = 'boolean'

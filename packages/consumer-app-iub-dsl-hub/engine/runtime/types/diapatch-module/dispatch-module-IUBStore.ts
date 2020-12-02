@@ -7,7 +7,7 @@ export interface DispatchModuleIUBStore {
 }
 
 export type TDispatchMethodNameOfIUBStore = IUBStoreMethod;
-export enum DispatchMethodNameOfIUBStore {
+export const enum DispatchMethodNameOfIUBStore {
   targetUpdateState = 'targetUpdateState',
   mappingUpdateState = 'mappingUpdateState',
   getPageState = 'getPageState',

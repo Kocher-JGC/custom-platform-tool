@@ -37,7 +37,7 @@ export type Dispatch =
   )
   & { params: any[] };
 
-export enum DispatchModuleName {
+export const enum DispatchModuleName {
   IUBStore = 'IUBStore',
   metadata = 'metadata',
   sys = 'sys',

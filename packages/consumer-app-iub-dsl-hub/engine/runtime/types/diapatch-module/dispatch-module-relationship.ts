@@ -7,7 +7,7 @@ export interface DispatchModuleRelationship {
 
 export type TDispatchMethodNameOfRelationship = keyof typeof DispatchMethodNameOfRelationship
 
-export enum DispatchMethodNameOfRelationship {
+export const enum DispatchMethodNameOfRelationship {
   effectAnalysis = 'effectAnalysis',
   effectDispatch = 'effectDispatch',
   effectReceiver = 'effectReceiver',

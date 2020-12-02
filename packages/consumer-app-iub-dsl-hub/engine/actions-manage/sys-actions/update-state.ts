@@ -1,6 +1,7 @@
 import { UpdateStateOptions } from "@iub-dsl/definition/actions";
 import { ActionDoFn } from "../types";
 import { DispatchModuleName, DispatchMethodNameOfIUBStore, RunTimeCtxToBusiness } from "../../runtime/types";
+import { isRunCtx, pickSchemaMark, isSchema } from "../../IUBDSL-mark";
 
 /**
  * 最重要的问题: 流程和隔离
@@ -14,18 +15,33 @@ export const changeStateAction = (conf: UpdateStateOptions, baseActionInfo): Act
   const { changeMapping } = conf;
   if (changeMapping) {
     return async (ctx: RunTimeCtxToBusiness) => {
-      // const { action: { payload }, asyncDispatchOfIUBEngine } = ctx;
-      // if (payload) {
-      //   asyncDispatchOfIUBEngine({
-      //     dispatch: {
-      //       module: DispatchModuleName.IUBStore,
-      //       method: DispatchMethodNameOfIUBStore.targetUpdateState,
-      //       params: [ changeMapping.struct[0].key, payload]
-      //     }
-      //   });
-      // }
-      console.log(changeMapping);
-      console.log(ctx);
+      const { asyncDispatchOfIUBEngine, dispatchOfIUBEngine } = ctx;
+      const transfVal = (transfStr, idx, struct) => {
+        if (isRunCtx(transfStr)) {
+          return ctx.action?.['payload'];
+        }
+        if (isSchema(transfStr)) {
+          return dispatchOfIUBEngine({
+            dispatch: {
+              module: DispatchModuleName.IUBStore,
+              method: DispatchMethodNameOfIUBStore.getPageState,
+              params: [transfStr]
+            }
+          });
+        }
+      };
+      const transfKey = (transfStr, idx, struct) => {
+        return pickSchemaMark(transfStr);
+      };
+      const transfRes = (changeMapping as any)(ctx, { transfVal, transfKey });
+      
+      asyncDispatchOfIUBEngine({
+        dispatch: {
+          module: DispatchModuleName.IUBStore,
+          method: DispatchMethodNameOfIUBStore.mappingUpdateState,
+          params: [transfRes]
+        }
+      });
     };
   }
   return async () => {
