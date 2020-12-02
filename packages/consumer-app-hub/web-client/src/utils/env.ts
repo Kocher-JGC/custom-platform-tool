@@ -10,7 +10,7 @@ export enum UrlConfKey {
  * 获取/public/conf.json配置
  */
 export const getAppEnvConfig = async () => {
-  const envConf = await fetch(`/config.json?${new Date().getTime()}`).then((res) => res.json());
+  const envConf = await fetch(`/config.json?t=${new Date().getTime()}`).then((res) => res.json());
   return envConf;
 };
 

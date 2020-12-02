@@ -12,14 +12,14 @@ import App from './main';
 /**
  * 从 config 获取环境配置
  */
-const getEnvConfigFromRemote = async () => {
-  try {
-    return await getAppEnvConfig();
-  } catch (err) {
-    console.log("获取后端 config 失败", err);
-    return {};
-  }
-};
+// const getEnvConfigFromRemote = async () => {
+//   try {
+//     return await getAppEnvConfig();
+//   } catch (err) {
+//     console.log("获取后端 config 失败", err);
+//     return {};
+//   }
+// };
 
 /**
  * 将 query 的 key 映射到 store 的 key
@@ -71,7 +71,7 @@ const initReq = (token?: string) => {
  */
 export async function render() {
   // 合并环境配置
-  const envConfig = Object.assign(await getEnvConfigFromRemote(), getEnvConfigFromLocation());
+  const envConfig = Object.assign(await getAppEnvConfig(), getEnvConfigFromLocation());
 
   // 判断环境配置的合法性
   const isPass = checkEnvConfig(envConfig);

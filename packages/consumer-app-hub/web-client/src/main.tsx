@@ -87,11 +87,9 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   }
 
   pageRender = (renderCtx: PageRenderCtx) => {
-    // console.log(renderCtx);
     const { history } = renderCtx;
     const { query } = history.location;
-    // console.log(renderCtx);
-    const pageID = query.pageId;
+    const pageID = query.pageID;
     return (
       <PageContainer
         {...this.envConfig}
