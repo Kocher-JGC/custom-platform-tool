@@ -42,7 +42,7 @@ export const getAppPreviewUrl = (options?: Options) => {
   const queryParamUrl = toQueryString({
     mode,
     appName,
-    pageId: pageID,
+    pageID: pageID,
     lessee: $R_P.urlManager.currLessee,
     app,
     t: $R_P.config.commonHeaders?.Authorization,
