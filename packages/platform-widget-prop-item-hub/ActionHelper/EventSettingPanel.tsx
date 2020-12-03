@@ -82,20 +82,23 @@ export const EventPanelHeader: React.FC<PEventPanelHeader> = ({
 };
 export interface PEventRefRenderer {
   refList: string[]
-  handleDelete: (param: string) => void
+  onDeleteEvent: (param: string) => void
   interActions: InterAction[]
   interEvents: InterEvents
-  handleUpdate: HandleUpdate
-  handleChangePlace: (eventID1: string, eventID2: string) => void
+  onUpdateEvent: (eventID: string, updateArea: EventConfig) => void
+  onChangeEventPlace: (eventID1: string, eventID2: string) => void
+  activeKeys: string[]
+  onSetActiveKeys: (param: string[]) => void
 }
 /**
  * 列表标题
  */
 export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
-  refList, handleDelete, interActions, interEvents, handleUpdate, handleChangePlace
+  refList, onDeleteEvent, interActions, interEvents, onUpdateEvent, onChangeEventPlace, activeKeys, onSetActiveKeys
 }) => {
   return (
     <Collapse 
+      activeKey = {activeKeys}
       expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
       className="event-list-panel" 
       ghost = {true}
@@ -114,7 +117,7 @@ export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
                           className="p-1"
                           onClick={(e)=>{
                             e.stopPropagation();
-                            handleChangePlace(event, refList[order-1]); 
+                            onChangeEventPlace(event, refList[order-1]); 
                           }}
                         />
                       ) : null }
@@ -123,7 +126,7 @@ export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
                           className="p-1"
                           onClick={(e)=>{
                             e.stopPropagation();
-                            handleChangePlace(event, refList[order+1]);
+                            onChangeEventPlace(event, refList[order+1]);
                           }}
                         />
                       ) : null}
@@ -131,11 +134,17 @@ export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
                         className="p-1"
                         onClick={(e)=>{
                           e.stopPropagation();
-                          handleDelete(event);
+                          onDeleteEvent(event);
                         }}
                       />
                     </>
                   );
+                }}
+                onHeaderClick = {()=>{
+                  if(activeKeys.includes(event)){
+                    return onSetActiveKeys(activeKeys.filter(item=>item!==event));
+                  }
+                  onSetActiveKeys([event, ...activeKeys]);
                 }}
               />
             )} key={event}
@@ -144,7 +153,7 @@ export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
               eventConfig = {interEvents[event] || {}}
               interActions={interActions}
               onUpdate = {(updateArea)=>{
-                handleUpdate(event, updateArea);
+                onUpdateEvent(event, updateArea);
               }}
             />
           </Panel>
@@ -159,22 +168,22 @@ export type ParamOnUpdate = {type: 'update', eventConfig: EventConfig, eventID: 
 export type ParamOnDelete = {type: 'remove', eventsRef: EventsRef, eventID: string}
 export type InterEvent = {actList: string[], condition?: any, stopByError: StopByError}
 export type InterEvents = {[key: string]: InterEvent}
-export interface PEventSettingPanel {
+export interface PEventGroupPanel {
   supportEvents: {alias: string, type: string}[]
   interActions: InterAction[]
   interEvents: InterEvents
   defaultConfig: {[key: string]: string[]}
   onSubmit: (param1: ParamOnCreate|ParamOnUpdate|ParamOnDelete) => void
 }
-export type HandleCreate = (eventType: string) => void
-export type HandleDelete = (eventType: string, eventID: string) => void
-export type HandleUpdate = (eventID: string, updateArea: EventConfig) => void
-export type HandleChangePlace = (eventType: string, eventID1: string, eventID2: string) => void
+export type HandleCreateEvent = (eventType: string) => void
+export type HandleDeleteEvent = (eventType: string, eventID: string) => void
+export type HandleUpdateEvent = (eventType: string, eventID: string, updateArea: EventConfig) => void
+export type HandleChangeEventPlace = (eventType: string, eventID1: string, eventID2: string) => void
 
 /**
  * 事件编辑面板
  */
-export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
+export const EventGroupPanel: React.FC<PEventGroupPanel> = ({
   supportEvents,
   interActions,
   interEvents,
@@ -183,29 +192,44 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
 }) => {
   const [eventsRef, setEventsRef] = useState(defaultConfig);
   const [eventsConfig, setEventsConfig] = useState(interEvents);
-  const [activeKey, setActiveKey] = useState(supportEvents[0]?.type || '');
+  /** 控制事件组的展开（回填时默认展开第一项，新增事件时需要展开当前事件组） */
+  const [activeGroup, setActiveGroup] = useState(supportEvents[0]?.type || '');
+  /** 控制组内事件的展开（新增时，需要展开该事件） */
+  const [activekeys, setActiveKeys] = useState({});
   /** 新增事件，一般都是新增组件上的事件引用 */
-  const handleCreate: HandleCreate = (eventType) => {
+  const handleCreateEvent: HandleCreateEvent = (eventType) => {
     /** 创建事件唯一标识 */
     const getNewEventId = () => {
       return `event.${nanoid(8)}`;
     };
+    const newEventId = getNewEventId();
     const eventsRefInCreate = {
       ...eventsRef,
       [eventType]: [
-        getNewEventId(),
+        newEventId,
         ...( eventsRef[eventType] || [])
       ]
     };
+    /** 当前面板的数据更新 */
     setEventsRef(eventsRefInCreate);
+    /** 通知页面进行事件数据更新 */
     onSubmit({
       type: 'create/changePlace',
       eventsRef: eventsRefInCreate
     });
+    /** 展开当前事件组 */
+    setActiveGroup(eventType);
+    /** 展开当前事件 */
+    setActiveKeys({
+      ...activekeys,
+      [eventType]: [
+        newEventId, ...(activekeys[eventType] || [])
+      ]
+    });
   };
 
   /** 删除，需要删除 pageMetadata.events 的对应数据，以及组件实例上的事件引用 */
-  const handleDelete: HandleDelete = (eventType, eventID)=>{
+  const handleDeleteEvent: HandleDeleteEvent = (eventType, eventID)=>{
     /** 1.删除组件实例上的事件引用 */
     const eventRefInDelete = {
       ...eventsRef,
@@ -223,7 +247,7 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
   };
 
   /** 修改，需要修改 pageMetadata.events 的对应数据 */
-  const handleUpdate: HandleUpdate = (eventID, updateArea) => {
+  const handleUpdateEvent: HandleUpdateEvent = (eventType, eventID, updateArea) => {
     const eventConfigInUpdate = {
       ...(eventsConfig[eventID] || {}),
       ...updateArea
@@ -240,7 +264,7 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
     });
   };
   /** 更改事件位置 */
-  const handleChangePlace: HandleChangePlace = (eventType, eventID1, eventID2) => {
+  const handleChangeEventPlace: HandleChangeEventPlace = (eventType, eventID1, eventID2) => {
     const eventsRefTmpl = eventsRef[eventType].slice();
     const index1 = eventsRefTmpl.findIndex((item)=>item === eventID1);
     const index2 = eventsRefTmpl.findIndex((item)=>item === eventID2);
@@ -260,7 +284,7 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
     <div className="event-setting-panel bg-gray-100 p-2">
       { supportEvents.length > 0 ? (
         <Collapse 
-          activeKey = {activeKey}
+          activeKey = {activeGroup}
           accordion 
           className="support-events-panel"
         >
@@ -269,7 +293,7 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
               header={(
                 <EventPanelHeader 
                   onHeaderClick={()=>{
-                    setActiveKey(supportEvent.type === activeKey ? '' : supportEvent.type);
+                    setActiveGroup(supportEvent.type === activeGroup ? '' : supportEvent.type);
                   }}
                   iconRenderer = {()=>{
                     return (
@@ -277,7 +301,7 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
                         className="mt-1"
                         onClick={(e)=>{
                           e.stopPropagation();
-                          handleCreate(supportEvent.type);
+                          handleCreateEvent(supportEvent.type);
                         }}
                       />
                     );
@@ -287,13 +311,23 @@ export const EventSettingPanel: React.FC<PEventSettingPanel> = ({
               )} key={supportEvent.type}
             >
               <EventRefRenderer 
+                activeKeys = {activekeys[supportEvent.type]}
+                onSetActiveKeys = {(activekeysTmpl)=>{
+                  setActiveKeys({
+                    ...activekeys,
+                    [supportEvent.type]: activekeysTmpl
+                  });
+                  
+                }}
                 refList = {eventsRef[supportEvent.type]} 
-                handleDelete = {(event)=>handleDelete(supportEvent.type, event)}
+                onDeleteEvent = {(event)=>handleDeleteEvent(supportEvent.type, event)}
                 interActions = {interActions}
                 interEvents = {eventsConfig}
-                handleUpdate = {handleUpdate}
-                handleChangePlace = {(eventID1, eventID2)=>{
-                  handleChangePlace(supportEvent.type, eventID1, eventID2);
+                onUpdateEvent = {(eventID, updateArea)=>{
+                  handleUpdateEvent(supportEvent.type, eventID, updateArea);
+                }}
+                onChangeEventPlace = {(eventID1, eventID2)=>{
+                  handleChangeEventPlace(supportEvent.type, eventID1, eventID2);
                 }}
               />
             </Panel>
