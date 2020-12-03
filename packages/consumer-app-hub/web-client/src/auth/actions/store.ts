@@ -65,7 +65,8 @@ export function getAppInfo() {
       });
   }
   // 本地存储数据缺失，清除数据重新登录
-  storage.clearAll();
+  // storage.clearAll();
+  clearPrevLoginData();
   return null;
 }
 
@@ -127,7 +128,12 @@ function onLoginSuccess(store, { resData = {}, originForm = {} }) {
 }
 
 function clearPrevLoginData() {
-  storage.clearAll();
+  // storage.clearAll();
+  storage.remove(`app/${storage.get("app/code")}/token`);
+  storage.remove("app/code");
+  storage.remove("app/lessee");
+  storage.remove("app/name");
+  storage.remove("paas/token");
 }
 
 function getPrevLoginData(): AuthStore | undefined {
@@ -139,6 +145,7 @@ const authActions = (store) => ({
     const { app } = store.getState();
     store.setState({
       isLogin: false,
+      logging: false,
       app: {
         name: app.name,
         code: app.code,
@@ -150,9 +157,11 @@ const authActions = (store) => ({
   switchApp(){
     store.setState({
       isLogin: false,
+      logging: false,
       app: null
     });
-    storage.clearAll();
+    // storage.clearAll();
+    clearPrevLoginData();
   },
   selectAppInfo(state, appInfo){
     const { code, lessee } = appInfo;
@@ -172,6 +181,9 @@ const authActions = (store) => ({
   async autoLogin(state, onSuccess) {
     const prevLoginState = getPrevLoginData();
     if (!prevLoginState) return;
+    store.setState({
+      autoLoging: true,
+    });
     /** 判断是否登录成功的逻辑 */
     const nextStore = onLoginSuccess(store, { resData: prevLoginState });
     store.setState(nextStore);

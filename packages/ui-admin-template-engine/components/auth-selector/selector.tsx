@@ -5,24 +5,33 @@ import { Children } from '@deer-ui/core/utils';
 
 export interface LoginSelectorProps {
   isLogin: boolean;
+  autoLoging: boolean;
   children: Children;
   loginPanelRender: () => JSX.Element
   didMount?: () => void;
 }
 
 export const AuthSelector: FC<LoginSelectorProps> = (props) => {
-  const { children, loginPanelRender, isLogin } = props;
+  const { children, isLogin, autoLoging, loginPanelRender, didMount } = props;
+
+  React.useEffect(() => {
+    didMount?.();
+  }, []);
 
   if(!loginPanelRender) {
     return (
       <div>请传入 loginPanelRender</div>
     );
   }
-
   let container;
   switch (true) {
     case isLogin:
       container = IsFunc(children) ? children(props) : children;
+      break;
+    case autoLoging:
+      container = (
+        <div id="auto-logging-tip">自动登录中...</div>
+      );
       break;
     default:
       container = loginPanelRender(props);

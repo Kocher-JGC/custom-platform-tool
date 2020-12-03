@@ -40,6 +40,9 @@ const queryKeyMapStoreKey = {
 const getEnvConfigFromLocation = () => {
   const { query } = history.location;
   if(!query) return {};
+  if(!query.mode && store.get("app/mode") === "preview"){
+    store.remove("app/mode");
+  }
   const queryKeys = Object.keys(query);
   const params = {};
 
