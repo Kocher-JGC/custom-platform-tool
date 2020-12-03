@@ -6,26 +6,6 @@ slug: /introduction
 
 采用 `monorepo` 前端工程结构，方便团队独立开发、调试，以及支持分布部署。
 
----
-
-<!-- ## 1. 知识库
-
-1. 整体
-   - [系统架构](https://www.tapd.cn/41909965/documents/show/1141909965001000886?file_type=word&file_ext=0-%E5%89%8D%E7%AB%AF%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1v3)
-2. 公用模块
-   - [路由模块设计方案](https://www.tapd.cn/41909965/documents/show/1141909965001001066?file_type=word)
-3. 配置端接入
-   - [页面设计器方案](https://www.tapd.cn/41909965/documents/show/1141909965001001350?file_type=word)
-   - [配置端业务模块接入](./平台接入/write-sub-app.md)
-   - [平台组件接入](./docs/平台组件接入规则.md)
-4. 应用端
-   - [应用前端运行方案](https://www.tapd.cn/41909965/documents/show/1141909965001001298?file_type=word)
-   - [应用端权限控制方案](https://www.tapd.cn/41909965/documents/show/1141909965001001065?file_type=word)
-   - [IUB-DSL 引擎接入 TODO](TODO)
-5. [工程部署](./docs/工程/deployment.md)
-
---- -->
-
 ## 1. 工程介绍（important）
 
 ### 1.1. 工程基础
