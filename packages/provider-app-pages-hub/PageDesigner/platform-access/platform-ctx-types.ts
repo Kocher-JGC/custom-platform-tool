@@ -30,12 +30,13 @@ export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) =>
 export type ChangeWidgetType = (widgetType: string) => void
 
 export type VariableType = 'system'|'page'|'pageInput'|'widget'
+export type VariableDataType = 'number'|'string'|'date'|'dateTime'
 export type VariableItem = {
   title: string
   code: string
   id: string
   alias?: string
-  varType: 'number'|'string'|'date'|'dateTime'
+  varType: VariableDataType
   realVal?: number|string
   type: VariableType
 }

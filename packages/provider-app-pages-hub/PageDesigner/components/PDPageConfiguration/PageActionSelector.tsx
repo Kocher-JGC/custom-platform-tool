@@ -8,24 +8,23 @@ import { SubmitData } from './SubmitData';
 import { FormInstance } from 'antd/lib/form';
 import { ChangeVariables } from './ChangeVariables';
 import { CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ActionsMeta as BasicActionsMeta } from '@engine/visual-editor/data-structure';
 
-type ActionItem = {
-  id: string
-  name?: string
-  actionType?: string
-  configCn?:string
-}
 
 export interface IProps {
   flatLayoutItems
   pageMetadata
   platformCtx
 }
+
+type IdActionsMeta = { id: string }
+type ActionsMeta = IdActionsMeta & BasicActionsMeta
 export interface IState {
-  list: ActionItem[]
-  listForShow: ActionItem[]
+  list: ActionsMeta[]
+  listForShow: ActionsMeta[]
   maxIndex: number
 }
+type InitActions = () => {[key: string]: ActionsMeta}
 export class PageActionSelector extends React.Component<IProps, IState> {
   state: IState = {
     list: [],
@@ -37,48 +36,64 @@ export class PageActionSelector extends React.Component<IProps, IState> {
 
 
   componentDidMount(){
+    /** 初始化动作列表 */
     const list = this.initList();
+    const maxIndex = list.length > 0 ? this.getOrderById(list[0]?.id) : this.state.maxIndex;
     this.setState({
       list,
       listForShow: list,
-      maxIndex: list.length > 0 ? this.getOrderById(list[0].id) : this.state.maxIndex
+      maxIndex
     });
     this.listFormRef.current?.setFieldsValue({ list });
   }
 
-  initActions = () => {
+  /**
+   * 从页面上下文中获取动作数据
+   */
+  initActions: InitActions = () => {
     const { actions } = this.props.pageMetadata;
-    // if(!actions || Object.keys(actions).length === 0){
-    //   const id = this.getActionId(0);
-    //   return {
-    //     [id]: { id }
-    //   };
-    // }
     return actions;
   }
 
-  initList = () => {
+  /**
+   * 初始化动作列表
+   */
+  initList = ():ActionsMeta[] => {
     const actions  = this.initActions();
+    
     const list: {
       order: number,
-      data: ActionItem
+      data: ActionsMeta
     }[] = [];
-    for(const key in actions){
-      const data = actions[key];
-      const order = this.getOrderById(key);
-      list.push({ order, data });
+
+    for(const id in actions){
+      const data = actions[id];
+      const order = this.getOrderById(id);
+      list.push({ order, data: { ...data, id } });
     }
-    return list.sort((a,b)=>a.order-b.order).map(item=>item.data);
-  }
-  getOrderById = (id) => {
-    if(!id) return -1;
-    return id.split('.')[1]-0;
+    return list.sort((a,b)=>b.order-a.order).map(item=>item.data);
   }
 
-  getActionId = (index) => {
+  /**
+   * 获取 唯一标识 中隐藏的索引值
+   * @param id 
+   */
+  getOrderById = (id: string): number => {
+    if(!id) return -1;
+    return Number(id.split('.')[1])-0;
+  }
+
+  /**
+   * 生成动作唯一标识
+   * @param index 
+   */
+  newActionId = (index: number): string => {
     return `act.${index}.${nanoid(8)}`;
   }
 
+  /**
+   * 现有支持的动作类型列表
+   */
   getTypeList = () => {
     return [
       { label: '打开链接', value: 'openPage', key: 'openPage' },
@@ -93,7 +108,11 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     ];
   };
 
-  getActionConfig = (action) => {
+  /**
+   * 各动作类型的动作配置
+   * @param action 
+   */
+  getActionConfig = (action: string) => {
     const config = {
       changeVariables: {
         ModalContent: ChangeVariables
@@ -123,7 +142,12 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     return (action && config[action]) || {};
   }
 
-  getIndexById = (list, id) => {
+  /**
+   * 根据 唯一标识 获取数据位于列表中的索引
+   * @param list 
+   * @param id 
+   */
+  getIndexById = (list: ActionsMeta[], id: string): number => {
     let index = -1;
     list.forEach((item, loopIndex)=>{
       if(item.id === id){
@@ -133,8 +157,13 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     return index;
   }
 
+  /**
+   * 弹出弹窗提供动作配置补充
+   * @param param0 
+   * @param actionConfig 
+   */
   perfectConfigInModal = ({ width, ModalContent }, actionConfig): Promise<{config, configCn}> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => { 
       const modalID = ShowModal({
         title: '配置动作',
         width: width || 900,
@@ -151,7 +180,6 @@ export class PageActionSelector extends React.Component<IProps, IState> {
                 onCancel={()=>{
                   CloseModal(modalID);
                 }}
-                {...this.props}
               />
             </div>
           );
@@ -159,6 +187,11 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       });
     });
   }
+
+  /**
+   * 根据搜索过滤展示数据
+   * @param param0 
+   */
   filterListAfterSearch = ({ type, name }) => {
     const { list } = this.state;
     return list.filter(item=>{
@@ -166,12 +199,21 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     });
   }
 
+  /**
+   * 根据用户输入过滤搜索框的下拉项展示
+   * @param value 
+   * @param option 
+   */
   filterOption = (value: string, option) => {
     return option.label.toLowerCase().includes(value.toLowerCase());
   }
-  handlePlus = (index) => {
+  /**
+   * 新增动作
+   * @param index 
+   */
+  handlePlus = () => {
     const { listForShow, list, maxIndex } = this.state;
-    const newItem = { id: this.getActionId(maxIndex+1) };
+    const newItem = { id: this.newActionId(maxIndex+1) };
     const newListForShow = [newItem, ...listForShow];
     this.setState({
       listForShow: newListForShow,
@@ -192,7 +234,12 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       list,
       listForShow
     });
-    this.listFormRef.current?.setFieldsValue({ list: listForShow });
+    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.props.platformCtx.meta.changePageMeta({
+      type: 'rm',
+      metaAttr: 'actions',
+      rmMetaID: id,
+    });
   }
   handleSetValue = (id, data) => {
     const list = this.state.list.slice();
@@ -239,14 +286,14 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       return ['name', 'actionType', 'configCn'].map(item=>['list', order, item]);
     };
     const validateKeys = getValidateKeys();
-    const { id, ...rest } = record;
+    const { id, ...data } = record;
     this.listFormRef.current?.validateFields(validateKeys).then(()=>{
       this.props.platformCtx.meta.changePageMeta({
         type: 'update',
         metaAttr: 'actions',
         metaID: id,
-        data: { ...rest, order },
-      });
+        data,
+        });
       AntMessage.success('动作配置成功');
     });    
   };
@@ -434,21 +481,21 @@ export class PageActionSelector extends React.Component<IProps, IState> {
                       ]}
                     >
                       <Input 
-                        value={_r.configCn}
+                        value={_r.configCn || ''}
                         onClick={e=>{
                           this.handlePerfectActionConfig(_i, _r, { ModalContent,width }).then(()=>{
                             this.listFormRef.current?.validateFields([['list', _i, 'configCn']]);
                           });
                         }}
-                        title = {_r.configCn}
+                        title = {_r.configCn || ''}
                         readOnly = {readOnly}
                         className = "w-full cursor-pointer"
                       />
                     </Form.Item>
                   ) : (
                     <Input 
-                      value={_r.configCn}
-                      title={_r.configCn}
+                      value={_r.configCn || ''}
+                      title={_r.configCn || ''}
                       readOnly = {readOnly}
                       className="w-full"
                     />

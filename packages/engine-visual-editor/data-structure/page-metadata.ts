@@ -107,6 +107,7 @@ export interface BasicSubmitDataItem {
   tableId: string
   tableName: string
   tableCode: string
+  id: string
 }
 export interface ChangeField extends BasicValueMeta {
   columnName: string
@@ -150,24 +151,28 @@ export interface DisplayControl extends BasicActionsMeta {
  */
 export interface RefreshPage extends BasicActionsMeta {
   actionType: "refreshPage"
+  configCn: ''
 }
 /**
  * 关闭页面
  */
 export interface ClosePage extends BasicActionsMeta {
   actionType: "closePage"
+  configCn: ''
 }
 /**
  * 整表读取
  */
 export interface ReadFormData extends BasicActionsMeta {
   actionType: "readFormData"
+  configCn: ''
 }
 /**
  * 整表读取
  */
 export interface WriteFormData extends BasicActionsMeta {
   actionType: "writeFormData"
+  configCn: ''
 }
 
 /**
