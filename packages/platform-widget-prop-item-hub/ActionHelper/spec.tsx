@@ -84,7 +84,7 @@ export class ActionHelperSpec {
       });
     };
     const handleSubmit = {
-      'create': handleCreate,
+      'create/changePlace': handleCreate,
       'update': handleUpdate,
       'remove': handleRemove
     };
