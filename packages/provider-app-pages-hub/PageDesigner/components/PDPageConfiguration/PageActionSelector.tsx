@@ -287,7 +287,6 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     };
     const validateKeys = getValidateKeys();
     const { id, ...data } = record;
-    console.log(id);
     this.listFormRef.current?.validateFields(validateKeys).then(()=>{
       this.props.platformCtx.meta.changePageMeta({
         type: 'update',

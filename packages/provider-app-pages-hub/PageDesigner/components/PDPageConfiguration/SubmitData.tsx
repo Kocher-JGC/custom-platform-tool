@@ -17,6 +17,7 @@ const OPERATE_TYPE_MENU = [
 interface IProps {
   onSuccess
   config
+  onCancel
 }
 interface IState {
   list: (InsertSubmitDataItem|DeleteSubmitDataItem|UpdateSubmitDataItem)[]
@@ -50,13 +51,20 @@ export class SubmitData extends React.Component<IProps, IState> {
     });
   };
 
+  initActions = () => {
+    const { config } = this.props;
+    return config || [];
+  }
+
   componentDidMount(){
     this.getTableList();
-    const list = this.initList();
+    const list = this.initActions();
+    const maxIndex = list.length > 0 ? Math.max.apply(null, list.map(item=>this.getOrderById(item.id))) : this.state.maxIndex;
+    console.log(maxIndex);
     this.setState({
       list,
       listForShow: list,
-      maxIndex: list.length > 0 ? list[list.length-1].index : this.state.maxIndex
+      maxIndex
     });
     this.listFormRef.current?.setFieldsValue({list});
   }
@@ -75,31 +83,6 @@ export class SubmitData extends React.Component<IProps, IState> {
       const { operateType, tableName } = item;
       return operateMap[operateType] + tableName + '记录';
     }).join('；');
-  }
-
-  initActions = () => {
-    const { config } = this.props;
-    // if(!actions || Object.keys(actions).length === 0){
-    //   const id = this.getActionId(0);
-    //   return {
-    //     [id]: { id }
-    //   };
-    // }
-    return config || {};
-  }
-
-  initList = () => {
-    const actions  = this.initActions();
-    const list: {
-      order: number
-      data: any
-    }[] = [];
-    for(const id in actions){
-      const order = this.getOrderById(id);
-      const data = actions[id];
-      list.push({ order, data: { ...data, id } });
-    }
-    return list.sort((a,b)=>a.order-b.order).map(item=>item.data);
   }
 
   getOrderById = (id: string)=>{
@@ -164,7 +147,8 @@ export class SubmitData extends React.Component<IProps, IState> {
    * 点击取消
    */
   handleCancel = () => {
-    
+    const { onCancel } = this.props;
+    typeof onCancel === 'function' && onCancel();
   }
   /**
    * 点击清空
@@ -191,8 +175,11 @@ export class SubmitData extends React.Component<IProps, IState> {
   handleSetValue = (id, data) => {
     const list = this.state.list.slice();
     const listForShow = this.state.listForShow.slice();
-    const index = this.getIndexById(list, id);
-    Object.assign(list[index], data);
+    const indexInList = this.getIndexById(list, id);
+    const indexInListShow = this.getIndexById(list, id);
+    const newData = { ...list[indexInList], ...data };
+    list.splice(indexInList, 1, newData);
+    listForShow.splice(indexInListShow, 1, newData);
     this.setState({
       list,
       listForShow,
@@ -446,13 +433,13 @@ export class SubmitData extends React.Component<IProps, IState> {
           />
           <Form.Item style={{ marginBottom: 0, marginTop: '0.5rem' }}>
             <Space className="float-right">
-              <Button htmlType="button" onClick={this.handleReset}>
+              <Button onClick={this.handleReset}>
             清空
               </Button>
               <Button type="primary" htmlType="submit">
             确定
               </Button>
-              <Button htmlType="button" onClick={this.handleCancel}>
+              <Button onClick={this.handleCancel}>
             取消
               </Button>
             </Space>

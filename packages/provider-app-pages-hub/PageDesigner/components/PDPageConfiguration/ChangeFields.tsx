@@ -165,13 +165,13 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
         pagination={false}
       />
       <Space className="float-right" style={{ height: 52 }}>
-        <Button htmlType="button" onClick={this.handleReset}>
+        <Button onClick={this.handleReset}>
       清空
         </Button>
         <Button type="primary" onClick={this.handleSubmit}>
       确定
         </Button>
-        <Button htmlType="button" onClick={this.handleCancel}>
+        <Button onClick={this.handleCancel}>
       取消
         </Button>
       </Space>
