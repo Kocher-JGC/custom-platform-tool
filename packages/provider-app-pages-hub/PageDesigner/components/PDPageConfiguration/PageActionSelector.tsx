@@ -234,6 +234,11 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       listForShow
     });
     this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.props.platformCtx.meta.changePageMeta({
+      type: 'rm',
+      metaAttr: 'actions',
+      rmMetaID: id,
+    });
   }
   handleSetValue = (id, data) => {
     const list = this.state.list.slice();
@@ -280,13 +285,14 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       return ['name', 'actionType', 'configCn'].map(item=>['list', order, item]);
     };
     const validateKeys = getValidateKeys();
-    const { id, ...rest } = record;
+    const { id, ...data } = record;
+    console.log(id);
     this.listFormRef.current?.validateFields(validateKeys).then(()=>{
       this.props.platformCtx.meta.changePageMeta({
         type: 'update',
         metaAttr: 'actions',
         metaID: id,
-        data: {...rest, order},
+        data,
         });
       AntMessage.success('动作配置成功');
       });    
