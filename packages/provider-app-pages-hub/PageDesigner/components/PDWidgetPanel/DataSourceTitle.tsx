@@ -27,9 +27,9 @@ export const DataSourceTitle: React.FC<DataSourceTitleProps> = ({
                 onClick={(e) => {
                   const closeModal = platformCtx.selector.openDatasourceSelector({
                     defaultSelected: interDatasources,
-                    modalType: 'side',
-                    type: 'TABLE',
-                    position: 'left',
+                    modalType: 'normal',
+                    typeArea: ['TABLE', 'DICT'],
+                    position: 'top',
                     onSubmit: ({ interDatasources }) => {
                       onAddDataSource(interDatasources);
                       closeModal();
