@@ -58,7 +58,20 @@ export const ExpressionEditor: React.FC<{ defaultValue: string, ref: any }>= Rea
   };
 
   const generateExpression = () => {
-    console.log("marks: ", editor.doc.getAllMarks());
+    const expression: string[] = [];
+    editor.doc.eachLine((line)=>{
+      let lineText = "";
+      const sortMarks = line.markedSpans?.sort((a, b) => a.from - b.from);
+      sortMarks.forEach((textMark) => {
+        if (textMark.marker.className?.indexOf("cm-field") !== -1) {
+          lineText += `__${textMark.marker.attributes["data-value"]}__`;
+        } else {
+          lineText += line.text.substring(textMark.from, textMark.to);
+        }
+      });
+      expression.push(lineText);
+    });
+    console.log("expression", expression);
     return "test";
   };
 

@@ -12,7 +12,7 @@ const { Panel } = Collapse;
 
 export const Expression: React.FC<{
   defaultValue: string;
-  onSubmit: () => void;
+  onSubmit: (val: string) => void;
 }> = ({ defaultValue, onSubmit }) => {
   const editorRef = useRef<{ addFunction: (functionItem: IExpressionFunctionOptions) => void; addVariable: (variableItem: IExpressionVariableOptions) => void; generateExpression: () => void; }>(null);
   const [
@@ -48,8 +48,8 @@ export const Expression: React.FC<{
                     size='small'
                     bordered={false}
                     dataSource={[
-                      { label: '张三', value: '101' },
-                      { label: '李四', value: '102' },
+                      { label: '用户名', value: 'SYSTEM_001' },
+                      { label: '昵称', value: 'SYSTEM_002' },
                     ]}
                     renderItem={(item: IExpressionVariableOptions) => (
                       <List.Item
@@ -67,8 +67,8 @@ export const Expression: React.FC<{
                     size='small'
                     bordered={false}
                     dataSource={[
-                      { label: '李四', value: '201' },
-                      { label: '张三', value: '202' },
+                      { label: '张三', value: 'PAGE_001' },
+                      { label: '李四', value: 'PAGE_002' },
                     ]}
                     renderItem={(item: IExpressionVariableOptions) => (
                       <List.Item>{item.label}</List.Item>
@@ -80,8 +80,8 @@ export const Expression: React.FC<{
                     size='small'
                     bordered={false}
                     dataSource={[
-                      { label: '文本框', value: '301' },
-                      { label: '张三', value: '302' },
+                      { label: '文本框1', value: 'WIDGET_001' },
+                      { label: '数字框2', value: 'WIDGET_002' },
                     ]}
                     renderItem={(item: IExpressionVariableOptions) => (
                       <List.Item>{item.label}</List.Item>
@@ -93,8 +93,8 @@ export const Expression: React.FC<{
                     size='small'
                     bordered={false}
                     dataSource={[
-                      { label: '页面 ID', value: '401' },
-                      { label: '张三', value: '402' },
+                      { label: '参数1', value: 'PARAMS_001' },
+                      { label: '参数2', value: 'PARAMS_002' },
                     ]}
                     renderItem={(item: IExpressionVariableOptions) => (
                       <List.Item>{item.label}</List.Item>
@@ -164,7 +164,7 @@ export const Expression: React.FC<{
         </Col>
       </Row>
 
-      <div className='expression-handle px-4 py-2'>
+      <div className='expression-handle py-4'>
         <Button type='primary' onClick={submitExpression}>
           确定
         </Button>
