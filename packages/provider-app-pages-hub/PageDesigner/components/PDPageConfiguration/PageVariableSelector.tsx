@@ -4,7 +4,7 @@ import lowerFirst from 'lodash/lowerFirst';
 import { ShowModal, CloseModal } from '@infra/ui';
 import { VariableEditor } from './PageVariableEditor';
 import { nanoid } from 'nanoid';
-import { VariableItem } from '@provider-app/page-designer/platform-access';
+import { VariableItem, VariableType, VariableDataType } from '@provider-app/page-designer/platform-access';
 import { PlatformCtx } from '@platform-widget-access/spec';
 export enum VarAttrTypeMap {
   string = '字符串',
@@ -17,6 +17,9 @@ interface Props {
 }
 export type VariableRecord = {title: string, id: string, children: VariableItem[]}
 export type GetVariableList = (options: {[key: string]: VariableItem[]}) => VariableRecord[]
+type OpenModalUpdateParam = { mode:'UPDATE', record:VariableRecord };
+type OpenModalInsertParam = {mode:'INSERT', record?: undefined}
+type OpenModal = (param: OpenModalUpdateParam|OpenModalInsertParam)=>Promise<VariableRecord>
 export const PageVariableSelector = ({
   platformCtx
 }: Props) => {
@@ -61,20 +64,20 @@ export const PageVariableSelector = ({
     if(['pageInput'].includes(record.type)){
       return (
         <>
-          <Button type="link" size="small" onClick={()=>{handleEdit(record, 'UPDATE');}}>编辑</Button>
+          <Button type="link" size="small" onClick={()=>{handleEdit(record);}}>编辑</Button>
           <Button type="link" size="small" onClick={()=>{handleDelete(record);}}>删除</Button>
         </>
       );
     }
     /** 变量类型，支持新增变量项 */
     if(['pageInput'].includes(record.id)){
-      return <Button type="link" size="small" onClick={()=>{handlePlus(record, 'INSERT');}}>新增</Button>;
+      return <Button type="link" size="small" onClick={()=>{handlePlus(record);}}>新增</Button>;
     }
   };
   /** 
    * 打开编辑变量弹窗（支持新增或编辑）
    */
-  const openModal = (mode:string, record?:VariableItem):Promise<VariableItem>=>{
+  const openModal: OpenModal = ({ mode, record })=>{
     return new Promise((resolve, reject)=>{
       const modalID = ShowModal({
         title: '配置变量',
@@ -122,9 +125,9 @@ export const PageVariableSelector = ({
    * @param record 
    * @param mode 
    */
-  const handlePlus = (record: VariableRecord, mode: string) => {
+  const handlePlus = (record: VariableRecord) => {
     const { id: type } = record;
-    openModal(mode).then(data=>{
+    openModal({ mode: 'INSERT' }).then(data=>{
       const metaID = `var.${type}.${newOrder(record)}.${nanoid(8)}`;
       platformCtx.meta.changePageMeta({
         type: 'update',
@@ -141,9 +144,9 @@ export const PageVariableSelector = ({
    * @param record 
    * @param mode 
    */
-  const handleEdit = (record: VariableRecord, mode: string) => {
+  const handleEdit = (record: VariableRecord) => {
     const { id, ...oldData } = record;
-    openModal(mode, record).then(data=>{
+    openModal({ mode: 'UPDATE', record }).then(data=>{
       platformCtx.meta.changePageMeta({
         type: 'update',
         metaAttr: 'varRely',
