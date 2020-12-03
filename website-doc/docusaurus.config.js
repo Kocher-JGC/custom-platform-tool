@@ -17,15 +17,42 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/',
-          activeBasePath: 'docs',
-          label: '概念',
+          to: 'docs/introduction',
+          // docId: 'introduction',
+          // activeBasePath: 'docs',
+          label: '介绍',
           position: 'left',
         },
-        { to: 'pages-api', label: 'API', position: 'left' },
-        { to: 'pages-config', label: '配置', position: 'left' },
-        { to: 'docs/access', activeBasePath: 'docs', label: '接入', position: 'left' },
-        { to: 'blog', label: 'Blog', position: 'left' },
+        { 
+          to: 'docs/api', 
+          label: 'API', 
+          position: 'left' 
+        },
+        { 
+          to: 'docs/architecture', 
+          label: '设计', 
+          position: 'left' 
+        },
+        { 
+          to: 'docs/configuration', 
+          label: '配置', 
+          position: 'left' 
+        },
+        { 
+          to: 'docs/access_platform_widget', 
+          label: '接入', 
+          position: 'left' 
+        },
+        { 
+          to: 'docs/deployment', 
+          label: '部署', 
+          position: 'left' 
+        },
+        { 
+          to: 'blog', 
+          label: 'Blog', 
+          position: 'right' 
+        },
         {
           href: 'https://github.com/facebook/docusaurus',
           label: 'GitHub',
