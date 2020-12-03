@@ -38,10 +38,11 @@ export class PageActionSelector extends React.Component<IProps, IState> {
   componentDidMount(){
     /** 初始化动作列表 */
     const list = this.initList();
+    const maxIndex = list.length > 0 ? this.getOrderById(list[0]?.id) : this.state.maxIndex;
     this.setState({
       list,
       listForShow: list,
-      maxIndex: list.length > 0 ? this.getOrderById(list[0]?.id) : this.state.maxIndex
+      maxIndex
     });
     this.listFormRef.current?.setFieldsValue({list});
   }
@@ -70,7 +71,7 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       const order = this.getOrderById(id);
       list.push({ order, data: { ...data, id } });
     }
-    return list.sort((a,b)=>a.order-b.order).map(item=>item.data);
+    return list.sort((a,b)=>b.order-a.order).map(item=>item.data);
   }
 
   /**
