@@ -12,8 +12,8 @@ module.exports = {
     navbar: {
       title: '自定义工具 3.0 前端',
       logo: {
-        alt: 'My Site Logo',
-        src: 'https://ui.thinkmore.xyz/static/dc94feda0ef97f9a1283e03195ff85c4/1d08b/logo.png',
+        alt: '3.0',
+        src: 'img/logo.png',
       },
       items: [
         {
