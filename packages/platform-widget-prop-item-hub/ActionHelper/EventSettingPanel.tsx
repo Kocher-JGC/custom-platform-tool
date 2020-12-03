@@ -311,7 +311,7 @@ export const EventGroupPanel: React.FC<PEventGroupPanel> = ({
               )} key={supportEvent.type}
             >
               <EventRefRenderer 
-                activeKeys = {activekeys[supportEvent.type]}
+                activeKeys = {activekeys[supportEvent.type] || []}
                 onSetActiveKeys = {(activekeysTmpl)=>{
                   setActiveKeys({
                     ...activekeys,
