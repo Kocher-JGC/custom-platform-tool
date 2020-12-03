@@ -1,5 +1,5 @@
 ---
-title: 前端部署说明
+id: 前端部署说明
 slug: /前端部署说明
 sidebar_label: 前端部署说明
 hide_title: true

@@ -1,5 +1,5 @@
 ---
-title: UI 组件接入标准
+id: UI 组件接入标准
 slug: /UI 组件接入标准
 hide_title: true
 ---

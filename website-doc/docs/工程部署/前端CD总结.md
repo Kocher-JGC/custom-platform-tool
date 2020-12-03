@@ -1,5 +1,5 @@
 ---
-title: 前端 3.0 CD（持续部署）总结
+id: 前端 3.0 CD（持续部署）总结
 slug: /前端 3.0 CD（持续部署）总结
 hide_title: true
 ---

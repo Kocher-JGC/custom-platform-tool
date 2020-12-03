@@ -19,9 +19,12 @@ module.exports = {
         {
           to: 'docs/',
           activeBasePath: 'docs',
-          label: 'Docs',
+          label: '概念',
           position: 'left',
         },
+        { to: 'pages-api', label: 'API', position: 'left' },
+        { to: 'pages-config', label: '配置', position: 'left' },
+        { to: 'docs/access', activeBasePath: 'docs', label: '接入', position: 'left' },
         { to: 'blog', label: 'Blog', position: 'left' },
         {
           href: 'https://github.com/facebook/docusaurus',
@@ -87,14 +90,14 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl:
-            'https://github.com/facebook/docusaurus/edit/master/website/',
+          // editUrl:
+          //   'https://github.com/facebook/docusaurus/edit/master/website/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
-          editUrl:
-            'https://10.0.4.55/custom-platform-v3-frontend-group/custom-platform-v3-frontend',
+          // editUrl:
+          //   'https://10.0.4.55/custom-platform-v3-frontend-group/custom-platform-v3-frontend',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

@@ -1,4 +1,5 @@
 ---
+id: index
 title: 自定义工具 3.0 工程文档
 sidebar_label: 自定义工具 3.0 工程文档
 hide_title: true
@@ -165,7 +166,5 @@ yarn start:platform-web-server
 每一个子应用都可以在自身目录的根目录下创建 `__test__` 文件夹，并且添加单元测试用例。
 
 ---
-
-## 7. 最后
 
 Thanks

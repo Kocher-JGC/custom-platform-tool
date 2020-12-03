@@ -1,5 +1,5 @@
 ---
-title: Hello world
+id: Hello world
 slug: /meno
 hide_title: true
 ---
