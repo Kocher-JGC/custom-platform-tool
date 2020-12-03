@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Table } from 'antd';
-import { Button } from '@infra/ui';
+import React, { useState, useEffect, forwardRef } from 'react';
+import { Table, Radio, Tag, Button, Input } from 'antd';
+import { queryTableListService } from '@provider-app/table-structure/service';
+import { ModuleTree } from '../PDInfraUI/ModuleTreeRenderer';
 
 interface SelectedRowInfo {
   id: string
@@ -10,66 +11,262 @@ interface TableSelectorProps extends PD.PropItemRendererBusinessPayload {
   /** 提交已选中的项 */
   onSubmit: (selectedRowInfo: SelectedRowInfo) => void
   defaultSelectedInfo?: SelectedRowInfo
+  single?: boolean
 }
+type AuxTableContainer = {[key: string]: boolean}
 
-export const TableSelector: React.FC<TableSelectorProps> = ({
-  $services,
-  defaultSelectedInfo = {
-    id: '',
-    name: ''
-  },
-  onSubmit
-}) => {
-  const rowKey = 'id';
-  // console.log('$services :>> ', $services);
-  const [dictList, setDictList] = useState([]);
-  useEffect(() => {
-    $services.table.getTable()
-      .then(({ result }) => {
-        const { data } = result;
-        setDictList(data);
+interface TableConfig {
+  moduleId?: string
+  lastModifiedByMe?: boolean
+  createdByMe?: boolean
+  paging: {
+    offset: number
+    size: number
+    total?: number
+  }
+  list: any[]
+  name?: string
+}
+const useTableList = (defaultPaging = {
+  offset: 0,
+  size: 10
+}): [TableConfig, (paging?: TableConfig['paging']) => void] => {
+  
+  const [dataList, setList] = useState<TableConfig>({
+    name: undefined,
+    moduleId: undefined,
+    paging: defaultPaging,
+    createdByMe: false,
+    lastModifiedByMe: false,
+    list: []
+  });
+  const getListByPaging = (param = defaultPaging) => {
+    debugger;
+    const { name = dataList.name, offset = 0, size = dataList.paging.size, createdByMe = dataList.createdByMe, lastModifiedByMe = dataList.lastModifiedByMe, moduleId = dataList.moduleId } = param;
+    queryTableListService({ name, moduleId, createdByMe, lastModifiedByMe, offset, size }).then((resData) => {
+      const { total, data } = resData?.result || {};
+      setList({
+        name,
+        moduleId,
+        createdByMe,
+        lastModifiedByMe,
+        paging: {
+          offset,
+          size,
+          total
+        },
+        list: data
       });
+    });
+  };
+  useEffect(() => {
+    getListByPaging();
   }, []);
-  const [selectedRowInfo, onSelectChange] = useState<SelectedRowInfo>(defaultSelectedInfo);
+  return [dataList, getListByPaging];
+};
+
+const TableList: React.FC = ({
+  single, onSubmit, defaultSelectedInfo = [], moduleId 
+}) => {
+  const [{ paging, list, createdByMe, lastModifiedByMe, name }, getTableConfig] = useTableList();
+  const [auxTableContainer, setAuxTableContainer] = useState<AuxTableContainer>({});
+  useEffect(() => {
+    initAuxTableContainer();
+  }, []);
+  useEffect(()=>{
+    const moduleIdParam = moduleId ? { moduleId } : {};
+    getTableConfig(moduleIdParam);
+  }, [moduleId]);
+  /** 渲染回填数据：是否带入附属表 */
+  const initAuxTableContainer = () => {
+    const result = {};
+    defaultSelectedInfo.forEach(item=>{
+      const { id, auxTable } = item;
+      result[id] = 'containAuxTable' in auxTable ? auxTable.containAuxTable : true;
+    });
+    setAuxTableContainer(result);
+  };
+  /** 拼装提交数据 */
+  const getSubmitData = (rows) => {
+    return rows.map(item=>{
+      const { id, name } = item;
+      return {
+        id, name, auxTable: {
+          containAuxTable: id in containAuxTableRenderer ? containAuxTableRenderer[id] : true
+        }
+      };
+    });
+  };
+  const containAuxTableRenderer = (id)=>{
+    return id in auxTableContainer ? auxTableContainer[id] : true;
+  };
   return (
-    <div className="p-4">
+    <>
+      <div>
+        <Button
+          className="mr-4" 
+          type={[createdByMe, lastModifiedByMe].includes(true) ? 'text': 'link'}
+          onClick={()=>{
+            getTableConfig({
+              createdByMe: false,
+              lastModifiedByMe: false,
+            });
+          }}
+        >所有</Button>
+        <Button
+          className="mr-4" 
+          type={createdByMe===true?'link': 'text'}
+          onClick={()=>{
+            getTableConfig({
+              createdByMe: true,
+              lastModifiedByMe: false,
+            });
+          }}
+        >我创建的</Button>
+        <Button
+          className="mr-4" 
+          type={lastModifiedByMe===true?'link': 'text'}
+          onClick={()=>{
+            getTableConfig({
+              createdByMe: false,
+              lastModifiedByMe: true,
+            });
+          }}
+        >我最后修改的</Button>
+        <span className="flex"></span>
+      </div>
+      <Input.Search 
+        value={name}
+        allowClear
+        onSearch={nameTmpl=>{
+          getTableConfig({
+            name: nameTmpl
+          });
+        }}
+      />
       <Table
         columns={[
           {
             dataIndex: 'name',
-            title: '标题'
+            title: '表结构名称'
           },
           {
-            dataIndex: 'description',
-            title: '描述',
+            dataIndex: 'id',
+            title: '带入附属表',
+            render: (_t)=>{
+              return (
+                <Radio.Group 
+                  value={containAuxTableRenderer(_t)}
+                  onChange={(e)=>{
+                    const { value } = e.target;
+                    setAuxTableContainer({
+                      ...auxTableContainer,
+                      [_t]: value
+                    });
+                    const itemIndex = defaultSelectedInfo.findIndex(item=>item.id === _t);
+                    if( itemIndex > -1 ){
+                      const selectedInfo = defaultSelectedInfo.slice();
+                      selectedInfo[itemIndex] = Object.assign(selectedInfo[itemIndex], { auxTable: { containAuxTable: value } });
+                      onSubmit(selectedInfo);
+                    }
+                  }}
+                >
+                  <Radio value={true}>是</Radio>
+                  <Radio value={false}>否</Radio>
+                </Radio.Group>
+              );
+            }
           },
         ]}
         rowSelection={{
-          selectedRowKeys: [selectedRowInfo[rowKey]],
-          type: 'radio',
+          selectedRowKeys: defaultSelectedInfo.map(item=>item.id),
+          type: single ? 'radio' : 'checkbox',
           onChange: (rowKeys, rows) => {
-            // 由于是单选的，所以只需要提取其中必要的信息
-            const selectedRow = rows[0];
-            const { id, name } = selectedRow;
-            onSelectChange({
-              id,
-              name
-            });
+            const submitData = getSubmitData(rows);
+            onSubmit(submitData);
           },
+        }}
+        onChange = {(pagination)=>{
+          getTableConfig({
+            offset: (pagination.current - 1)*pagination.pageSize,
+            size: pagination.pageSize,
+          });
+        }}
+        pagination={{
+          size: 'small',
+          showSizeChanger: true,
+          showQuickJumper: true,
+          total: paging.total
         }}
         rowKey="id"
         size="small"
-        dataSource={dictList}
+        dataSource={list}
+        scroll={{ y: 340 }}
       />
-      <Button
-        disabled={!selectedRowInfo[rowKey]}
-        onClick={(e) => {
-          /** 由于是单选的，所以只需要返回字符串即可 */
-          onSubmit(selectedRowInfo);
+    </>
+  );
+};
+
+const SelectedTableTags = ({
+  onSubmit, defaultSelectedInfo
+}) => {
+  return (
+    <div className="border border-gray-400 border-solid pl-2 pt-2 overflow-auto" style={{ height: 69 }}>
+      { defaultSelectedInfo?.length > 0 ? (
+        <Tag
+          className="cursor-pointer"
+          color="#488CF0"
+          style={{ marginBottom: 8 }}
+          onClick={e=>{
+            onSubmit([]);
+          }}
+        >
+        全部清空
+        </Tag>
+      ) : null }
+      {defaultSelectedInfo.map(item=>(
+        <Tag
+          onClose = {e=>{
+            onSubmit(defaultSelectedInfo.filter(loop=>loop.id !==item.id));
+          }} 
+          closable
+          key={item.id}
+        >
+          {item.name}
+        </Tag>
+      ))}
+    </div>
+  );
+};
+
+export const TableSelector: React.FC<TableSelectorProps> = ({
+  defaultSelectedInfo,
+  onSubmit,
+  single
+}) => {
+  const [moduleId, setModuleId] = useState<React.ReactText>('');
+  return (
+    <div className="flex">
+      <div className="w-1/4 box-border pr-1">
+        <ModuleTree onSelect={(selectedModuled)=>{
+          setModuleId(selectedModuled);
         }}
-      >
-        确定选择
-      </Button>
+        />
+      </div>
+      <div className="w-3/4">
+        <TableList 
+          moduleId={moduleId}
+          defaultSelectedInfo = {defaultSelectedInfo}
+          single={single}
+          onSubmit = {onSubmit}
+        />
+        { !single ? (
+          <SelectedTableTags 
+            defaultSelectedInfo = {defaultSelectedInfo}
+            onSubmit = {onSubmit}
+          />
+        ) : null }
+      </div>
     </div>
   );
 };
