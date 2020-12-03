@@ -204,8 +204,7 @@ const TableList: React.FC = ({
         rowKey="id"
         size="small"
         dataSource={list}
-        scroll={{ y: 340 }}
-        
+        scroll={{ y: 340 }} 
       />
     </>
   );
