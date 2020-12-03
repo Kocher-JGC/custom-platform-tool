@@ -22,8 +22,8 @@
       },
       {
         "name": "doc_website",
-        "buildCmd": "yarn build:doc-website",
-        "dockerfilePath": "./doc-website"
+        "buildCmd": "yarn build:website-doc",
+        "dockerfilePath": "./website-doc"
       }
     ]
   }
