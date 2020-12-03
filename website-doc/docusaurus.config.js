@@ -3,7 +3,7 @@ module.exports = {
   tagline: '万物皆可自定义',
   url: 'https://10.0.4.55/custom-platform-v3-frontend-group/custom-platform-v3-frontend',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/logo.png',
   organizationName: 'haoyun tech', // Usually your GitHub org/user name.
