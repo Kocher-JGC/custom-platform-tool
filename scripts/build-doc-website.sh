@@ -1,1 +1,1 @@
-cd ./doc-website && yarn && yarn build
+cd ./website-doc && yarn && yarn build
