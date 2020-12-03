@@ -1,0 +1,1 @@
+cd ./website-doc && yarn && yarn build
