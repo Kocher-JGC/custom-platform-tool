@@ -183,19 +183,20 @@ class LoginFilter extends React.Component<LoginFilterProps> {
             // }
             statusbarActions={[
               {
-                action: () => {
-                  // console.log('action');
-                },
+                action: () => {},
                 title: username,
                 overlay: () => {
-                  return (
-                    <div style={{ width: 120 }}>
-                      <div className="p10" onClick={switchUser}>切换账号</div>
-                      <hr style={{ margin: 0 }} />
-                      <div className="p10" onClick={switchApp}>切换应用</div>
-                      {/* <div className="p20">修改密码</div> */}
-                    </div>
-                  );
+                  if(store.get("app/mode") !== "preview"){
+                    return (
+                      <div style={{ width: 120 }}>
+                        <div className="p10" onClick={switchUser}>切换账号</div>
+                        <hr style={{ margin: 0 }} />
+                        <div className="p10" onClick={switchApp}>切换应用</div>
+                        {/* <div className="p20">修改密码</div> */}
+                      </div>
+                    );
+                  }
+                  return null;
                 }
               }
             ]}
