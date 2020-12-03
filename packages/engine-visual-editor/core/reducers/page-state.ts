@@ -4,7 +4,7 @@ import {
   INIT_APP, InitAppAction, DEL_ENTITY, DelEntityAction,
   ADD_ENTITY, AddEntityAction, UPDATE_APP, UpdateAppAction, ChangeMetadataAction, CHANGE_METADATA
 } from "../actions";
-import { PageMetadata } from "../../data-structure";
+import { PageMetadata, PageState } from "../../data-structure";
 
 const DefaultPageMeta: PageMetadata = {
   events: {},
@@ -33,6 +33,20 @@ const delMetaData = (pageMetadata, delID) => {
     }
   });
 };
+
+// export function pageStateReducer(
+//   state: {},
+//   action: InitAppAction | AddEntityAction | ChangeMetadataAction | DelEntityAction
+// ) {
+//   switch (action.type) {
+//     case INIT_APP:
+      
+//       break;
+  
+//     default:
+//       break;
+//   }
+// }
 
 /**
  * 组件选择状态管理。如果组件未被实例化，则实例化后被选择
@@ -102,12 +116,14 @@ export function pageMetadataReducer(
           }
 
           if(changeData.type === 'create' || changeData.type === 'create/rm') {
+            /** 创建新 meta 或删除旧 meta */
             const {
               data, metaID, relyID
               // data, datas, metaAttr, metaID, rmMetaID, replace, relyID
             } = changeData;
 
             if(changeData.type === 'create/rm') {
+              /** 创建新 meta 并删除旧 meta */
               const { rmMetaID } = changeData;
               Reflect.deleteProperty(draft[metaAttr], rmMetaID);
             }
@@ -128,6 +144,7 @@ export function pageMetadataReducer(
           }
 
           if(changeData.type === 'replace') {
+            /** 替换旧 meta */
             const { datas } = changeData;
             if(!datas) {
               console.error(`在 replace 模式下需要指定 datas`);
@@ -136,6 +153,7 @@ export function pageMetadataReducer(
           }
 
           if(changeData.type === 'update') {
+            /** 更新 meta item */
             const { metaID, data } = changeData;
             if(!metaID) {
               console.error(`在更新时没有传入对应的 metaID，请检查调用链路`);
@@ -145,6 +163,7 @@ export function pageMetadataReducer(
           }
 
           if(changeData.type === 'update/batch') {
+            /** 批量更新 meta items */
             const { datas } = changeData;
             Object.assign(draft[metaAttr], datas);
           }
@@ -231,6 +250,7 @@ export function pageMetadataReducer(
 export interface AppContext {
   /** App 是否做好准备 */
   ready: boolean
+  pageState: PageState
   /** 页面元数据 */
   payload?: {
     [payloadKey: string]: any
@@ -238,23 +258,30 @@ export interface AppContext {
     defaultMeta?: any
   }
 }
+
+const defaultPageState: PageState = {
+  eventRef: []
+};
+
 /**
  * 整个应用的上下文数据
  */
 export function appContextReducer(
-  state = {
-    ready: false
+  state: AppContext = {
+    ready: false,
+    pageState: defaultPageState
   },
   action: InitAppAction | UpdateAppAction
 ): AppContext {
   switch (action.type) {
     case INIT_APP:
       const {
-        payload,
+        payload, pageContent,
         name, id
       } = action;
       return {
         ready: true,
+        pageState: pageContent?.pageState || defaultPageState,
         payload,
       };
     case UPDATE_APP:

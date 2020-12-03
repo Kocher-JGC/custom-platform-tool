@@ -4,10 +4,11 @@
  * 应用的 action，需要留有足够的扩展空间
  */
 
-import { ActionsMeta, BasePageData, DSMeta, SchemaMeta, VarMeta } from "../../data-structure";
+import { ActionsMeta, BasePageData, DSMeta, PageState, SchemaMeta, VarMeta } from "../../data-structure";
 import { ChangeMetadataOption, ChangeMetadataOptions } from './change-meta';
 
 export interface AppActionsContext {
+  pageState?: PageState
   pageContent?: BasePageData
   payload?: any
   name?: string

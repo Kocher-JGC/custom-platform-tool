@@ -253,11 +253,14 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       layoutInfo,
       pageMetadata,
       appLocation,
+      appContext,
     } = this.props;
+    const { pageState } = appContext;
     const { pageID } = appLocation;
     const pageContent = wrapPageData({
       id: pageID,
       pageID,
+      pageState,
       name: '测试页面',
       pageMetadata,
       layoutInfo,
@@ -310,6 +313,17 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     });
 
     InitApp(initData);
+  }
+
+  /**
+   * 更新页面状态
+   * @param nextPageState 
+   */
+  changePageState = (nextPageState) => {
+    const { dispatcher: { UpdateAppContext } } = this.props;
+    UpdateAppContext({
+      pageState: nextPageState
+    });
   }
 
   updatePage = (options = {}) => {

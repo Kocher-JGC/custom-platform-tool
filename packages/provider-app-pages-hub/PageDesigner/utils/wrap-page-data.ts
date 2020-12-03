@@ -5,6 +5,7 @@ export const wrapPageData = ({
   id,
   name = '测试',
   pageID,
+  pageState,
   type = 2,
   pageMetadata,
   layoutInfo,
@@ -15,6 +16,7 @@ export const wrapPageData = ({
     content: layoutInfo,
     id,
     name,
+    pageState,
     pageID,
     meta: {
       ...pageMetadata,
