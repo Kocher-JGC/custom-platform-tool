@@ -1,7 +1,7 @@
 import React from 'react';
 import { PopModelSelector } from '@infra/ui';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { EventSettingPanel } from './EventSettingPanel';
+import { EventGroupPanel } from './EventSettingPanel';
 import './style.scss';
 import { ActionsMeta } from '@engine/visual-editor/data-structure';
 const whichAttr = 'eventRef';
@@ -100,7 +100,7 @@ export class ActionHelperSpec {
             style:{ maxHeight: '100vh' },
             children: ({ close }) => {
               return (
-                <EventSettingPanel
+                <EventGroupPanel
                   supportEvents = {supportEvents}
                   interActions={getInterActions()}
                   interEvents={interEvents}
