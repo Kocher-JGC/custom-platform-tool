@@ -9,7 +9,7 @@ import { PlatformCtx } from "./platform-ctx-types";
 export interface PropItemRenderContext {
   /** 编辑中的组件实例 */
   readonly widgetEntity: WidgetEntity
-  /** 组件实例状态 */
+  /** 将要编辑的属性的 keys，将通过 PropItemRenderContext.editingWidgetState 传入 */
   readonly editingWidgetState: any
   /** 更改组件实例状态的接口 */
   changeEntityState: ChangeEntityState

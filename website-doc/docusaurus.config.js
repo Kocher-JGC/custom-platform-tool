@@ -54,8 +54,8 @@ module.exports = {
           position: 'right' 
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
-          label: 'GitHub',
+          href: 'https://10.0.4.55/custom-platform-v3-frontend-group/custom-platform-v3-frontend',
+          label: 'Git',
           position: 'right',
         },
       ],

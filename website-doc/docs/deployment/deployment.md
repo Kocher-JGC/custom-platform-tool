@@ -1,7 +1,7 @@
 ---
 id: deployment
 slug: /deployment
-title: 前端整体部署说明
+title: 整体部署说明
 ---
 
 ## 1. 项目地址
@@ -12,7 +12,7 @@ title: 前端整体部署说明
 
 ## 2. 环境准备
 
-- node > v14
+- node > v15.3
 - yarn > v1.22
 - npm > v6.13
 - pm2 > 4.4
