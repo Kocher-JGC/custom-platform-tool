@@ -1,6 +1,5 @@
 import React from 'react';
 import { AllWidgetType, WidgetCollection, WidgetDef } from "@iub-dsl/definition";
-import { PlatformWidgetMeta, BusinessWidgetRender, PlatformWidgetComp } from '@platform-widget-access/spec';
 import { getWidget } from "@platform-widget-access/loader";
 import { defaultWidgetParse } from './default-widget-parser';
 

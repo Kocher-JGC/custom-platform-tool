@@ -1,6 +1,7 @@
 import { PlatformWidgetMeta } from '@platform-widget-access/spec';
+import * as Widgets from '@platform-widget-access/register/refs-widget';
+
 import { getUICompHOC } from './getUIComp';
-import * as Widgets from '../refs-widget';
 
 /**
  * 获取组件实例

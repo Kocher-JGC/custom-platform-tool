@@ -1,5 +1,4 @@
 import { GroupPanelData } from "@engine/visual-editor/components/GroupPanel";
-import { ApiMock } from "./api-mock";
 
 export const widgetPanelData: GroupPanelData = {
   title: '控件类型',
@@ -7,12 +6,14 @@ export const widgetPanelData: GroupPanelData = {
   itemsGroups: [
     {
       title: '通用',
+      type: '',
       items: [
         'FormButton',
       ]
     },
     {
       title: '表单控件',
+      type: '',
       items: [
         'FormInput',
         'FormTimeTicker',
@@ -23,12 +24,14 @@ export const widgetPanelData: GroupPanelData = {
     },
     {
       title: '表格控件',
+      type: '',
       items: [
         'NormalTable',
       ]
     },
     {
       title: '布局控件',
+      type: '',
       items: [
         'FlexLayout'
       ]
@@ -36,4 +39,3 @@ export const widgetPanelData: GroupPanelData = {
   ]
 };
 
-export const getWidgetPanelData = ApiMock(widgetPanelData);
