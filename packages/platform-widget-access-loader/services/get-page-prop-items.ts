@@ -1,4 +1,3 @@
-import { PropItemCompAccessSpec } from "@engine/visual-editor/data-structure";
 import { ApiMock } from "./api-mock";
 
 /**
