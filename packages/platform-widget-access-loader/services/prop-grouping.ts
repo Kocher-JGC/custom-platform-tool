@@ -55,7 +55,7 @@ export const propItemGroupingData: GroupPanelData[] = [
       {
         title: '样式属性',
         items: [
-          'PropLabelColor',
+          'prop_style_title_color',
         ]
       },
     ]

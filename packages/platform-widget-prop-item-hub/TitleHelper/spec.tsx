@@ -4,7 +4,6 @@ import { TitleEditorComp } from './comp';
 
 @PropItem({
   id: 'prop_title_value',
-  name: 'PropTitle',
   label: '标题',
   whichAttr: ['title', 'field'],
   defaultValues: {

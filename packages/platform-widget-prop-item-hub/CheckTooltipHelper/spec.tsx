@@ -7,7 +7,6 @@ import { CheckErrorTooltipComp } from './comp';
 
 @PropItem({
   id: 'prop_check_error_tooltip',
-  name: 'PropCheckErrorTooltip',
   label: '失败提示',
   whichAttr: ['checkErrorTooltip', 'field'],
   // defaultValues: {

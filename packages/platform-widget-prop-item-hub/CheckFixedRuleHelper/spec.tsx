@@ -7,7 +7,6 @@ import { CheckFixedRuleComp } from './comp';
 
 @PropItem({
   id: 'prop_check_fixed_rule',
-  name: 'PropCheckFixedRule',
   label: '固定规则',
   whichAttr: ['checkFixedRule', 'field'],
   // defaultValues: {

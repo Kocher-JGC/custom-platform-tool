@@ -7,7 +7,6 @@ import { WidgetTypeComp } from './comp';
 
 @PropItem({
   id: 'prop_widget_type',
-  name: 'PropWidgetType',
   label: '控件类型',
   whichAttr: ['widgetType', 'field'],
   // defaultValues: {

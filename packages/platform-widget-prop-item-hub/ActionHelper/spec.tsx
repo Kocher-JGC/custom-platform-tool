@@ -13,7 +13,6 @@ export type HandleUpdate = (param1: {eventID: string, eventConfig: EventConfig})
 export type HandleRemove = (param1: {eventID: string, eventsRef: EventsRef}) => void;
 @PropItem({
   id: 'prop_action_config',
-  name: 'PropActionConfig',
   label: '动作设置',
   whichAttr,
   useMeta: ['events'],

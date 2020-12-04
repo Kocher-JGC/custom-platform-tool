@@ -7,7 +7,6 @@ import { UnitEditorComp } from './comp';
 
 @PropItem({
   id: 'prop_unit_value',
-  name: 'PropUnit',
   label: '单位',
   whichAttr: ['unit', 'field'],
   // defaultValues: {

@@ -31,10 +31,10 @@ export type PropItemCompRender = ({
  * 2. useMeta：使用了哪些页面元数据
  */
 export interface PropItemMeta<G = string> {
-  /** 属性项 ID，随机生成的 */
+  /** 该属性项的唯一标识 ID */
   readonly id: string
-  /** 被 widget 引用的属性名字 */
-  readonly name: string
+  // /** 被 widget 引用的属性名字 */
+  // readonly name: string
   /** prop item 的分组信息 */
   readonly pGroupType?: G
   /** 属性项上方的显示名 */

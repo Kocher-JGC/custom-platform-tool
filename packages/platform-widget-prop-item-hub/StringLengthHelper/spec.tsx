@@ -7,7 +7,6 @@ import { StringLengthComp } from './comp';
 
 @PropItem({
   id: 'prop_string_length',
-  name: 'PropStringLength',
   label: '字符长度',
   whichAttr: ['stringLength', 'field']
 })
