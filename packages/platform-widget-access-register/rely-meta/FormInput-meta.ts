@@ -5,6 +5,11 @@ export const FormInputMeta = CreateWidgetPropItemRely({
   label: '文本框',
   widgetRef: 'FormInput',
   wGroupType: 'formController',
+  eventAttr: [
+    { alias: '值改变事件', type: 'onChange' },
+    { alias: '鼠标移入事件', type: 'onMouseIn' },
+    { alias: '鼠标移除事件', type: 'onMouseOut' },
+  ],
   varAttr: [{
     alias: '实际值',
     attr: 'realVal',
@@ -34,6 +39,7 @@ export const FormInputMeta = CreateWidgetPropItemRely({
       { propID: 'prop_check_custom_rule', editAttr: ['checkCustomRule'] },
       { propID: 'prop_check_error_tooltip', editAttr: ['checkErrorTooltip'] },
       { propID: 'prop_field', editAttr: ['field'] },
+      { propID: 'prop_action_config', editAttr: ['eventRef'] },
     ]
   }
 });

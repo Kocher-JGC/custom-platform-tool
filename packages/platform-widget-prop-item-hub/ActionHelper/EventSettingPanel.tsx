@@ -108,7 +108,7 @@ export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
           <Panel
             header={(
               <EventPanelHeader 
-                title={`事件${order+1}`}
+                title={`动作${order+1}`}
                 iconRenderer = {()=>{
                   return (
                     <>
@@ -193,7 +193,7 @@ export const EventGroupPanel: React.FC<PEventGroupPanel> = ({
   const [eventsRef, setEventsRef] = useState(defaultConfig);
   const [eventsConfig, setEventsConfig] = useState(interEvents);
   /** 控制事件组的展开（回填时默认展开第一项，新增事件时需要展开当前事件组） */
-  const [activeGroup, setActiveGroup] = useState(supportEvents[0]?.type || '');
+  const [activeGroup, setActiveGroup] = useState('');
   /** 控制组内事件的展开（新增时，需要展开该事件） */
   const [activekeys, setActiveKeys] = useState({});
   /** 新增事件，一般都是新增组件上的事件引用 */
