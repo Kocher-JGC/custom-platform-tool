@@ -41,6 +41,12 @@ export const takeTableField = (datasourceData): PD.Datasource => {
  * @param datas 
  */
 export const takeTable = async (tableList) => {
+  if(tableList.length === 0){
+    return {
+      decorativeData: [],
+      remoteData: []
+    };
+  }
   /** 获取请求表数据参数 */
   const getTablesParam = () => {
     return tableList.map(item=>({
@@ -94,18 +100,12 @@ export const takeTable = async (tableList) => {
 /**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeDictItems = (datas: any[]) => {
-  return datas.map((column) => {
-    // console.log('column', column);
-    return pick(
-      column, [
-        'name',
-        'code',
-        'id',
-        'hasChild',
-      ]
-    );
-  });
+export const takeDictItems = () => {
+  return [
+    { name: '编码', code: 'code', id: 'code' },
+    { name: '名称', code: 'name', id: 'name' },
+    { name: '父编码', code: 'pid', id: 'pid' }
+  ];
 };
 /**
  * 从后端返回的字典数据提取前端需要用到的数据
@@ -119,13 +119,13 @@ export const takeDictField = (datasourceData) => {
       'code',
     ]
   ), {
-    items: takeDictItems(datasourceData.items)
+    columns: takeDictItems()
   });
 };
 
 export const wrapInterDatasource = async (remoteDSData: any[]) => {
   // const nextState: PD.Datasources = [];
-  const tableList = [], dictList = [];
+  const tableList = [], nextDictList = [], remoteDictList = [];
   remoteDSData.length > 0 && remoteDSData.forEach((data, order) => {
     if (!data) return;
     switch (data.type) {
@@ -133,7 +133,8 @@ export const wrapInterDatasource = async (remoteDSData: any[]) => {
         tableList.push(data);
         break;
       case 'DICT':
-        dictList.push(data);
+        remoteDictList.push(data);
+        nextDictList.push(takeDictField(data));
         break;
     }
   });
@@ -142,7 +143,7 @@ export const wrapInterDatasource = async (remoteDSData: any[]) => {
     remoteData: remoteTableList
   } = await takeTable(tableList);
   return {
-    decorativeData: [...nextTableList],
-    remoteData: [...remoteTableList]
+    decorativeData: [...nextTableList, ...nextDictList],
+    remoteData: [...remoteTableList, ...remoteDictList]
   };
 };
