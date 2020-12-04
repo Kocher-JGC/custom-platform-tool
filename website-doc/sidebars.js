@@ -43,6 +43,7 @@ module.exports = {
       items: [
         'access/平台组件接入/知识准备',
         'access/平台组件接入/接入指南',
+        'access/平台组件接入/接入事例',
         'access/页面数据结构',
       ],
     },
