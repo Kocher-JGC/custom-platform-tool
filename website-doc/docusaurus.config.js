@@ -49,6 +49,11 @@ module.exports = {
           position: 'left' 
         },
         { 
+          to: 'docs/changelog', 
+          label: 'CHANGELOG', 
+          position: 'left' 
+        },
+        { 
           to: 'blog', 
           label: 'Blog', 
           position: 'right' 
