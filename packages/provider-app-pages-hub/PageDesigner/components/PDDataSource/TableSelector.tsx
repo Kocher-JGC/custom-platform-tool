@@ -41,9 +41,8 @@ const useTableList = (defaultPaging = {
     list: []
   });
   const getListByPaging = (param = defaultPaging) => {
-    debugger;
     const { name = dataList.name, offset = 0, size = dataList.paging.size, createdByMe = dataList.createdByMe, lastModifiedByMe = dataList.lastModifiedByMe, moduleId = dataList.moduleId } = param;
-    queryTableListService({ name, moduleId, createdByMe, lastModifiedByMe, offset, size }).then((resData) => {
+    queryTableListService({ name, moduleId, createdByMe, lastModifiedByMe, offset, size, addHadAuxTableTag: true }).then((resData) => {
       const { total, data } = resData?.result || {};
       setList({
         name,
@@ -82,7 +81,7 @@ const TableList: React.FC = ({
     const result = {};
     defaultSelectedInfo.forEach(item=>{
       const { id, auxTable } = item;
-      result[id] = 'containAuxTable' in auxTable ? auxTable.containAuxTable : true;
+      result[id] = 'containAuxTable' in auxTable ? auxTable.containAuxTable : falase;
     });
     setAuxTableContainer(result);
   };
@@ -138,6 +137,7 @@ const TableList: React.FC = ({
       <Input.Search 
         value={name}
         allowClear
+        placeholder="请输入表结构名称"
         onSearch={nameTmpl=>{
           getTableConfig({
             name: nameTmpl
@@ -148,13 +148,15 @@ const TableList: React.FC = ({
         columns={[
           {
             dataIndex: 'name',
+            key: 'name',
             title: '表结构名称'
           },
           {
             dataIndex: 'id',
+            key: 'id',
             title: '带入附属表',
-            render: (_t)=>{
-              return (
+            render: (_t, _r)=>{
+              return _r.hadAuxTable ? (
                 <Radio.Group 
                   value={containAuxTableRenderer(_t)}
                   onChange={(e)=>{
@@ -174,7 +176,7 @@ const TableList: React.FC = ({
                   <Radio value={true}>是</Radio>
                   <Radio value={false}>否</Radio>
                 </Radio.Group>
-              );
+              ) : null;
             }
           },
         ]}
@@ -193,6 +195,7 @@ const TableList: React.FC = ({
           });
         }}
         pagination={{
+          pageSizeOptions: ['10', '20', '30', '40', '50', '100'],
           size: 'small',
           showSizeChanger: true,
           showQuickJumper: true,
@@ -202,12 +205,13 @@ const TableList: React.FC = ({
         size="small"
         dataSource={list}
         scroll={{ y: 340 }}
+        
       />
     </>
   );
 };
 
-const SelectedTableTags = ({
+export const SelectedTags = ({
   onSubmit, defaultSelectedInfo
 }) => {
   return (
@@ -261,7 +265,7 @@ export const TableSelector: React.FC<TableSelectorProps> = ({
           onSubmit = {onSubmit}
         />
         { !single ? (
-          <SelectedTableTags 
+          <SelectedTags 
             defaultSelectedInfo = {defaultSelectedInfo}
             onSubmit = {onSubmit}
           />
