@@ -4,7 +4,6 @@ import { OptionsSelector } from './comp';
 
 @PropItem({
   id: 'prop_datasource_selector',
-  name: 'PropDataSource',
   label: '数据源选择',
   // optDS => option datasource
   whichAttr: ['optDS'],

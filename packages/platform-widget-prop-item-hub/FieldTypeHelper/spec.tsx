@@ -7,7 +7,6 @@ import { FieldTypeComp } from './comp';
 
 @PropItem({
   id: 'prop_field_type',
-  name: 'PropFieldType',
   label: '字段类型',
   whichAttr: ['fieldType', 'field'],
   // defaultValues: {

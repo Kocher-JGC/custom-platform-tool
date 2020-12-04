@@ -7,7 +7,6 @@ import { NumberMinComp } from './comp';
 
 @PropItem({
   id: 'prop_number_min',
-  name: 'PropNumberMin',
   label: '最小值',
   whichAttr: ['min', 'field'],
   // defaultValues: {

@@ -7,7 +7,6 @@ import { DataTypeComp } from './comp';
 
 @PropItem({
   id: 'prop_data_type',
-  name: 'PropDataType',
   label: '数据类型',
   whichAttr: ['dataType', 'field'],
   // defaultValues: {

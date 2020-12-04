@@ -7,7 +7,6 @@ import { CheckCustomRuleComp } from './comp';
 
 @PropItem({
   id: 'prop_check_custom_rule',
-  name: 'PropCheckCustomRule',
   label: '自定义校验',
   whichAttr: ['checkCustomRule', 'field'],
   // defaultValues: {

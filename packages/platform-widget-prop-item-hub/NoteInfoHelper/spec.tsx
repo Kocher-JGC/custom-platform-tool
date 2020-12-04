@@ -7,7 +7,6 @@ import { NoteInfoComp } from './comp';
 
 @PropItem({
   id: 'prop_note_info',
-  name: 'PropNoteInfo',
   label: '备注信息',
   whichAttr: ['noteInfo', 'field'],
   // defaultValues: {

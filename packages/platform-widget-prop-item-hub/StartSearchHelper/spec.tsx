@@ -7,7 +7,6 @@ import { StartSearchComp } from './comp';
 
 @PropItem({
   id: 'prop_start_search',
-  name: 'PropStartSearch',
   label: '启动搜索',
   whichAttr: ['startSearch', 'field'],
   // defaultValues: {
