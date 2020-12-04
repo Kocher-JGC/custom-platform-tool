@@ -4,7 +4,7 @@ import { Tabs, Button } from 'antd';
 import { getDictionaryListServices } from '@provider-app/services';
 // import { wrapInterDatasource } from '../../services/datasource';
 import { TableSelector } from './TableSelector';
-import { DictSelector, DictSubItems } from './DictSelector';
+import { DictSelector } from './DictSelector';
 import { wrapInterDatasource } from './utils';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
@@ -68,7 +68,13 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
         ) : null }
         {typeArea.includes("DICT") ? (
           <TabPane tab="字典" key="DICT">
-            字典
+            <DictSelector 
+              single = {single}
+              defaultSelectedInfo = {selectedInfo.filter(item=>item.type === 'DICT')}
+              onSubmit = {(dictData)=>{
+                handleSubmit('DICT', dictData)
+              }}
+            />
           </TabPane>
         ) : null }
       </Tabs>
