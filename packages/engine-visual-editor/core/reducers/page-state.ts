@@ -260,7 +260,7 @@ export interface AppContext {
 }
 
 const defaultPageState: PageState = {
-  eventRef: []
+  eventRef: {}
 };
 
 /**
