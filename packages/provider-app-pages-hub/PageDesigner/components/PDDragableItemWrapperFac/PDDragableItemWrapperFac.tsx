@@ -8,7 +8,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { Button } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { TEMP_ENTITY_ID } from '@engine/visual-editor/data-structure';
+import { TEMP_ENTITY_ID } from '@engine/visual-editor/core';
 import {
   DragItemComp,
   DragableItemTypes,
@@ -18,6 +18,8 @@ import { TempEntityTip } from './TempEntityTip';
 import { WidgetRenderer } from '../WidgetRenderer';
 import { PDCustomEditorLoader } from '../PDCustomEditorLoader';
 import { getWidgetMetadataSync } from '../../services';
+
+const devEnv = process.env.NODE_ENV === 'development';
 
 /**
  * 可视化编辑器引擎的组件抽象实现
@@ -65,6 +67,7 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
         className={classes}
         key={id}
       >
+        {devEnv ? `id: ${id}` : ''}
         <DragItemComp
           id={id}
           index={idx}

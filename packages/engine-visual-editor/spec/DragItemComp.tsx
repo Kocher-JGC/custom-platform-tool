@@ -59,7 +59,7 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
           const isNodeInChildRes = isNodeInChild(id, widgetType.id);
           // console.log(isNodeInChildRes);
           if (!isNodeInChildRes && onItemDrop) {
-            const dropCtx = { id, index };
+            const dropCtx = { id, idx: index };
             onItemDrop({ ...widgetType }, dropCtx);
           }
         });

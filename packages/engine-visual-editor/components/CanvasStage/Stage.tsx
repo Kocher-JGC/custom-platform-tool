@@ -79,13 +79,13 @@ class CanvasStage extends React.Component<CanvasStageProps> {
    * 相应拖放的放的动作的过滤器
    * 用于实例化 widgetType 或者更新 componentEntity
    */
-  dropDispatcher = (widgetType, dropCtx?: DnDContext) => {
+  dropDispatcher = (dragWidgetMeta, dropTargetCtx?: DnDContext) => {
     const {
       layoutNodeInfo,
       AddEntity,
       onAddEntity
     } = this.props;
-    const { id: parentID = null, idx } = dropCtx || {};
+    const { id: parentID = null, idx } = dropTargetCtx || {};
     let _idx = idx;
     if (typeof _idx === 'undefined') {
       if (typeof this.lastMoveIdx === 'undefined') {
@@ -95,7 +95,7 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       }
     }
 
-    const widgetMetaCopy = Object.assign({}, widgetType);
+    const widgetMetaCopy = Object.assign({}, dragWidgetMeta);
     if (parentID) {
       widgetMetaCopy.parentID = parentID;
     }
@@ -218,7 +218,7 @@ class CanvasStage extends React.Component<CanvasStageProps> {
                  */
                 debounceAddTempEntity.exec(() => {
                   this.onItemMove(layoutNodeInfoLen, layoutNodeInfoLen, item);
-                }, 100);
+                }, 50);
               }}
               onItemDrop={(_dragableItemDef, dropOptions) => {
                 if (dropOptions.type !== DragableItemTypes.DragableItemType) return;

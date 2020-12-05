@@ -4,3 +4,4 @@ export * from './reducers';
 export * from './store';
 export * from './utils';
 export * from './visual-app-connector';
+export * from './const';

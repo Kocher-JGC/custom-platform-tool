@@ -1,6 +1,7 @@
 /// //////////////// widget ///////////////////
 // import { PropItemCompAccessSpec } from ".";
 
+import { TEMP_ENTITY_ID } from "../core";
 import { VarAttrType, EventAttrType } from "./page-metadata";
 import { WidgetRelyPropItems } from "./widget-prop-item-rely";
 
@@ -58,7 +59,6 @@ export interface WidgetEntityState {
 
 /// //////////////// temp widget entity 临时组件实例 ///////////////////
 
-export const TEMP_ENTITY_ID = 'temp-entity';
 /**
  * 由于拖动产生的临时 entity
  */

@@ -159,7 +159,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       }
 
       nextOptions.push(nextItem);
-      console.log(nextOptions);
     });
 
     ChangePageMeta(nextOptions);
