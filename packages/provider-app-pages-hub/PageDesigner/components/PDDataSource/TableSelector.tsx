@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, Radio, Tag, Button, Input } from 'antd';
 import { queryTableListService } from '@provider-app/table-structure/service';
 import { ModuleTree } from '../PDInfraUI/ModuleTreeRenderer';
@@ -204,7 +204,7 @@ const TableList: React.FC = ({
         rowKey="id"
         size="small"
         dataSource={list}
-        scroll={{ y: 340 }} 
+        scroll={{ y: 330 }} 
       />
     </>
   );
