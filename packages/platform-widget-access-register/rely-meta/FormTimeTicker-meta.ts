@@ -1,7 +1,6 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const FormTimeTickerMeta = CreateWidgetPropItemRely({
-  id: 'widget-form-time-ticker',
   label: '时间框',
   widgetRef: 'FormTimeTicker',
   wGroupType: 'formController',

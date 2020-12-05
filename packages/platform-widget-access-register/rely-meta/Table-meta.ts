@@ -1,7 +1,6 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const TableMeta = CreateWidgetPropItemRely({
-  id: 'widget-id-3',
   label: '表格',
   widgetRef: 'NormalTable',
   wGroupType: 'dataDisplay',

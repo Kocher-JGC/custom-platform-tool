@@ -1,7 +1,6 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const FormInputMeta = CreateWidgetPropItemRely({
-  id: 'widget-id-1',
   label: '文本框',
   widgetRef: 'FormInput',
   wGroupType: 'formController',

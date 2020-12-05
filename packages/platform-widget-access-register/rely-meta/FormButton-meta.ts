@@ -1,7 +1,6 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const FormButtonMeta = CreateWidgetPropItemRely({
-  id: 'widget-form-button',
   widgetRef: 'FormButton',
   label: '动作按钮',
   wGroupType: 'formController',

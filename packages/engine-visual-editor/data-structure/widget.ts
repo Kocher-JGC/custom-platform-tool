@@ -10,8 +10,6 @@ import { WidgetRelyPropItems } from "./widget-prop-item-rely";
  * 2. 用于存储组件的元数据信息
  */
 export interface EditableWidgetMeta<G = string> {
-  /** 组件类型 id */
-  id: string
   /** 组件类面板的显示名 */
   label: string;
   /** 组件类面板的显示名 */
