@@ -409,7 +409,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         /** 获取对应控件数据 */
         const widgetEntity = flatLayoutItems[widgetRef];
         if(!widgetEntity) continue;
-        const { propState } = widgetEntity;
+        const { propState, id } = widgetEntity;
         if (!propState) continue;
         // TODO: 这里取了特定的值，后续需要改进
         const { widgetCode, title } = propState;
@@ -420,7 +420,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
           varList.push({
             code, varType, type,
             title: `${title}.${alias}`,
-            id: code,
+            id: `${id}.${attr}`,
           });
         });
       }
