@@ -5,6 +5,25 @@ import { nanoid } from 'nanoid';
 import { EventsRef, EventConfig, InterAction } from './spec';
 const { Panel } = Collapse;
 
+export enum StopByError {no, yes}
+export type ParamOnCreate = {type: 'create/changePlace', eventsRef: EventsRef}
+export type ParamOnUpdate = {type: 'update', eventConfig: EventConfig, eventID: string}
+export type ParamOnDelete = {type: 'remove', eventsRef: EventsRef, eventID: string}
+export type InterEvent = {actList: string[], condition?: any, stopByError: StopByError}
+export type InterEvents = {[key: string]: InterEvent}
+export interface PEventGroupPanel {
+  widgetId: string
+  supportEvents: {alias: string, type: string}[]
+  interActions: InterAction[]
+  interEvents: InterEvents
+  defaultConfig: {[key: string]: string[]}
+  onSubmit: (param1: ParamOnCreate|ParamOnUpdate|ParamOnDelete) => void
+}
+export type HandleCreateEvent = (eventType: string) => void
+export type HandleDeleteEvent = (eventType: string, eventID: string) => void
+export type HandleUpdateEvent = (eventType: string, eventID: string, updateArea: EventConfig) => void
+export type HandleChangeEventPlace = (eventType: string, eventID1: string, eventID2: string) => void
+
 
 const layout = {
   labelCol: { span: 9 },
@@ -54,8 +73,8 @@ const EventConfigItem: React.FC<PEventConfigItem> = ({
         label="异常则中断执行"
       >
         <Radio.Group>
-          <Radio value='1'>是</Radio>
-          <Radio value='0'>否</Radio>
+          <Radio value={StopByError.yes}>是</Radio>
+          <Radio value={StopByError.no}>否</Radio>
         </Radio.Group>
       </Form.Item>
     </Form>
@@ -162,28 +181,11 @@ export const EventRefRenderer: React.FC<PEventRefRenderer> = ({
     </Collapse>
   );
 };
-export enum StopByError {yes, no}
-export type ParamOnCreate = {type: 'create/changePlace', eventsRef: EventsRef}
-export type ParamOnUpdate = {type: 'update', eventConfig: EventConfig, eventID: string}
-export type ParamOnDelete = {type: 'remove', eventsRef: EventsRef, eventID: string}
-export type InterEvent = {actList: string[], condition?: any, stopByError: StopByError}
-export type InterEvents = {[key: string]: InterEvent}
-export interface PEventGroupPanel {
-  supportEvents: {alias: string, type: string}[]
-  interActions: InterAction[]
-  interEvents: InterEvents
-  defaultConfig: {[key: string]: string[]}
-  onSubmit: (param1: ParamOnCreate|ParamOnUpdate|ParamOnDelete) => void
-}
-export type HandleCreateEvent = (eventType: string) => void
-export type HandleDeleteEvent = (eventType: string, eventID: string) => void
-export type HandleUpdateEvent = (eventType: string, eventID: string, updateArea: EventConfig) => void
-export type HandleChangeEventPlace = (eventType: string, eventID1: string, eventID2: string) => void
-
 /**
  * 事件编辑面板
  */
 export const EventGroupPanel: React.FC<PEventGroupPanel> = ({
+  widgetId,
   supportEvents,
   interActions,
   interEvents,
@@ -200,7 +202,7 @@ export const EventGroupPanel: React.FC<PEventGroupPanel> = ({
   const handleCreateEvent: HandleCreateEvent = (eventType) => {
     /** 创建事件唯一标识 */
     const getNewEventId = () => {
-      return `event.${nanoid(8)}`;
+      return `event.${widgetId}.${eventType}.${nanoid(8)}`;
     };
     const newEventId = getNewEventId();
     const eventsRefInCreate = {
