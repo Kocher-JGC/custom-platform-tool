@@ -6,50 +6,57 @@ import { ModuleTree } from '../PDInfraUI/ModuleTreeRenderer';
 interface SelectedRowInfo {
   id: string
   name: string
+  type: string
+
+  auxTable?: {containAuxTable: boolean}
 }
-interface TableSelectorProps extends PD.PropItemRendererBusinessPayload {
+interface TableSelectorProps {
   /** 提交已选中的项 */
-  onSubmit: (selectedRowInfo: SelectedRowInfo) => void
-  defaultSelectedInfo?: SelectedRowInfo
+  onSubmit: (selectedRowInfo: SelectedRowInfo[]) => void
+  defaultSelectedInfo?: SelectedRowInfo[]
   single?: boolean
 }
 type AuxTableContainer = {[key: string]: boolean}
 
 interface TableConfig {
-  moduleId?: string
-  lastModifiedByMe?: boolean
-  createdByMe?: boolean
-  paging: {
-    offset: number
-    size: number
+  param: {
+    moduleId?: React.ReactText
+    lastModifiedByMe?: boolean
+    createdByMe?: boolean
+    offset?: number
+    size?: number
     total?: number
+    name?: string
   }
+  
   list: any[]
-  name?: string
 }
-const useTableList = (defaultPaging = {
+const useTableList = (defaultParam = {
   offset: 0,
   size: 10
-}): [TableConfig, (paging?: TableConfig['paging']) => void] => {
+}): [TableConfig, (param?: TableConfig['param']) => void] => {
   
   const [dataList, setList] = useState<TableConfig>({
-    name: undefined,
-    moduleId: undefined,
-    paging: defaultPaging,
-    createdByMe: false,
-    lastModifiedByMe: false,
+    param: defaultParam,
     list: []
   });
-  const getListByPaging = (param = defaultPaging) => {
-    const { name = dataList.name, offset = 0, size = dataList.paging.size, createdByMe = dataList.createdByMe, lastModifiedByMe = dataList.lastModifiedByMe, moduleId = dataList.moduleId } = param;
+  const getListByPaging = (param: TableConfig['param'] = defaultParam) => {
+    const { 
+      name = dataList.param.name, 
+      offset = 0, 
+      size = dataList.param.size, 
+      createdByMe = dataList.param.createdByMe, 
+      lastModifiedByMe = dataList.param.lastModifiedByMe, 
+      moduleId = dataList.param.moduleId 
+    } = param;
     queryTableListService({ name, moduleId, createdByMe, lastModifiedByMe, offset, size, addHadAuxTableTag: true }).then((resData) => {
       const { total, data } = resData?.result || {};
       setList({
-        name,
-        moduleId,
-        createdByMe,
-        lastModifiedByMe,
-        paging: {
+        param: {
+          name,
+          moduleId,
+          createdByMe,
+          lastModifiedByMe,
           offset,
           size,
           total
@@ -63,11 +70,13 @@ const useTableList = (defaultPaging = {
   }, []);
   return [dataList, getListByPaging];
 };
-
-const TableList: React.FC = ({
+interface TableListProps extends TableSelectorProps {
+  moduleId?: React.ReactText
+}
+const TableList: React.FC<TableListProps> = ({
   single, onSubmit, defaultSelectedInfo = [], moduleId 
 }) => {
-  const [{ paging, list, createdByMe, lastModifiedByMe, name }, getTableConfig] = useTableList();
+  const [{ param: { createdByMe, lastModifiedByMe, name, total }, list }, getTableConfig] = useTableList();
   const [auxTableContainer, setAuxTableContainer] = useState<AuxTableContainer>({});
   useEffect(() => {
     initAuxTableContainer();
@@ -81,7 +90,7 @@ const TableList: React.FC = ({
     const result = {};
     defaultSelectedInfo.forEach(item=>{
       const { id, auxTable } = item;
-      result[id] = 'containAuxTable' in auxTable ? auxTable.containAuxTable : falase;
+      result[id] = auxTable && 'containAuxTable' in auxTable ? auxTable.containAuxTable : false;
     });
     setAuxTableContainer(result);
   };
@@ -190,7 +199,7 @@ const TableList: React.FC = ({
         }}
         onChange = {(pagination)=>{
           getTableConfig({
-            offset: (pagination.current - 1)*pagination.pageSize,
+            offset: (pagination?.current || 0 - 1) * ( pagination.pageSize || 10),
             size: pagination.pageSize,
           });
         }}
@@ -199,7 +208,7 @@ const TableList: React.FC = ({
           size: 'small',
           showSizeChanger: true,
           showQuickJumper: true,
-          total: paging.total
+          total: total
         }}
         rowKey="id"
         size="small"

@@ -5,16 +5,20 @@ import { SelectedTags } from './TableSelector';
 interface SelectedRowInfo {
   id: string
   name: string
+  type: string
 }
-interface DictSelectorProps extends PD.PropItemRendererBusinessPayload {
+interface DictSelectorProps {
   /** 提交已选中的项 */
-  onSubmit: (selectedRowInfo: SelectedRowInfo) => void
-  defaultSelectedInfo?: SelectedRowInfo
+  onSubmit: (allRowInfo: SelectedRowInfo[] ) => void
+  defaultSelectedInfo?: SelectedRowInfo[]
   single?: boolean
 }
 
-interface ChildDictListProps  extends DictSelectorProps {
+interface ChildDictListProps {
+  defaultSelectedInfo?: SelectedRowInfo[]
+  single?: boolean
   dictId: string
+  onSubmit: (allRowInfo: SelectedRowInfo[], selectedRowInfo: SelectedRowInfo[], rowKeys: React.ReactText[] ) => void
 }
 
 const dictColumns = [
@@ -25,6 +29,7 @@ const childDictColumns = [
   { title: '编码', dataIndex: 'code', key: 'code' },
   { title: '名称', dataIndex: 'name', key: 'name' }
 ];
+type Dict = SelectedRowInfo & {code: string, children: Dict[]}
 interface TableConfig {
   params: {
     offset: number
@@ -35,6 +40,7 @@ interface TableConfig {
   }
   list: any[]
 }
+type GetSubmitData = (allRowInfo: SelectedRowInfo[], selectedRowInfo: SelectedRowInfo[], rowKeys: React.ReactText[] ) => SelectedRowInfo[]
 const useDictList = (defaultParams = {
   offset: 0,
   size: 10
@@ -120,7 +126,7 @@ export const ChildDictList: React.FC<ChildDictListProps> = ({
   single = false,
   onSubmit
 }) => {
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<Dict[]>([]);
   const constructList = (list)=>{
     return list.map(item=>{
       return {
@@ -166,7 +172,7 @@ export const DictList: React.FC<DictSelectorProps> = ({
   onSubmit
 }) => {
   const [{ params, list }, getTableList] = useDictList();
-  const getSubmitData = (allRows = [], selctedRows = [], selectedRowKeys = []) => {
+  const getSubmitData: GetSubmitData = (allRows = [], selctedRows = [], selectedRowKeys = []) => {
     const defaultSelectedKeys = defaultSelectedInfo.map(item=>item.id);
     const plusRows = selctedRows.filter(item=>!defaultSelectedKeys.includes(item.id));
     const minusRowKeys = allRows.map(item=>item.id).filter(item=>!selectedRowKeys.includes(item));
@@ -228,7 +234,7 @@ export const DictList: React.FC<DictSelectorProps> = ({
   );
 };
 
-export const DictSelector = ({
+export const DictSelector: React.FC<DictSelectorProps> = ({
   single, defaultSelectedInfo = [], onSubmit
 })=>{
   return (

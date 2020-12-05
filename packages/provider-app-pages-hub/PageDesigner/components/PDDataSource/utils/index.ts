@@ -1,6 +1,7 @@
 import pick from "lodash/pick";
 import { message as AntdMessage } from 'antd';
 
+type RemoteDSData = {id: string, name: string, type: string, auxTable: {containAuxTable?:boolean}}
 /**
  * 提取由后端返回的，前端需要的 columns
  */
@@ -40,7 +41,7 @@ export const takeTableField = (datasourceData): PD.Datasource => {
  * 从
  * @param datas 
  */
-export const takeTable = async (tableList) => {
+export const takeTable = async (tableList: RemoteDSData[]) => {
   if(tableList.length === 0){
     return {
       decorativeData: [],
@@ -110,7 +111,7 @@ export const takeDictItems = () => {
 /**
  * 从后端返回的字典数据提取前端需要用到的数据
  */
-export const takeDictField = (datasourceData) => {
+export const takeDictField = (datasourceData:RemoteDSData) => {
   return Object.assign({}, pick(
     datasourceData, [
       'name',
@@ -122,10 +123,9 @@ export const takeDictField = (datasourceData) => {
     columns: takeDictItems()
   });
 };
-
-export const wrapInterDatasource = async (remoteDSData: any[]) => {
+export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
   // const nextState: PD.Datasources = [];
-  const tableList = [], nextDictList = [], remoteDictList = [];
+  const tableList: RemoteDSData[] = [], nextDictList = [], remoteDictList: RemoteDSData[] = [];
   remoteDSData.length > 0 && remoteDSData.forEach((data, order) => {
     if (!data) return;
     switch (data.type) {

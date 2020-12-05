@@ -15,7 +15,7 @@ interface SubmitItem {
 
 interface DataSourceBinderProps {
   onSubmit: (submitItems: SubmitItem[], interDatasources: PD.Datasources) => void
-  bindedDataSources: ({id: string, type: string})[]
+  bindedDataSources: ({id: string, type: string, name: string})[]
   /** 是否单选 */
   single?: boolean
   typeArea: ('TABLE' | 'DICT')[]

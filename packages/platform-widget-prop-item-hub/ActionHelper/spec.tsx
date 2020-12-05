@@ -1,7 +1,7 @@
 import React from 'react';
 import { PopModelSelector } from '@infra/ui';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { EventGroupPanel } from './EventSettingPanel';
+import { EventGroupPanel, StopByError } from './EventSettingPanel';
 import './style.scss';
 import { ActionsMeta } from '@engine/visual-editor/data-structure';
 const whichAttr = 'eventRef';
