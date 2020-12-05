@@ -32,13 +32,17 @@ interface ToolbarCustomProps {
   flatLayoutItems
   appLocation
   pageMetadata
+  pageState
+  changePageState
 }
 
 const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
   onReleasePage,
   flatLayoutItems,
   pageMetadata,
-  appLocation
+  appLocation,
+  changePageState,
+  pageState
 }) => {
   const previewUrl = getAppPreviewUrl({
     ...appLocation,
@@ -64,6 +68,8 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                     children: ({ close }) => {
                       return (
                         <PageConfigContainer
+                          pageState = {pageState}
+                          changePageState = {changePageState}
                           platformCtx = {platformCtx}
                           pageMetadata={pageMetadata}
                           flatLayoutItems={flatLayoutItems}

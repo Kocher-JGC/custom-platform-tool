@@ -4,6 +4,6 @@
 
 export interface PageState {
   /** 页面事件引用 */
-  eventRef: string[]
+  eventRef: {[key:string]: string[]}
 }
  
