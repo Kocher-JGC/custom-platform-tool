@@ -18,7 +18,7 @@ export interface OpenDatasourceSelectorOptions {
   /** 选择数据源的类型 */
   typeArea: DataSourceType[]
   /** 默认选择的数据源的项 */
-  defaultSelected: ({ id: string, type: DataSourceType })[]
+  defaultSelected: PD.Datasource[]
   /** 数据源选择器选择后的回调 */
   onSubmit: (submitOptions: OnDatasourceSelectorSubmitOptions) => void
   /** 是否单选 */
