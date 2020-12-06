@@ -2,14 +2,18 @@
 // import { PropItemCompAccessSpec } from ".";
 
 import { TEMP_ENTITY_ID } from "../core";
+import { DragableWidgetBaseType } from "./dragable-item";
 import { VarAttrType, EventAttrType } from "./page-metadata";
 import { WidgetRelyPropItems } from "./widget-prop-item-rely";
 
 /**
+ * 在页面设计器中加载的平台组件的元数据
+ * 
  * 1. 可被编辑属性的组件的定义
  * 2. 用于存储组件的元数据信息
+ * 3. 是否可以被内嵌（作为是否布局组件的标识）
  */
-export interface EditableWidgetMeta<G = string> {
+export interface EditableWidgetMeta<G = string> extends DragableWidgetBaseType {
   /** 组件类面板的显示名 */
   label: string;
   /** 组件类面板的显示名 */
@@ -39,13 +43,15 @@ export interface EditableWidgetMeta<G = string> {
 export interface WidgetEntity extends EditableWidgetMeta {
   /** 实例 id */
   id: string
+  /** 父级 id */
+  parentID?: string;
   /** 子元素 */
   body?: WidgetEntity[]
   /** 存储组件实例的状态 */
   propState?: WidgetEntityState
   /** 实例化后的状态 */
-  _state: string
-  // _state: 'active' | 'disable'
+  // _state: string
+  _state: 'active' | 'disable' | typeof TEMP_ENTITY_ID
 }
 
 /**

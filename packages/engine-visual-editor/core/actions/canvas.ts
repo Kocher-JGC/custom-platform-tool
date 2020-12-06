@@ -16,16 +16,22 @@ export interface AddEntityAction {
   type: typeof ADD_ENTITY
   entity: WidgetEntity
   idx: number
+  nestingInfo: ElemNestingInfo
+}
+
+interface AddEntityOptions {
+  nestingInfo: ElemNestingInfo
+  idx: number
 }
 
 export const AddEntity = (
   entity: WidgetEntity,
-  idx: number
+  options: AddEntityOptions
 ): AddEntityAction => {
   return {
     type: ADD_ENTITY,
     entity,
-    idx
+    ...options
   };
 };
 

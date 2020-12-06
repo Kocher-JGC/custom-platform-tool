@@ -12,14 +12,14 @@ import { WidgetEntity, WidgetEntityState } from '../../data-structure';
  * DnD 的回调的 context
  */
 export interface DnDContext {
-  id: string
   idx: number
+  dropTargetItem: WidgetEntity
 }
 
 export type DragItemConfig = any;
 
-export type DragItemDrop = (entity, dnDContext: DnDContext) => void
-export type DragItemDrag = (entity, dnDContext: DnDContext) => void
+export type OnItemDrop = (dragItem, dndContext: DnDContext) => void
+export type OnItemDrag = (dragItem, dndContext: DnDContext) => void
 export type DragItemMove = (dragIndex: number, hoverIndex: number, compClass: any) => void
 export type CancelDrag = (originalIndex: number) => void
 
@@ -48,9 +48,11 @@ export type WrapperItemDeleteEvent = (event, actionCtx: ActionCtx) => void
  * 可拖拽元素的 actions
  */
 export interface DragItemActions {
-  onItemDrop?: DragItemDrop
+  /** 响应组件的“放”事件 */
+  onItemDrop?: OnItemDrop
   /** 响应组件的“拖”事件 */
-  onItemDrag?: DragItemDrag
+  onItemDrag?: OnItemDrag
+  /** 响应组件的“被拖动”的事件 */
   onItemMove?: DragItemMove
 }
 
@@ -61,7 +63,7 @@ export interface WrapperFacContext {
   getEntityProps: GetEntityProps
   /** 扁平的 node 结构 */
   getLayoutNode: GetLayoutNode
-  UpdateEntityState: VEDispatcher['UpdateEntityState']
+  updateEntityState: VEDispatcher['UpdateEntityState']
 }
 
 /**
