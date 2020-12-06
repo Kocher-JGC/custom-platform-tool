@@ -2,6 +2,7 @@ import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const FlexMeta = CreateWidgetPropItemRely({
   widgetRef: 'FlexLayout',
+  embedable: true,
   wGroupType: 'layout',
   label: 'Flex 布局',
   propItemsRely: {
