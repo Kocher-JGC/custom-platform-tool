@@ -23,9 +23,17 @@ const PropEditorWrapper = ({
   );
 };
 
-export const PDCustomEditorLoader = ({
-  children,
+interface PDCustomEditorLoaderProps {
+  onClick?: () => void
+  children
+  entityState
+  propEditor
+  changeEntityState
+}
+
+export const PDCustomEditorLoader: React.FC<PDCustomEditorLoaderProps> = ({
   onClick,
+  children,
   entityState,
   propEditor,
   changeEntityState

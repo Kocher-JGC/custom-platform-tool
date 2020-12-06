@@ -22,13 +22,13 @@ import { getWidgetMetadataSync } from '../../services';
 const devEnv = process.env.NODE_ENV === 'development';
 
 /**
- * 可视化编辑器引擎的组件抽象实现
+ * 组件在舞台被实例化后的包装器
  */
 export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
   {
     onItemDrop, onItemMove, onItemClick, onDelete,
     getLayoutNode, getSelectedState, getEntityProps,
-    UpdateEntityState
+    updateEntityState
     // getHoveringEntity, setHoveringEntity
   },
 ) => (propsForChild) => {
@@ -69,7 +69,6 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
       >
         {devEnv ? `id: ${id}` : ''}
         <DragItemComp
-          id={id}
           index={idx}
           onItemDrop={onItemDrop}
           onItemMove={onItemMove}
@@ -97,8 +96,7 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
               propEditor={propEditor}
               entityState={entityState}
               changeEntityState={(changeVal) => {
-                // updateEntityState(changeVal);
-                UpdateEntityState(updateCtx, changeVal);
+                updateEntityState(updateCtx, changeVal);
               }}
             >
               <span className="t_green">

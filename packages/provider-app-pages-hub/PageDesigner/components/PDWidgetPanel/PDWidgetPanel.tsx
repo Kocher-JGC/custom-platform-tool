@@ -1,3 +1,7 @@
+/**
+ * 左边的组件面板
+ */
+
 import React from 'react';
 import { ComponentPanelProps } from '@engine/visual-editor/components/WidgetPanel';
 import DragItemComp from '@engine/visual-editor/spec/DragItemComp';
@@ -19,6 +23,10 @@ export interface PageDesignerComponentPanelProps {
   getDragItemConfig?: ComponentPanelProps['getDragItemConfig']
 }
 
+/**
+ * 左边组件面板的组件工厂函数
+ * @param getDragItemConfig 
+ */
 const itemRendererFac = (
   getDragItemConfig
 ): ItemRendererType => (widgetRef, groupType) => {
@@ -30,12 +38,13 @@ const itemRendererFac = (
     );
   }
   const {
-    id, label
+    label
   } = widgetMeta;
   switch (groupType) {
     case 'dragableItems':
       return (
         <DragItemComp
+          id={widgetRef}
           className="drag-comp-item"
           type={DragableItemTypes.DragableItemType}
           dragConfig={getDragItemConfig ? getDragItemConfig(widgetMeta) : {}}
@@ -99,15 +108,16 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
             // itemsGroups={widgetPanelData}
           />
         </Tab>
-        <Tab label={(
-          <DataSourceTitle
-            interDatasources={interDatasources}
-            onAddDataSource={(addData) => {
+        <Tab 
+          label={(
+            <DataSourceTitle
+              interDatasources={interDatasources}
+              onAddDataSource={(addData) => {
               // return console.log(addData);
-              onUpdatedDatasource(addData);
-            }}
-          />
-        )}
+                onUpdatedDatasource(addData);
+              }}
+            />
+          )}
         >
           <DataSourceDragItem
             interDatasources={interDatasources}
