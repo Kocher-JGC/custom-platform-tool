@@ -26,3 +26,4 @@ export * from '@platform-widget-prop-item/widget-coding-helper';
 export * from '@platform-widget-prop-item/widget-type-helper';
 export * from '@platform-widget-prop-item/page-size-helper';
 export * from '@platform-widget-prop-item/show-order-column-helper';
+export * from '@platform-widget-prop-item/field-ellipsis-helper';
