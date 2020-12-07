@@ -13,6 +13,9 @@ import { GeneralTableComp } from '.';
     },
     optDS: {
       type: 'string'
+    },
+    title: {
+      type: 'string'
     }
   },
 })
