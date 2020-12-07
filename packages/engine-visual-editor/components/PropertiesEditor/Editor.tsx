@@ -51,8 +51,6 @@ export interface PropertiesEditorProps {
   // editorConfig?: any
   /** 默认的表单数据state */
   entityState?: WidgetEntityState
-  /** 保存属性 */
-  changeEntityState: ChangeEntityState
   updateEntityState: (nextState) => void
   /** 初始化实例 */
   initEntityState: InitEntityStateOfEditor
@@ -230,6 +228,7 @@ PropertiesEditorProps, PropertiesEditorState
     /** 延后更新整个应用的数据 */
     debounce.exec(() => {
       const { selfEntityState } = this.state;
+      console.log('selfEntityState :>> ', selfEntityState);
       nextValue && this.props.updateEntityState(selfEntityState);
     }, 100);
   }

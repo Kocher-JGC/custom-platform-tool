@@ -93,7 +93,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
   }
 
   onSetCol = (nextState) => {
-    const { platformCtx: { meta: { changeEntityState } } } = this.props;
+    const { changeEntityState } = this.props;
 
     changeEntityState({
       attr: 'columns',

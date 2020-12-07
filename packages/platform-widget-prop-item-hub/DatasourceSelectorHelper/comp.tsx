@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Radio } from 'antd';
 import { PropItemRenderContext } from '@platform-widget-access/spec';
-// import { PopModelSelector } from '@infra/ui';
-// import { DictSelector } from './DictSelector';
-// import { TableSelector } from './TableSelector';
 
 interface OptionsType {
   type: 'TABLE' | 'DICT'

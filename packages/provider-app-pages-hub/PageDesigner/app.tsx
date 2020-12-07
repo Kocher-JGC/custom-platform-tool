@@ -365,27 +365,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     }
     return result;    
   }
-  /**
-   * 更改组件实例状态的统一方法
-   * @param nextEntityState 
-   * TODO: 属性项更改属性追踪器
-   */
-  changeEntityState: ChangeEntityState = (nextEntityState: NextEntityStateType) => {
-    const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
-    const { entity: activeEntity, nestingInfo } = selectedInfo;
-
-    /** 
-     * 这里做批量更新操作，将多个并发的更新 state 操作推入待更新队列中
-     */
-    this.pushToUpdateQueue(nextEntityState);
-    debounce.exec(() => {
-      const entityState = entityStateMergeRule(activeEntity?.propState, this.consumUpdateQueue());
-      UpdateEntityState({
-        nestingInfo: nestingInfo,
-        entity: activeEntity
-      }, entityState);
-    }, 50);
-  }
 
   updateEntityState = (nextState) => {
     const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
@@ -402,7 +381,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     takeMeta: this.takeMeta,
     changeWidgetType: this.changeWidgetType,
     getVariableData: this.getVariableData,
-    changeEntityState: this.changeEntityState,
+    // changeEntityState: this.changeEntityState,
   });
 
   render() {
@@ -485,7 +464,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
                       InitEntityState(selectedInfo, entityState);
                     }}
                     updateEntityState={this.updateEntityState}
-                    changeEntityState={this.changeEntityState}
                   />
                 )
               }

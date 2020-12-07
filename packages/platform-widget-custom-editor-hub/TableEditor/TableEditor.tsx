@@ -248,11 +248,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
 
   render() {
     const {
-      onSubmit, platformCtx: {
-        meta: {
-          changeEntityState
-        }
-      }
+      onSubmit, changeEntityState
     } = this.props;
     const { usingColumns } = this.state;
     // console.log(usingColumns);
