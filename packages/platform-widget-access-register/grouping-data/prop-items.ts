@@ -25,6 +25,7 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_dropdown_multiple',
           'prop_table_ds_helper',
           'prop_unit_value',
+          'rate-number-value',
         ]
       },
       {
