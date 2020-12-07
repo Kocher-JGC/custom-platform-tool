@@ -19,6 +19,9 @@ import { GeneralTableComp } from '.';
     },
     titlePlace: {
       type: 'string'
+    },
+    pageSize: {
+      type: 'number'
     }
   },
 })
