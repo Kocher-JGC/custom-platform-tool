@@ -7,6 +7,7 @@ export const TableMeta = CreateWidgetPropItemRely({
   // propEditor: 'TableEditor',
   propItemsRely: {
     propItemRefs: [
+      { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
       {
         propID: 'prop_table_ds_helper',
         defaultValues: {
