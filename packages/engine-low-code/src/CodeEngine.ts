@@ -79,7 +79,6 @@ export default class CodeCompiler {
    */
   public parseCodeToAst(): void {
     this.ast = parse(this.code);
-    console.log("this.ast", this.ast);
   }
 
   public codeIsExpression(code: string): boolean {
@@ -122,7 +121,6 @@ export default class CodeCompiler {
         }
         if (path.node.type === "Identifier") {
           if (identifierMapping[path.node.name]) {
-            console.log("666", identifierMapping[path.node.name]);
             path.node.name = identifierMapping[path.node.name];
           }
         }

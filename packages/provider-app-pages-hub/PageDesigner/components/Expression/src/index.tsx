@@ -1,3 +1,3 @@
-import "./registerFx";
+// import "./registerFx";
 
 export { Expression } from "./ExpressionEditor";

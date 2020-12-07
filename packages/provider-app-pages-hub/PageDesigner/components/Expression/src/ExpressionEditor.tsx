@@ -15,28 +15,19 @@ import {
   message
 } from "antd";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
-import CodeEditor from "@engine/code-editor";
 import codeEngine from "@engine/low-code";
 import createSandbox from "@engine/js-sandbox";
 import { PlatformCtx } from "@platform-widget-access/spec";
-import Variable from "./component/variable";
-import Function from "./component/function";
-import Description from "./component/description";
-import { VARIABLE_DATA, FUNCTION_TREE } from "./config";
+import { HY_METHODS } from "@library/expression-methods";
+import { VARIABLE_DATA } from "./config";
 import {
-  EXPRESSION_FUNCTION,
   SHOW_FUNCTION_FIELD,
-  HY_METHODS,
+  // HY_METHODS,
   HY_METHODS_TYPE,
   VARIABLE_TYPE,
   VAR_VALUE_TYPE
 } from "./constants";
-import {
-  IExpressionGrammarOptions,
-  IExpressionVariableOptions,
-  IExpressionFunctionOptions,
-  IHyMethod
-} from "./interface";
+import { IHyMethod } from "./interface";
 import "./index.less";
 
 const { Panel } = Collapse;
@@ -48,8 +39,10 @@ const methodsTree = HY_METHODS.reduce((a, b) => {
   }
   return a;
 }, {});
-
-console.log("methodsTree", methodsTree);
+const HY = HY_METHODS.reduce((a, b) => {
+  a[b.name] = b.execute;
+  return a;
+}, {});
 
 const Editor = React.lazy(
   () => import(/* webpackChunkName: "code_editor" */ "@engine/code-editor")
@@ -61,9 +54,7 @@ interface IProps {
 export const Expression: React.FC<IProps> = (props) => {
   const [editor, setEditor] = useState<any>(null);
   const [ready, setReady] = useState<boolean>(false);
-  const [selectFuncNode, setSelectFuncNode] = useState({});
   const [curFunction, setCurFunction] = useState<IHyMethod | null>(null);
-  const [cacheFuncNode, setCacheFuncNode] = useState({});
   const [debugCodeValue, setDebugCodeValue] = useState({});
   const [variableVisible, setVariableVisible] = useState({});
   const [variableMapping, setVariableMapping] = useState<{ [key: string]: string } | null>(null);
@@ -74,7 +65,7 @@ export const Expression: React.FC<IProps> = (props) => {
   });
   const [operationResult, setOperationResult] = useState("");
   const insertValue = (code: string, pos = 0) => {
-    console.log("insertValue", code, pos);
+    // console.log("insertValue", code, pos);
     const cur = editor.getCursor();
     editor.replaceRange(code, cur, cur, "+insert");
     setTimeout(() => {
@@ -90,16 +81,16 @@ export const Expression: React.FC<IProps> = (props) => {
     if (code && variableMapping) {
       try {
         const str = codeEngine(code, { identifierMapping: variableMapping });
-        console.dir(str);
+        console.dir("低代码引擎处理结果: ", str);
         const context = getVariableValue();
-        console.log("context", context);
-        const sandbox = createSandbox({ ...context }, {});
+        console.log("变量上下文: ", context);
+        const sandbox = createSandbox({ ...context, HY }, {});
         const res = await sandbox(str);
         console.log("调试结果: ", res);
         message.success(`调试结果: ${res}`);
         setOperationResult(res);
       } catch (error) {
-        console.dir(error);
+        console.dir("调试失败: ", error);
         setOperationResult(error.toString());
         message.error(`调试失败，${error.message}`);
       }
@@ -107,12 +98,11 @@ export const Expression: React.FC<IProps> = (props) => {
   };
   const initVariableMapping = (res) => {
     const obj = {};
-    Object.keys(res).map((type) => {
+    Object.keys(res).forEach((type) => {
       res[type].forEach((item) => {
-        obj[item.title] = `${item.type}.${item.code}`;
+        obj[item.title] = `${item.type}.${item.id}`;
       });
     });
-    console.log("variableMapping", obj);
     setVariableMapping(obj);
   };
   const getVariableValue = () => {
@@ -124,12 +114,11 @@ export const Expression: React.FC<IProps> = (props) => {
         variableValue[tmp[0]][tmp[1]] = debugCodeValue[key];
       }
     });
-    console.log("variableValue", variableValue);
     return variableValue;
   };
   const getVariableHintName = (): string[] => {
     const hint: string[] = [];
-    VARIABLE_DATA.map((item) => {
+    VARIABLE_DATA.forEach((item) => {
       item.props.forEach((props) => {
         hint.push(props.title);
       });
@@ -143,21 +132,10 @@ export const Expression: React.FC<IProps> = (props) => {
       keywords: keywords
     });
   };
-  const handleFuncSelect = (info: any) => {
-    console.log("info", info);
-    const { node } = info;
-    setSelectFuncNode(node);
-    setCacheFuncNode(node);
-    insertValue(node.name, 1);
-  };
-  const handleFuncMouseEnter = (info: any) => {
-    const { node } = info;
-    setSelectFuncNode(node);
-  };
   const replacePoint = (res: {
     [key: string]: VariableItem[];
   }): { [key: string]: VariableItem[] } => {
-    let obj = {};
+    const obj = {};
     Object.keys(res).forEach((type) => {
       obj[type] = res[type].map((item) => ({
         ...item,
@@ -220,9 +198,10 @@ export const Expression: React.FC<IProps> = (props) => {
     props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
       // 替换特殊字符 . 为 _
       const variable = replacePoint(res);
+      // const variable = res;
       setVariableTree(variable);
       initVariableMapping(variable);
-      console.log(res, variable);
+      console.log("全部变量: ", res, variable);
     });
   }, []);
 
@@ -357,22 +336,12 @@ export const Expression: React.FC<IProps> = (props) => {
             </section>
           </Col>
         </Row>
-
-        {/* <Row className="action-bar">
-          <Col xs={24} sm={12} md={24} lg={7} xl={7}>
-            <Variable variableData={VARIABLE_DATA} onClick={insertValue} />
-          </Col>
-          <Col xs={24} sm={12} md={24} lg={{ span: 7, offset: 1 }} xl={{ span: 5, offset: 1 }}>
-            <Function
-              funcTreeData={FUNCTION_TREE}
-              onSelect={handleFuncSelect}
-              onMouseEnter={handleFuncMouseEnter}
-            />
-          </Col>
-          <Col xs={24} sm={12} md={24} lg={{ span: 7, offset: 1 }} xl={{ span: 10, offset: 1 }}>
-            <Description title={selectFuncNode.title} description={selectFuncNode.description} />
-          </Col>
-        </Row> */}
+        <div className="expression-handle py-4">
+          <span className="expression-handle-tip">请在英文输入法模式下编辑表达式</span>
+          <Button type="primary" onClick={() => {}}>
+            确定
+          </Button>
+        </div>
       </div>
     </Suspense>
   );

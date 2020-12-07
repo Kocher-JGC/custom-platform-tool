@@ -1,0 +1,8 @@
+{
+  "name": "@library/expression-methods",
+  "version": "1.0.0",
+  "description": "表达式函数库",
+  "author": "vale",
+  "license": "MIT",
+  "dependencies": {}
+}
