@@ -6,6 +6,7 @@ export interface GeneralTableCompProps {
   columns: any[]
   dataSource: any[]
   title: string
+  titlePlace: string
 }
 
 export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
