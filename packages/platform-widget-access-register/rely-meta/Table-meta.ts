@@ -20,6 +20,13 @@ export const TableMeta = CreateWidgetPropItemRely({
           title: '表格'
         },
       },
+      {
+        propID: 'prop_title_place',
+        editAttr: ['titlePlace'],
+        defaultValues: {
+          titlePlace: 'left'
+        },
+      }
       // { propID: 'prop_flex_config' },
     ]
   }
