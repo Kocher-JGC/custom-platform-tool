@@ -16,6 +16,9 @@ import { GeneralTableComp } from '.';
     },
     title: {
       type: 'string'
+    },
+    titlePlace: {
+      type: 'string'
     }
   },
 })

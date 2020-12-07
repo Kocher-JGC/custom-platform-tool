@@ -10,6 +10,7 @@ export const propItemGroupingData: GroupPanelData[] = [
         items: [
           'prop_widget_coding',
           'prop_title_value',
+          'prop_title_place',
           'prop_field',
           'prop_real_value',
           'prop_action_config',
