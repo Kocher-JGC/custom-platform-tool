@@ -41,6 +41,13 @@ export const TableMeta = CreateWidgetPropItemRely({
         defaultValues: {
           showOrderColumn: false
         },
+      },
+      {
+        propID: 'prop_field_ellipsis',
+        editAttr: ['fieldEllipsis'],
+        defaultValues: {
+          fieldEllipsis: true
+        },
       }
       // { propID: 'prop_flex_config' },
     ]
