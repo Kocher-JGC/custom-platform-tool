@@ -14,7 +14,6 @@ interface TableDSHelperCompProps extends PropItemRenderContext {
 interface TableEditorState {
   datasourceMeta: PD.Datasource
   usingColumns: PTColumn[]
-  dsType: string
 }
 
 const takeTableInfo = (_tableInfo) => {
@@ -29,7 +28,6 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
 
     this.state = {
       datasourceMeta,
-      dsType: datasourceMeta?.type,
       usingColumns: this.setUsingColumns()
     };
   }
@@ -243,73 +241,51 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
       genMetaRefID,
     } = platformCtx.meta;
 
-    const { datasourceMeta, dsType } = this.state;
+    const { datasourceMeta } = this.state;
     // console.log(datasourceMeta);
     // 选项数据源的引用
     const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
-    // const datasourceMeta = DSOptionsRef ? takeMeta({
-    //   metaAttr: 'dataSource',
-    //   metaRefID: DSOptionsRef
-    // }) as OptionsType : null;
-    // const [dsType, setDsType] = useState(datasourceMeta?.type);
   
-    const dsBinder = 
-    // dsType ? 
-      (
-        <div 
-          className="px-4 py-2 border cursor-pointer"
-          onClick={e => {
-            platformCtx.selector.openDatasourceSelector({
-              defaultSelected: datasourceMeta ? [datasourceMeta] : [],
-              modalType: 'normal',
-              position: 'top',
-              single: true,
-              typeArea: ['TABLE'],
-              selectConfig: { table: { containAuxTable: false } },
-              onSubmit: ({ close, interDatasources }) => {
+    const dsBinder = (
+      <div 
+        className="px-4 py-2 border cursor-pointer"
+        onClick={e => {
+          platformCtx.selector.openDatasourceSelector({
+            defaultSelected: datasourceMeta ? [datasourceMeta] : [],
+            modalType: 'normal',
+            position: 'top',
+            single: true,
+            typeArea: ['TABLE'],
+            onSubmit: ({ close, interDatasources }) => {
               // 由于是单选的，所以只需要取 0
-                const bindedDS = interDatasources[0];
+              const bindedDS = interDatasources[0];
 
-                close();
+              close();
               
-                if(DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1) return;
-                const nextMetaID = changePageMeta({
-                  type: 'create/rm',
-                  metaAttr: 'dataSource',
-                  // metaID: DSOptionsRef,
-                  rmMetaID: DSOptionsRef,
-                  data: bindedDS
+              if(DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1) return;
+              const nextMetaID = changePageMeta({
+                type: 'create/rm',
+                metaAttr: 'dataSource',
+                // metaID: DSOptionsRef,
+                rmMetaID: DSOptionsRef,
+                data: bindedDS
                 // metaID:
-                });
-                changeEntityState({
-                  attr: whichAttr,
-                  value: nextMetaID
-                });
-                this.setDatasourceMetaForSelf(bindedDS);
-              }
-            });
-          }}
-        >
-          {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
-        </div>
-      ); 
-      // : null;
+              });
+              changeEntityState({
+                attr: whichAttr,
+                value: nextMetaID
+              });
+              this.setDatasourceMetaForSelf(bindedDS);
+            }
+          });
+        }}
+      >
+        {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
+      </div>
+    ); 
   
     return (
       <div>
-        {/* <div className="py-2">
-          <Radio.Group
-            onChange={(e) => {
-              this.setState({
-                dsType: e.target.value
-              });
-            }}
-            value={dsType}
-          >
-            <Radio value={'TABLE'}>数据表</Radio>
-            <Radio value={'DICT'}>字典表</Radio>
-          </Radio.Group>
-        </div> */}
         {
           dsBinder
         }
