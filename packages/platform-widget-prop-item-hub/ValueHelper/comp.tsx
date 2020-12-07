@@ -81,7 +81,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   }
 
   return (
-    <div className="value-helper">
+    <div className="value-helper flex">
       <div className="mb-2">
         <Selector
           needCancel={false}

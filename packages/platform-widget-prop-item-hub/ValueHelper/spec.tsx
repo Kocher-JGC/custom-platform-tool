@@ -4,7 +4,6 @@ import { ValueHelper } from "./comp";
 
 @PropItem({
   id: "prop_real_value",
-  name: "PropValue",
   label: "值",
   whichAttr: ["realVal", "exp", "variable"]
 })

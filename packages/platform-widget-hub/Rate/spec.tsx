@@ -26,7 +26,6 @@ export class Rate implements PlatformWidgetComp {
   }
 
   render(widgetState: WidgetEntityState) {
-    console.log(widgetState)
     return (
       <RateComp {...widgetState} />
     );
