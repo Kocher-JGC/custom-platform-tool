@@ -5,6 +5,7 @@ export default function codeEngine(code: string, options: IOptions) {
   const conveCode = compiler.codeIsExpression(`(function(){${code}})`)
     ? `(async function() { return ${code} })()`
     : `(async function() { ${code} })()`;
+  console.log("conveCode", conveCode);
   compiler.setCode(conveCode);
   return compiler.getCompileCode();
 }

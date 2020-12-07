@@ -1,6 +1,6 @@
 export interface IExpressionVariableOptions {
-  label: string;
-  value: string;
+  title: string;
+  name: string;
 }
 
 export interface IExpressionFunctionOptions {
@@ -9,10 +9,17 @@ export interface IExpressionFunctionOptions {
   describe: string;
   usage: string;
   example: string;
+  async?: boolean;
+}
+
+export interface IExpressionGrammarOptions {
+  title: string;
+  name: string;
 }
 
 export interface IExpressionFunction {
   title: string;
   name: string;
   options: IExpressionFunctionOptions[];
+  namespace: string;
 }

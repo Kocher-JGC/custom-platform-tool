@@ -52,6 +52,7 @@ export const createPlatformCtx = (metaCtx: PlatformCtx['meta']): PlatformCtx => 
             return (
               <Expression
                 defaultValue=""
+                metaCtx={metaCtx}
                 onSubmit={(value) => {
                   onSubmit({ close, value });
                 }}

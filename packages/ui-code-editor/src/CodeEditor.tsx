@@ -158,10 +158,10 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
       foldGutter,
       lint,
       gutters,
-      // hintOptions: {
-      //   completeSingle: false,
-      //   ...hintOptions,
-      // },
+      hintOptions: {
+        completeSingle: false,
+        ...hintOptions,
+      },
       ...configuration,
     });
     /** 设置窗口大小 */

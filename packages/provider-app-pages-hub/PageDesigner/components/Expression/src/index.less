@@ -1,4 +1,30 @@
 .expression {
+  .CodeMirror {
+    border: 1px solid #e0e0e0;
+  }
+  .action-bar {
+    margin-top: 10px;
+  }
+  .ant-card-head {
+    padding: 0 10px;
+    min-height: 30px;
+
+    .ant-card-head-title {
+      padding: 8px 0;
+    }
+  }
+  .ant-card-body {
+    padding: 10px;
+  }
+  .ant-list-item {
+    padding: 8px 4px !important;
+  }
+  .ant-list-item-action {
+    margin-left: 10px;
+  }
+}
+
+.expression {
   padding: 20px;
   &-handle {
     display: flex;
@@ -67,16 +93,13 @@
   &-editor {
     margin-bottom: 5px;
     min-height: 200px;
-    border-left: 1px solid #e0e0e0;
-    border-right: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
   }
   .cm-field {
     margin: 1px;
     padding: 0 5px;
   }
   .cm-field-value {
-    background-color:#ebf5ff;
+    background-color: #ebf5ff;
     color: #008dcd;
     user-select: none;
   }
