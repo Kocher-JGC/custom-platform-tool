@@ -8,6 +8,9 @@ import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 import { setOfSchemaPath } from './utils';
 import { isSchema, pickSchemaMark } from '../IUBDSL-mark';
 
+const reg = /(?<=[\\/\\[]?)([^\\/\\[\]]+)(?=[\\/\]\\[]?)/g;
+
+
 // TODO
 const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
   baseStruct: CommonObjStruct,
@@ -58,7 +61,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   return (): IUBStoreEntity => {
     const [IUBPageStore, setIUBPageStore] = useCacheState(fullStruct);
 
-    console.log(IUBPageStore);
+    // console.log(IUBPageStore);
     
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
     const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
@@ -68,7 +71,8 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       if (typeof strOrStruct === 'string') {
         if (isSchema(strOrStruct)) {
           // _.at(object, [paths])
-          return LGet(IUBPageStore, pickSchemaMark(strOrStruct), '');
+          strOrStruct = pickSchemaMark(strOrStruct);
+          return LGet(IUBPageStore, strOrStruct.match(reg), '');
         }
         // console.warn('stateManage: 非schemas描述');
         // TODO
@@ -87,13 +91,17 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     };
     const getWatchDeps = getPageState;
 
+    const getPageState2 = (ctx: RunTimeCtxToBusiness, struct: string[]) => {
+      const state = struct.reduce((res, key) => ({ ...res, [key]: LGet(IUBPageStore, key, '') }), {});
+      return state;
+    };
     /** 复杂数据的更新 */
-    const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: ChangeMapping[]) => {
-      const newState = IUBPageStore;
-      changeMaps.forEach(({ from, target }) => {
-        setOfSchemaPath(newState, target, from);
-      });
-      setIUBPageStore(newState);
+    const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: any) => {
+      // const newState = IUBPageStore;
+      // changeMaps.forEach(({ from, target }) => {
+      //   setOfSchemaPath(newState, target, from);
+      // });
+      setIUBPageStore(changeMaps);
     };
     
 
@@ -158,6 +166,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
 
     return {
       getPageState,
+      getPageState2,
       getWatchDeps,
       mappingUpdateState,
       ...handleFn

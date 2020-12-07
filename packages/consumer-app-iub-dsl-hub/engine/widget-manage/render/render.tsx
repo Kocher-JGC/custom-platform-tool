@@ -24,8 +24,8 @@ export const widgetRenderer = (conf: WidgetParseRes) => {
     // }, [extralProps]);
 
     const renderedComp = useMemo(() => {
-      // console.count(widgetCode);
-
+      // console.count(widgetCode + widgetId);
+      
       return widgetRender({
         pageStatus,
         widgetCode, widgetId,

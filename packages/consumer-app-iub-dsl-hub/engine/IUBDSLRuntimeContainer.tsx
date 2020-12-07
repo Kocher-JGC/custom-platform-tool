@@ -4,12 +4,15 @@ import React, {
 } from 'react';
 import { LayoutRenderer } from '@engine/layout-renderer';
 import { pageManage } from './page-manage';
-import Modal from 'antd/lib/modal/Modal';
 import { createIUBStore } from './state-manage';
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 import { effectRelationship as genEffectRelationship } from './relationship';
 import { RunTimeCtxToBusiness } from './runtime/types';
 import { widgetRenderer } from "./widget-manage";
+
+/**
+ * 要提供一种注册机制, 动态注册上下文内容
+ */
 
 const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
   const {

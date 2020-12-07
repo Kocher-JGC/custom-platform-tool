@@ -6,7 +6,7 @@ import { APBDSLCURDAction } from "./business-actions";
 import { ActionParserRes } from "./types";
 import { pickActionMark } from "../IUBDSL-mark";
 import { RunTimeCtxToBusiness } from "../runtime/types";
-import { noopError } from "../utils";
+import { noopError, reSetFuncWrap } from "../utils";
 import { defaultExtralParser } from "../IUBDSLParser";
 
 /**
@@ -46,10 +46,13 @@ export const actionsCollectionParser = (
     };
   };
 
+  const reSetAction = reSetFuncWrap(actionIds, actionList);
+
   return {
     actionList,
     actionIds,
-    bindAction
+    bindAction,
+    reSetAction
   };
 };
 
@@ -62,13 +65,13 @@ export const actionsCollectionParser = (
 const actionParseWrapFn = (conf: ActionDef, actionFn) => {
   const actionBaseConf = genActionBaseInfo(conf);
   /** 扩展的动作解析 */
-  return (exrtalActionParser = defaultExtralParser) => {
+  return (actionExtralParser = defaultExtralParser) => {
     /**
      * originFn: 原始处理函数
      * actOpts: 动作配置
      * actConf: 基础的动作配置信息
      */
-    const { actionFn: fn, actionOpts, actionBaseConf: confToUse } = exrtalActionParser({ actionFn, actionOpts: conf.actionOptions, actionBaseConf });
+    const { actionFn: fn, actionOpts, actionBaseConf: confToUse } = actionExtralParser({ actionFn, actionOpts: conf.actionOptions, actionBaseConf });
 
     const runFn = fn(actionOpts, confToUse);
     return runFn;

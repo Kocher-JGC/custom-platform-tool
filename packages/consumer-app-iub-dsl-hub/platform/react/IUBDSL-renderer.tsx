@@ -30,7 +30,7 @@ const IUBDSLRenderer = ({ dsl, hooks = {} as any, pageStatus = '' }) => {
       hooks?.beforeParse?.();
       dslParseRes = IUBDSLParser({ dsl });
       /** 现在先不缓存解析结果 */
-      // resolvedDsl[dsl.pageID] = dslParseRes;
+      resolvedDsl[dsl.pageID] = dslParseRes;
       hooks?.afterParse?.();
     }
   } catch (e) {

@@ -1,6 +1,16 @@
 const pubTestFn = (regExp: RegExp) => (text: string) => regExp.test(text);
 const pubPickFn = (regExp: RegExp) => (text:string) => text.replace(regExp, '') || text;
 
+
+// /^@\([^\\)]+\)\./g
+
+export const isIUBDSLMark = (str: string) => /^@\([^\\)]+\)\./.test(str);
+
+export const defaultPickMark = (str: string) => {
+  const idx = str.indexOf(').') + 2;
+  return [str.slice(0, idx), str.slice(idx)];
+};
+
 /** 
  * 接口元数据的mark部分
  */
@@ -20,13 +30,13 @@ export const isSchema = pubTestFn(schemaRegExp);
 export const pickSchemaMark = pubPickFn(schemaRegExp);
 
 /** 
- * 上下文载体的mark
+ * 运行时上下文
  */
-export const payloadMark = '@(payload).';
+export const runCtxMark = '@(runCtx).';
 /** 数据源的元数据 AOP/util */
-const payloadRegExp = /^@\(payload\)\./;
-export const isPayload = pubTestFn(payloadRegExp);
-export const pickPayloadMark = pubPickFn(payloadRegExp);
+const runCtxRegExp = /^@\(runCtx\)\./;
+export const isRunCtx = pubTestFn(runCtxRegExp);
+export const pickRunCtxMark = pubPickFn(runCtxRegExp);
 
 /** 
  * 动作的mark
