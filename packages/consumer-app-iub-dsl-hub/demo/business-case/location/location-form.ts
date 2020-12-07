@@ -25,6 +25,7 @@ export const locationForm: TypeOfIUBDSL = {
       fieldRef: "@(interMeta).1330690108524994560/1330690108566937616",
       type: FoundationType.string,
       desc: '位置名称',    
+      defaultVal: '位置名称'
     },
     wnlmddk6: {
       type: ComplexType.structObject,
@@ -45,11 +46,51 @@ export const locationForm: TypeOfIUBDSL = {
           type: FoundationType.string,
           fieldRef: "@(interMeta).1330690108524994560/1330690108566937614",
           desc: '位置名称',
+          defaultVal: 'wnlmddk6_id3位置名称',
         },
         wnlmddk6_id4: {
           type: FoundationType.string,
           fieldRef: "@(interMeta).1330690108524994560/1330692953483649025",
           desc: '位置类型',
+          defaultVal: '类型1',
+        }
+      }
+    },
+    wnlmddk999: {
+      type: ComplexType.structArray,
+      interRef: "@(interMeta).1330690108524994560",
+      desc: '上级信息',
+      struct: {
+        wnlmddk999_id1: {
+          type: FoundationType.string,
+          fieldRef: "@(interMeta).1330690108524994560/1330690108566937616",
+          desc: '主键',
+        },
+        wnlmddk999_id2: {
+          type: FoundationType.string,
+          fieldRef: "@(interMeta).1330690108524994560/1330690108566937605",
+          desc: '上级位置id',
+        },
+        wnlmddk999_id3: {
+          type: FoundationType.string,
+          fieldRef: "@(interMeta).1330690108524994560/1330690108566937614",
+          desc: '位置名称',
+        },
+        wnlmddk999_id4: {
+          type: ComplexType.structObject,
+          desc: '位置类型',
+          struct: {
+            hZuHwTTk_id1: {
+              type: FoundationType.string,
+              fieldRef: "@(interMeta).1330690535979098112/code",
+              desc: 'code'
+            },
+            hZuHwTTk_id2: {
+              type: FoundationType.string,
+              fieldRef: "@(interMeta).1330690535979098112/name",
+              desc: 'name'
+            },
+          }
         }
       }
     },

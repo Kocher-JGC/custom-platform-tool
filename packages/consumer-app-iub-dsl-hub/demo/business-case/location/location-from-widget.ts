@@ -32,7 +32,7 @@ export const locationFromWidget: WidgetCollection = {
     widgetCode: "FormInput.1",
     propState: {
       widgetCode: "FormInput.1",
-      realVal: '@(schema).wnlmddk6.wnlmddk6_id3',
+      realVal: '@(schema).wnlmddk6/wnlmddk6_id3',
       title: "上级位置",
     },
     eventHandlers: {
@@ -48,7 +48,7 @@ export const locationFromWidget: WidgetCollection = {
     widgetRef: AllWidgetType.DropdownSelector,
     propState: {
       widgetCode: "DropdownSelector.0",
-      realVal: '@(schema).hZuHwTTk.hZuHwTTk_id1',
+      realVal: '@(schema).hZuHwTTk/hZuHwTTk_id1',
       dataSource: "@(schema).hZuHwTTk_Arr",
       title: "位置类型",
     },

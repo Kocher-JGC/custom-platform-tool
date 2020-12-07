@@ -2,10 +2,10 @@ import {
   ConditionOperator, ComplexType,
   OpenType, PageType, ActionCollection, InterReqType, InterType,
   ConditionCollection,
-  InterCollection, Ref2ValueCollection
+  InterCollection, Ref2ValCollection
 } from '@iub-dsl/definition';
 
-export const interSetDataCollection: Ref2ValueCollection = {
+export const interSetDataCollection: Ref2ValCollection = {
   inter3_set: {
     type: ComplexType.structArray,
     struct: [
@@ -31,7 +31,7 @@ export const interSetDataCollection: Ref2ValueCollection = {
     type: ComplexType.structObject,
     struct: [
       {
-        value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
+        value: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
         key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
       }
     ]
@@ -41,7 +41,7 @@ export const interSetDataCollection: Ref2ValueCollection = {
     struct: [
       {
         // 需要根据打开目标{页面输出回填, 如何对应问题}
-        value: '@(payload).', // 来源: 固定值, 表达式, 后端数据
+        value: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
         key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
       }
     ]
@@ -50,29 +50,29 @@ export const interSetDataCollection: Ref2ValueCollection = {
     type: ComplexType.structArray,
     struct: [
       // {
-      //   value: '@(payload).', // 根据meta转换成schema
+      //   value: '@(runCtx).payload', // 根据meta转换成schema
       //   key: '@(schema).hZuHwTTk_Arr',
       // },
+      // {
+      //   value: '固定值',
+      //   key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
+      // },
       {
-        value: '固定值',
-        key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
-      },
-      {
-        value: '@(payload).[#(idx)]/code',
+        value: '@(runCtx).payload[#(idx)]/code',
         key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id1',
       },
       {
-        value: '@(payload).[#(idx)]/name',
+        value: '@(runCtx).payload[#(idx)]/name',
         key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
       },
-      {
-        key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id3',
-        value: {
-          type: ComplexType.structArray,
-          /** 树形结构, 结构一致 */
-          struct: []
-        }
-      }
+      // {
+      //   key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id3',
+      //   value: {
+      //     type: ComplexType.structArray,
+      //     /** 树形结构, 结构一致 */
+      //     struct: []
+      //   }
+      // }
     ]
   },
   hZuHwTTk_onchange: {
@@ -80,7 +80,7 @@ export const interSetDataCollection: Ref2ValueCollection = {
     struct: [
       {
         /** 第一种, 整个表转换的 */
-        value: '@(payload).', // 根据meta转换成schema
+        value: '@(runCtx).payload', // 根据meta转换成schema
         key: '@(schema).hZuHwTTk', // TODO onChange仅拿到单个值, 需要转换、 可以在event统一转换
       }
       /** 
@@ -89,11 +89,11 @@ export const interSetDataCollection: Ref2ValueCollection = {
        * 反思: 弹窗传值, 同理 其实也无法脱离元数据, 如果是赋值其他, 那么, 可以同时赋值给多个, 也可以验证复杂赋值
        */
       // {
-      //   from: '@(payload)..code',
+      //   from: '@(runCtx).payload/code',
       //   : '@(schema).hZuHwTTk/hZuHwTTk_id1',
       // },
       // {
-      //   from: '@(payload)..name',
+      //   from: '@(runCtx).payload/name',
       //   : '@(schema).hZuHwTTk/hZuHwTTk_id2',
       // }
     ]
