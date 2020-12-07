@@ -76,6 +76,6 @@ export interface PlatformCtx {
     /** 获取变量数据 */
     getVariableData: GetVariableData
     /** 更改 widget state */
-    changeEntityState: ChangeEntityState
+    // changeEntityState: ChangeEntityState
   }
 }
