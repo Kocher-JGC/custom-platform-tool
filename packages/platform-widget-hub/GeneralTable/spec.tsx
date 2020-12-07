@@ -19,7 +19,13 @@ import { GeneralTableComp } from '.';
     },
     titlePlace: {
       type: 'string'
-    }
+    },
+    pageSize: {
+      type: 'number'
+    },
+    showOrderColumn: {
+      type: 'boolean'
+    },
   },
 })
 export class NormalTable implements PlatformWidgetComp {

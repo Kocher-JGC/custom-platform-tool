@@ -8,18 +8,28 @@ export interface GeneralTableCompProps {
   dataSource: any[]
   title: string
   titlePlace: 'left'|'right'|'center'
+  pageSize: number
+  showOrderColumn: boolean
 }
 
 export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
   // console.log(props);
-  const { columns = [], dataSource = [], title, titlePlace, ...other } = props || {};
+  const { columns = [], showOrderColumn, dataSource = [], title, titlePlace, pageSize, ...other } = props || {};
   // console.log(columns, dataSource);
+  const getColumns = () => {
+    if(!showOrderColumn) return columns;
+    return [
+      { dataIndex: 'order', key: 'key', title: '序号', search: false },
+      ...columns
+    ];
+  };
+  const columnsWithOrder = getColumns();
   return (
     <div>
       <ProTable 
         className={`title-place-${titlePlace}`}
         headerTitle={title}
-        columns={columns || []} 
+        columns={columnsWithOrder || []} 
         dataSource={dataSource} 
         {...other}
       />
