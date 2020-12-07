@@ -33,6 +33,13 @@ export const TableMeta = CreateWidgetPropItemRely({
         defaultValues: {
           pageSize: 10
         },
+      },
+      {
+        propID: 'prop_show_order_column',
+        editAttr: ['showOrderColumn'],
+        defaultValues: {
+          showOrderColumn: false
+        },
       }
       // { propID: 'prop_flex_config' },
     ]

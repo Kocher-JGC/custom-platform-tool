@@ -24,3 +24,4 @@ export * from '@platform-widget-prop-item/unit-helper';
 export * from '@platform-widget-prop-item/field-type-helper';
 export * from '@platform-widget-prop-item/title-place-helper';
 export * from '@platform-widget-prop-item/page-size-helper';
+export * from '@platform-widget-prop-item/show-order-column-helper';

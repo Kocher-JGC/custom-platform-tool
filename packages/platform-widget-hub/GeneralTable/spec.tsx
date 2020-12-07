@@ -22,7 +22,10 @@ import { GeneralTableComp } from '.';
     },
     pageSize: {
       type: 'number'
-    }
+    },
+    showOrderColumn: {
+      type: 'boolean'
+    },
   },
 })
 export class NormalTable implements PlatformWidgetComp {
