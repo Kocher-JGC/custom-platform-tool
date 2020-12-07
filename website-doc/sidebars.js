@@ -24,6 +24,7 @@ module.exports = {
         'module-design/权限控制详细设计',
         'module-design/路由详细设计',
         'module-design/页面设计器方案设计',
+        'module-design/布局系统',
       ],
     },
     {
