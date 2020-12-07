@@ -20,6 +20,7 @@ export const widgetPanelData: GroupPanelData = {
         'FormInputNumber',
         'Textarea',
         'DropdownSelector',
+        'Rate',
       ]
     },
     {
