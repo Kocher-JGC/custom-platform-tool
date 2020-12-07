@@ -24,4 +24,4 @@ export * from '@platform-widget-prop-item/unit-helper';
 export * from '@platform-widget-prop-item/value-helper';
 export * from '@platform-widget-prop-item/widget-coding-helper';
 export * from '@platform-widget-prop-item/widget-type-helper';
-
+export * from '@platform-widget-prop-item/page-size-helper';

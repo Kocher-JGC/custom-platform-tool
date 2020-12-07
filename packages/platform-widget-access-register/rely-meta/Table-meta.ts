@@ -26,6 +26,13 @@ export const TableMeta = CreateWidgetPropItemRely({
         defaultValues: {
           titlePlace: 'left'
         },
+      },
+      {
+        propID: 'prop_page_size',
+        editAttr: ['pageSize'],
+        defaultValues: {
+          pageSize: 10
+        },
       }
       // { propID: 'prop_flex_config' },
     ]

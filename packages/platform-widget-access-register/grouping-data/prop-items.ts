@@ -11,6 +11,7 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_widget_coding',
           'prop_title_value',
           'prop_title_place',
+          'prop_page_size',
           'prop_field',
           'prop_real_value',
           'prop_action_config',
