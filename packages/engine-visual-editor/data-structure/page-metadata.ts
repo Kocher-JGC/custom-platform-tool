@@ -14,7 +14,7 @@ export interface EventAttrType {
   /** 该事件变量的别名 */
   alias: string
   /** 事件类型 */
-  type: 'onClick'|'onDbClick'|'onMouseIn'|'onMouseOut'|'onChange'
+  type: 'onClick'|'onDbClick'|'onMouseIn'|'onMouseOut'|'onChange'|'onQuery'|'onRowCheck'|'onRowDbClick'|'onRowClick'|'onCellDbClick'|'onCellClick'
 }
 
 /**
