@@ -1,4 +1,4 @@
-import { CommonConditionRef } from './../../definition/hub/condition/condition';
+import { refIdOfCondition } from './../../definition/hub/condition/condition';
 /** TODO: 流程上下文运行不是特别规范 */
 
 import { FlowCollection, FlowItemInfo, FlowOutItemWires } from '@iub-dsl/definition/flow';
@@ -135,7 +135,7 @@ const onceFlowOutRun = async (flowCtx, { flowIds, getFlowItemInfo }: { flowIds: 
 
 /** 单项流程运行函数生成的参数 */
 interface FlowItemRunWrapParam<C = any> {
-  condition: CommonConditionRef;
+  condition: refIdOfCondition;
   /** TODO: 实际动作运行的interface如何写? */
   actionHandle: (ctx: C, ...args) => unknown;
   flowOutRun: OnceFlowOutRun<C>
