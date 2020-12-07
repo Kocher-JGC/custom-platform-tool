@@ -48,7 +48,14 @@ export const TableMeta = CreateWidgetPropItemRely({
         defaultValues: {
           fieldEllipsis: true
         },
-      }
+      }, 
+      {
+        propID: 'prop_check_row',
+        editAttr: ['rowCheckType', 'checkedRowsStyle'],
+        defaultValues: {
+          rowCheckType: 'no'
+        }
+      },
       // { propID: 'prop_flex_config' },
     ]
   }
