@@ -9,20 +9,22 @@ export interface OnDatasourceSelectorSubmitOptions {
   /** 从远端选择回来的数据源 */
   selectedDSFromRemote
 }
-
+type DataSourceType = 'TABLE' | 'DICT'
 export interface OpenDatasourceSelectorOptions {
   /** 弹出的类型 */
   modalType: 'normal' | 'side'
   /** 弹出的位置 */
   position?: 'left' | 'right' | 'top' | 'bottom';
   /** 选择数据源的类型 */
-  type: 'TABLE' | 'DICT'
+  typeArea: DataSourceType[]
   /** 默认选择的数据源的项 */
-  defaultSelected: ({ id: string })[]
+  defaultSelected: PD.Datasource[]
   /** 数据源选择器选择后的回调 */
   onSubmit: (submitOptions: OnDatasourceSelectorSubmitOptions) => void
   /** 是否单选 */
   single?: boolean
+  /** 是否只能选择单一范围的数据 */
+  typeSingle?: boolean
 }
 
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void

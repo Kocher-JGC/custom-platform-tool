@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { queryTableListService } from '@provider-app/table-structure/service';
-import { Table, Button } from 'antd';
-import { getDictionaryListServices } from '@provider-app/services';
+import React, { useState } from 'react';
+import { Tabs, Button } from 'antd';
 // import { wrapInterDatasource } from '../../services/datasource';
-// import { TableSelector } from './TableSelector';
-import { DictSelector, DictSubItems } from './DictSelector';
+import { TableSelector } from './TableSelector';
+import { DictSelector } from './DictSelector';
 import { wrapInterDatasource } from './utils';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/es/locale/zh_CN';
+const { TabPane } = Tabs;
 
 interface SubmitItem {
   id: string
@@ -14,198 +15,102 @@ interface SubmitItem {
 
 interface DataSourceBinderProps {
   onSubmit: (submitItems: SubmitItem[], interDatasources: PD.Datasources) => void
-  bindedDataSources: ({id: string})[]
+  bindedDataSources: ({id: string, type: string, name: string})[]
   /** 是否单选 */
   single?: boolean
-  type: 'TABLE' | 'DICT'
+  typeArea: ('TABLE' | 'DICT')[]
+  typeSingle?: boolean
 }
-
-interface TableList {
-  paging: {
-    offset: number
-    size: number
-    total?: number
-  }
-  list: any[]
-}
-
-const useTableList = (type, defaultPaging = {
-  offset: 0,
-  size: 10
-}): [TableList, (paging?: TableList['paging']) => void] => {
-  let reqFunc;
-  switch (type) {
-    case 'TABLE':
-      reqFunc = queryTableListService;
-      break;
-    case 'DICT':
-      reqFunc = getDictionaryListServices;
-      break;
-  }
-  if(!reqFunc) {
-    throw Error(`未找到 type = ${type} 对应的请求接口`);
-  }
-  const [dataList, setList] = useState<TableList>({
-    paging: defaultPaging,
-    list: []
-  });
-  const getListByPaging = (pagingOptions = defaultPaging) => {
-    const { offset = 0, size = dataList.paging.size } = pagingOptions;
-    reqFunc(pagingOptions).then((resData) => {
-      const { total, data } = resData?.result || {};
-      setList({
-        paging: {
-          offset,
-          size,
-          total
-        },
-        list: data
-      });
-    });
-  };
-  useEffect(() => {
-    getListByPaging();
-  }, []);
-  return [dataList, getListByPaging];
+const tabPaneTitle = {
+  TABLE: '数据表',
+  DICT: '字典'
 };
-
-const columns = [
-  {
-    key: 'name',
-    dataIndex: 'name',
-    title: '表结构名称',
-  },
-  {
-    key: 'action',
-    dataIndex: 'action',
-    title: '是否带入附属表',
-  },
-];
-
-const getItem = (dataSource, ids: string[]) => {
-  const res: any[] = [];
-  ids.forEach((id) => {
-    const item = dataSource.find((item) => item.id === id);
-    res.push(item);
-  });
-  return res;
-};
-
-// const useTableSelection = (defaultValue: string[] = []): [any, (selection) => void] => {
-//   const [selection, setSelection] = useState(defaultValue);
-//   return [selection, setSelection];
-// };
-
-/**
- * 获取默认的 dataSource 数据
- * @param bindedDataSources
- */
-const getDefaultDataSourceData = (bindedDataSources: any[] = []) => {
-  if(!bindedDataSources) {
-    // console.warn(`注意，DataSourceSelector 中的 bindedDataSources 被传入了空值`);
-    return {
-      keys: [],
-      rowItems: []
-    };
-  }
-  const keys = bindedDataSources.map((item) => item.id);
-  return {
-    keys,
-    rowItems: bindedDataSources
-  };
-};
-
-interface SelectedRowInfo {
-  keys: string[]
-  rowItems: any[]
-}
-
-const setItemsType = (items: Record<string, string>[], type) => {
-  if(!items) return [];
-
-  const _item = [...items];
-  _item.forEach((item) => item.type = type);
-
-  return _item;
-};
-// const interDatasources = await takeDatasources(addingDataFormRemote);
-// const nextDSState = {};
-// interDatasources.forEach((dsItem, idx) => {
-//   nextDSState[this.genDatasourceMetaID(idx)] = dsItem;
-// });
-
 export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
-  const { bindedDataSources, single = false, type, onSubmit } = props;
-  const [dataList, getDataList] = useTableList(type);
-  // const [selectedRowInfo, onSelectChange] = useTableSelection(
-  //   getDefaultDataSourceData(bindedDataSources)
-  // );
-  const [{ keys: selectedRowKeys, rowItems }, onSelectChange] = useState<SelectedRowInfo>(
-    getDefaultDataSourceData(bindedDataSources)
-  );
-  const rowKey = 'id';
-  // console.log(dataList);
-  const { list, paging } = dataList;
-  const tablePaging = {
-    current: paging.offset + 1,
-    total: paging.total,
-    pageSize: paging.size,
+  const { bindedDataSources = [], single = false, typeSingle = false, typeArea, onSubmit } = props;
+  const [selectedInfo, setSelectedInfo] = useState(bindedDataSources);
+  
+  const handleSubmit = (type, data) => {
+    data = data.map(item=>({ ...item, type }));
+    const filterByType = () => {
+      return selectedInfo.filter(item=>item.type !== type);
+    };
+    if(!typeSingle){
+      return setSelectedInfo([...filterByType(), ...data]);
+    }
+    setSelectedInfo(data);
   };
-  let expandableElem;
-  switch (type) {
-    case 'TABLE':
-      
-      break;
-    case 'DICT':
-      expandableElem = {
-        expandedRowRender: (record) => {
-          // console.log(record);
-          return (
-            <DictSubItems
-              dictID={record[rowKey]}
-            />
-          );
-        },
-        expandedRowKeys: selectedRowKeys,
-      };
-      break;
-  }
-  return (
-    <div className="data-source-binder p20">
-      <Table
-        rowKey={rowKey}
-        size="small"
-        onChange={(pagination) => {
-          // console.log(pagination);
-          getDataList({
-            offset: pagination.current - 1,
-            size: pagination.pageSize,
-          });
+  const tableSelectorRenderer = ()=>{
+    return (<TableSelector 
+      single = {single}
+      defaultSelectedInfo = {selectedInfo.filter(item=>item.type === 'TABLE')}
+      onSubmit={(tableData)=>{
+        handleSubmit('TABLE', tableData);
+      }}
+    />);
+  };
+  const dictSelectorRenderer = () => {
+    return (
+      <DictSelector 
+        single = {single}
+        defaultSelectedInfo = {selectedInfo.filter(item=>item.type === 'DICT')}
+        onSubmit = {(dictData)=>{
+          handleSubmit('DICT', dictData);
         }}
-        columns={columns}
-        dataSource={list}
-        pagination={tablePaging}
-        rowSelection={{
-          selectedRowKeys,
-          type: single ? 'radio' : 'checkbox',
-          onChange: (rowKeys, rowItems) => {
-            onSelectChange({
-              keys: rowKeys,
-              rowItems: setItemsType(rowItems, type)
-            });
-          },
-        }}
-        expandable={expandableElem}
       />
-      <Button
-        onClick={(e) => {
+    );
+  };
+  const Renderer = ({ type, ...rest }) => {
+    let comp;
+    switch(type){
+      case 'TABLE':
+        comp = (
+          <TableSelector {...rest}/>
+        );break;
+      case 'DICT':
+        comp = <DictSelector {...rest}/>; break;
+    }
+    return comp || null;
+  };
+  return (
+    <ConfigProvider locale={zhCN}>
+      <div className="data-source-binder p20">
+        {typeArea.length > 1 ? (
+          <Tabs 
+            tabPosition = "left"
+          >
+            {typeArea.map(item=>(
+              <TabPane tab={tabPaneTitle[item]} key={item}>
+                {Renderer({
+                  type: item,
+                  single: single,
+                  defaultSelectedInfo: selectedInfo.filter(item=>item.type === item),
+                  onSubmit: (dictData)=>{
+                    handleSubmit(item, dictData);
+                  }
+                })}
+              </TabPane>
+            ))}
+          </Tabs>
+        ): Renderer({
+          type: typeArea[0],
+          single: single,
+          defaultSelectedInfo: selectedInfo.filter(item=>item.type === typeArea[0]),
+          onSubmit: (dictData)=>{
+            handleSubmit(typeArea[0], dictData);
+          }
+        })
+        }
+        <Button
+          onClick={(e) => {
           // const submitData = getItem(list, selectedRowKeys);
-          const interDatasources = wrapInterDatasource(rowItems, type);
-          onSubmit(rowItems, interDatasources);
-        }}
-      >
+            wrapInterDatasource(selectedInfo).then(({ remoteData, decorativeData })=>{
+              onSubmit(remoteData, decorativeData);
+            });          
+          }}
+        >
         确定
-      </Button>
-    </div>
+        </Button>
+      </div>
+    </ConfigProvider>
   );
 };

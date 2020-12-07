@@ -14,6 +14,13 @@ export const TableMeta = CreateWidgetPropItemRely({
 
         }
       },
+      {
+        propID: 'prop_title_value',
+        editAttr: ['title'],
+        defaultValues: {
+          title: '表格'
+        },
+      },
       // { propID: 'prop_flex_config' },
     ]
   }

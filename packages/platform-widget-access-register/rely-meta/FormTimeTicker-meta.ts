@@ -5,6 +5,11 @@ export const FormTimeTickerMeta = CreateWidgetPropItemRely({
   label: '时间框',
   widgetRef: 'FormTimeTicker',
   wGroupType: 'formController',
+  eventAttr: [
+    { alias: '值改变事件', type: 'onChange' },
+    { alias: '鼠标移入事件', type: 'onMouseIn' },
+    { alias: '鼠标移除事件', type: 'onMouseOut' },
+  ],
   varAttr: [{
     alias: '实际值',
     attr: 'realVal',
@@ -35,6 +40,7 @@ export const FormTimeTickerMeta = CreateWidgetPropItemRely({
       { propID: 'prop_string_length', editAttr: ['stringLength'] },
       { propID: 'prop_prompt_info', editAttr: ['promptInfo'] },
       { propID: 'prop_note_info', editAttr: ['noteInfo'] },
+      { propID: 'prop_action_config', editAttr: ['eventRef'] },
       // { propID: 'prop_real_value', editAttr: ['realVal', 'exp', 'variable'] },
       // { propID: 'prop_field', editAttr: ['field'] },
     ]

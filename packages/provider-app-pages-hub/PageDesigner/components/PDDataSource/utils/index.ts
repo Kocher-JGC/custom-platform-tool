@@ -1,5 +1,7 @@
 import pick from "lodash/pick";
+import { message as AntdMessage } from 'antd';
 
+type RemoteDSData = {id: string, name: string, type: string, auxTable: {containAuxTable?:boolean}}
 /**
  * 提取由后端返回的，前端需要的 columns
  */
@@ -36,25 +38,80 @@ export const takeTableField = (datasourceData): PD.Datasource => {
 };
 
 /**
+ * 从
+ * @param datas 
+ */
+export const takeTable = async (tableList: RemoteDSData[]) => {
+  if(tableList.length === 0){
+    return {
+      decorativeData: [],
+      remoteData: []
+    };
+  }
+  /** 获取请求表数据参数 */
+  const getTablesParam = () => {
+    return tableList.map(item=>({
+      tableId: item.id,
+      addWithAuxTable: item.auxTable.containAuxTable
+    }));
+  };
+  /** 获取剩余的表配置 */
+  const getTableConfig = () => {
+    const result = {};
+    tableList.forEach(item=>{
+      const { id, auxTable } = item;
+      result[id] = { auxTable };
+    });
+    return result;
+  };
+  /** 拼接表格索引 */
+  // const getTablesOrder = () =>{
+  //   const map = {};
+  //   tableList.forEach(item=>{
+  //     const { id, order } = item;
+  //     map[id] = order;
+  //   });
+  //   return map;
+  // };
+  const { code, result, msg } = await $R_P.post({
+    url: '/data/v1/tables/tableWithAux',
+    data: { tables: getTablesParam() }
+  });
+  if(code !== '00000') {
+    AntdMessage.error('获取数据表数据失败，请联系技术人员');
+    return {
+      decorativeData: [],
+      remoteData: []
+    };
+  }
+  // const orderMap = getTablesOrder();
+  // const res = {};
+  // result.forEach(item=>{
+  //   const { id } = item;
+  //   const order = orderMap[id];
+  //   res[order] = takeTableField(item);
+  // });
+  // return res;
+  const tableConfig = getTableConfig();
+  return {
+    decorativeData: result.map(item=>({ ... takeTableField(item), ...tableConfig[item.id] })),
+    remoteData: result
+  };
+};
+/**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeDictItems = (datas: any[]) => {
-  return datas.map((column) => {
-    // console.log('column', column);
-    return pick(
-      column, [
-        'name',
-        'code',
-        'id',
-        'hasChild',
-      ]
-    );
-  });
+export const takeDictItems = () => {
+  return [
+    { name: '编码', code: 'code', id: 'code' },
+    { name: '名称', code: 'name', id: 'name' },
+    { name: '父编码', code: 'pid', id: 'pid' }
+  ];
 };
 /**
  * 从后端返回的字典数据提取前端需要用到的数据
  */
-export const takeDictField = (datasourceData) => {
+export const takeDictField = (datasourceData:RemoteDSData) => {
   return Object.assign({}, pick(
     datasourceData, [
       'name',
@@ -63,24 +120,30 @@ export const takeDictField = (datasourceData) => {
       'code',
     ]
   ), {
-    items: takeDictItems(datasourceData.items)
+    columns: takeDictItems()
   });
 };
-
-export const wrapInterDatasource = (remoteDSData: any[], type) => {
-  const nextState: PD.Datasources = [];
-  remoteDSData.length > 0 && remoteDSData.forEach((data) => {
+export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
+  // const nextState: PD.Datasources = [];
+  const tableList: RemoteDSData[] = [], nextDictList = [], remoteDictList: RemoteDSData[] = [];
+  remoteDSData.length > 0 && remoteDSData.forEach((data, order) => {
     if (!data) return;
-    let takeItem;
-    switch (type) {
+    switch (data.type) {
       case 'TABLE':
-        takeItem = takeTableField(data);
+        tableList.push(data);
         break;
       case 'DICT':
-        takeItem = takeDictField(data);
+        remoteDictList.push(data);
+        nextDictList.push(takeDictField(data));
         break;
     }
-    nextState.push(takeItem);
   });
-  return nextState;
+  const {
+    decorativeData: nextTableList,
+    remoteData: remoteTableList
+  } = await takeTable(tableList);
+  return {
+    decorativeData: [...nextTableList, ...nextDictList],
+    remoteData: [...remoteTableList, ...remoteDictList]
+  };
 };
