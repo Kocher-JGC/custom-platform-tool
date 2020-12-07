@@ -77,6 +77,7 @@ export const TableMeta = CreateWidgetPropItemRely({
           }
         }
       },
+      { propID: 'prop_action_config', editAttr: ['eventRef'] },
       // { propID: 'prop_flex_config' },
     ]
   }
