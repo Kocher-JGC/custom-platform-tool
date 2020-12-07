@@ -1,7 +1,6 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const DropdownSelectorMeta = CreateWidgetPropItemRely({
-  id: 'widget-id-5',
   label: '下拉选择器',
   widgetRef: 'DropdownSelector',
   wGroupType: 'formController',

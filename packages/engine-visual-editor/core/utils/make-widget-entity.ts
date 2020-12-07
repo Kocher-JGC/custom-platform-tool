@@ -6,8 +6,9 @@ import {
   increaseID,
 } from '@engine/visual-editor/utils';
 import {
-  EditableWidgetMeta, WidgetEntity, TempWidgetEntityType, TEMP_ENTITY_ID
+  EditableWidgetMeta, WidgetEntity, TempWidgetEntityType
 } from '../../data-structure';
+import { TEMP_ENTITY_ID } from '../const';
 
 export type MakeWidgetEntity = (
   widgetType: EditableWidgetMeta,

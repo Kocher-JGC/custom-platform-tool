@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/flex-layout",
+  "description": "flex 布局组件",
+  "version": "0.0.1",
+  "author": "SANGET",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

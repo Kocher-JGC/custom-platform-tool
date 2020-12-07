@@ -22,7 +22,7 @@ export const useResourceFac = <T>(
   };
 };
 
-export const useWidgetMeta = useResourceFac<WidgetTypeMetadataCollection>(
+export const useWidgetMeta = useResourceFac<EditableWidgetMeta>(
   loadPlatformWidgetMeta
 );
 

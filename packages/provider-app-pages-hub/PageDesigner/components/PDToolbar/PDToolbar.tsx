@@ -3,10 +3,87 @@ import { Button, ShowModal, CloseModal } from '@infra/ui';
 import { getAppPreviewUrl } from '@provider-app/config';
 
 import { previewAppService } from '@provider-app/services';
-import { PageConfigContainer } from "./PDPageConfiguration";
 import { PlatformContext } from '@provider-app/page-designer/utils';
+import { PageConfigContainer } from "../PDPageConfiguration";
+import { loadPropItemData } from '../../services';
+
+import './index.less';
 
 const isDevEnv = process.env.NODE_ENV === 'development';
+
+function syntaxHighlight(json) {
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+    let cls = 'number';
+    if (/^"/.test(match)) {
+      if (/:$/.test(match)) {
+        cls = 'key';
+      } else {
+        cls = 'string';
+      }
+    } else if (/true|false/.test(match)) {
+      cls = 'boolean';
+    } else if (/null/.test(match)) {
+      cls = 'null';
+    }
+    return '<span class="' + cls + '">' + match + '</span>';
+  });
+}
+
+const prepareData = async () => {
+  const [
+    propItemData
+  ] = await Promise.all([
+    loadPropItemData(),
+  ]);
+
+  return propItemData;
+};
+
+const PropDataDisplayer = () => {
+  const [data, setData] = React.useState({});
+  React.useEffect(() => {
+    prepareData().then((propData) => {
+      console.log(propData);
+      setData(propData);
+    });
+  }, []);
+  return (
+    <pre 
+      dangerouslySetInnerHTML={{
+        __html: syntaxHighlight(JSON.stringify(data, null, 2))
+      }}
+    >
+    </pre>
+  );
+};
+
+const CheckAllExistPropItems = () => {
+  return !isDevEnv ? null : (
+    <Button
+      className="mr10"
+      color="default"
+      onClick={(e) => {
+        const modalID = ShowModal({
+          title: '页面设置',
+          width: 900,
+          children: ({ close }) => {
+            return (
+              <div>
+                <PropDataDisplayer />
+              </div>
+            );
+          },
+          onClose: ()=>{
+            CloseModal(modalID);
+          }
+        });
+      }}
+    >
+      查看所有属性项(仅开发用)
+    </Button>
+  );
+};
 
 const ReleaseBtn = ({
   onReleasePage
@@ -58,6 +135,8 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
             <div className="flex items-center px-2" style={{ height: '100%' }}>
               <span className="text-gray-500">新手教程制作中，敬请期待</span>
               <span className="flex"></span>
+              {/* 开发用的，查看所有属性项的按钮 */}
+              <CheckAllExistPropItems />
               <Button
                 className="mr10"
                 color="default"
@@ -82,7 +161,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                   });
                 }}
               >
-        页面设置
+                页面设置
               </Button>
               <Button
                 color="default"
@@ -109,7 +188,7 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
                   });
                 }}
               >
-        预览
+                预览
               </Button>
               {/* <Button
         hola

@@ -1,7 +1,6 @@
 import { CreateWidgetPropItemRely } from "@platform-widget-access/spec";
 
 export const TextareaMeta = CreateWidgetPropItemRely({
-  id: 'widget-id-11',
   label: '多行文本框',
   wGroupType: 'formController',
   widgetRef: 'Textarea',
