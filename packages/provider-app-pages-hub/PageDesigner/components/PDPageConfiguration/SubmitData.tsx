@@ -6,6 +6,7 @@ import { getTableList as getTableListAPI } from '@provider-app/table-editor/apis
 import { nanoid } from 'nanoid';
 import { FormInstance } from 'antd/lib/form';
 import { ChangeFields } from './ChangeFields';
+import { InsertSubmitDataItem, DeleteSubmitDataItem, UpdateSubmitDataItem } from '@engine/visual-editor/data-structure';
 
 const OPERATE_TYPE_MENU = [
   { label: '新增', key: 'insert', value: 'insert' },
@@ -13,8 +14,19 @@ const OPERATE_TYPE_MENU = [
   { label: '删除', key: 'delete', value: 'delete' }
 ];
 
-export class SubmitData extends React.Component {
-  state = {
+interface IProps {
+  onSuccess
+  config
+  onCancel
+}
+interface IState {
+  list: (InsertSubmitDataItem|DeleteSubmitDataItem|UpdateSubmitDataItem)[]
+  listForShow: (InsertSubmitDataItem|DeleteSubmitDataItem|UpdateSubmitDataItem)[]
+  maxIndex: number
+  tableList: {label: string, value: string, key: string}[]
+}
+export class SubmitData extends React.Component<IProps, IState> {
+  state: IState = {
     list: [],
     listForShow: [],
     maxIndex: -1,
@@ -22,66 +34,10 @@ export class SubmitData extends React.Component {
   }
   listFormRef = React.createRef<FormInstance>();
   searchFormRef = React.createRef<FormInstance>();
-
-  getSubmitDataTitle = ()=>{
-    const { list } = this.state;
-    const operateMap = {
-      insert: '新增',
-      update: '修改',
-      delete: '删除'
-    };
-    return list.map(item=>{
-      const { operateType, tableName } = item;
-      return operateMap[operateType] + tableName + '记录';
-    }).join('；');
-  }
-  handleFinish = () => {
-    const { onSuccess } = this.props;
-    typeof onSuccess === 'function' && onSuccess(
-      this.state.list,
-      this.getSubmitDataTitle()
-    );
-  }
-  handleCancel = () => {
-    
-  }
-  handleReset = () => {
-    this.setState({
-      list: [],
-      listForShow: [],
-      maxIndex: -1
-    }, ()=> {
-      this.listFormRef.current?.setFieldsValue({list: this.state.listForShow});
-    });
-  }
-  constructActions = () => {
-    const result = {};
-    this.state.list.forEach((item,order)=>{
-      result[item.id] = { ...item, order };
-    });
-    return result;
-  }
-  validateList = () => {
-    return new Promise((resolve, reject)=> {
-      try {
-        this.listFormRef.current?.validateFields();
-        resolve(true);
-      }catch(e){
-        resolve(false);
-      }
-    });
-  }
-
-  componentDidMount(){
-    this.getTableList();
-    const list = this.initList();
-    this.setState({
-      list,
-      listForShow: list,
-      maxIndex: list.length > 0 ? list[list.length-1].index : this.state.maxIndex
-    });
-    this.listFormRef.current?.setFieldsValue({list});
-  }
+  
+  /**
+   * 初始化数据表列表
+   */
   getTableList = () => {
     getTableListAPI().then(res=>{
       this.setState({
@@ -97,25 +53,42 @@ export class SubmitData extends React.Component {
 
   initActions = () => {
     const { config } = this.props;
-    // if(!actions || Object.keys(actions).length === 0){
-    //   const id = this.getActionId(0);
-    //   return {
-    //     [id]: { id }
-    //   };
-    // }
-    return config || {};
+    return config || [];
   }
 
-  initList = () => {
-    const actions  = this.initActions();
-    const list = [];
-    for(const key in actions){
-      const { order, ...data } = actions[key];
-      list.push({ order, data });
-    }
-    return list.sort((a,b)=>a.order<b.order).map(item=>item.data);
+  componentDidMount(){
+    this.getTableList();
+    const list = this.initActions();
+    const maxIndex = list.length > 0 ? Math.max.apply(null, list.map(item=>this.getOrderById(item.id))) : this.state.maxIndex;
+    console.log(maxIndex);
+    this.setState({
+      list,
+      listForShow: list,
+      maxIndex
+    });
+    this.listFormRef.current?.setFieldsValue({list});
   }
 
+  /**
+   * 获取提交标题
+   */
+  getSubmitDataTitle = (): string=>{
+    const { list } = this.state;
+    const operateMap = {
+      insert: '新增',
+      update: '修改',
+      delete: '删除'
+    };
+    return list.map(item=>{
+      const { operateType, tableName } = item;
+      return operateMap[operateType] + tableName + '记录';
+    }).join('；');
+  }
+
+  getOrderById = (id: string)=>{
+    if(!id) return -1;
+    return Number(id.split('.')[2])-0;
+  }
   getActionId = (index) => {
     return `act.submitData.${index}.${nanoid(8)}`;
   }
@@ -129,7 +102,7 @@ export class SubmitData extends React.Component {
       list: [newItem, ...list],
       maxIndex: maxIndex+1
     });
-    this.listFormRef.current?.setFieldsValue({list: newListForShow});
+    this.listFormRef.current?.setFieldsValue({ list: newListForShow });
   }
 
   handleMinus = (id) => {
@@ -143,7 +116,7 @@ export class SubmitData extends React.Component {
       list,
       listForShow
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
 
   handleMoveUp = (index) => {
@@ -159,6 +132,37 @@ export class SubmitData extends React.Component {
     this.handleMoveUp(index+1);
   }
 
+  
+  /**
+   * 点击确定
+   */
+  handleFinish = () => {
+    const { onSuccess } = this.props;
+    typeof onSuccess === 'function' && onSuccess(
+      this.state.list,
+      this.getSubmitDataTitle()
+    );
+  }
+  /**
+   * 点击取消
+   */
+  handleCancel = () => {
+    const { onCancel } = this.props;
+    typeof onCancel === 'function' && onCancel();
+  }
+  /**
+   * 点击清空
+   */
+  handleReset = () => {
+    this.setState({
+      list: [],
+      listForShow: [],
+      maxIndex: -1
+    }, ()=> {
+      this.listFormRef.current?.setFieldsValue({list: this.state.listForShow});
+    });
+  }
+
   getIndexById = (list, id) => {
     let index = -1;
     list.forEach((item, loopIndex)=>{
@@ -171,22 +175,28 @@ export class SubmitData extends React.Component {
   handleSetValue = (id, data) => {
     const list = this.state.list.slice();
     const listForShow = this.state.listForShow.slice();
-    const index = this.getIndexById(list, id);
-    Object.assign(list[index], data);
+    const indexInList = this.getIndexById(list, id);
+    const indexInListShow = this.getIndexById(list, id);
+    const newData = { ...list[indexInList], ...data };
+    list.splice(indexInList, 1, newData);
+    listForShow.splice(indexInListShow, 1, newData);
     this.setState({
       list,
       listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
 
+  filterOption = (value, option)=>{
+    return option.label.toLowerCase().includes(value.toLowerCase());
+  }
   handleSearch = () => {
     const searchArea = this.searchFormRef.current?.getFieldsValue();
     const listForShow = this.filterListAfterSearch(searchArea);
     this.setState({ 
       listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
   }
   handleClear = () => {
     this.searchFormRef.current?.resetFields();
@@ -247,9 +257,7 @@ export class SubmitData extends React.Component {
           >
             <Select  
               placeholder="请选择数据表"
-              filterOption = {(value, option)=>{
-                return option.label.toLowerCase().includes(value.toLowerCase());
-              }}
+              filterOption = {this.filterOption}
               showSearch
               allowClear
               className="w-full"
@@ -335,9 +343,7 @@ export class SubmitData extends React.Component {
                       ]}
                     >
                       <Select  
-                        filterOption = {(value, option)=>{
-                          return option?.label.toLowerCase().includes(value.toLowerCase());
-                        }}
+                        filterOption = {this.filterOption}
                         className="w-full"
                         options = {tableList}
                         onChange={(value, option)=>{
@@ -427,13 +433,13 @@ export class SubmitData extends React.Component {
           />
           <Form.Item style={{ marginBottom: 0, marginTop: '0.5rem' }}>
             <Space className="float-right">
-              <Button htmlType="button" onClick={this.handleReset}>
+              <Button onClick={this.handleReset}>
             清空
               </Button>
               <Button type="primary" htmlType="submit">
             确定
               </Button>
-              <Button htmlType="button" onClick={this.handleCancel}>
+              <Button onClick={this.handleCancel}>
             取消
               </Button>
             </Space>

@@ -107,16 +107,6 @@
   <script>
     (function () {
 
-      function getQueryValue(queryName) {
-        const reg = new RegExp("(^|&)" + queryName + "=([^&]*)(&|$)", "i");
-        const r = window.location.search.substr(1).match(reg);
-        if (r != null) {
-          return decodeURI(r[2]);
-        } else {
-          return null;
-        }
-      }
-
       function toggleLoadingState(id, state) {
         const target = document.querySelector(id);
         if (!target) return;
@@ -135,7 +125,7 @@
         }, 2 * 1000)
       }
 
-      console.log("应用发布后端服务", `http://${getQueryValue("api")}/appManager/installApp`)
+      // console.log("应用发布后端服务", `http://${getQueryValue("api")}/appManager/installApp`)
       document.querySelector('#upload1').addEventListener("change", function (e) {
         const [file] = document.querySelector('#upload1').files;
         if (file) {
@@ -175,10 +165,8 @@
           const formData = new FormData();
           formData.set("file", file);
           formData.set("clean_app_business_tables", 1);
-          const url = getQueryValue("api");
-          const isHttp = /http/.test(url);
           axios.request({
-            url: `${!isHttp ? `http://${url}` : url}/appManager/installApp`,
+            url: `/appManager/installApp`,
             method: "POST",
             headers: {
               'Content-Type': 'multipart/form-data'

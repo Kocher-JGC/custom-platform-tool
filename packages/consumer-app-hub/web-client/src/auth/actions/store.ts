@@ -2,12 +2,19 @@
  * 用户验证模块
  */
 import createStore from "unistore";
+import storage from "store";
 import { Call, EventEmitter } from "@mini-code/base-func";
 
 import * as AUTH_APIS from "./apis";
+import { setRequestHeader } from "../../utils/request";
+
+const PREV_LOGIN_DATA = 'prev/login/data';
 
 export interface SaaSAuthActionsTypes {
-  autoLogin: () => void;
+  autoLogin: (onSuccess?: () => void) => void;
+  switchUser: () => void;
+  switchApp: () => void;
+  selectAppInfo: (app: { code: string, lessee: string }) => void;
   login: (form, onSuccess?: () => void) => void;
   logout: () => void;
 }
@@ -17,21 +24,53 @@ export interface AuthStoreState extends AuthStore, SaaSAuthActionsTypes {
 }
 
 export interface AuthStore {
-  userInfo: {};
-  menuStore: {};
-  username: string;
-  loginResDesc: string;
-  autoLoging: boolean;
-  logging: boolean;
-  logouting: boolean;
-  isLogin: boolean;
-  token: string;
+  userInfo: Record<string, unknown>
+  username: string
+  loginResDesc: string
+  autoLoging: boolean
+  logging: boolean
+  logouting: boolean
+  isLogin: boolean
+  token: string
+
+  app: IApp | null
+}
+export interface IApp {
+  name: string
+  code: string
+  lessee: string
+  token: string
 }
 
 export function getPrevLoginToken() {
   const res = getPrevLoginData();
   return res ? res.token : null;
 }
+
+export function checkAppInfo() {
+  return storage.get("app/code") && storage.get(`app/${storage.get("app/code")}/token`);
+}
+
+export function getAppInfo() {
+  if(storage.get("app/code")){
+    return Object.assign(
+      {},
+      {
+        name: storage.get("app/name"),
+        code: storage.get("app/code"),
+        lessee: storage.get("app/lessee"),
+      },
+      storage.get(`app/${storage.get("app/code")}/token`) && {
+        token: storage.get(`app/${storage.get("app/code")}/token`),
+      });
+  }
+  // 本地存储数据缺失，清除数据重新登录
+  // storage.clearAll();
+  clearPrevLoginData();
+  return null;
+}
+
+const handleLoginSuccess = (loginRes) => loginRes.code === 'C0000';
 
 const defaultAuthStore: AuthStore = {
   userInfo: {},
@@ -40,80 +79,127 @@ const defaultAuthStore: AuthStore = {
   autoLoging: !!getPrevLoginToken(),
   logging: false,
   logouting: false,
-  // isLogin: false,
-  isLogin: process.env.NODE_ENV === 'development',
+  isLogin: false,
+  // isLogin: process.env.NODE_ENV === 'development',
   token: "",
-  menuStore: []
+  app: getAppInfo()
 };
 
 const authStore = createStore(defaultAuthStore);
 
-function onLoginSuccess(store, resData) {
-  const userInfo = resData;
-  const { username } = resData;
-  userInfo.username = username;
-  // let menuStore = (userInfo.Menus || {}).Child;
-  const { token } = resData;
-  // delete userInfo['Menus'];
+function onLoginSuccess(store, { resData = {}, originForm = {} }) {
+  const prevLoginRes = resData;
+  const { app } = store.getState();
 
-  store.setState({
+  /** TODO: 提取页面需要的信息 */
+  const { username } = resData;
+  /**
+   * 提取用户信息
+   */
+  const userInfo = {
+    username
+  };
+
+  let { token } = resData || {};
+
+  if(token.indexOf("Bearer") === -1){
+    token = `Bearer ${token}`;
+  }
+
+  const resultStore = {
     logging: false,
     autoLoging: false,
     isLogin: true,
     token,
     username,
+    prevLoginRes,
     userInfo
-    // menuStore
-  });
+  };
+
+  storage.set(`app/${storage.get("app/code")}/token`, token);
+
+  setRequestHeader({ Authorization: token });
 
   EventEmitter.emit("LOGIN_SUCCESS", { userInfo, loginRes: resData });
-  localStorage.setItem("PREV_LOGIN_DATA", JSON.stringify(resData));
+  storage.set(PREV_LOGIN_DATA, resData);
+  // initRequest(saasServerUrl, token);
+
+  return resultStore;
 }
 
 function clearPrevLoginData() {
-  localStorage.clear();
+  // storage.clearAll();
+  storage.remove(`app/${storage.get("app/code")}/token`);
+  storage.remove("app/code");
+  storage.remove("app/lessee");
+  storage.remove("app/name");
+  storage.remove("paas/token");
 }
 
 function getPrevLoginData(): AuthStore | undefined {
-  const res = localStorage.getItem("PREV_LOGIN_DATA");
-  let result;
-  if (res) {
-    try {
-      result = JSON.parse(res);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-  return result;
+  return storage.get(PREV_LOGIN_DATA);
 }
 
 const authActions = (store) => ({
-  async autoLogin() {
-    const token = getPrevLoginToken();
-    if (!token) return;
-    const loginRes = await AUTH_APIS.login({
-      token
+  switchUser(){
+    const { app } = store.getState();
+    store.setState({
+      isLogin: false,
+      logging: false,
+      app: {
+        name: app.name,
+        code: app.code,
+        lessee: app.lessee
+      }
     });
-    const isLogin = loginRes.code === 0;
-    if (isLogin) {
-      onLoginSuccess(
-        store,
-        Object.assign({}, getPrevLoginData(), loginRes.data)
-      );
-    }
-    // if (prevLoginData) {
-    //   onLoginSuccess(store, prevLoginData);
-    // }
+    storage.remove(`app/${app.code}/token`);
   },
-  async login(state, form, callback) {
+  switchApp(){
+    store.setState({
+      isLogin: false,
+      logging: false,
+      app: null
+    });
+    // storage.clearAll();
+    clearPrevLoginData();
+  },
+  selectAppInfo(state, appInfo){
+    const { code, lessee } = appInfo;
+    if(code && lessee){
+      const { app } = store.getState();
+      store.setState({
+        app:{
+          ...app,
+          code,
+          lessee
+        }
+      });
+      storage.set("app/code", code);
+      storage.set("app/lessee", lessee);
+    }
+  },
+  async autoLogin(state, onSuccess) {
+    const prevLoginState = getPrevLoginData();
+    if (!prevLoginState) return;
+    store.setState({
+      autoLoging: true,
+    });
+    /** 判断是否登录成功的逻辑 */
+    const nextStore = onLoginSuccess(store, { resData: prevLoginState });
+    store.setState(nextStore);
+    Call(onSuccess);
+  },
+  async login(state, form, onSuccess) {
     store.setState({
       logging: true
     });
     const loginRes = await AUTH_APIS.login(form);
-    const isLogin = loginRes.code === 0;
+    /** 判断是否登录成功的逻辑 */
+    const isLogin = handleLoginSuccess(loginRes);
     if (isLogin) {
-      Call(callback, form);
-      onLoginSuccess(store, Object.assign({}, loginRes.data, form));
+      Call(onSuccess, form);
+      const nextStore = onLoginSuccess(store, { resData: loginRes.data, originForm: form });
+      store.setState(nextStore);
     } else {
       store.setState({
         logging: false,
@@ -125,8 +211,14 @@ const authActions = (store) => ({
     store.setState({
       logouting: true
     });
-    await AUTH_APIS.logout();
-    store.setState(defaultAuthStore);
+    // await AUTH_APIS.logout();
+    store.setState({
+      ...defaultAuthStore,
+      isLogin: false,
+      autoLoging: false,
+      logging: false,
+      logouting: false,
+    });
     clearPrevLoginData();
   }
 });

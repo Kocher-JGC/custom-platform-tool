@@ -7,7 +7,6 @@ import { NumberRadixPointComp } from './comp';
 
 @PropItem({
   id: 'prop_number_radixPoint',
-  name: 'PropNumberRadixPoint',
   label: '小数位数',
   whichAttr: ['radixPoint', 'field'],
   // defaultValues: {

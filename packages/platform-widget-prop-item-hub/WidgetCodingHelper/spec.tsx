@@ -45,7 +45,6 @@ const WidgetCodeComp: React.FC<PropItemRenderContext> = (props) => {
 
 @PropItem({
   id: 'prop_widget_coding',
-  name: 'PropWidgetCoding',
   label: '编码',
   whichAttr: ['field', 'widgetCode'],
   useMeta: ['schema'],

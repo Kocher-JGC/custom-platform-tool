@@ -7,7 +7,6 @@ import { PromptInfoComp } from './comp';
 
 @PropItem({
   id: 'prop_prompt_info',
-  name: 'PropPromptInfo',
   label: '提示信息',
   whichAttr: ['promptInfo', 'field'],
   // defaultValues: {

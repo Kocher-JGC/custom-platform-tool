@@ -42,7 +42,8 @@ const defaultAuthStore: AuthStore = {
   logging: false,
   logouting: false,
   // isLogin: !!getPrevLoginToken(),
-  isLogin: process.env.NODE_ENV === 'development',
+  isLogin: false,
+  // isLogin: process.env.NODE_ENV === 'development',
   prevLoginRes: {},
   token: "",
   // menuStore: NAV_MENU_CONFIG
@@ -50,8 +51,8 @@ const defaultAuthStore: AuthStore = {
 const authStore = createStore(defaultAuthStore);
 
 export interface PaaSAuthActionsTypes {
-  autoLogin: () => void;
-  login: (state, form, onSuccess: () => void) => void;
+  autoLogin: (onSuccess?) => void;
+  login: (form, onSuccess: () => void) => void;
   logout: () => void;
 }
 
@@ -79,9 +80,9 @@ function onLoginSuccess({ resData, originForm = {} }) {
   const userInfo = {
     username: userName
   };
-  // let menuStore = (userInfo.Menus || {}).Child;
+
   const { token } = resData.loginSuccessInfo || {};
-  // delete userInfo['Menus'];
+
   const resultStore = {
     logging: false,
     autoLoging: false,
@@ -90,7 +91,6 @@ function onLoginSuccess({ resData, originForm = {} }) {
     username: userName,
     prevLoginRes,
     userInfo
-    // menuStore
   };
 
   /** 设置 Authorization */
@@ -135,11 +135,18 @@ function getPrevLoginData(): AuthStore | undefined {
  */
 const authActions: AuthActions = (store) => ({
   /** 自动登录 */
-  async autoLogin() {
+  async autoLogin(state, form, onSuccess) {
+    store.setState({
+      autoLoging: true
+    });
     // const token = getPrevLoginToken();
     /** TODO: 是否有做 token 是否有效的接口验证 */
     const prevLoginState = getPrevLoginData();
-    if (!prevLoginState) return;
+    if (!prevLoginState) {
+      return store.setState({
+        autoLoging: false
+      });
+    }
     $R_P.urlManager.setLessee(prevLoginState.prevLoginRes.lesseeAccessName);
     // const loginRes = await AUTH_APIS.login({
     //   token
@@ -147,8 +154,9 @@ const authActions: AuthActions = (store) => ({
     /** 判断是否登录成功的逻辑 */
     // const isLogin = handleLoginSuccess(loginRes);
     // if (isLogin) {
-    onLoginSuccess({ resData: prevLoginState.prevLoginRes });
-    store.setState(prevLoginState);
+    const nextState = onLoginSuccess({ resData: prevLoginState.prevLoginRes });
+    store.setState(nextState);
+    Call(onSuccess);
     // }
   },
 

@@ -1,4 +1,5 @@
 const express = require("express");
+const request = require('request');
 const path = require("path");
 const multer = require("multer");
 const axios = require("axios");
@@ -92,6 +93,20 @@ app.get("/app-list", (req, res) => {
   });
 });
 
+// 安装后端应用转发
+app.post("/appManager/installApp", (req, res) => {
+  readJson(path.join(__dirname, projectFolder, `config.json`), (err, json) => {
+    if (err || !json || !json.saasServerUrl) {
+      res.json({
+        err: "获取 SaaS 地址失败",
+        code: "10000"
+      });
+    } else {
+      req.pipe(request(`${json.saasServerUrl}${req.url}`)).pipe(res);
+    }
+  });
+});
+
 // 安装前端应用文件
 app.post("/upload", (req, res) => {
   upload(req, res, (uploadErr) => {
@@ -170,13 +185,14 @@ app.post("/upload", (req, res) => {
 app.listen(config.port, () => {
   console.log("启动应用端更新服务成功");
   // 根据环境变量注册对应的 consul
-  if (process.env.CONSUL_HOST && process.env.CONSUL_PORT && process.env.CONSUMER_HOST) {
+  if (process.env.CONSUL_HOST && process.env.CONSUL_PORT && process.env.CONSUMER_HOST && process.env.CONSUMER_PORT) {
     const namespace = process.env.CONSUL_NAMESPACE;
     console.log(
       "注册 consul",
       process.env.CONSUL_HOST,
       process.env.CONSUL_PORT,
-      process.env.CONSUMER_HOST
+      process.env.CONSUMER_HOST,
+      process.env.CONSUMER_PORT
     );
     consul.register();
     // 从 consul 更新 config
@@ -184,9 +200,9 @@ app.listen(config.port, () => {
       .get(
         `http://${process.env.CONSUL_HOST}:${
           process.env.CONSUL_PORT
-        }/v1/kv/config/consumer-app-server${
+        }/v1/kv/config/custom-platform-v3-frontend${
           namespace ? `/${namespace}` : ""
-        }/consumer-app.json?t=${Date.now()}`
+        }/consumer_app.json?t=${Date.now()}`
       )
       .then((res) => {
         const config = res.data;

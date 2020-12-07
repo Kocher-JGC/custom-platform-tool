@@ -1,8 +1,27 @@
 import React from 'react';
 import { Table, Button, Space } from 'antd';
 import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
-export class ChangeFields extends React.PureComponent {
-  state = {
+import { BasicValueMeta } from '@engine/visual-editor/data-structure';
+export interface IProps {
+  onSuccess: (param1: PChangeFields|null, title: string)=>void
+  onCancel
+  changeFields
+  platformCtx
+  tableId
+}
+interface ChangeFieldsValue extends BasicValueMeta {
+  tableName: string
+  columnName: string
+}
+type PChangeFields = {[key: string]: ChangeFieldsValue}
+export interface IState {
+  changeFields: PChangeFields
+  treeList
+  treeMap
+  variableData
+}
+export class ChangeFields extends React.PureComponent<IProps, IState> {
+  state: IState = {
     treeList: [],
     treeMap: {},
     changeFields: {},
@@ -107,7 +126,7 @@ export class ChangeFields extends React.PureComponent {
   }
   getSubmitTitle = () => {
     const { changeFields } = this.state;
-    const list = [];
+    const list: string[] = [];
     for(const key in changeFields){
       const { tableName, columnName } = changeFields[key];
       list.push(`${tableName}.${columnName}`);
@@ -146,13 +165,13 @@ export class ChangeFields extends React.PureComponent {
         pagination={false}
       />
       <Space className="float-right" style={{ height: 52 }}>
-        <Button htmlType="button" onClick={this.handleReset}>
+        <Button onClick={this.handleReset}>
       清空
         </Button>
         <Button type="primary" onClick={this.handleSubmit}>
       确定
         </Button>
-        <Button htmlType="button" onClick={this.handleCancel}>
+        <Button onClick={this.handleCancel}>
       取消
         </Button>
       </Space>

@@ -120,7 +120,7 @@ export interface ProColumnGroupType<RecordType> extends ProColumnType<RecordType
   children: ProColumns<RecordType>;
 }
 
-export type ProColumns<T = {}> = ProColumnGroupType<T> | ProColumnType<T>;
+export type ProColumns<T = Record<string, unknown>> = ProColumnGroupType<T> | ProColumnType<T>;
 
 export interface ProTableProps<T, U extends ParamsType>
   extends Omit<TableProps<T>, 'columns' | 'rowSelection'> {
@@ -323,7 +323,7 @@ const columnRender = <T, U = any>({
   }
   const { renderText = (val: any) => val } = item;
   const renderTextStr = renderText(text, row, index, action.current);
-  const textDom = defaultRenderText<T, {}>(
+  const textDom = defaultRenderText<T, Record<string, unknown>>(
     renderTextStr,
     (item.valueType as ProFieldValueType) || 'text',
     index,
@@ -390,7 +390,7 @@ const defaultOnFilter = (value: string, record: any, dataIndex: string | string[
  * @param map
  * @param columnEmptyText
  */
-const genColumnList = <T, U = {}>(
+const genColumnList = <T, U = Record<string, unknown>>(
   columns: ProColumns<T>[],
   map: {
     [key: string]: ColumnsState;
@@ -449,7 +449,7 @@ const genColumnList = <T, U = {}>(
  * 更快 更好 更方便
  * @param props
  */
-const ProTable = <T extends {}, U extends ParamsType>(
+const ProTable = <T extends Record<string, unknown>, U extends ParamsType>(
   props: ProTableProps<T, U> & {
     defaultClassName: string;
   },
@@ -496,7 +496,7 @@ const ProTable = <T extends {}, U extends ParamsType>(
     setSelectedRows(rows);
   };
 
-  const [formSearch, setFormSearch] = useState<{}>(() => rest.form?.initialValues);
+  const [formSearch, setFormSearch] = useState<Record<string, unknown>>(() => rest.form?.initialValues);
   const [proFilter, setProFilter] = useState<{
     [key: string]: React.ReactText[];
   }>({});
@@ -576,7 +576,7 @@ const ProTable = <T extends {}, U extends ParamsType>(
 
   action.fullScreen = fullScreen.current;
 
-  const pagination = mergePagination<T, {}>(propsPagination, action, intl);
+  const pagination = mergePagination<T, Record<string, unknown>>(propsPagination, action, intl);
 
   const counter = Container.useContainer();
 
@@ -865,7 +865,7 @@ const ProTable = <T extends {}, U extends ParamsType>(
  * 更快 更好 更方便
  * @param props
  */
-const ProviderWarp = <T, U extends { [key: string]: any } = {}>(props: ProTableProps<T, U>) => {
+const ProviderWarp = <T, U extends { [key: string]: any } = Record<string, unknown>>(props: ProTableProps<T, U>) => {
   const { getPrefixCls } = useContext(AntdConfigContext);
   return (
     <Container.Provider initialState={props}>

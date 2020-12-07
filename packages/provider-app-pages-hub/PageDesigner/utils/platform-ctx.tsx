@@ -18,17 +18,19 @@ export const createPlatformCtx = (metaCtx: PlatformCtx['meta']): PlatformCtx => 
     meta: metaCtx,
     selector: {
       openDatasourceSelector: (options) => {
-        const { defaultSelected, modalType, position, type, single, onSubmit } = options;
+        const { defaultSelected, modalType, position, typeArea, single, onSubmit, typeSingle } = options;
         const ModalID = ShowModal({
           title: '数据源选择',
           type: modalType,
           position,
+          width: 900,
           children: ({ close }) => {
             return (
               <DataSourceSelector
                 bindedDataSources={defaultSelected}
-                type={type}
+                typeArea={typeArea}
                 single={single}
+                typeSingle = {typeSingle}
                 onSubmit={(selectedDSFromRemote, interDatasources) => {
                   onSubmit({ close, interDatasources, selectedDSFromRemote });
                 }}

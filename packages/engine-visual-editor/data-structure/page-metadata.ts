@@ -1,6 +1,3 @@
-import { LayoutInfoActionReducerState } from "./layout";
-import { WidgetRelyPropItems } from "./widget";
-
 /**
  * 变量 item 的类型
  */
@@ -17,7 +14,7 @@ export interface EventAttrType {
   /** 该事件变量的别名 */
   alias: string
   /** 事件类型 */
-  type: 'onClick'|'onDbClick'
+  type: 'onClick'|'onDbClick'|'onMouseIn'|'onMouseOut'|'onChange'
 }
 
 /**
@@ -110,6 +107,7 @@ export interface BasicSubmitDataItem {
   tableId: string
   tableName: string
   tableCode: string
+  id: string
 }
 export interface ChangeField extends BasicValueMeta {
   columnName: string
@@ -153,24 +151,28 @@ export interface DisplayControl extends BasicActionsMeta {
  */
 export interface RefreshPage extends BasicActionsMeta {
   actionType: "refreshPage"
+  configCn: ''
 }
 /**
  * 关闭页面
  */
 export interface ClosePage extends BasicActionsMeta {
   actionType: "closePage"
+  configCn: ''
 }
 /**
  * 整表读取
  */
 export interface ReadFormData extends BasicActionsMeta {
   actionType: "readFormData"
+  configCn: ''
 }
 /**
  * 整表读取
  */
 export interface WriteFormData extends BasicActionsMeta {
   actionType: "writeFormData"
+  configCn: ''
 }
 
 /**
@@ -211,32 +213,4 @@ export interface PageMetadata {
   }
   /** 事件 meta */
   events: MetaStorage<EventsMeta>
-}
-
-/**
- * 基础页面数据
- */
-export interface BasePageData {
-  /** ID */
-  id: string
-  /** ID */
-  pageID: string
-  /** 页面名字 */
-  name: string
-  /** 页面布局内容 */
-  content: LayoutInfoActionReducerState
-  /** 页面元数据，包括联动、表达式、以及大部分的业务扩展 */
-  meta: PageMetadata
-}
-
-/**
- * 页面元数据
- */
-export interface PageStageEntity {
-  /** 内部 page id，一般为固定 id */
-  id: string
-  /** 存放后端返回的 page id */
-  pageID: string
-  /** 绑定可编辑的属性 */
-  propItemsRely: WidgetRelyPropItems
 }

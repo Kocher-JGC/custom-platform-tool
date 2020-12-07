@@ -34,7 +34,8 @@ export const FormInputNumberComp: React.FC<FormInputNumberCompProps> = (props) =
       <div
         style={{
           color: labelColor
-        }}>
+        }}
+      >
         {title}
       </div>
       <InputNumber {...compProps} style={{ width: 300 }} />

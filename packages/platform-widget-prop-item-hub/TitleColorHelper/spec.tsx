@@ -7,7 +7,6 @@ const whichAttr = 'labelColor';
 
 @PropItem({
   id: 'prop_style_title_color',
-  name: 'PropLabelColor',
   label: '标题颜色',
   whichAttr,
 })

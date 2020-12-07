@@ -31,3 +31,9 @@ export interface DropCollectType {
   isOverCurrent: boolean
   canDrop: boolean
 }
+
+
+export interface DragableWidgetBaseType {
+  /** 是否可内嵌其他组件 */
+  embedable?: boolean
+}

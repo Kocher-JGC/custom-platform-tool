@@ -9,7 +9,7 @@ source_dir=$pwd/packages/consumer-app-hub
 # 构建 web 服务
 cd $source_dir/web-server
 echo "进入 web-server 构建"
-yarn
+npm i
 # ls node_modules
 
 # 构建所有项目

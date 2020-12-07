@@ -1,10 +1,11 @@
 import React from 'react';
-import { GroupPanelItem, PanelItemsGroup } from '.';
+import { GroupPanelItem } from '.';
+import { WidgetGrouping } from '../../data-structure';
 
 export type ItemRendererType = (item: GroupPanelItem, groupType: string) => JSX.Element | null
 
 export interface GroupItemsRenderProps {
-  itemsGroups?: PanelItemsGroup[]
+  itemsGroups?: WidgetGrouping['itemsGroups']
   groupType: string
   itemRenderer: ItemRendererType
 }

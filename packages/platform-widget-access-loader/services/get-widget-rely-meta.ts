@@ -1,33 +1,20 @@
 import { WidgetTypeMetadataCollection } from "@engine/visual-editor/data-structure";
-import {
-  FormInputMeta,
-  FlexMeta,
-  TableMeta,
-  DropdownSelectorMeta,
-  TextareaMeta,
-  FormButtonMeta,
-  FormInputNumberMeta,
-  FormTimeTickerMeta,
-} from "@platform-widget-access/prop-item-rely";
+import * as MetaCollection from "@platform-widget-access/register/rely-meta";
 import { ApiMock } from "./api-mock";
 
-const tempArr = [
-  FormInputMeta,
-  FlexMeta,
-  TableMeta,
-  DropdownSelectorMeta,
-  TextareaMeta,
-  FormButtonMeta,
-  FormInputNumberMeta,
-  FormTimeTickerMeta
-];
-
-export const widgetMetadataCollection: WidgetTypeMetadataCollection = {
+/**
+ * 创建组件集合
+ */
+const createWidgetMetaColl = () => {
+  const res = {};
+  /** 将数组转换成 collection 数据机构 */
+  Object.keys(MetaCollection).forEach((metaKey) => {
+    const meta = MetaCollection[metaKey];
+    res[meta.widgetRef] = meta;
+  });
+  return res;
 };
 
-/** 将数组转换成 collection 数据机构 */
-tempArr.forEach((meta) => {
-  widgetMetadataCollection[meta.widgetRef] = meta;
-});
+export const widgetMetadataCollection: WidgetTypeMetadataCollection = createWidgetMetaColl();
 
 export const getWidgetMetadata = ApiMock(widgetMetadataCollection);

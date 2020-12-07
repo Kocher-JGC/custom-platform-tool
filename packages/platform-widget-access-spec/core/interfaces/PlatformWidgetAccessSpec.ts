@@ -5,8 +5,8 @@ import { WidgetEditableProps, WidgetEntityState } from "@engine/visual-editor/da
  * TODO: 蒋国才 ，完善应用传入的内容
  */
 export interface WidgetActions {
-  onClick: Function
-  onChange: Function
+  onClick: () => void
+  onChange: () => void
 }
 
 export type PlatformWidgetRender = (
@@ -20,7 +20,11 @@ export type PlatformWidgetRender = (
 export interface PlatformWidgetMeta {
   /** 组件的名称 */
   name: string
-  /** 可编辑的属性, TODO: 需要一套校验可编辑属性的规则的工具 */
+  /** 
+   * 可编辑的属性，用于告诉平台，该组件有多少属性可以被编辑
+   * 1. 暂时未开放
+   * 2. TODO: 需要一套校验可编辑属性的规则的工具 
+   */
   editableProps: WidgetEditableProps
 }
 

@@ -1,12 +1,14 @@
 import axios from "axios";
 import { ensureDir, writeJSON } from "fs-extra";
-import path from 'path';
+// import path from 'path';
 import { ConsulConfig } from "./config";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require("path");
 
 const consul = new ConsulConfig();
 
 export const registerConsul = async () => {
-  if (process.env.CONSUL_HOST && process.env.CONSUL_PORT && process.env.CONSUMER_HOST) {
+  if (process.env.CONSUL_HOST && process.env.CONSUL_PORT && process.env.CONSUMER_HOST && process.env.CONSUMER_PORT) {
     const namespace = process.env.CONSUL_NAMESPACE;
     console.log(
       "注册 consul",
@@ -21,9 +23,9 @@ export const registerConsul = async () => {
         .get(
           `http://${process.env.CONSUL_HOST}:${
             process.env.CONSUL_PORT
-          }/v1/kv/config/consumer-app-server${
+          }/v1/kv/config/custom-platform-v3-frontend${
             namespace ? `/${namespace}` : ""
-          }/custom-platform-provider-web-server.json?t=${Date.now()}`
+          }/node_web_server.json?t=${Date.now()}`
         )
         .then((res) => res.data);
 

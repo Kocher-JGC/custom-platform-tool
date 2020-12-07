@@ -19,6 +19,11 @@
         "name": "node_web_server",
         "buildCmd": "yarn build:platform-web-server",
         "dockerfilePath": "./packages/platform-web-server"
+      },
+      {
+        "name": "doc_website",
+        "buildCmd": "yarn build:website-doc",
+        "dockerfilePath": "./website-doc"
       }
     ]
   }

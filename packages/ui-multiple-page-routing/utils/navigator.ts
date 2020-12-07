@@ -28,7 +28,9 @@ export interface NavigateConfig {
 
 interface HistoryExtends extends History {
   location: History['location'] & {
-    query: {}
+    query: {
+      [key: string]: string
+    }
   }
 }
 

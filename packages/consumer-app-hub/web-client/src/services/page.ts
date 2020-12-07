@@ -9,7 +9,7 @@ import { UrlConfKey } from '../utils/env';
 const filterRes = (res) => {
   if (res.data.code === "00000") {
     return res.data?.result;
-  } if (res.status === 200) {
+  } else if (res.status === 200) {
     return res.data;
   }
   return {};
@@ -22,7 +22,7 @@ const mergeParam = (params: API.IPageDataParams): API.IPageDataParams => {
   return {
     ...params,
     id: params.id,
-    t: store.get("app/token")
+    t: store.get(`paas/token`)
   };
 };
 

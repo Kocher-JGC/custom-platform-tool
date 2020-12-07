@@ -7,7 +7,6 @@ import { DropdownMultipleComp } from './comp';
 
 @PropItem({
   id: 'prop_dropdown_multiple',
-  name: 'PropDropdownMultiple',
   label: '下拉多选',
   whichAttr: ['dropdownMultiple', 'field'],
   // defaultValues: {

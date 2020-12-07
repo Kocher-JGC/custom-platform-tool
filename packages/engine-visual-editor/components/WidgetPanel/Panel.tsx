@@ -27,11 +27,13 @@ export interface ComponentPanelProps {
 const defaultItemRendererFac = (widgetMetaDataCollection, getDragItemConfig) => (widgetMetaID) => {
   const widgetType = widgetMetaDataCollection[widgetMetaID];
   const {
-    id, label
+    name, label
   } = widgetType;
   return (
     <DragItemComp
-      key={id} className="drag-comp-item"
+      key={name}
+      id={name}
+      className="drag-comp-item"
       type={DragableItemTypes.DragableItemType}
       dragConfig={getDragItemConfig ? getDragItemConfig(widgetType) : {}}
       dragableWidgetType={{

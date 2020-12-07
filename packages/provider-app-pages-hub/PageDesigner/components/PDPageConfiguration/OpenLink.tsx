@@ -138,7 +138,7 @@ export const OpenLink = ({
    * 提交表单数据
    */
   const onFinish = (values) => {
-    const { openType, pageArea, link } = values;
+    const { openType, pageArea, link } = values;// eslint-disable-line no-unused-vars
     /** 打开方式 */
     const openTypeCn = OPEN_TYPE_MENU.filter(item=>item.value === openType)[0]?.label;
     /** 打开页面 */

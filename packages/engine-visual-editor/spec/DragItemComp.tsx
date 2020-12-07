@@ -5,25 +5,27 @@ import {
 import { TargetType } from 'dnd-core';
 import { HasValue } from '@mini-code/base-func';
 import { DragableItemTypes, DragItemActions } from '.';
-import { DragableItemType, DropCollectType } from '../data-structure';
+import { DragableItemType, DragableWidgetBaseType, DropCollectType } from '../data-structure';
 import { isNodeInChild } from '../utils';
 
 /**
  * 作用于 dragItem 传递到 drop 容器的参数配置
  */
-interface DraggedItemInfo {
+interface DraggedItemInfo<D = Record<string, unknown>> {
   index?: number
   type: string | symbol
+  dragableWidgetType: DragableWidgetBaseType & D
+  dragConfig?: C
 }
 
-type HtmlAttr = Omit<React.HTMLAttributes<HTMLDivElement>, keyof DragItemActions | 'children'>
+type OmitHtmlAttr = 'children' | 'id'
+type HtmlAttr = Omit<React.HTMLAttributes<HTMLDivElement>, keyof DragItemActions | keyof DraggedItemInfo | OmitHtmlAttr>
 
 export interface DragItemCompProps<
-  D = any, C = any
-> extends DraggedItemInfo, DragItemActions, HtmlAttr {
+  D, C = any
+> extends DraggedItemInfo<D>, DragItemActions, HtmlAttr {
+  id: string
   children: any
-  dragableWidgetType: D
-  dragConfig?: C
   accept?: TargetType
 }
 
@@ -32,9 +34,9 @@ export interface DragItemCompProps<
  */
 export const DragItemComp: React.FC<DragItemCompProps> = ({
   children, dragableWidgetType, dragConfig, style,
-  type, id, index,
-  onItemMove, onItemDrop, onItemDrag,
+  type, index,
   accept = [DragableItemTypes.DragItemEntity, DragableItemTypes.DragableItemType],
+  onItemMove, onItemDrop, onItemDrag,
   ...other
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,7 +49,7 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
     /**
      * ref: https://react-dnd.github.io/react-dnd/docs/api/use-drop
      */
-    drop: ({ dragableWidgetType: widgetType }) => {
+    drop: ({ dragableWidgetType: dragedItemType }) => {
       /**
        * @important 重要策略
        *
@@ -56,11 +58,10 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
        */
       if (isOverCurrent) {
         setTimeout(() => {
-          const isNodeInChildRes = isNodeInChild(id, widgetType.id);
-          // console.log(isNodeInChildRes);
-          if (!isNodeInChildRes && onItemDrop) {
-            const dropCtx = { id, index };
-            onItemDrop({ ...widgetType }, dropCtx);
+          const dropTargetItem = dragableWidgetType;
+          if (onItemDrop) {
+            const dropCtx = { idx: index, dropTargetItem };
+            onItemDrop({ ...dragedItemType }, dropCtx);
           }
         });
       }
@@ -89,6 +90,8 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
         return;
       }
 
+      const { embedable } = item.dragableWidgetType;
+
       // Determine rectangle on screen
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
 
@@ -116,7 +119,7 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
       }
 
       // Time to actually perform the action
-      onItemMove && onItemMove(dragIndex, hoverIndex, item);
+      onItemMove?.(dragIndex, hoverIndex, item);
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -132,7 +135,6 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
       dragConfig,
       dragableWidgetType,
       type,
-      id,
       index,
     },
     collect: (monitor) => ({

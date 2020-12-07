@@ -10,7 +10,7 @@ export enum UrlConfKey {
  * 获取/public/conf.json配置
  */
 export const getAppEnvConfig = async () => {
-  const envConf = await fetch(`/config.json?${new Date().getTime()}`).then((res) => res.json());
+  const envConf = await fetch(`/config.json?t=${new Date().getTime()}`).then((res) => res.json());
   return envConf;
 };
 
@@ -30,14 +30,6 @@ export async function getMainConf(currentApp: string) {
     app: mainConf.applicationCode,
     lessee: mainConf.lesseeCode
   };
-}
-
-/**
- * 获取已安装应用信息
- */
-export async function getAppList() {
-  const appList = await fetch(`http://localhost:5020/app-list?t=${new Date().getTime()}`).then((res) => res.json());
-  return Object.values(appList);
 }
 
 /** 所有配置的key */

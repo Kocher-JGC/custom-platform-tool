@@ -22,7 +22,7 @@ type SymbolTarget = 'target' | 'context'
  *  属性代理
  */
 export default class ProxySandbox {
-  public proxy: WindowProxy & any
+  public proxy: WindowProxy
 
   public options: IOptions
 
@@ -139,9 +139,7 @@ export default class ProxySandbox {
        */
       deleteProperty(target: IFakeWindow, p: PropertyKey): boolean {
         if (target.hasOwnProperty(p)) {
-          // @ts-ignore
-          delete target[p];
-          return true;
+          Reflect.deleteProperty(target, p);
         }
         return true;
       },

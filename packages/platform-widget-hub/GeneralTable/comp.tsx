@@ -5,15 +5,21 @@ import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro
 export interface GeneralTableCompProps {
   columns: any[]
   dataSource: any[]
+  title: string
 }
 
 export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
   // console.log(props);
-  const { columns = [], dataSource = [], ...other } = props || {};
+  const { columns = [], dataSource = [], title, ...other } = props || {};
   // console.log(columns, dataSource);
   return (
     <div>
-      <ProTable columns={columns || []} dataSource={dataSource} {...other} />
+      <ProTable 
+        headerTitle={title}
+        columns={columns || []} 
+        dataSource={dataSource} 
+        {...other}
+      />
     </div>
   );
 };

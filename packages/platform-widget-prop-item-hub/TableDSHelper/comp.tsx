@@ -5,6 +5,7 @@ import { Button, Input, DropdownWrapper, ShowModal } from '@infra/ui';
 import { PlusOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Sortable from "sortablejs";
 import { genRenderColumn, genRowData } from './utils';
+import pick from 'lodash/pick';
 
 interface TableDSHelperCompProps extends PropItemRenderContext {
   whichAttr: string
@@ -252,47 +253,51 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
     // }) as OptionsType : null;
     // const [dsType, setDsType] = useState(datasourceMeta?.type);
   
-    const dsBinder = dsType ? (
-      <div 
-        className="px-4 py-2 border cursor-pointer"
-        onClick={e => {
-          platformCtx.selector.openDatasourceSelector({
-            defaultSelected: datasourceMeta ? [datasourceMeta] : [],
-            modalType: 'side',
-            position: 'right',
-            single: true,
-            type: dsType,
-            onSubmit: ({ close, interDatasources }) => {
+    const dsBinder = 
+    // dsType ? 
+      (
+        <div 
+          className="px-4 py-2 border cursor-pointer"
+          onClick={e => {
+            platformCtx.selector.openDatasourceSelector({
+              defaultSelected: datasourceMeta || [],
+              modalType: 'normal',
+              position: 'top',
+              single: true,
+              typeArea: ['TABLE'],
+              selectConfig: { table: { containAuxTable: false } },
+              onSubmit: ({ close, interDatasources }) => {
               // 由于是单选的，所以只需要取 0
-              const bindedDS = interDatasources[0];
+                const bindedDS = interDatasources[0];
 
-              close();
+                close();
               
-              if(DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1) return;
-              const nextMetaID = changePageMeta({
-                type: 'create/rm',
-                metaAttr: 'dataSource',
-                // metaID: DSOptionsRef,
-                rmMetaID: DSOptionsRef,
-                data: bindedDS
+                if(DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1) return;
+                const nextMetaID = changePageMeta({
+                  type: 'create/rm',
+                  metaAttr: 'dataSource',
+                  // metaID: DSOptionsRef,
+                  rmMetaID: DSOptionsRef,
+                  data: bindedDS
                 // metaID:
-              });
-              changeEntityState({
-                attr: whichAttr,
-                value: nextMetaID
-              });
-              this.setDatasourceMetaForSelf(bindedDS);
-            }
-          });
-        }}
-      >
-        {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
-      </div>
-    ) : null;
+                });
+                changeEntityState({
+                  attr: whichAttr,
+                  value: nextMetaID
+                });
+                this.setDatasourceMetaForSelf(bindedDS);
+              }
+            });
+          }}
+        >
+          {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
+        </div>
+      ); 
+      // : null;
   
     return (
       <div>
-        <div className="py-2">
+        {/* <div className="py-2">
           <Radio.Group
             onChange={(e) => {
               this.setState({
@@ -304,7 +309,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
             <Radio value={'TABLE'}>数据表</Radio>
             <Radio value={'DICT'}>字典表</Radio>
           </Radio.Group>
-        </div>
+        </div> */}
         {
           dsBinder
         }

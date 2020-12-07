@@ -26,15 +26,18 @@ export type PropItemCompRender = ({
 }) => JSX.Element
 
 /**
- * 属性项
- * @description 节点含义说明：第一层为描述属性项的元数据，propItemCompDef 节点为描述该属性项中用于交互的组件
+ * 属性项，重要节点含义说明：
+ * 1. whichAttr：属性项将编辑多少属性，平台将分析该属性，将其组装为一个对象通过 render 传入
+ * 2. useMeta：使用了哪些页面元数据
  */
-export interface PropItemMeta {
-  /** 属性项 ID，随机生成的 */
+export interface PropItemMeta<G = string> {
+  /** 该属性项的唯一标识 ID */
   readonly id: string
-  /** 被 widget 引用的属性名字 */
-  readonly name: string
-  /** 属性项显示的 label */
+  // /** 被 widget 引用的属性名字 */
+  // readonly name: string
+  /** prop item 的分组信息 */
+  readonly pGroupType?: G
+  /** 属性项上方的显示名 */
   readonly label: string
   /**
    * 1. 需要编辑的组件实例状态的哪些属性；

@@ -22,10 +22,24 @@ export const useResourceFac = <T>(
   };
 };
 
-export const useWidgetMeta = useResourceFac<WidgetTypeMetadataCollection>(
+export const useWidgetMeta = useResourceFac<EditableWidgetMeta>(
   loadPlatformWidgetMeta
 );
 
+// const widgetMetaCache = {};
+// export const useWidgetPanelData = (resID) => {
+//   const [ready, setReady] = useState(!!widgetMetaCache[resID]);
+//   useEffect(() => {
+//     loadPlatformWidgetMeta(resID).then((res) => {
+//       console.log(res);
+//       widgetMetaCache[resID] = res;
+//       setReady(true);
+//     });
+//   }, []);
+//   return [
+//     ready, widgetMetaCache[resID]
+//   ];
+// };
 export const useWidgetPanelData = useResourceFac<GroupPanelData>(
   loadWidgetPanelData
 );

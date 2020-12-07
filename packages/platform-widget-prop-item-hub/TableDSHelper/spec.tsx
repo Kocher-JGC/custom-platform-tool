@@ -7,8 +7,7 @@ import { TableDSHelperComp } from './comp';
 
 @PropItem({
   id: 'prop_table_ds_helper',
-  name: 'TableDSHelperSpec',
-  label: '字符长度',
+  label: '选择数据源',
   whichAttr: ['ds', 'columns'],
   useMeta: ['dataSource']
 })

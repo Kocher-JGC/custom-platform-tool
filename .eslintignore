@@ -1,6 +1,14 @@
-env-scripts/
+infra-react-env-scripts/
 __test__/
 node_modules/
+*.bak.*
 .bak/
-packages/consumer-app/web-platform/config
+packages/_demo-doc-expression-editor-hub
+build
 dist
+demo/
+*.demo/
+demos/
+*.min*
+packages/ui-code-editor/src/lint/js-lint.js
+packages/provider-app-biz-component-hub/pro-table/

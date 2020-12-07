@@ -1,3 +1,7 @@
+/**
+ * 左边的组件面板
+ */
+
 import React from 'react';
 import { ComponentPanelProps } from '@engine/visual-editor/components/WidgetPanel';
 import DragItemComp from '@engine/visual-editor/spec/DragItemComp';
@@ -6,9 +10,12 @@ import { Tab, Tabs } from '@infra/ui';
 import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/components/GroupPanel';
 import { LoadingTip } from '@provider-ui/loading-tip';
 import { PageMetadata } from '@engine/visual-editor/data-structure';
+import { getWidgetMetadata } from '@platform-widget-access/loader';
+
 import { DataSourceDragItem } from '../PDDataSource';
-import { PlatformContext, useWidgetMeta, useWidgetPanelData } from '../../utils';
+import { useWidgetMeta, useWidgetPanelData } from '../../utils';
 import { DataSourceTitle } from './DataSourceTitle';
+import { groupWidget } from './group-shape';
 
 export interface PageDesignerComponentPanelProps {
   pageMetadata: PageMetadata
@@ -16,6 +23,10 @@ export interface PageDesignerComponentPanelProps {
   getDragItemConfig?: ComponentPanelProps['getDragItemConfig']
 }
 
+/**
+ * 左边组件面板的组件工厂函数
+ * @param getDragItemConfig 
+ */
 const itemRendererFac = (
   getDragItemConfig
 ): ItemRendererType => (widgetRef, groupType) => {
@@ -27,12 +38,13 @@ const itemRendererFac = (
     );
   }
   const {
-    id, label
+    label
   } = widgetMeta;
   switch (groupType) {
     case 'dragableItems':
       return (
         <DragItemComp
+          id={widgetRef}
           className="drag-comp-item"
           type={DragableItemTypes.DragableItemType}
           dragConfig={getDragItemConfig ? getDragItemConfig(widgetMeta) : {}}
@@ -62,6 +74,14 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
   // widgetPanelData,
   ...other
 }) => {
+  // const [widgetPanelData, setWidgetPanelData] = React.useState(null);
+  // React.useEffect(() => {
+  //   getWidgetMetadata().then((res) => {
+  //     const widgetGroupingData = groupWidget(res);
+  //     // console.log(res);
+  //     setWidgetPanelData(widgetGroupingData);
+  //   });
+  // }, []);
   const [ready, widgetPanelData] = useWidgetPanelData();
   if (!ready) {
     return (
@@ -88,15 +108,16 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
             // itemsGroups={widgetPanelData}
           />
         </Tab>
-        <Tab label={(
-          <DataSourceTitle
-            interDatasources={interDatasources}
-            onAddDataSource={(addData) => {
+        <Tab 
+          label={(
+            <DataSourceTitle
+              interDatasources={interDatasources}
+              onAddDataSource={(addData) => {
               // return console.log(addData);
-              onUpdatedDatasource(addData);
-            }}
-          />
-        )}
+                onUpdatedDatasource(addData);
+              }}
+            />
+          )}
         >
           <DataSourceDragItem
             interDatasources={interDatasources}

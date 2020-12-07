@@ -1,8 +1,9 @@
 import { EditableWidgetMeta } from "@engine/visual-editor/data-structure";
+import { WidgetGroupingTypes } from "../grouping-register";
 
 /**
- * 组件与属性项的绑定函数
+ * 创建组件与属性项的绑定关系
  */
-export const CreateWidgetPropItemRely = (meta: EditableWidgetMeta) => {
+export const CreateWidgetPropItemRely = (meta: EditableWidgetMeta<WidgetGroupingTypes>) => {
   return meta;
 };

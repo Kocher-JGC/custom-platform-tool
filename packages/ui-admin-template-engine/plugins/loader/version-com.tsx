@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import {
   Tip, ShowModal, Alert, Notify
-} from '../ui-refs';
+} from '../../ui-refs';
 
 export interface VersionInfo {
   packageVersion: string;
@@ -23,7 +23,11 @@ export interface VersionDisplayerProps {
   versionInfo: VersionInfo;
 }
 
-class VersionChecker extends Component<VersionCheckerProps> {
+class VersionChecker extends Component<VersionCheckerProps, {
+  currVersion
+  updateLog
+  lastVersion
+}> {
   __unmount
 
   timer
@@ -67,9 +71,9 @@ class VersionChecker extends Component<VersionCheckerProps> {
     fetch(`${versionUrl}?t=${Date.now()}`)
       .then((res) => res.json())
       .then((remoteVersion) => {
-        let { numberVersion, updateLog } = remoteVersion;
-        numberVersion = numberVersion.trim();
-        if (numberVersion != this.state.lastVersion) {
+        const { numberVersion, updateLog } = remoteVersion;
+        const _numberVersion = numberVersion.trim();
+        if (_numberVersion !== this.state.lastVersion) {
           this._clear();
           Notify({
             config: {
@@ -84,7 +88,7 @@ class VersionChecker extends Component<VersionCheckerProps> {
             }
           });
           !this.__unmount && this.setState({
-            lastVersion: numberVersion,
+            lastVersion: _numberVersion,
             updateLog
           });
         }
@@ -100,7 +104,7 @@ class VersionChecker extends Component<VersionCheckerProps> {
       title: '是否更新版本？',
       type: 'confirm',
       width: 400,
-      confirmText: (
+      children: () => (
         <div>
           <div>
             <h4>更新内容:</h4>
@@ -109,12 +113,13 @@ class VersionChecker extends Component<VersionCheckerProps> {
           <hr />
           <Alert
             type="success"
-            text="请确保已保存工作内容，页面即将刷新" />
+            text="请确保已保存工作内容，页面即将刷新"
+          />
         </div>
       ),
       onConfirm: (isSure) => {
         if (isSure) {
-          location.reload();
+          window.location.reload();
         }
       },
     });

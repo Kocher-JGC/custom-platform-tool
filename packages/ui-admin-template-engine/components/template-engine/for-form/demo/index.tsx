@@ -184,7 +184,7 @@ export class TestFormBasic extends ActionAgent {
           type: 'success'
         }
       } {
-      ...this.state
+        ...this.state
       }
       formOptions = {
         this.formOptions

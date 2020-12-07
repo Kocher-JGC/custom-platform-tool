@@ -4,7 +4,6 @@ import { PaginationProps } from '@deer-ui/core/pagination/pagination';
 import { ButtonProps } from '@deer-ui/core/utils/props';
 import { Color } from '@deer-ui/core/utils';
 import { RecordItem, Column } from '@deer-ui/core/table/column-filter';
-import { $TFunc } from '../../../props';
 
 export interface TemplateOptions {
   /** 此接口将要废弃，请使用 checkedOverlay */
@@ -41,8 +40,8 @@ export interface ReportActionBtnItem {
 
 export interface GetQueryDataResult {
   nextPagin: PaginationProps['pagingInfo'];
-  conditionData: {};
-  selectedItems?: {};
+  conditionData: Record<string, string>
+  selectedItems?: Record<string, string>
 }
 
 export interface ReportTemplateState {
@@ -83,8 +82,6 @@ export interface ReportTemplateProps {
   // ---------------------
   /** 查询数据接口 */
   onQueryData: (data: GetQueryDataResult) => void;
-  /** getKeyMapper 获取 i18n */
-  $T: $TFunc;
   /** children */
   children?: any;
   /** 数据渲染组件 */

@@ -7,7 +7,6 @@ import { NumberMaxComp } from './comp';
 
 @PropItem({
   id: 'prop_number_max',
-  name: 'PropNumberMax',
   label: '最大值',
   whichAttr: ['max', 'field'],
   // defaultValues: {

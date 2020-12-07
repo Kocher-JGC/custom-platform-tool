@@ -19,19 +19,19 @@ interface IEvent {
   /** 滚动编辑器时触发 */
   onScroll?: (instance: Editor) => void;
   /** 每次更改编辑器的内容时​​触发。 */
-  onChange?: (instance: Editor, changeObj: object) => void;
+  onChange?: (instance: Editor, changeObj: Record<string, unknown>) => void;
   /** 在应用更改之前会触发此事件，并且其处理程序可以选择修改或取消更改。  */
-  onBeforeChange?: (instance: Editor, changeObj: object) => void;
+  onBeforeChange?: (instance: Editor, changeObj: Record<string, unknown>) => void;
   /** 每当此文档中的光标或选择更改时触发  */
   onCursorActivity?: (instance: Editor) => void;
   /** 通过键映射处理键后触发。 */
   onKeyHandled?: (instance: Editor, name: string, event: Event) => void;
   /** 每当从隐藏的文本区域读取新输入（由用户键入或粘贴）时，将触发此事件。 */
-  onInputRead?: (instance: Editor, changeObj: object) => void;
+  onInputRead?: (instance: Editor, changeObj: Record<string, unknown>) => void;
   /** 如果文本输入与模式的电子模式匹配，则触发该事件，从而导致该行的缩进发生更改。 */
   onElectricInput?: (instance: Editor, line: number) => void;
   /** 在移动所选内容之前会触发此事件。 */
-  onBeforeSelectionChange?: (instance: Editor, changeObj: object) => void;
+  onBeforeSelectionChange?: (instance: Editor, changeObj: Record<string, unknown>) => void;
   /** 每当编辑器的视图端口发生更改（由于滚动，编辑或任何其他因素）时触发。 */
   onViewportChange?: (instance: Editor, from: number, to: number) => void;
   /** 将新文档附加到编辑器。返回旧文档，该文档现在不再与编辑器关联。 */

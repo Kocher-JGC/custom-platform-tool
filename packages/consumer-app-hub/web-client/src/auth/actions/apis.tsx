@@ -1,13 +1,17 @@
-export function login(data) {
+// TODO 登录不是真实的
+export function login(data): Promise<{ code: string, message: string, data?: any }> {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        code: 0,
-        message: 'success'
+        code: 'C0000',
+        message: 'success',
+        data: {
+          username: data.AdminName,
+          token: "123456"
+        }
       });
-    }, 1000);
+    }, 500);
   });
-  // return $R.post("/login", data);
 }
 
 export function logout() {
