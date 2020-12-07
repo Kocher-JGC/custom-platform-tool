@@ -260,7 +260,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
           className="px-4 py-2 border cursor-pointer"
           onClick={e => {
             platformCtx.selector.openDatasourceSelector({
-              defaultSelected: datasourceMeta || [],
+              defaultSelected: datasourceMeta ? [datasourceMeta] : [],
               modalType: 'normal',
               position: 'top',
               single: true,
