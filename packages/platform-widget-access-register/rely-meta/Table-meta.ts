@@ -4,6 +4,14 @@ export const TableMeta = CreateWidgetPropItemRely({
   label: '表格',
   widgetRef: 'NormalTable',
   wGroupType: 'dataDisplay',
+  eventAttr: [
+    { alias: '查询', type: 'onQuery' },
+    { alias: '选择行', type: 'onRowCheck' },
+    { alias: '双击行', type: 'onRowDbClick' },
+    { alias: '单击行', type: 'onRowClick' },
+    { alias: '双击单元格', type: 'onCellDbClick' },
+    { alias: '单击单元格', type: 'onCellClick' },
+  ],
   // propEditor: 'TableEditor',
   propItemsRely: {
     propItemRefs: [
@@ -56,6 +64,7 @@ export const TableMeta = CreateWidgetPropItemRely({
           rowCheckType: 'no'
         }
       },
+      { propID: 'prop_action_config', editAttr: ['eventRef'] },
       // { propID: 'prop_flex_config' },
     ]
   }
