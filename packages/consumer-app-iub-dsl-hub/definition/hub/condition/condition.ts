@@ -31,7 +31,7 @@ export interface Condition {
 }
 
 /** 条件配置的引用 */
-export type CommonConditionRef = string;
+export type refIdOfCondition = string;
 
 export interface CommonCondition {
   condition?: Condition;

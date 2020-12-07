@@ -1,4 +1,4 @@
-import { CommonConditionRef, Ref2ValueOfArr } from "../../hub";
+import { refIdOfCondition, Ref2ValueOfArr } from "../../hub";
 
 export const enum InterType {
   C = 'C',
@@ -30,7 +30,7 @@ export interface CInterDef extends BaseInterDef {
 export interface UInterDef extends BaseInterDef {
   interType: InterType.U;
   set: string;
-  condition: CommonConditionRef;
+  condition: refIdOfCondition;
 }
 
 const enum CountFn {
@@ -43,7 +43,7 @@ const enum CountFn {
 
 export interface RInterDef extends BaseInterDef {
   interType: InterType.R;
-  condition?: CommonConditionRef;
+  condition?: refIdOfCondition;
   page?: {
     from: number;
     size: number;
@@ -51,19 +51,19 @@ export interface RInterDef extends BaseInterDef {
   needTotal?: boolean;
   /** 字段映射信息 */
   fields?: {
-    fieldName: string | CountFn;
-    mid: string;
+    field: string | CountFn;
+    alias: string;
   }[];
   sort?: { [str: string]: 'desc' | 'asc'; };
   group?: {
-    havingCondition: CommonConditionRef;
+    havingCondition: refIdOfCondition;
     groupBy: string[];
   }
 }
 
 export interface DInterDef extends BaseInterDef {
   interType: InterType.D;
-  condition: CommonConditionRef;
+  condition: refIdOfCondition;
 }
 
 export type InterDef = CInterDef | UInterDef | RInterDef | DInterDef; 

@@ -1,5 +1,6 @@
 export interface Lowcode {
   code?: any;
+  [str: string]: any;
 }
 
 export interface LowcodeCollection {
