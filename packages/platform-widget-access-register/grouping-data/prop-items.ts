@@ -14,6 +14,7 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_page_size',
           'prop_show_order_column',
           'prop_field_ellipsis',
+          'prop_check_row',
           'prop_field',
           'prop_real_value',
           'prop_action_config',
