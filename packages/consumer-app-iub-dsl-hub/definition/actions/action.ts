@@ -1,4 +1,4 @@
-import { CommonConditionRef } from "../hub";
+import { refIdOfCondition } from "../hub";
 import { ComplexType } from '../schema';
 import {
   ChangeState, ChangeStateType,
@@ -38,7 +38,7 @@ export interface BasicActionConf {
   actionOptions: any;
   /** 单个动作的输出, TODO: 实际如何使用 */
   actionOutput?: ActionOutput;
-  condition?: CommonConditionRef
+  condition?: refIdOfCondition
 }
 
 /** 

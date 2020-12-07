@@ -7,7 +7,7 @@
 // }
 
 import { BasicActionConf } from '../action';
-import { CommonConditionRef } from '../../hub';
+import { refIdOfCondition } from '../../hub';
 
 /** 打开类型「model/page/_blank」 */
 export const enum OpenType {
@@ -24,7 +24,7 @@ export interface OpenPageOptions {
   pageType: PageType;
   pageUrl: string;
   emitConf?: { // 传入的配置
-    condition: CommonConditionRef;
+    condition: refIdOfCondition;
   }
 }
 
