@@ -32,6 +32,7 @@ export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
         columns={columnsWithOrder || []} 
         dataSource={dataSource} 
         {...other}
+        options={false}
       />
     </div>
   );
