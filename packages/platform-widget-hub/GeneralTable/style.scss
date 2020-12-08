@@ -1,9 +1,9 @@
 .ant-pro-table {
- &.title-place-center .ant-pro-table-list-toolbar-container .ant-pro-table-list-toolbar-left {
+ &.title-align-center .ant-pro-table-list-toolbar-container .ant-pro-table-list-toolbar-left {
     flex: 1 1;
     justify-content: center;
   }
-&.title-place-right .ant-pro-table-list-toolbar-container .ant-pro-table-list-toolbar-left {
+&.title-align-right .ant-pro-table-list-toolbar-container .ant-pro-table-list-toolbar-left {
     flex: 1 1;
     justify-content: flex-end;
     padding-right: 1rem

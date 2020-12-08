@@ -22,7 +22,7 @@ export * from '@platform-widget-prop-item/check-tooltip-helper';
 export * from '@platform-widget-prop-item/table-datasource-helper';
 export * from '@platform-widget-prop-item/unit-helper';
 export * from '@platform-widget-prop-item/field-type-helper';
-export * from '@platform-widget-prop-item/title-place-helper';
+export * from '@platform-widget-prop-item/title-align-helper';
 export * from '@platform-widget-prop-item/page-size-helper';
 export * from '@platform-widget-prop-item/show-order-column-helper';
 export * from '@platform-widget-prop-item/word-wrap-helper';
