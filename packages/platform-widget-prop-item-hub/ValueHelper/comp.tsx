@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input, Selector } from '@infra/ui';
-import { ChangeEntityState } from '@platform-widget-access/spec';
-import { PlatformContext } from '@provider-app/page-designer/utils';
+import { ChangeEntityState, PropItemRenderContext } from '@platform-widget-access/spec';
 
 /**
  * 可用的值的类型
@@ -15,7 +14,7 @@ const selectTypes = {
 /**
  * ValueHelperProps
  */
-interface ValueHelperProps {
+interface ValueHelperProps extends PropItemRenderContext {
   editingWidgetState
   onChange: ChangeEntityState
 }
@@ -26,6 +25,7 @@ interface ValueHelperProps {
  */
 export const ValueHelper: React.FC<ValueHelperProps> = ({
   editingWidgetState,
+  platformCtx,
   onChange,
 }) => {
   const [selectedItem, setSelectedItem] = React.useState('costomValue');
@@ -46,24 +46,19 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       break;
     case 'expression':
       Comp = (
-        <PlatformContext.Consumer>
-          {
-            (platformCtx) =>
-              <div
-                className="px-4 py-2 border"
-                onClick={(e) => {
-                  const closeModal = platformCtx.selector.openExpressionImporter({
-                    onSubmit: ({ value }) => {
-                      console.log("表达式结果", value);
-                      closeModal();
-                    }
-                  });
-                }}
-              >
-                {exp ? '已设置表达式' : '点击设置表达式'}
-              </div>
-          }
-        </PlatformContext.Consumer>
+        <div
+          className="px-4 py-2 border"
+          onClick={(e) => {
+            const closeModal = platformCtx.selector.openExpressionImporter({
+              onSubmit: ({ value }) => {
+                console.log("表达式结果", value);
+                closeModal();
+              }
+            });
+          }}
+        >
+          {exp ? '已设置表达式' : '点击设置表达式'}
+        </div>
       );
       break;
     case 'variable':

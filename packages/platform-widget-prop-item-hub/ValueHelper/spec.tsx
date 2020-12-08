@@ -1,5 +1,5 @@
 import React from "react";
-import { PropItem } from "@platform-widget-access/spec";
+import { PropItem, PropItemRenderContext } from "@platform-widget-access/spec";
 import { ValueHelper } from "./comp";
 
 @PropItem({
@@ -8,8 +8,14 @@ import { ValueHelper } from "./comp";
   whichAttr: ["realVal", "exp", "variable"]
 })
 export class ValueHelperSpec {
-  render(ctx) {
+  render(ctx: PropItemRenderContext) {
     const { changeEntityState, editingWidgetState } = ctx;
-    return <ValueHelper onChange={changeEntityState} editingWidgetState={editingWidgetState} />;
+    return (
+      <ValueHelper
+        {...ctx}
+        onChange={changeEntityState}
+        editingWidgetState={editingWidgetState}
+      />
+    );
   }
 }

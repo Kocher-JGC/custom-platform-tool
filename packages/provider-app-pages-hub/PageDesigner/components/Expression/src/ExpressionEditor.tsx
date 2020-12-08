@@ -260,7 +260,8 @@ export const Expression: React.FC<IProps> = (props) => {
                               <Popover
                                 visible={!!variableVisible[item.id]}
                                 content={initVariableEdit(item.varType, item.type, item.id)}
-                                trigger="click">
+                                trigger="click"
+                              >
                                 <Tag
                                   color="success"
                                   onClick={() => {
@@ -268,15 +269,18 @@ export const Expression: React.FC<IProps> = (props) => {
                                       ...pre,
                                       [item.id]: !pre[item.id]
                                     }));
-                                  }}>
+                                  }}
+                                >
                                   {debugCodeValue[`${item.type}~${item.id}`] || "编辑"}
                                 </Tag>
                               </Popover>
-                            ]}>
+                            ]}
+                          >
                             <span
                               onClick={() => {
                                 insertValue(item.title, 0);
-                              }}>
+                              }}
+                            >
                               {item.title}
                             </span>
                           </List.Item>
@@ -304,7 +308,8 @@ export const Expression: React.FC<IProps> = (props) => {
                             onClick={() => {
                               insertValue(`${item.namespace}.${item.name}()`, 1);
                               setCurFunction(item);
-                            }}>
+                            }}
+                          >
                             {item.name}
                           </List.Item>
                         )}
