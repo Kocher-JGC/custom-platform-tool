@@ -51,10 +51,10 @@ export const TableMeta = CreateWidgetPropItemRely({
         },
       },
       {
-        propID: 'prop_field_ellipsis',
-        editAttr: ['fieldEllipsis'],
+        propID: 'prop_word_wrap',
+        editAttr: ['wordWrap'],
         defaultValues: {
-          fieldEllipsis: true
+          wordWrap: false
         },
       }, 
       {
@@ -65,6 +65,15 @@ export const TableMeta = CreateWidgetPropItemRely({
         }
       },
       { propID: 'prop_action_config', editAttr: ['eventRef'] },
+      { 
+        propID: 'prop_query_type', 
+        editAttr: ['queryType'], 
+        defaultValues: {
+          queryType: {
+            typical: 'asForm'
+          }
+        }
+      },
       // { propID: 'prop_flex_config' },
     ]
   }

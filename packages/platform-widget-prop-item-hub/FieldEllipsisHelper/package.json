@@ -1,9 +1,0 @@
-{
-  "name": "@platform-widget-prop-item/field-ellipsis-helper",
-  "description": "字段数据显示省略号",
-  "version": "0.0.1",
-  "author": "LIJIA",
-  "license": "MIT",
-  "dependencies": {
-  }
-}
