@@ -1,6 +1,6 @@
 import React from 'react';
 import CanvasStage from '@engine/visual-editor/components/CanvasStage';
-import { PDdragableItemWrapperFac } from './PDDragableItemWrapperFac';
+import { PDdragableItemWrapperFac } from '../PDDragableItemWrapperFac';
 
 const PDCanvasStage = (props) => {
   return (

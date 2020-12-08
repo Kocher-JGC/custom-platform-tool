@@ -88,4 +88,4 @@ export type DragableItemWrapperFac = (
   wrapperFacOptions: WrapperFacOptions
 ) => (
   props: LayoutWrapperContext
-) => JSX.Element
+) => JSX.Element | null

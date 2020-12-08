@@ -15,9 +15,9 @@ import { WidgetRelyPropItems } from "./widget-prop-item-rely";
  */
 export interface EditableWidgetMeta<G = string> extends DragableWidgetBaseType {
   /** 组件类面板的显示名 */
-  label: string;
+  label: string
   /** 组件类面板的显示名 */
-  desc?: string;
+  desc?: string
   /** widget 的分组信息 */
   wGroupType?: G
   /** 绑定可编辑的属性 */
@@ -44,7 +44,7 @@ export interface WidgetEntity extends EditableWidgetMeta {
   /** 实例 id */
   id: string
   /** 父级 id */
-  parentID?: string;
+  parentID?: string
   /** 子元素 */
   body?: WidgetEntity[]
   /** 存储组件实例的状态 */

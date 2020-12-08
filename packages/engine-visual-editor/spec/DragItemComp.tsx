@@ -90,8 +90,6 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
         return;
       }
 
-      const { embedable } = item.dragableWidgetType;
-
       // Determine rectangle on screen
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
 

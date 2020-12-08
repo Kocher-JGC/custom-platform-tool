@@ -228,7 +228,7 @@ PropertiesEditorProps, PropertiesEditorState
     /** 延后更新整个应用的数据 */
     debounce.exec(() => {
       const { selfEntityState } = this.state;
-      console.log('selfEntityState :>> ', selfEntityState);
+      // console.log('selfEntityState :>> ', selfEntityState);
       nextValue && this.props.updateEntityState(selfEntityState);
     }, 100);
   }

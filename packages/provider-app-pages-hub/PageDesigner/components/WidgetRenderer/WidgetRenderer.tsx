@@ -16,6 +16,7 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
   const {
     onClick,
     entity,
+    children,
     entityState = {},
     layoutNodeItem,
     className,
@@ -35,7 +36,7 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
     // 处理异常组件
     Com = <Unexpect />;
   } else {
-    Com = WidgetFormRemote.render(entityState);
+    Com = WidgetFormRemote.render(Object.assign({}, entityState, { children }));
   }
   const classes = classnames(
     "comp-renderer",
@@ -48,7 +49,7 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
       className={classes}
     >
       {Com}
-      <div className="__mark"></div>
+      {/* <div className="__mark"></div> */}
     </div>
   );
 };

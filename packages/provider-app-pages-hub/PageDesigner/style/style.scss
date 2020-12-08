@@ -96,7 +96,7 @@
   }
   &.selected {
     box-shadow: 0 0 3px rgba(#376BFB, 1);
-    .action-area {
+    >.drag-item >.action-area {
       display: block;
     }
     z-index: 3;

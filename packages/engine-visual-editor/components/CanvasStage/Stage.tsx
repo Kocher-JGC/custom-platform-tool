@@ -93,6 +93,7 @@ class CanvasStage extends React.Component<CanvasStageProps> {
    *    b. 组件被放入某个布局容器职中，将产生上下级关系，这里是布局的关键策略点
    */
   dropDispatcher = (dragWidgetMeta: WidgetEntity, dropTargetCtx?: DnDContext) => {
+    // console.log(dragWidgetMeta);
     const {
       layoutNodeInfo,
       AddEntity,
@@ -114,8 +115,9 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       const { idx, dropTargetItem } = dropTargetCtx;
       // 如果有放的项
       if(dropTargetItem) {
-        const { embedable } = dropTargetItem;
-        if(embedable) {
+        const { acceptChildStrategy } = dropTargetItem;
+        if(acceptChildStrategy) {
+          addEntityNestingInfo[1] = 0;
           const parentID = dropTargetItem.id;
           // 如果被放的项是可以被嵌套的，则将该组件放入父级组件中
           if(parentID) {
@@ -128,7 +130,6 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       }
     }
     addEntityNestingInfo[0] = addEntityIdx;
-    console.log(dropTargetCtx);
 
     /** 是否已经实例化的组件 */
     const isMotify = widgetMetaCopy._state === 'active';
@@ -214,7 +215,6 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       DelEntity,
       dragableItemWrapper,
     } = this.props;
-    // console.log(layoutNodeInfo);
     const hasNode = layoutNodeInfo.length > 0;
 
     const pageStyle = pageEntityState?.style;

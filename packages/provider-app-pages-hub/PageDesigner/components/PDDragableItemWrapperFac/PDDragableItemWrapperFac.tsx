@@ -21,6 +21,16 @@ import { getWidgetMetadataSync } from '../../services';
 
 const devEnv = process.env.NODE_ENV === 'development';
 
+const DevEnvInfo = ({
+  id, nestingInfo
+}) => {
+  return devEnv ? (
+    <div className="__dev_env_info">
+      id: {id}, nestingInfo: {JSON.stringify(nestingInfo)}
+    </div>
+  ) : null;
+};
+
 /**
  * 组件在舞台被实例化后的包装器
  */
@@ -43,6 +53,8 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
   const isSelected = getSelectedState(ctx);
   const entityState = getEntityProps(ctx) || {};
   const currEntity = getLayoutNode(ctx);
+  
+  if(!currEntity) return null;
   const widgetMeta = getWidgetMetadataSync(currEntity.widgetRef);
 
   const classes = classnames([
@@ -67,7 +79,7 @@ export const PDdragableItemWrapperFac: DragableItemWrapperFac = (
         className={classes}
         key={id}
       >
-        {devEnv ? `id: ${id}` : ''}
+        <DevEnvInfo id={id} nestingInfo={nestingInfo} />
         <DragItemComp
           index={idx}
           onItemDrop={onItemDrop}

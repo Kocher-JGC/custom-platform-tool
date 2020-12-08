@@ -18,6 +18,7 @@ import {
 } from '../actions';
 import { getItemFromNestingItemsByBody } from '../utils';
 import { mergeDeep } from '@infra/utils/tools';
+import { ElemNestingInfo } from '@engine/layout-renderer';
 
 /**
  * action types
@@ -32,6 +33,37 @@ export type LayoutInfoActionReducerAction =
   ChangeEntityTypeAction |
   InitAppAction
 
+function addItem2NestingArr(array: any[], nestingInfo: ElemNestingInfo, addItem) {
+  const _nestingInfo = [...nestingInfo];
+  const targetAddPosition = _nestingInfo.pop() as number;
+  if(_nestingInfo.length === 0) {
+    array.splice(targetAddPosition, 1, addItem);
+  } else {
+    const recursive = (currDiveIdx) => {
+      const currNestIdx = _nestingInfo[currDiveIdx];
+      const nextNestIdx = _nestingInfo[currDiveIdx + 1];
+      if(typeof nextNestIdx === 'undefined') {
+        // 取最后一个嵌套位置
+        if(!array[currNestIdx]) {
+          return console.log(`没有节点 ${_nestingInfo}`);
+        }
+        if(!array[currNestIdx]?.body) {
+          array[currNestIdx].body = [];
+        }
+        array[currNestIdx].body.splice(currNestIdx, 1, addItem);
+        return;
+      } else {
+        recursive(currDiveIdx + 1);
+      }
+    };
+    recursive(0);
+  }
+
+  return array;
+}
+
+// console.log(addItem2NestingArr([[{}]], [0,0,0], { test: '123' }));
+
 /**
  * 用于处理布局信息的 reducer
  */
@@ -44,14 +76,18 @@ export const layoutInfoReducer = (
       const { pageContent } = action;
       return produce(pageContent, (draft) => (draft ? draft.content : state));
     case ADD_ENTITY:
-      const { entity: addEntity, idx } = action;
-      const addNextState = update(state, {
-        $splice: [
-          [idx, 1, addEntity],
-        ],
+      const addNextStateRes = produce(state, (draft) => {
+        const { entity: addEntity, idx, nestingInfo } = action;
+        const addNextState = addItem2NestingArr(draft, nestingInfo, addEntity);
+        // const addNextState = update(state, {
+        //   $splice: [
+        //     [idx, 1, addEntity],
+        //   ],
+        // });
+  
+        return addNextState;
       });
-
-      return addNextState;
+      return addNextStateRes;
     case SORTING_ENTITY:
       const {
         dragIndex, hoverIndex, nestingInfo,

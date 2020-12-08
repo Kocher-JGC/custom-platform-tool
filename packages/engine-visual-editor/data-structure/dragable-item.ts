@@ -32,8 +32,17 @@ export interface DropCollectType {
   canDrop: boolean
 }
 
+export interface AcceptChildSetting {
+  /** 接受的类型的策略，白名单还是黑名单 */
+  strategy: 'blackList' | 'whiteList'
+  /** 拒绝接受的子组件的黑明白 */
+  blackList?: string[]
+  /** 接受的子组件的白名单 */
+  whiteList?: string[]
+}
+
 
 export interface DragableWidgetBaseType {
-  /** 是否可内嵌其他组件 */
-  embedable?: boolean
+  /** 接受子内容的策略，布局组件的基础 */
+  acceptChildStrategy?: AcceptChildSetting
 }
