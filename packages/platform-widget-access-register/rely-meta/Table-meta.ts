@@ -30,10 +30,10 @@ export const TableMeta = CreateWidgetPropItemRely({
         },
       },
       {
-        propID: 'prop_title_place',
-        editAttr: ['titlePlace'],
+        propID: 'prop_title_align',
+        editAttr: ['titleAlign'],
         defaultValues: {
-          titlePlace: 'left'
+          titleAlign: 'left'
         },
       },
       {
