@@ -11,6 +11,7 @@ import 'codemirror/addon/edit/closebrackets.js'; // 当键入时将自动关闭�
 
 import 'codemirror/lib/codemirror.css';
 import './index.less';
+
 /**
  * 编辑器事件
  * 具体查看  https://codemirror.net/doc/manual.html#events
@@ -57,8 +58,6 @@ interface IEvent {
  * 编辑器对外暴露属性
  */
 interface ICodeEditorProps extends EditorConfiguration, IEvent {
-  /**  */
-  hintOptions: any;
   /** 是否只读 */
   readOnly?: string | boolean;
   /** 初始值 */
@@ -77,12 +76,14 @@ interface ICodeEditorProps extends EditorConfiguration, IEvent {
   width?: string;
   /** 高度 */
   height?: string;
+  /**  */
+  hintOptions?: any;
   /** 获取 Editor 实例 */
-  getEditor?: (editor: any) => any;
+  getEditor?: (editor: Editor) => void;
   /** 自定义注册 */
   registerHelper?: (editor: Editor, options: EditorConfiguration) => void;
   /** 实例化完成 */
-  ready?: (editor: Editor, codeMirror: any) => void;
+  ready?: (editor: Editor) => void;
   renderSelectTheme?: () => ReactElement;
   renderSelectMode?: () => ReactElement;
   renderSelectFontSize?: () => ReactElement;
@@ -141,7 +142,8 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
       mode, theme, lint, foldGutter, autofocus, extraKeys, hintOptions, value, registerHelper, width, height, ...configuration
     } = this.props;
     const gutters = this.getGutters();
-    this.editor = CodeMirror.fromTextArea(this.codeRef.current!, {
+    if(!this.codeRef.current) return;
+    this.editor = CodeMirror.fromTextArea(this.codeRef.current, {
       mode,
       tabSize: 2,
       lineNumbers: true,
@@ -170,9 +172,9 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
     /** 外部获取editor 实例 */
     this.props.getEditor && this.props.getEditor(this.editor);
     /** 初始化编辑器后 获取editor 和  CodeMirror */
-    this.props.ready && this.props.ready(this.editor, CodeMirror);
+    this.props.ready && this.props.ready(this.editor);
     /** 初始化事件 */
-    this.inintEvent();
+    this.initEvent();
   }
 
   /**
@@ -185,9 +187,9 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   /**
    * 初始化事件
    */
-  public inintEvent(): void {
+  public initEvent(): void {
     ALL_EVENTS.forEach((event) => {
-      this.props[`on${firstUpperCase(event)}`] && this.editor!.on(event, this.props[`on${firstUpperCase(event)}`]);
+      this.props[`on${firstUpperCase(event)}`] && this.editor?.on(event, this.props[`on${firstUpperCase(event)}`]);
     });
   }
 
@@ -224,17 +226,17 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   /**
    *  加载全屏资源
    */
-  public loadFullScreenResource(): Promise<any> {
+  public loadFullScreenResource(): Promise<void> {
     return Promise.all([
       require('codemirror/addon/display/fullscreen.css'),
       require('codemirror/addon/display/fullscreen.js'),
-    ]);
+    ]).then(()=>{});
   }
 
   /**
    *  加载搜索资源
    */
-  public loadSearchResource(): Promise<any> {
+  public loadSearchResource(): Promise<void> {
     return Promise.all([
       require('codemirror/addon/dialog/dialog.css'),
       require('codemirror/addon/search/matchesonscrollbar.css'),
@@ -243,39 +245,39 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
       require('codemirror/addon/scroll/annotatescrollbar.js'),
       require('codemirror/addon/search/matchesonscrollbar.js'),
       require('codemirror/addon/search/jump-to-line.js'),
-    ]);
+    ]).then(()=>{});
   }
 
   /**
    * 代码折叠 所需加载资源
    */
-  public loadFoldResource(): Promise<any> {
+  public loadFoldResource(): Promise<void> {
     return Promise.all([
       require('codemirror/addon/fold/foldgutter.js'),
       require('codemirror/addon/fold/foldcode.js'),
       require('codemirror/addon/fold/brace-fold.js'),
       require('codemirror/addon/fold/foldgutter.css')
-    ]);
+    ]).then(()=>{});
   }
 
   /**
    * 需要用到lint 加载的公共资源 每个lint还需单独加载
    */
-  public loadLintResource(): Promise<any> {
+  public loadLintResource(): Promise<void> {
     return Promise.all([
       require('codemirror/addon/lint/lint.js'),
       require('codemirror/addon/lint/lint.css')
-    ]);
+    ]).then(()=>{});
   }
 
   /**
    * 需要hint加载资源
    */
-  public loadHintResource(): Promise<any> {
+  public loadHintResource(): Promise<void> {
     return Promise.all([
       require('codemirror/addon/hint/show-hint.js'),
       require('codemirror/addon/hint/show-hint.css')
-    ]);
+    ]).then(()=>{});
   }
 
   /**
@@ -295,7 +297,7 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    * 目前自动补全() 和 {}
    */
   public AutoInsertParentheses(): void {
-    this.editor!.addKeyMap({
+    this.editor?.addKeyMap({
       name: 'autoInsertParentheses',
       "'('": (cm) => {
         const cur = cm.getCursor();
@@ -316,11 +318,11 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    */
   public componentDidUpdate(prevProps: ICodeEditorProps) {
     if (!equals(prevProps.hintOptions, this.props.hintOptions)) {
-      this.editor!.setOption('hintOptions', this.props.hintOptions);
+      // this.editor?.setOption('hintOptions', this.props.hintOptions);
       this.onInputRead(this.props.hintOptions);
     }
     if (prevProps.value !== this.props.value) {
-      this.setCodeMirrorValue(this.props.value!);
+      this.setCodeMirrorValue(this.props.value);
     }
   }
 
@@ -328,15 +330,17 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    * 动态设置 编辑器的值
    * @param value
    */
-  public setCodeMirrorValue = (value: string) => {
-    this.editor!.setValue(value);
+  public setCodeMirrorValue = (value?: string) => {
+    if(value === "" || value){
+      this.editor?.setValue(value);
+    }
   }
 
   /**
    * 每当从隐藏的文本区域中读取新输入（由用户键入或粘贴）时，就会触发
    */
-  public onInputRead = (hintOptions: any) => {
-    this.editor!.on('inputRead', (cm, change) => {
+  public onInputRead = (hintOptions) => {
+    this.editor?.on('inputRead', (cm, change) => {
       cm.execCommand('autocomplete');
     });
   }
@@ -346,7 +350,7 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    * @param mode
    */
   public setCodeMirrorOption<K extends keyof EditorConfiguration>(option: K, value: string) {
-    this.editor!.setOption(option, value);
+    this.editor?.setOption(option, value);
   }
 
   /**

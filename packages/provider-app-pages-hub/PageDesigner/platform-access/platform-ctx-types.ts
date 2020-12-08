@@ -27,7 +27,17 @@ export interface OpenDatasourceSelectorOptions {
   typeSingle?: boolean
 }
 
+export interface OnExpressionImporterSubmitOptions {
+  /** 关闭当前弹窗 */
+  close: () => void
+  value: string
+}
+
+export interface OpenExpressionImporterOptions {
+  onSubmit: (submitOptions: OnExpressionImporterSubmitOptions) => void
+}
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
+export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) => () => void
 
 export type ChangeWidgetType = (widgetType: string) => void
 
@@ -62,6 +72,7 @@ export interface PlatformCtx {
   /** 由页面设计器提供的选择器 */
   selector: {
     openDatasourceSelector: OpenDatasourceSelector
+    openExpressionImporter: OpenExpressionImporter
   }
   /** 对于页面元数据的操作 */
   meta: {

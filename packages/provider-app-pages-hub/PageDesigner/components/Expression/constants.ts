@@ -8,7 +8,8 @@ export const SHOW_FUNCTION_FIELD = {
 export const EXPRESSION_FUNCTION: IExpressionFunction[]  = [
   {
     title: "字符串函数",
-    name: "STRING_FUNCTION",
+    name: "STRING",
+    namespace: "HY",
     options:[
       {
         title: 'LENGTH',
@@ -149,7 +150,8 @@ export const EXPRESSION_FUNCTION: IExpressionFunction[]  = [
   },
   {
     title: "时间函数",
-    name: "DATE_FUNCTION",
+    name: "DATE",
+    namespace: "HY",
     options: [
       { title: 'NOW', name: 'NOW', describe: '返回计算机系统当前设定的日期和时间值', usage: 'NOW()', example: '' },
       { title: 'DATE', name: 'DATE', describe: '将字符串转为日期格式', usage: '', example: '' },
@@ -283,7 +285,8 @@ export const EXPRESSION_FUNCTION: IExpressionFunction[]  = [
   },
   {
     title: "数学函数",
-    name: "MATH_FUNCTION",
+    name: "MATH",
+    namespace: "HY",
     options: [
       { title: 'CEIL', name: 'CEIL', describe: '', usage: '', example: '' },
       {
@@ -313,16 +316,18 @@ export const EXPRESSION_FUNCTION: IExpressionFunction[]  = [
   },
   {
     title: "数据库函数",
-    name: "DATABASE_FUNCTION",
+    name: "ASYNC",
+    namespace: "HY",
     options: [
       {
         title: 'GET_ONE',
         name: 'GET_ONE',
+        async: true,
         describe: '',
         usage: '',
         example: ''
       },
-      { title: 'UUID', name: 'UUID', describe: '', usage: '', example: '' }
+      { title: 'UUID', name: 'UUID', async: true, describe: '', usage: '', example: '' }
     ]
   }
 ];

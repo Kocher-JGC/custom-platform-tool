@@ -49,7 +49,7 @@ const PropDataDisplayer = () => {
     });
   }, []);
   return (
-    <pre 
+    <pre
       dangerouslySetInnerHTML={{
         __html: syntaxHighlight(JSON.stringify(data, null, 2))
       }}
@@ -137,6 +137,20 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
               <span className="flex"></span>
               {/* 开发用的，查看所有属性项的按钮 */}
               <CheckAllExistPropItems />
+              {/* <Button
+                className='mr10'
+                color='default'
+                onClick={(e) => {
+                  const closeModal = platformCtx.selector.openExpressionImporter({
+                    onSubmit: ({ value }) => {
+                      console.log('表达式结果', value);
+                      closeModal();
+                    },
+                  });
+                }}
+              >
+  离线编辑器
+              </Button> */}
               <Button
                 className="mr10"
                 color="default"

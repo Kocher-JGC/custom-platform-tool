@@ -1,9 +1,7 @@
 import React from 'react';
-import {
-  CloseModal, Input, Selector, ShowModal
-} from '@infra/ui';
+import { Input, Selector } from '@infra/ui';
 import { ChangeEntityState } from '@platform-widget-access/spec';
-import { Expression } from './Expression';
+import { PlatformContext } from '@provider-app/page-designer/utils';
 
 /**
  * 可用的值的类型
@@ -48,31 +46,24 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       break;
     case 'expression':
       Comp = (
-        <div
-          className="px-4 py-2 border"
-          onClick={(e) => {
-            const modalID = ShowModal({
-              title: '表达式编辑',
-              width: 900,
-              children: () => {
-                return (
-                  <Expression
-                    defaultValue={exp}
-                    onSubmit={(val) => {
-                      onChange([
-                        { value: val, attr: 'exp' },
-                        { attr: 'realVal', value: null }
-                      ]);
-                      CloseModal(modalID);
-                    }}
-                  />
-                );
-              }
-            });
-          }}
-        >
-          {exp ? '已设置表达式' : '点击设置表达式'}
-        </div>
+        <PlatformContext.Consumer>
+          {
+            (platformCtx) =>
+              <div
+                className="px-4 py-2 border"
+                onClick={(e) => {
+                  const closeModal = platformCtx.selector.openExpressionImporter({
+                    onSubmit: ({ value }) => {
+                      console.log("表达式结果", value);
+                      closeModal();
+                    }
+                  });
+                }}
+              >
+                {exp ? '已设置表达式' : '点击设置表达式'}
+              </div>
+          }
+        </PlatformContext.Consumer>
       );
       break;
     case 'variable':
