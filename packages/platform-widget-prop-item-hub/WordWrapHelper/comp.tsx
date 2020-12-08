@@ -1,16 +1,16 @@
 import React from "react";
 import { Radio } from "antd";
-import { FIELD_ELLIPSIS_MENU } from "./constants";
+import { WORD_WRAP_MENU } from "./constants";
 
-export const FieldEllipsisComp = ({ editingWidgetState, onChange }) => {
-  const { fieldEllipsis } = editingWidgetState;
+export const WordWrapComp = ({ editingWidgetState, onChange }) => {
+  const { wordWrap } = editingWidgetState;
   // const [showPageSize, setShowPageSize] = useState<boolean>(!!pageSize);
   return (
     <>
       <Radio.Group
         className='w-full'
-        value={!!fieldEllipsis}
-        options={FIELD_ELLIPSIS_MENU}
+        value={!!wordWrap}
+        options={WORD_WRAP_MENU}
         onChange={e=>{
           onChange(e.target.value);
         }}

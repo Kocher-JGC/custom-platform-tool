@@ -33,6 +33,7 @@ export const GeneralTableComp: React.FC<GeneralTableCompProps> = (props) => {
         dataSource={dataSource} 
         pagination={pageSize ? { pageSize }:false}
         {...other}
+        options={false}
       />
     </ConfigProvider>
   );

@@ -13,12 +13,12 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_title_place',
           'prop_page_size',
           'prop_show_order_column',
-          'prop_field_ellipsis',
+          'prop_word_wrap',
           'prop_check_row',
           'prop_field',
           'prop_real_value',
+          'prop_query_type',
           'prop_action_config',
-          'prop_datasource_selector',
           'prop_widget_type',
           'prop_field_type',
           'prop_data_type',
@@ -27,7 +27,6 @@ export const propItemGroupingData: GroupPanelData[] = [
           'prop_note_info',
           'prop_start_search',
           'prop_dropdown_multiple',
-          'prop_table_ds_helper',
           'prop_unit_value',
         ]
       },
@@ -72,6 +71,14 @@ export const propItemGroupingData: GroupPanelData[] = [
   {
     title: '数据',
     itemsGroups: [
+      {
+        title: '数据源',
+        type: '',
+        items: [
+          'prop_datasource_selector',
+          'prop_table_ds_helper',
+        ]
+      },
       {
         title: '控件校验',
         type: '',
