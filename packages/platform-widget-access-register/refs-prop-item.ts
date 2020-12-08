@@ -19,7 +19,7 @@ export * from '@platform-widget-prop-item/string-length-helper';
 export * from '@platform-widget-prop-item/table-datasource-helper';
 export * from '@platform-widget-prop-item/title-color-helper';
 export * from '@platform-widget-prop-item/title-helper';
-export * from '@platform-widget-prop-item/title-place-helper';
+export * from '@platform-widget-prop-item/title-align-helper';
 export * from '@platform-widget-prop-item/unit-helper';
 export * from '@platform-widget-prop-item/value-helper';
 export * from '@platform-widget-prop-item/widget-coding-helper';

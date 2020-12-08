@@ -17,7 +17,7 @@ import { GeneralTableComp } from '.';
     title: {
       type: 'string'
     },
-    titlePlace: {
+    titleAlign: {
       type: 'string'
     },
     pageSize: {

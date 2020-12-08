@@ -1,19 +1,19 @@
 import React from 'react';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { TitlePlaceComp } from './comp';
+import { TitleAlignComp } from './comp';
 
 /** 属性项编辑的组件属性 */
 // const whichAttr = 'title';
-const attr = 'titlePlace';
+const attr = 'titleAlign';
 @PropItem({
-  id: 'prop_title_place',
+  id: 'prop_title_align',
   label: '标题位置',
   whichAttr: [attr],
   // defaultValues: {
   //   title: '标题'
   // },
 })
-export class TitlePlaceSpec {
+export class TitleAlignSpec {
   render(ctx: PropItemRenderContext) {
     const {
       changeEntityState,
@@ -25,7 +25,7 @@ export class TitlePlaceSpec {
       });
     };
     return (
-      <TitlePlaceComp onChange = {handleChange} editingWidgetState = {editingWidgetState} />
+      <TitleAlignComp onChange = {handleChange} editingWidgetState = {editingWidgetState} />
     );
   }
 }
