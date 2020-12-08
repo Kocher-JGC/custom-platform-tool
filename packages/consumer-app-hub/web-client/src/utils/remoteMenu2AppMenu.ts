@@ -37,7 +37,7 @@ export const remoteMenu2AppMenu = (menuDataRes: MenuDataRes[]): AdminTmplMenus =
   const menuTree: AdminTmplMenus = [];
   const flatNodeItems: FlatNodeItem = {};
   menuDataResCopy.forEach((item) => {
-    const { id, pageLink, path, name, level, pid, icon } = item;
+    const { id, pageLink, name, pid, icon } = item;
     const appMenuItem: AdminTmplMenuItem = {
       path: `page~${id}`,
       title: name,
@@ -49,10 +49,11 @@ export const remoteMenu2AppMenu = (menuDataRes: MenuDataRes[]): AdminTmplMenus =
     if(!flatNodeItems[id]) flatNodeItems[id] = appMenuItem;
     Object.assign(flatNodeItems[id], appMenuItem);
     if(pid) {
-      if(!flatNodeItems[pid]) flatNodeItems[pid] = appMenuItem;
-      Object.assign(flatNodeItems[pid], {
-        child: []
-      });
+      if(!flatNodeItems[pid]) {
+        flatNodeItems[pid] = Object.assign({}, {
+          child: []
+        });
+      }
       flatNodeItems[pid].child?.push(appMenuItem);
     } else {
       menuTree.push(flatNodeItems[id]);
