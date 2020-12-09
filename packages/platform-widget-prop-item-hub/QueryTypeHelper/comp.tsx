@@ -1,12 +1,16 @@
-import React from "react";
-import { Checkbox, Select } from "antd";
-import { QUEYR_TYPE_MENU, QUERY_STYLE_MENU } from "./constants";
+import React, { useState } from "react";
+import { Checkbox, Select, InputNumber } from "antd";
+import { QUERY_STYLE_MENU } from "./constants";
 import pick from 'lodash/pick';
 
+/**
+ * 查询样式
+ * @param param0
+ */
 export const QueryStyleComp = ({ onChange, value }) => {
   return (
     <div className="prop-query-style my-1">
-      <span>查询框位置</span>
+      <span className="mr-3">查询框位置</span>
       <Select 
         value = {value}
         onChange={onChange}
@@ -15,14 +19,59 @@ export const QueryStyleComp = ({ onChange, value }) => {
     </div>
   );
 };
+/**
+ * 最大个数
+ * @param param0 
+ */
+export const MaxShowNum = ({ value: originValue, onChange }) => {
+  const [validate, setValidate] = useState(true);
+  const [value, setValue] = useState(originValue);
+  return (
+    <> 
+      <span className="mr-3">最大显示个数</span>
+      <InputNumber 
+        value = {value}
+        onChange={value=>{
+          const validateTmpl = /^([1-9]|10)$/.test(value.toString());
+          setValidate(validateTmpl);
+          value = validateTmpl ? value : originValue;
+          onChange(value);
+          setValue(value);
+        }}
+      />
+      {!validate ? <div className="text-red-600">只能输入1-10的数字</div> : null}
+    </>
+  );
+};
+/**
+ * 查询方式
+ * @param param0 
+ */
 export const QueryTypeComp = ({ editingWidgetState, onChange }) => {
   const { queryType } = editingWidgetState;
-  console.log(queryType);
   const handleChangeQueryStyle=(type, value)=>{
-    onChange({
+    const typeArea = {
+      ...(queryType[type]||{}),
+      'queryStyle': value
+    };
+    if(value === 'inToolbar'){
+      typeArea.maxNum = 4;
+    }
+    const result = {
       ...queryType,
-      [type]: value
-    });
+      [type]: typeArea
+    };
+    onChange(result);
+  };
+  const handleChangeMaxNum = (type, value) => {
+    const result = {
+      ...queryType,
+      [type]: {
+        ...(queryType[type] || {}),
+        maxNum: value
+      }
+    };
+    onChange(result);
   };
   return (
     <>
@@ -33,7 +82,7 @@ export const QueryTypeComp = ({ editingWidgetState, onChange }) => {
           const result = pick(queryType, value);
           value.forEach(item=>{
             if(!(item in result)){
-              result[item] = 'asForm';
+              result[item] = { queryStyle: 'asForm' };
             }
           });          
           onChange(result);
@@ -42,7 +91,17 @@ export const QueryTypeComp = ({ editingWidgetState, onChange }) => {
         <Checkbox value="typical">普通查询</Checkbox>
         <br/>
         {'typical' in queryType && queryType['typical'] ? (
-          <QueryStyleComp value={queryType['typical']} onChange={(value)=>handleChangeQueryStyle('typical', value)}/>
+          <>
+            <QueryStyleComp 
+              value={queryType['typical'].queryStyle} 
+              onChange={(value)=>handleChangeQueryStyle('typical', value)}
+            />
+            { queryType['typical'].queryStyle === 'inToolbar' ? (
+              <MaxShowNum 
+                value={queryType['typical'].maxNum} 
+                onChange={(value)=>handleChangeMaxNum('typical', value)}
+              />) : null }
+          </>
         ) : null }
         <Checkbox value="special">高级查询（暂未支持）</Checkbox>
         <br/>
