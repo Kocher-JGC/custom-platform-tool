@@ -4,7 +4,7 @@ import { PageSizeComp } from './comp';
 
 /** 属性项编辑的组件属性 */
 // const whichAttr = 'title';
-const attr = 'pageSize';
+const attr = 'defaultPageSize';
 @PropItem({
   id: 'prop_page_size',
   label: '显示分页',
