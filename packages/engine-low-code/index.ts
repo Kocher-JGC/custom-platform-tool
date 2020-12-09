@@ -2,10 +2,9 @@ import CodeCompiler, { IOptions } from './src/CodeEngine';
 
 export default function codeEngine(code: string, options: IOptions) {
   const compiler = new CodeCompiler(options);
-  const conveCode = compiler.codeIsExpression(`(function(){${code}})`)
+  const runCode = compiler.codeIsExpression(`(async function(){${code}})`)
     ? `(async function() { return ${code} })()`
     : `(async function() { ${code} })()`;
-  console.log("conveCode", conveCode);
-  compiler.setCode(conveCode);
+  compiler.setCode(runCode);
   return compiler.getCompileCode();
 }

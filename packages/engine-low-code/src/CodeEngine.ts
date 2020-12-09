@@ -1,11 +1,11 @@
 import { parse } from "@babel/parser";
-import traverse from "@babel/traverse";
+import traverse, { NodePath } from "@babel/traverse";
 import generate from "@babel/generator";
 import { transform } from "@babel/core";
 import { File } from "@babel/types";
 
 export interface IOptions {
-  visitor?: { enter: () => void } | null;
+  visitor?: { enter: (path: NodePath) => void };
   es5?: boolean;
   identifierMapping?: { [key: string]: string };
 }
@@ -18,7 +18,7 @@ export default class CodeCompiler {
   private ast: File | null;
 
   /**  */
-  private visitor: { enter: () => void } | null = null;
+  private visitor: IOptions['visitor'] | null  = null;
 
   private es5 = true;
 
@@ -33,7 +33,19 @@ export default class CodeCompiler {
   }
 
   /**
-   * 设置code值
+   * 判断代码为表达式还是低代码
+   * @param code 代码字符串
+   */
+  public codeIsExpression(code: string): boolean {
+    const statement = parse(code).program.body[0];
+    if(statement.type === "ExpressionStatement"){
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * 设置 code 值
    * @param code
    */
   public setCode(code: string) {
@@ -41,14 +53,14 @@ export default class CodeCompiler {
   }
 
   /**
-   * 获取编译后的code
+   * 获取编译后的 code
    */
   public getCompileCode() {
     return this.es5 ? this.codeTransformEs5() : this.astGenerateCode();
   }
 
   /**
-   * 获取转换后的es5 代码字符串
+   * 获取转换后的 es5 代码字符串
    */
   public codeTransformEs5(): string {
     return transform(this.astGenerateCode(), {
@@ -69,9 +81,11 @@ export default class CodeCompiler {
   public astGenerateCode(): string {
     this.parseCodeToAst();
     this.traverseAst();
-    return generate(this.ast as File, {
+    const res = generate(this.ast as File, {
       comments: false
-    }).code;
+    });
+    console.log("转换结果: ", res);
+    return res.code;
   }
 
   /**
@@ -79,15 +93,6 @@ export default class CodeCompiler {
    */
   public parseCodeToAst(): void {
     this.ast = parse(this.code);
-  }
-
-  public codeIsExpression(code: string): boolean {
-    const { expression } = parse(code).program.body[0];
-    return (
-      expression &&
-      expression.body.body.length === 1 &&
-      expression.body.body[0].type === "ExpressionStatement"
-    );
   }
 
   /**
@@ -103,33 +108,17 @@ export default class CodeCompiler {
    * 转化AST节点类型
    * @param visitor
    */
-  public getVisitor(visitor: any) {
+  public getVisitor(visitor?: IOptions['visitor'] | null): IOptions['visitor'] {
     if (visitor) {
       return visitor;
     }
     const { identifierMapping } = this;
     return {
-      enter(path: any) {
-        if (path.node.type === "FunctionDeclaration") {
-          path.node.async = true;
-        }
-        if (path.node.type === "MemberExpression") {
-          path.node.object.name = `await ${path.node.object.name}`;
-        }
-        if (path.node.type === "CallExpression") {
-          path.node.callee.name = `await ${path.node.callee.name}`;
-        }
-        if (path.node.type === "Identifier") {
-          if (identifierMapping[path.node.name]) {
-            path.node.name = identifierMapping[path.node.name];
-          }
+      enter(path: NodePath) {
+        if (path.node.type === "Identifier" && identifierMapping[path.node.name]) {
+          path.node.name = identifierMapping[path.node.name];
         }
       }
-      // Identifier(path: any) {
-      //   if (identifierMapping![path.node.name]) {
-      //     path.node.name = identifierMapping![path.node.name];
-      //   }
-      // }
     };
   }
 }

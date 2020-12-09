@@ -1,9 +1,12 @@
 import { IFakeWindow } from "./interfaces";
 
-export function uniq(array: PropertyKey[]) {
-  return array.filter(function filter(this: string[], element) {
-    return this.includes(element) ? false : ((this as any)[element] = true);
-  }, {});
+export function uniq(arr: PropertyKey[]) {
+  return arr.reduce((a,b)=>{
+    if(!a.includes[b]){
+      a.push(b);
+    }
+    return a;
+  }, [] as PropertyKey[]);
 }
 
 export function isConstructable(fn: () => void | FunctionConstructor) {
@@ -33,8 +36,8 @@ export function isBoundedFunction(fn: CallableFunction) {
  */
 const naughtySafari = typeof document.all === 'function' && typeof document.all === 'undefined';
 export const isCallable = naughtySafari
-  ? (fn: any) => typeof fn === 'function' && typeof fn !== 'undefined'
-  : (fn: any) => typeof fn === 'function';
+  ? (fn: unknown) => typeof fn === 'function' && typeof fn !== 'undefined'
+  : (fn: unknown) => typeof fn === 'function';
 /**
  * @export fakeWindow propertiesWithGetter
  * @param {Window} global

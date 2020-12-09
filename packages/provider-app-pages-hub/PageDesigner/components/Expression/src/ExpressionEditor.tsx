@@ -14,19 +14,13 @@ import {
   InputNumber,
   message
 } from "antd";
+import { Editor } from "codemirror";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
 import codeEngine from "@engine/low-code";
 import createSandbox from "@engine/js-sandbox";
 import { PlatformCtx } from "@platform-widget-access/spec";
 import { HY_METHODS } from "@library/expression-methods";
-import { VARIABLE_DATA } from "./config";
-import {
-  SHOW_FUNCTION_FIELD,
-  // HY_METHODS,
-  HY_METHODS_TYPE,
-  VARIABLE_TYPE,
-  VAR_VALUE_TYPE
-} from "./constants";
+import { SHOW_FUNCTION_FIELD, HY_METHODS_TYPE, VARIABLE_TYPE, VAR_VALUE_TYPE } from "./constants";
 import { IHyMethod } from "./interface";
 import "./index.less";
 
@@ -44,40 +38,61 @@ const HY = HY_METHODS.reduce((a, b) => {
   return a;
 }, {});
 
-const Editor = React.lazy(
+const ExpressionEditor = React.lazy(
   () => import(/* webpackChunkName: "code_editor" */ "@engine/code-editor")
 );
 interface IProps {
   metaCtx: PlatformCtx["meta"];
+  /** 表达式提交回调函数 */
+  onSubmit: (res: { value: string }) => void;
+  defaultValue?: string;
 }
 
 export const Expression: React.FC<IProps> = (props) => {
-  const [editor, setEditor] = useState<any>(null);
+  /** 编辑器对象 */
+  const [editor, setEditor] = useState<Editor | null>(null);
+  /** 编辑器是否准备就绪 */
   const [ready, setReady] = useState<boolean>(false);
+  /** 当前正在查看简介的函数对象 */
   const [curFunction, setCurFunction] = useState<IHyMethod | null>(null);
+  /** 用于调试的变量-键值对，用于沙箱的上下文 */
   const [debugCodeValue, setDebugCodeValue] = useState({});
+  /** 变量是否正在编辑-键值对 */
   const [variableVisible, setVariableVisible] = useState({});
+  /** 变量 key 值的显示值和实际值-键值对，用于低代码引擎替换变量 */
   const [variableMapping, setVariableMapping] = useState<{ [key: string]: string } | null>(null);
+  /** 变量树 */
   const [variableTree, setVariableTree] = useState<{ [key: string]: VariableItem[] }>({});
+  /** 编辑器下拉提示 */
   const [hintOptions, setHintOptions] = useState<{ completeSingle: boolean; keywords: string[] }>({
     completeSingle: false,
     keywords: []
   });
+  /** 调试结果 */
   const [operationResult, setOperationResult] = useState("");
+
+  /**
+   * 编辑器插入值
+   * @param code 指定字符串
+   * @param pos 光标倒退几格
+   */
   const insertValue = (code: string, pos = 0) => {
-    // console.log("insertValue", code, pos);
+    if (!editor) return;
     const cur = editor.getCursor();
     editor.replaceRange(code, cur, cur, "+insert");
     setTimeout(() => {
       const cur = editor.getCursor();
       editor.setCursor({ line: cur.line, ch: cur.ch - pos });
+      editor.focus();
     }, 500);
   };
+  /**
+   * 调试代码
+   */
   const debugCode = async () => {
+    if (!editor) return;
     const code = editor.getValue();
-    // const mappingSource = variableMapping("title", "key");
     console.log("编辑器内容", code);
-
     if (code && variableMapping) {
       try {
         const str = codeEngine(code, { identifierMapping: variableMapping });
@@ -96,6 +111,9 @@ export const Expression: React.FC<IProps> = (props) => {
       }
     }
   };
+  /**
+   * 初始化时格式化变量树
+   */
   const initVariableMapping = (res) => {
     const obj = {};
     Object.keys(res).forEach((type) => {
@@ -105,6 +123,9 @@ export const Expression: React.FC<IProps> = (props) => {
     });
     setVariableMapping(obj);
   };
+  /**
+   * 将用于调试的变量-键值对转换成沙箱可用的上下文
+   */
   const getVariableValue = () => {
     const variableValue = {};
     Object.keys(debugCodeValue).forEach((key) => {
@@ -116,22 +137,9 @@ export const Expression: React.FC<IProps> = (props) => {
     });
     return variableValue;
   };
-  const getVariableHintName = (): string[] => {
-    const hint: string[] = [];
-    VARIABLE_DATA.forEach((item) => {
-      item.props.forEach((props) => {
-        hint.push(props.title);
-      });
-    });
-    return hint;
-  };
-  const initHintOptions = () => {
-    const keywords = getVariableHintName();
-    setHintOptions({
-      completeSingle: false,
-      keywords: keywords
-    });
-  };
+  /**
+   * 替换变量的特殊字符 . (在低代码引擎中会误认为获取对象键值)
+   */
   const replacePoint = (res: {
     [key: string]: VariableItem[];
   }): { [key: string]: VariableItem[] } => {
@@ -146,6 +154,9 @@ export const Expression: React.FC<IProps> = (props) => {
     });
     return obj;
   };
+  /**
+   * 根据变量类型初始化变量编辑组件
+   */
   const initVariableEdit = (varType: string, type: string, id: string) => {
     const type_id = `${type}~${id}`;
     switch (varType) {
@@ -187,18 +198,39 @@ export const Expression: React.FC<IProps> = (props) => {
         break;
     }
   };
-
+  /**
+   * 清除编辑器
+   */
   const resetEditor = () => {
     setOperationResult("");
+    if (!editor) return;
     editor.setValue("");
+  };
+  /**
+   * 选择方法，异步函数需要多加 await
+   */
+  const selectMethod = (item: IHyMethod) => {
+    insertValue(`${item.type === "ASYNC" ? "await " : ""}${item.namespace}.${item.name}()`, 1);
+    setCurFunction(item);
+  };
+
+  const onSubmit = () =>{
+    if (!editor) return;
+    const code = editor.getValue();
+    if (code && variableMapping) {
+      try {
+        // const value = codeEngine(code, { identifierMapping: variableMapping });
+        props.onSubmit && props.onSubmit({ value: code });
+      }catch (error){
+        message.error("生成代码失败，请检查表达式是否无误");
+      }
+    }
   };
 
   useEffect(() => {
-    initHintOptions();
     props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
       // 替换特殊字符 . 为 _
       const variable = replacePoint(res);
-      // const variable = res;
       setVariableTree(variable);
       initVariableMapping(variable);
       console.log("全部变量: ", res, variable);
@@ -222,15 +254,12 @@ export const Expression: React.FC<IProps> = (props) => {
                 </Button>
               </Space>
             </div>
-            <Editor
+            <ExpressionEditor
               theme="ttcn"
-              value=""
               mode="javascript"
-              renderToolBar={() => <></>}
               lint={false}
               height="200px"
-              gutters={["CodeMirror-linenumbers"]}
-              hintOptions={hintOptions}
+              defaultValue={props.defaultValue || ""}
               getEditor={(editor) => setEditor(editor)}
               ready={() => {
                 setReady(true);
@@ -306,8 +335,7 @@ export const Expression: React.FC<IProps> = (props) => {
                         renderItem={(item: IHyMethod) => (
                           <List.Item
                             onClick={() => {
-                              insertValue(`${item.namespace}.${item.name}()`, 1);
-                              setCurFunction(item);
+                              selectMethod(item);
                             }}
                           >
                             {item.name}
@@ -343,7 +371,7 @@ export const Expression: React.FC<IProps> = (props) => {
         </Row>
         <div className="expression-handle py-4">
           <span className="expression-handle-tip">请在英文输入法模式下编辑表达式</span>
-          <Button type="primary" onClick={() => {}}>
+          <Button type="primary" onClick={onSubmit}>
             确定
           </Button>
         </div>

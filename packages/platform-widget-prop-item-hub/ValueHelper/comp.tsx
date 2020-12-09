@@ -28,8 +28,13 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   platformCtx,
   onChange,
 }) => {
-  const [selectedItem, setSelectedItem] = React.useState('costomValue');
   const { exp, realVal, variable } = editingWidgetState;
+  const defaultSelectedItem = (() => {
+    if (exp) return "expression";
+    if (variable) return "variable";
+    return "costomValue";
+  })();
+  const [selectedItem, setSelectedItem] = React.useState(defaultSelectedItem);
   let Comp;
   switch (selectedItem) {
     case 'costomValue':
@@ -40,6 +45,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
             { value, attr: 'realVal' },
             /** 需要将 value 清空 */
             { value: null, attr: 'exp' },
+            { value: null, attr: 'variable' },
           ])}
         />
       );
@@ -50,8 +56,15 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
           className="px-4 py-2 border"
           onClick={(e) => {
             const closeModal = platformCtx.selector.openExpressionImporter({
+              defaultValue: exp,
               onSubmit: ({ value }) => {
                 console.log("表达式结果", value);
+                onChange([
+                  { value: value, attr: 'exp' },
+                  /** 需要将 value 清空 */
+                  { value: null, attr: 'realVal' },
+                  { value: null, attr: 'variable' },
+                ]);
                 closeModal();
               }
             });

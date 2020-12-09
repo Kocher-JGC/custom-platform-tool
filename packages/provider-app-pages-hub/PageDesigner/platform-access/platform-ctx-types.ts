@@ -29,12 +29,12 @@ export interface OpenDatasourceSelectorOptions {
 
 export interface OnExpressionImporterSubmitOptions {
   /** 关闭当前弹窗 */
-  close: () => void
   value: string
 }
 
 export interface OpenExpressionImporterOptions {
-  onSubmit: (submitOptions: OnExpressionImporterSubmitOptions) => void
+  defaultValue: string;
+  onSubmit: (submitOptions: OnExpressionImporterSubmitOptions) => void;
 }
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) => () => void

@@ -44,18 +44,16 @@ export const createPlatformCtx = (metaCtx: PlatformCtx['meta']): PlatformCtx => 
         };
       },
       openExpressionImporter: (options) => {
-        const { onSubmit } = options;
+        const { defaultValue = "", onSubmit } = options;
         const modalID = ShowModal({
           title: '表达式编辑',
           width: 900,
-          children: ({ close }) => {
+          children: () => {
             return (
               <Expression
-                defaultValue=""
+                defaultValue={defaultValue}
                 metaCtx={metaCtx}
-                onSubmit={(value) => {
-                  onSubmit({ close, value });
-                }}
+                onSubmit={onSubmit}
               />
             );
           }
