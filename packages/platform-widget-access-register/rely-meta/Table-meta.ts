@@ -83,7 +83,9 @@ export const TableMeta = CreateWidgetPropItemRely({
         editAttr: ['queryType'], 
         defaultValues: {
           queryType: {
-            typical: 'asForm'
+            typical: {
+              queryStyle: 'asForm'
+            }
           }
         }
       },
