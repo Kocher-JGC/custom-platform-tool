@@ -38,9 +38,9 @@ export const TableMeta = CreateWidgetPropItemRely({
       },
       {
         propID: 'prop_page_size',
-        editAttr: ['pageSize'],
+        editAttr: ['defaultPageSize'],
         defaultValues: {
-          pageSize: 10
+          defaultPageSize: 10
         },
       },
       {
@@ -61,7 +61,8 @@ export const TableMeta = CreateWidgetPropItemRely({
         propID: 'prop_check_row',
         editAttr: ['rowCheckType', 'checkedRowsStyle'],
         defaultValues: {
-          rowCheckType: 'no'
+          rowCheckType: 'no',
+          checkedRowsStyle: 'checkCell'
         }
       },
       { propID: 'prop_action_config', editAttr: ['eventRef'] },
@@ -70,7 +71,9 @@ export const TableMeta = CreateWidgetPropItemRely({
         editAttr: ['queryType'], 
         defaultValues: {
           queryType: {
-            typical: 'asForm'
+            typical: {
+              queryStyle: 'asForm'
+            }
           }
         }
       },

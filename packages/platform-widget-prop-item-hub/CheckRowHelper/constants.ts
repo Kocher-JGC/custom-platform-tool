@@ -10,6 +10,6 @@ export const CHECK_ROW = {
 };
 export const SELECTED_ROW_MENU = [
   { label: '选择框', key: 'checkCell', value: 'checkCell' },
-  { label: '高亮行', key: 'activRow', value: 'activRow' },
-  { label: '选择框+高亮行', key: 'checkCellAndactivRow', value: 'checkCellAndactivRow' },
+  { label: '高亮行', key: 'activeRow', value: 'activeRow' },
+  { label: '选择框+高亮行', key: 'checkCellAndactiveRow', value: 'checkCellAndactiveRow' },
 ];

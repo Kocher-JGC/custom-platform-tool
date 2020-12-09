@@ -20,12 +20,15 @@ import { GeneralTableComp } from '.';
     titleAlign: {
       type: 'string'
     },
-    pageSize: {
+    defaultPageSize: {
       type: 'number'
     },
     showOrderColumn: {
       type: 'boolean'
     },
+    queryType: {
+      type: '{[key: string]: {queryStyle: string, maxNum?:number}|null}'
+    }
   },
 })
 export class NormalTable implements PlatformWidgetComp {
