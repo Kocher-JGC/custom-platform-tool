@@ -24,7 +24,7 @@ export const DataSourceDragItem: React.FC<DataSourceDragItemProps> = ({
               <Panel header={dName} key={id}>
                 <div className="group p-2">
                   {
-                    columns && columns.map((column) => {
+                    (columns ? Object.values(columns) : []).map((column) => {
                       const { name: colName, id } = column;
                       return (
                         <p key={id}>{colName}</p>
