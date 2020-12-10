@@ -55,8 +55,6 @@ const getTableVariable = ({ propState, id, type, dataSource }) => {
       return list;
     }, []);
   };
-  console.log(propState);
-  console.log(dataSource);
   // TODO DS
   const columns = getColumns([ds]);
   const result = [];
