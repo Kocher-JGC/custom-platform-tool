@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Radio, InputNumber } from 'antd';
+import { Menu, Dropdown } from 'antd';
 import { PropItemRenderContext, CustomEditor, PTColumn } from '@platform-widget-access/spec';
-import { Button, Input, DropdownWrapper, ShowModal } from '@infra/ui';
+import { CloseModal, DropdownWrapper, ShowModal } from '@infra/ui';
 import { PlusOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Sortable from "sortablejs";
 import { genRenderColumn, genRowData } from './utils';
-import pick from 'lodash/pick';
+import { ColumnEditableItems } from './ColumnEditableItems';
+import './style.scss';
 
 interface TableDSHelperCompProps extends PropItemRenderContext {
   whichAttr: string
@@ -76,13 +77,12 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
   setCol = (item, id) => {
     const { usingColumns } = this.state;
     const itemIdx = usingColumns.findIndex((col) => col.id === id);
-    let nextState = [...usingColumns];
+    const nextState = [...usingColumns];
     if (itemIdx === -1) {
-      nextState.push(item);
+      nextState.push(genRenderColumn(item));
     } else {
       nextState.splice(itemIdx, 1);
     }
-    nextState = genRenderColumn([...nextState]);
     this.setState({
       usingColumns: nextState
     }, () => this.setupSortableColumnItems());
@@ -92,10 +92,9 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
 
   onSetCol = (nextState) => {
     const { changeEntityState } = this.props;
-
     changeEntityState({
       attr: 'columns',
-      value: nextState.map(item=>({ ...item, width: item.width || 60 }))
+      value: nextState
     });
   }
 
@@ -118,7 +117,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
               className="column-selector-container"
             >
               {
-                columns.map((col, idx) => {
+                Object.values(columns || []).map((col, idx) => {
                   const { name, id } = col;
                   const isSelected = usingColumns.find(uCol => uCol.id === id);
                   return (
@@ -150,6 +149,67 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
       </DropdownWrapper>
     );
   }
+  constructColumnAttr = (column) => {
+    const { type } = column;
+    if(type === 'dsColumn'){
+      return this.constructDsColumnAttr(column);
+    }
+  }
+  constructDsColumnAttr = (column) => {
+    // TODO 数据源会支持带入附属表，需要改动
+    const { datasourceMeta } = this.state;
+    return Object.assign({}, column, {
+      tableTitle: datasourceMeta.name,
+      fieldCode: datasourceMeta.columns[column.fieldID].fieldCode
+    });
+  }
+
+  
+  updateCol = (item, id) => {
+    const { usingColumns } = this.state;
+    const itemIdx = usingColumns.findIndex((col) => col.id === id);
+    const nextState = [...usingColumns];
+    nextState.splice(itemIdx, 1, item);
+    this.setState({
+      usingColumns: nextState
+    }, () => this.setupSortableColumnItems());
+    this.onSetCol(nextState);
+  }
+
+  renderSelectedColumnMenu = (col, id) => {
+    return (
+      <Menu>
+        <Menu.Item
+          key="0" onClick={e => {
+            const modalID = ShowModal({
+              title: '编辑列',
+              type: 'side',
+              position: 'right',
+              width: 300,
+              children: () => {
+                return (
+                  <div>
+                    <ColumnEditableItems 
+                      defaultValue = {this.constructColumnAttr(col)}
+                      onChange={(column)=>{
+                        this.updateCol(column, col.id);
+                        CloseModal(modalID);
+                      }}
+                    />
+                  </div>
+                );
+              }
+            });
+          }}
+        >
+          <span>编辑列</span>
+        </Menu.Item>
+        <Menu.Item key="1">
+          <span>编辑组件</span>
+        </Menu.Item>
+      </Menu>
+    );
+  }
 
   renderSelectedColumnEditor = () => {
     const { usingColumns, datasourceMeta } = this.state;
@@ -160,8 +220,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
           usingColumns.map((col, idx) => {
             if(!col) return null;
             // console.log(col);
-            const { name, id, title, alias, conditionStrategy, rowRenderStrategy } = col;
-            const displayName = title || name || alias;
+            const { id, title } = col;
             // const isActive = usingColumns.find((item) => item && item.id === id);
             return (
               <div 
@@ -169,27 +228,12 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
                 style={{ color: 'inherit' }}
                 key={id}
               >
-                <span
-                  onClick={e => {
-                    ShowModal({
-                      title: '编辑列',
-                      type: 'side',
-                      position: 'right',
-                      children: () => {
-                        return (
-                          <div>
-                            这里编辑列
-                          </div>
-                        );
-                      }
-                    });
-                  }}
-                >
-                  <DownOutlined 
-                    className="selection __action"
-                  />
-                  {displayName}
-                </span>
+                <Dropdown overlay={this.renderSelectedColumnMenu(col, id)} trigger={['click']}>
+                  <span className="ant-dropdown-link">
+                    <DownOutlined className="mr-2"/>
+                    {title}
+                  </span>                  
+                </Dropdown>
                 <CloseOutlined
                   className="close __action"
                   onClick={e => {
@@ -257,6 +301,9 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
             single: true,
             typeArea: ['TABLE'],
             onSubmit: ({ close, interDatasources }) => {
+              if(!Array.isArray(interDatasources) || interDatasources.length === 0){
+                return close();
+              }
               // 由于是单选的，所以只需要取 0
               const bindedDS = interDatasources[0];
 
