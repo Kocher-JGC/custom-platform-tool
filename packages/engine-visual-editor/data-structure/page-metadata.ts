@@ -7,7 +7,7 @@ export interface VarAttrType {
   /** 该属性变量的别名 */
   attr: string
   /** 变量类型 */
-  type: 'string' | 'number'
+  type: 'string' | 'number' | 'array' | 'date' | 'dateTime' | 'stringArray' | 'numberArray' | 'dateArray' | 'dateTimeArray'
 }
 
 export interface EventAttrType {
