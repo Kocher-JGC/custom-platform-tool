@@ -4,15 +4,7 @@ import lowerFirst from 'lodash/lowerFirst';
 import { VariableItem } from '@provider-app/page-designer/platform-access';
 import { ValueHelper } from '@provider-app/page-designer/components/PDInfraUI';
 import { BasicValueMeta } from '@engine/visual-editor/data-structure';
-/**
- * 数据类型的对应中文显示
- */
-export enum VarAttrTypeMap {
-  string = '字符串',
-  number = '数字',
-  date='日期',
-  dateTime='日期时间'
-}
+import { VarAttrTypeMap } from './PageVariableSelector';
 interface Props {
   platformCtx
   config: {[key: string]: BasicValueMeta}
