@@ -9,8 +9,10 @@ export const TableMeta = CreateWidgetPropItemRely({
     { alias: '选择行', type: 'onRowCheck' },
     { alias: '双击行', type: 'onRowDbClick' },
     { alias: '单击行', type: 'onRowClick' },
+    { alias: '行失焦', type: 'onRowBlur' },
     { alias: '双击单元格', type: 'onCellDbClick' },
     { alias: '单击单元格', type: 'onCellClick' },
+    { alias: '单元格失焦', type: 'onCellBlur' },
   ],
   // propEditor: 'TableEditor',
   propItemsRely: {
