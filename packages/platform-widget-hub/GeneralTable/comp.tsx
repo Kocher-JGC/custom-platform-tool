@@ -26,11 +26,17 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
   
   /** 拼接展示列 */
   getColumns = ({ columns, wordWrap, showOrderColumn }) => {
-    let result = columns || [];
+    let result = (columns || [])
+      /** 配置人员可以配置不显示字段 */
+      .filter(item=>item.show)
+      .map(item=>({
+        dataIndex: `${item.id}`,
+        ...item
+      }));
     /** 单元格内是否支持换行 */
     const getEllipsis = () => {
       if(wordWrap) return {};
-      return { ellipsis: { showTitle: true } };
+      return { ellipsis: true };
     };
     const getClassName = () => {
       /** 单元格换行 */
@@ -41,7 +47,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
     };
     const ellipsis = getEllipsis();
     const className = getClassName();
-    result = result.map(item=>({ className, ...ellipsis, ...item }));
+    result = (result || []).map(item=>({ className, ...ellipsis, ...item }));
     /** 是否显示排序号 */
     if(showOrderColumn){
       result = [
@@ -64,7 +70,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
           title,
           filter: (
             <LightFilter>
-              {columns.slice(0,maxNum).map(item=>(
+              {(columns || []).slice(0,maxNum).map(item=>(
                 <ProFormDatePicker label={item.name} key={item.id}/>
               ))}
             </LightFilter>
@@ -88,9 +94,6 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
     }
     return rowCheckType === 'no' ? {} : { rowSelection: result };
     //TODO 应用端的交互效果
-  };
-  getDataSource = () => {
-    return Array(20).fill('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx').map((item, id)=>({ id, key:id, create_user_id: item }));
   };
   getClassName = ({ titleAlign, queryType, rowCheckType, checkedRowsStyle })=>{
     /** 标题位置：只在 toolbar 只有标题时才能起作用 */
@@ -137,7 +140,6 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
       /** 选中形式 */
       checkedRowsStyle,
       ...other } = this.props || {};
-    const dataSourceTmpl = this.getDataSource();
     const rowSelection = this.getRowSelection({ rowCheckType, checkedRowsStyle });
     const columnsWithOrder = this.getColumns({ columns, showOrderColumn, wordWrap });
     const decorativeProps = this.getPropsForSearch({ title, queryType, columns });
@@ -149,7 +151,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
           className={className}
           headerTitle={title}
           columns={columnsWithOrder || []} 
-          dataSource={dataSourceTmpl} 
+          dataSource={dataSource} 
           pagination={pagination}
           options={false}
           {...rowSelection}
