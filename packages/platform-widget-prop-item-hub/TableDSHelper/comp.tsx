@@ -94,7 +94,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
     const { changeEntityState } = this.props;
     changeEntityState({
       attr: 'columns',
-      value: nextState.map(item=>({ ...item, width: item.width || 60 }))
+      value: nextState
     });
   }
 
