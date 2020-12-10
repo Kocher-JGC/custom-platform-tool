@@ -78,7 +78,8 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
         }
       } : { headerTitle: title };
     };
-    return { ...getToolbarOrTitle(), ...getSearch() };
+    // TODO 由于应用端暂不支持搜索，所以先不放开搜索框
+    return { ...getToolbarOrTitle(), ...getSearch(), search: false };
   };
   /** 获取表格选中方式 */
   getRowSelection = ({ rowCheckType, checkedRowsStyle })=>{
