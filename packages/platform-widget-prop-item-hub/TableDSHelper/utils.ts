@@ -1,3 +1,5 @@
+
+import { nanoid } from 'nanoid';
 /**
  * 模拟生成 row 数据
  */
@@ -23,17 +25,13 @@ export const genRowData = (usingColumns, rowCount = 3) => {
 /**
  * 模拟生成 row 数据
  */
-export const genRenderColumn = (usingColumns) => {
-  const resData = [];
-  const colItem = {};
-  usingColumns.forEach((col, idx) => {
-    const { name, fieldCode } = col;
-    colItem[fieldCode] = '';
-    resData.push({
-      ...col,
-      title: name,
-      dataIndex: fieldCode,
-    });
-  });
-  return resData;
+export const genRenderColumn = (usingColumn) => {
+  const { id: fieldID, name: title, tableID: dsID } = usingColumn;
+  return {
+    title, dsID, fieldID,
+    id: `field.dsColumn.${nanoid(8)}`,
+    width: '60px',
+    type: 'dsColumn',
+    show: true
+  };
 };
