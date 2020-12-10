@@ -73,33 +73,33 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
       const { name: tableName, id: tableId, code: tableCode } = item;
       return {
         tableCode, tableName, tableId, name: tableName, id: tableId,
-        children: this.constructColumnList(item.columns, { tableCode, tableName })
+        children: this.constructColumnList(item.columns, { tableId, tableName })
       };
     });
     return list;
   }
 
-  constructColumnList = (columns, { tableCode, tableName }) => {
+  constructColumnList = (columns, { tableId, tableName }) => {
     const list = columns.map(item=>{
       const { name: columnName, id: columnId, code: columnCode } = item;
-      return { id: columnId, columnName, columnId, columnCode, tableCode, tableName,  name: columnName, };
+      return { id: columnId, columnName, columnId, columnCode, tableId, tableName,  name: columnName, };
     });
     return list;
   }
   
   handleSetValue = (_r, changeArea) => {
-    const { tableCode, columnCode, tableName, columnName } = _r;
+    const { tableId, columnId, tableName, columnName } = _r;
     const { changeFields } = this.state;
     const notEmpty = Object.values(changeArea).filter(item=>!!item).length > 0;
     if(notEmpty){
       this.setState({
         changeFields: {
           ...changeFields,
-          [tableCode+'.'+columnCode]: { ...changeArea, tableName, columnName }
+          [tableId+'.'+columnId]: { ...changeArea, tableName, columnName }
         }
       });
     }else {
-      const { [tableCode+'.'+columnCode]: currentOne, ...rest } = changeFields;
+      const { [tableId+'.'+columnId]: currentOne, ...rest } = changeFields;
       this.setState({
         changeFields: rest
       });
@@ -148,11 +148,11 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
           key: 'valueConfig',
           title: '值',
           render: (_t, _r)=>{
-            const { tableCode, columnCode } = _r;
-            return columnCode ? (
+            const { tableId, columnId } = _r;
+            return columnId ? (
               <ValueHelper 
                 variableData = {variableData}
-                editedState = {changeFields[tableCode+'.'+columnCode] || {}}
+                editedState = {changeFields[tableId+'.'+columnId] || {}}
                 onChange={(changeArea)=>{
                   this.handleSetValue(_r, changeArea);
                 }}
