@@ -19,13 +19,15 @@ export interface IState {
   treeList
   treeMap
   variableData
+  unShowSystemColList: string[]
 }
 export class ChangeFields extends React.PureComponent<IProps, IState> {
   state: IState = {
     treeList: [],
     treeMap: {},
     changeFields: {},
-    variableData: {}
+    variableData: {},
+    unShowSystemColList: []
   }
   componentDidMount(){
     this.getColumnList();
@@ -46,9 +48,11 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
         }] }
       }).then((res)=>{
         const treeList = this.constructTableList(res?.result||[]);
+        const treeMap = this.constructTreeMap(treeList);
         this.setState({
           treeList,
-          treeMap: this.constructTreeMap(treeList)
+          treeMap,
+          unShowSystemColList: treeList.map(item=>item.id)
         }, () => {
           resolve();
         });
@@ -81,8 +85,8 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
 
   constructColumnList = (columns, { tableId, tableName }) => {
     const list = columns.map(item=>{
-      const { name: columnName, id: columnId, code: columnCode } = item;
-      return { id: columnId, columnName, columnId, columnCode, tableId, tableName,  name: columnName, };
+      const { name: columnName, id: columnId, code: columnCode, species } = item;
+      return { id: columnId, columnName, columnId, columnCode, tableId, tableName,  name: columnName, species };
     });
     return list;
   }
@@ -133,8 +137,18 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
     }
     return list.join('，');
   }
+
+  filterDatasource = (treeList, unShowSystemColList) => {
+    const list =  treeList.map(({ children, ...rest })=>{
+      return {
+        ...rest,
+        children: children.filter(item=>!(item.species||'').includes('SYS') || !unShowSystemColList.includes(item.tableId))
+      };
+    });
+    return list;
+  }
   render(){
-    const { treeList, changeFields, variableData } = this.state;
+    const { treeList, changeFields, variableData, unShowSystemColList } = this.state;
     return <>
       <Table
         size="small"
@@ -157,11 +171,29 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
                   this.handleSetValue(_r, changeArea);
                 }}
               />
-            ) : null;
+            ) : (
+              <Button 
+                className="float-right"
+                onClick={()=>{
+                  if(unShowSystemColList.includes(tableId)){
+                    this.setState({
+                      unShowSystemColList: unShowSystemColList.filter(item=>item!==tableId)
+                    });
+                  }else {
+                    this.setState({
+                      unShowSystemColList: [tableId, ...unShowSystemColList]
+                    });
+                  }
+                  
+                }}
+              >
+                {`${unShowSystemColList.includes(tableId) ? '显示': '隐藏'}系统字段`}
+              </Button>
+            );
           }
         }]}
         rowKey="id"
-        dataSource={treeList}
+        dataSource={this.filterDatasource(treeList, unShowSystemColList)}
         pagination={false}
       />
       <Space className="float-right" style={{ height: 52 }}>
