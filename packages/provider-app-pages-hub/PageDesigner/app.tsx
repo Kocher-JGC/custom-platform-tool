@@ -90,7 +90,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       const dsRefID = genMetaRefID('dataSource', {
         idStrategy: dsItem.id
       });
-      nextDSState[dsRefID] = dsItem;
+      nextDSState[dsRefID] = { ...dsItem, dsType: 'pageDS' };
     });
     this.changePageMetaStradegy({
       type: 'replace',
