@@ -1,5 +1,6 @@
 import React from 'react';
-import { Table as AntTable } from 'antd';
+import { ConfigProvider } from "antd";
+import zhCN from 'antd/es/locale/zh_CN';
 import ProTable, { ProColumns, TableDropdown, ActionType } from '@ant-design/pro-table';
 import { LightFilter, ProFormDatePicker } from '@ant-design/pro-form';
 import './style.scss';

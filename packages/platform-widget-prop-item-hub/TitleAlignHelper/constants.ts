@@ -1,5 +1,4 @@
-import { IOptions }from"./interface";
-export const PLACE_MENU: IOptions[] = [
+export const PLACE_MENU = [
   {
     label: "居左",
     key: "left",
