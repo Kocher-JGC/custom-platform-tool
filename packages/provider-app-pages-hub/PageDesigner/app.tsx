@@ -286,7 +286,9 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const { entity, nestingInfo } = selectedInfo;
     UpdateEntityState({ entity, nestingInfo }, nextState);
   }
-
+  getVariableData = (filter, options)=>{
+    return getVariableData(this.props, filter, options);
+  }
   /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
@@ -295,7 +297,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     genMetaRefID: genMetaRefID,
     takeMeta: this.takeMeta,
     changeWidgetType: this.changeWidgetType,
-    getVariableData: getVariableData.bind(this),
+    getVariableData: this.getVariableData,
     // changeEntityState: this.changeEntityState,
   });
 
