@@ -121,10 +121,10 @@ const getWidgetVariable = ({ varRely, flatLayoutItems, dataSource }) => {
 const getCustomedVariable = () => {
   return [];
 };
-export const getVariableData = async function (props, filter: string[] = [], options) {
-  const varRely = options ? options.varRely : props.pageMetadata.varRely;
-  const flatLayoutItems = options ? options.flatLayoutItems : props.flatLayoutItems;
-  const dataSource = props.pageMetadata.dataSource;
+export const getVariableData = async function (ctx, {filter: string[] = [], options}) {
+  const varRely = options ? options.varRely : ctx?.pageMetadata.varRely;
+  const flatLayoutItems = options ? options.flatLayoutItems : ctx?.flatLayoutItems;
+  const { dataSource } = ctx?.pageMetadata;
   const getVariable = {
     customed: getCustomedVariable,
     system: getSystemVaraible,

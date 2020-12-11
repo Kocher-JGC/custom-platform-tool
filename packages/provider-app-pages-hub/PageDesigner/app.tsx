@@ -320,9 +320,15 @@ class PageDesignerApp extends React.Component<
     const { entity, nestingInfo } = selectedInfo;
     UpdateEntityState({ entity, nestingInfo }, nextState);
   };
+
   getVariableData = (filter, options) => {
-    return getVariableData(this.props, filter, options);
+    const { pageMetadata, flatLayoutItems } = this.props;
+    return getVariableData(
+      { pageMetadata, flatLayoutItems },
+      { filter, options }
+    );
   };
+
   /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
