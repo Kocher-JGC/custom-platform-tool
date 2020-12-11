@@ -10,23 +10,16 @@ import { isRunCtx, pickSchemaMark, isSchema } from "../../IUBDSL-mark";
  * 1. 需要用到标准输入得, 不需要用到标准输入得
  * 2. 配置流程中的上下文的「流程引擎中识别」
  */
-export const changeStateAction = (conf, baseActionInfo): ActionDoFn => {
+export const APIReqAction = (conf, baseActionInfo): ActionDoFn => {
   // 更新状态动作的配置和定义
-  const { changeMapping } = conf;
-  if (changeMapping && typeof changeMapping === 'function') {
+  const { apiReqRef } = conf;
+  if (apiReqRef && typeof apiReqRef === 'function') {
     return async (ctx: RunTimeCtxToBusiness) => {
-      const { asyncDispatchOfIUBEngine, dispatchOfIUBEngine } = ctx;
-      const changeVal = await changeMapping(ctx);
-      asyncDispatchOfIUBEngine({
-        dispatch: {
-          module: DispatchModuleName.IUBStore,
-          method: DispatchMethodNameOfIUBStore.mappingUpdateState,
-          params: [changeVal]
-        }
-      });
+      const apiRes = await apiReqRef(ctx);
+      return apiRes;
     };
   }
   return async () => {
-    console.log(changeMapping);
+    console.log(apiReqRef);
   };
 };

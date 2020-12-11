@@ -1,13 +1,11 @@
-import { ActionDef, ActionCollection } from "@iub-dsl/definition/actions/action";
-import { openModelFromTable } from './sys-actions/modal/modal-show-from-table';
-import { changeStateAction, openModal } from "./sys-actions";
-import { APBDSLCURDAction } from "./business-actions";
-
+import { ActionDef, ActionCollection } from "@iub-dsl/definition";
+import { changeStateAction, openPageAction } from "./sys-actions";
 import { ActionParserRes } from "./types";
-import { pickActionMark } from "../IUBDSL-mark";
+import { pickActionMark, isAction } from "../IUBDSL-mark";
 import { RunTimeCtxToBusiness } from "../runtime/types";
-import { noopError, reSetFuncWrap } from "../utils";
+import { noopError, reSetFuncWrap, noopBind } from "../utils";
 import { defaultExtralParser } from "../IUBDSLParser";
+import { APIReqAction } from "./business-actions/API-req";
 
 /**
  * 动作集合解析器
@@ -27,18 +25,24 @@ export const actionsCollectionParser = (
    * 绑定真实处理动作的函数
    * @param actionId 动作id
    */
-  const bindAction = (actionId: string) => {
+  const bindAction = (actionId: string, plugins?) => {
+    /** 非@(action).标示 */
+    if (!isAction(actionId) && actionId !== '') {
+      return noopBind(actionId);
+    }
     /** 预留: 非actionId, 绑定时候可以做额外的判断或处理 */
     actionId = pickActionMark(actionId);
 
     /**
      * 最后一层包装函数
      */
-    return (context: RunTimeCtxToBusiness) => { 
+    return (context: RunTimeCtxToBusiness) => {
+      if (!actionId) {
+        return (IUBCtx) => { };
+      }
       let actionRunFn = actionList[actionId];
-      
       if (typeof actionRunFn !== 'function') {
-        console.error(`获取流程失败!: ${actionId}`);
+        console.error(`获取动作失败!: ${actionId}`);
         actionRunFn = noopError;
       }
       
@@ -88,11 +92,9 @@ const getActionFn = (actionConf: ActionDef) => {
     case 'changeState':
       return changeStateAction;
     case 'openPage':
-      return openModal;
-    case 'interfaceRequest':
-      return () => noopError;
-    case 'APBDSLCURD':
-      return APBDSLCURDAction;
+      return openPageAction;
+    case 'APIReq':
+      return APIReqAction;
     // case 'openModalFromTableClick':
     //   return actionParseWrapFn(actionConf, openModelFromTable);
     default:
