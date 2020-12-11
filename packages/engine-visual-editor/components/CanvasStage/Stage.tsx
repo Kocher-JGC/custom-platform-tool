@@ -106,35 +106,35 @@ class CanvasStage extends React.Component<CanvasStageProps> {
 
     // 切断原型链
     const widgetMetaCopy = { ...dragWidgetMeta };
-    let addEntityNestingInfo: ElemNestingInfo = [];
+    const addEntityNestingInfo: ElemNestingInfo = [];
 
     let addEntityIdx: number;
-    if (!dropTargetCtx) {
-      if (typeof this.lastMoveIdx === "undefined") {
-        addEntityIdx = layoutNodeInfo.length;
-      } else {
-        addEntityIdx = this.lastMoveIdx;
-      }
-      addEntityNestingInfo[0] = addEntityIdx;
+    // if (!dropTargetCtx) {
+    if (typeof this.lastMoveIdx === "undefined") {
+      addEntityIdx = layoutNodeInfo.length;
     } else {
-      const { nestingInfo, dropTargetItem } = dropTargetCtx;
-      // 如果有放的项
-      if (dropTargetItem) {
-        const { acceptChildStrategy } = dropTargetItem;
-        if (acceptChildStrategy) {
-          // TODO: 完善布局信息
-          addEntityNestingInfo = [...nestingInfo];
-          const parentID = dropTargetItem.id;
-          // 如果被放的项是可以被嵌套的，则将该组件放入父级组件中
-          if (parentID) {
-            widgetMetaCopy.parentID = parentID;
-          }
-        }
-      }
-      // if (typeof idx !== 'undefined') {
-      //   addEntityIdx = idx;
-      // }
+      addEntityIdx = this.lastMoveIdx;
     }
+    addEntityNestingInfo[0] = addEntityIdx;
+    // } else {
+    // const { nestingInfo, dropTargetItem } = dropTargetCtx;
+    // 如果有放的项
+    // if (dropTargetItem) {
+    //   const { acceptChildStrategy } = dropTargetItem;
+    //   if (acceptChildStrategy) {
+    //     // TODO: 完善布局信息
+    //     addEntityNestingInfo = [...nestingInfo];
+    //     const parentID = dropTargetItem.id;
+    //     // 如果被放的项是可以被嵌套的，则将该组件放入父级组件中
+    //     if (parentID) {
+    //       widgetMetaCopy.parentID = parentID;
+    //     }
+    //   }
+    // }
+    // if (typeof idx !== 'undefined') {
+    //   addEntityIdx = idx;
+    // }
+    // }
 
     /** 是否已经实例化的组件 */
     const isMotify = widgetMetaCopy._state === "active";
