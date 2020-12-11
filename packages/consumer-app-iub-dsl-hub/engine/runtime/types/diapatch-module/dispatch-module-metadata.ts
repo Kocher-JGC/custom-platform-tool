@@ -12,5 +12,6 @@ export const enum DispatchMethodNameOfMetadata {
   getFieldKeyInfo = 'getFieldKeyInfo',
   getMetaFieldKey = 'getMetaFieldKey',
   getMetaFromMark = 'getMetaFromMark',
-  fieldDataMapToFieldMarkData = 'fieldDataMapToFieldMarkData'
+  fieldDataMapToFieldMarkData = 'fieldDataMapToFieldMarkData',
+  findRefRelation = 'findRefRelation'
 }

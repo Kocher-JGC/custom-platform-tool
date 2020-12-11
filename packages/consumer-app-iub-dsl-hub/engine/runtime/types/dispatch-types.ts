@@ -9,6 +9,7 @@ import {
   DispatchModuleMetadata, TDispatchMethodNameOfDatasourceMeta
 } from ".";
 import { BaseActionInfo } from "../../actions-manage/types";
+import { PageManageInstance } from "../../page-manage";
 
 export interface DispatchCtxOfIUBEngine {
   actionInfo?: BaseActionInfo;
@@ -21,6 +22,10 @@ export interface RunTimeCtxToBusiness {
   pageStatus: string;
   action?: any;
   pageManage: PageManageInstance;
+  requestHandler: any;
+
+  PageRenderer: React.FC<{ pageId: string }>
+
   asyncDispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => Promise<any>;
   dispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => any
 }

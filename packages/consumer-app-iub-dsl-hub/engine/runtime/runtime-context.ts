@@ -16,7 +16,6 @@ import {
 import { whenHandle } from '../condition-engine/when-handle';
 import { GRCtx } from './types/runtime-context';
 import { useEventProps } from '../event-manage';
-import { error } from 'console';
 
 const useUU = (setListConf: any[] = []) => {
   const [prop, setProp] = useCacheState({});
@@ -27,25 +26,6 @@ const useUU = (setListConf: any[] = []) => {
     }, deps);
   });
   return prop;
-};
-
-const APBDSLrequest = (url) => async (ctx: RunTimeCtxToBusiness, reqParam, search) => {
-  const APBDSLRes = await originReq(url, reqParam);
-  if (APBDSLRes) {
-    if (!search) {
-      notification.success({
-        message: '请求成功!',
-      });
-    }
-    const action = {
-      action: {
-        type: 'APBDSLRes',
-        payload: APBDSLRes
-      }
-    };
-    return action;
-  }
-  return {};
 };
 
 const getDispatchMethod = (
@@ -74,7 +54,6 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     /************* */
     findEquMetadata,
     getFlowItemInfo,
-    datasourceMetaEntity,
     flowsRun,
   } = dslParseRes;
   console.log('//___genRuntimeCtxFn___\\\\');
@@ -106,7 +85,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
       string: () => {},
     },
     metadata: {
-      ...datasourceMetaEntity,
+      ...interMetaEntity,
     },
     relationship: {
       findEquMetadata,
@@ -125,7 +104,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
       string: () => {},
     },
     metadata: {
-      ...datasourceMetaEntity,
+      ...interMetaEntity,
     },
     relationship: {
       findEquMetadata,
@@ -144,13 +123,16 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     },
   };
 
+  /**
+   * TODO: 将解析的bing 和 dispath 合并
+   */
   /** 异步运行时调度中心 */
-  const asyncDispatchOfIUBEngine = async (ctx: DispatchCtxOfIUBEngine) => {
-    const { actionInfo, dispatch } = ctx;
+  const asyncDispatchOfIUBEngine = async (IUBCtx: DispatchCtxOfIUBEngine) => {
+    const { actionInfo, dispatch } = IUBCtx;
     const { module, method, params } = dispatch;
 
-    // console.log(ctx);
-    // console.count('-----asyncDispatchOfIUBEngine----');
+    // console.log(IUBCtx);
+    console.count('-----asyncDispatchOfIUBEngine----');
 
     /** 获取实际运行的函数 */
     const dispatchMethod = getDispatchMethod(dispatch, asyncRuntimeContext);
@@ -161,7 +143,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     }
 
     /** 生成副作用信息 */
-    // const shouldUseEffect = effectAnalysis(runTimeCtxToBusiness.current, ctx);
+    // const shouldUseEffect = effectAnalysis(runTimeCtxToBusiness.current, IUBCtx);
     // 临时代码
     // shouldUseEffect();
 
@@ -252,21 +234,12 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     });
     const propp = useUU(list);
 
-    return useMemo(() => {
-      return {
-        ...propp
-      };
-    }, [
-      propp,
-    ]);
+    return useMemo(() => ({ ...propp }), [propp]);
   };
 
   /** 更新在事件运行中使用的上下文 */
   runTimeCtxToBusiness.current = {
-    pageId: runTimeCtxToBusiness.current.pageId,
-    pageMark: runTimeCtxToBusiness.current.pageMark,
-    pageManage: runTimeCtxToBusiness.current.pageManage,
-    pageStatus: runTimeCtxToBusiness.current.pageStatus,
+    ...omitUseRef(runTimeCtxToBusiness),
     asyncDispatchOfIUBEngine,
     dispatchOfIUBEngine
   };
@@ -285,4 +258,16 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     useEventProps: acturlUseEventProps,
     runTimeCtxToBusiness
   };
+};
+
+type OmitRTimeCtxType = Omit<RunTimeCtxToBusiness, 'action' | 'dispatchOfIUBEngine' | 'asyncDispatchOfIUBEngine'> 
+const omitKeys = ['asyncDispatchOfIUBEngine', 'dispatchOfIUBEngine', 'action'];
+const omitUseRef = (obj: React.MutableRefObject<RunTimeCtxToBusiness>): OmitRTimeCtxType=> {
+  const keys = Object.keys(obj.current);
+  return keys.reduce((res, key) => {
+    if (!omitKeys.includes(key)) {
+      res[key] = obj.current[key];
+    }
+    return res;
+  }, {} as OmitRTimeCtxType);
 };
