@@ -11,7 +11,14 @@ import { refIdOfCondition } from '../../hub';
 
 /** 打开类型「model/page/_blank」 */
 export const enum OpenType {
-  modal = 'modal',
+  /** 模态框 */
+  openModal = 'openModal',
+  /** 替换当前页 */
+  replaceCurrentPage = 'replaceCurrentPage',
+  /** 应用内tab页 */
+  newTabInApp = 'newTabInApp',
+  /** 浏览器内tab */
+  newTabInBrowser = 'newTabInBrowser'
 }
 /** 打开的页面类型 */
 export const enum PageType {

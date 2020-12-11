@@ -22,8 +22,9 @@ export const enum FuncCodeOfAPB {
  * 基础得APBDSL定义
  */
 export interface BaseAPBDef {
+  stepsId: string;
   funcCode: FuncCodeOfAPB;
-  table: string;
+  // table: string;
 }
 
 /**

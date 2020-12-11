@@ -2,7 +2,7 @@
  * 读取的定义比较复杂, 单独文件
  */
 import { refIdOfCondition } from '@iub-dsl/definition';
-import { FuncCodeOfAPB } from "../api-req-of-APB";
+import { FuncCodeOfAPB, BaseAPBDef } from "../api-req-of-APB";
 
 /**
  * 读取的公共部分信息
@@ -13,6 +13,12 @@ export interface ReadBaseInfo extends ReadPageInfo {
   fields?: {
     field: string | CountFn;
     alias: string;
+  }[];
+  readField?: {
+    alias: string;
+    field: string;
+    fieldId: string;
+    tableId: string;
   }[];
   condition?: refIdOfCondition;
   sort?: { [str: string]: 'desc' | 'asc'; };
@@ -25,14 +31,14 @@ export interface ReadBaseInfo extends ReadPageInfo {
 /**
  * 读取功能的定义
  */
-export interface ReadDef extends ReadRefObjDef {
+export interface ReadDef extends ReadRefObjDef, BaseAPBDef {
   funcCode: FuncCodeOfAPB.R;
 }
 
 /**
  * 读取参照物的定义
  */
-interface ReadRefObjDef {
+export interface ReadRefObjDef {
   readList: {
     [str: string]: ReadBaseInfo
   },
@@ -100,29 +106,29 @@ const enum CountFn {
 /**
  * 配置生成的数据
  */
-const mockRead: ReadDef = {
-  funcCode: FuncCodeOfAPB.R,
-  readList: {},
-  readDef: {
-    readRef: 'assets', // 资产主表
-    joins: [
-      {
-        readDef: {
-          readRef: 'assets_attrs', // 附属1.设备属性
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'assets_chain_info', // 附属2.通道
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-    ]
-  },
-};
+// const mockRead: ReadDef = {
+//   funcCode: FuncCodeOfAPB.R,
+//   readList: {},
+//   readDef: {
+//     readRef: 'assets', // 资产主表
+//     joins: [
+//       {
+//         readDef: {
+//           readRef: 'assets_attrs', // 附属1.设备属性
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'assets_chain_info', // 附属2.通道
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//     ]
+//   },
+// };
 
 /**
  * 1. 在转换的时候 「readDef/joinsType/readDef」为一个整体
@@ -136,111 +142,111 @@ const mockRead: ReadDef = {
  *  (资产 on (部门 on 视频设备类) on 设备 on 设备 on 区域 on 区域 on 区域 on 库存状态) on ( 设备属性 on 父设备 on 生产 ) on ( 通道 on 通道类型 )
  *  默认: (资产 on 设备属性 on 通道)「? 设备大类 = 视频设备类」
  */
-const actualRead: ReadDef = {
-  funcCode: FuncCodeOfAPB.R,
-  readList: {},
-  readDef: {
-    readRef: 'assets', // 资产主表
-    joins: [
-      {
-        /** 字段引用关系又生成一级 */
-        readDef: {
-          readRef: 'department',// 部门
-          joins: [
-            {
-              readDef: {
-                readRef: 'location_type',
-              },
-              joinsType: JoinsType.leftJoin,
-              joinsCond: '',
-            }
-          ]
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'device', // 设备大类
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'device', // 设备小类
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'location', // 建筑物
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'location', // 楼层
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'location', // 区域
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'stock_status', // 库存状态
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'assets_attrs', // 附属1.设备属性
-          joins: [
-            {
-              readDef: {
-                readRef: 'device', // 父设备
-              },
-              joinsType: JoinsType.leftJoin,
-              joinsCond: '',
-            },
-            {
-              readDef: {
-                readRef: 'dict_shengchanchangshang', // 生产厂商字典
-              },
-              joinsType: JoinsType.leftJoin,
-              joinsCond: '',
-            }
-          ]
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-      {
-        readDef: {
-          readRef: 'assets_chain_info', // 附属2.通道
-          joins: [
-            {
-              readDef: {
-                readRef: 'dict_tongdaoleixing', // 通道类型字典
-              },
-              joinsType: JoinsType.leftJoin,
-              joinsCond: '',
-            }
-          ],
-        },
-        joinsType: JoinsType.leftJoin,
-        joinsCond: '',
-      },
-    ]
-  },
-};
+// const actualRead: ReadDef = {
+//   funcCode: FuncCodeOfAPB.R,
+//   readList: {},
+//   readDef: {
+//     readRef: 'assets', // 资产主表
+//     joins: [
+//       {
+//         /** 字段引用关系又生成一级 */
+//         readDef: {
+//           readRef: 'department',// 部门
+//           joins: [
+//             {
+//               readDef: {
+//                 readRef: 'location_type',
+//               },
+//               joinsType: JoinsType.leftJoin,
+//               joinsCond: '',
+//             }
+//           ]
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'device', // 设备大类
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'device', // 设备小类
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'location', // 建筑物
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'location', // 楼层
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'location', // 区域
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'stock_status', // 库存状态
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'assets_attrs', // 附属1.设备属性
+//           joins: [
+//             {
+//               readDef: {
+//                 readRef: 'device', // 父设备
+//               },
+//               joinsType: JoinsType.leftJoin,
+//               joinsCond: '',
+//             },
+//             {
+//               readDef: {
+//                 readRef: 'dict_shengchanchangshang', // 生产厂商字典
+//               },
+//               joinsType: JoinsType.leftJoin,
+//               joinsCond: '',
+//             }
+//           ]
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//       {
+//         readDef: {
+//           readRef: 'assets_chain_info', // 附属2.通道
+//           joins: [
+//             {
+//               readDef: {
+//                 readRef: 'dict_tongdaoleixing', // 通道类型字典
+//               },
+//               joinsType: JoinsType.leftJoin,
+//               joinsCond: '',
+//             }
+//           ],
+//         },
+//         joinsType: JoinsType.leftJoin,
+//         joinsCond: '',
+//       },
+//     ]
+//   },
+// };
 
