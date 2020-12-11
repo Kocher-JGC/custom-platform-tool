@@ -87,6 +87,7 @@ export class TableDSHelperComp extends React.Component<
     });
     return dsMeta;
   };
+
   ColIndexInUsingColumns = (col) => {
     const { id: fieldID, dsID } = col;
     const { usingColumns } = this.state;
@@ -98,6 +99,7 @@ export class TableDSHelperComp extends React.Component<
       );
     });
   };
+
   setCol = (item) => {
     const { usingColumns } = this.state;
     const myIndexInUsingColumns = this.ColIndexInUsingColumns(item);
@@ -163,7 +165,7 @@ export class TableDSHelperComp extends React.Component<
                               }`}
                               key={id}
                             >
-                              {tableTitle + "." + name}
+                              {`${tableTitle}.${name}`}
                             </div>
                           );
                         })}
