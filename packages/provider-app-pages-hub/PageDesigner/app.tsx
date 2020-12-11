@@ -32,7 +32,7 @@ import {
   PlatformContext,
   genMetaRefID,
   genMetaIDStrategy,
-  getVariableData,
+  getVariableDataTool,
 } from "./utils";
 
 import "./style";
@@ -323,7 +323,7 @@ class PageDesignerApp extends React.Component<
 
   getVariableData = (filter, options) => {
     const { pageMetadata, flatLayoutItems } = this.props;
-    return getVariableData(
+    return getVariableDataTool(
       { pageMetadata, flatLayoutItems },
       { filter, options }
     );

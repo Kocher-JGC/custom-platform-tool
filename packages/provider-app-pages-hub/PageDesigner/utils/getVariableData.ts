@@ -152,7 +152,7 @@ const getWidgetVariable: GetWidgetVariable = ({ varRely, flatLayoutItems, dataSo
 const getCustomedVariable = () => {
   return [];
 };
-export const getVariableData: GetVariableData = async (ctx, { options, filter = [] }) => {
+export const getVariableDataTool: GetVariableData = async (ctx, { options, filter = [] }) => {
   const varRely = options ? options.varRely : ctx?.pageMetadata.varRely;
   const flatLayoutItems = options ? options.flatLayoutItems : ctx?.flatLayoutItems;
   const { dataSource } = ctx?.pageMetadata;
