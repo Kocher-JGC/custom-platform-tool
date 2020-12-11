@@ -1,28 +1,29 @@
 /**
  * DropStageContainer
  */
-import React from 'react';
-import { useDrop } from 'react-dnd';
-import classnames from 'classnames';
+import React from "react";
+import { useDrop } from "react-dnd";
+import classnames from "classnames";
 import {
-  DragableItemType, DropCollectType,
-} from '@engine/visual-editor/data-structure';
-import { Call } from '@mini-code/base-func';
+  DragableItemType,
+  DropCollectType,
+} from "@engine/visual-editor/data-structure";
+import { Call } from "@mini-code/base-func";
 
 /**
  * 中央舞台组件的 props
  */
 export interface DropStageProps {
-  onItemDrop
-  onLeave?: (dragItem: DragableItemType) => void
-  onEnter?: (dragItem: DragableItemType) => void
+  onItemDrop;
+  onLeave?: (dragItem: DragableItemType) => void;
+  onEnter?: (dragItem: DragableItemType) => void;
   /** 触发 onEnter 和 onLeave 的条件 */
-  triggerCondition?: (dragItem: DragableItemType) => boolean
-  onStageClick?: () => void
-  style
-  className?
-  accept
-  children
+  triggerCondition?: (dragItem: DragableItemType) => boolean;
+  onStageClick?: () => void;
+  style;
+  className?;
+  accept: string[];
+  children;
 }
 
 /**
@@ -69,11 +70,11 @@ const DropStageContainer: React.FC<DropStageProps> = ({
       }
     }
   };
-  const [{
-    isOver,
-    isOverCurrent,
-    canDrop
-  }, drop] = useDrop<DragableItemType, void, DropCollectType>({
+  const [{ isOver, isOverCurrent, canDrop }, drop] = useDrop<
+    DragableItemType,
+    void,
+    DropCollectType
+  >({
     accept,
     drop: (dropOptions) => {
       const { dragableWidgetType, type } = dropOptions;
@@ -109,16 +110,16 @@ const DropStageContainer: React.FC<DropStageProps> = ({
 
   const stageClasses = classnames([
     className,
-    'canvas-stage',
-    'renderer',
-    isOver && 'overing'
+    "canvas-stage",
+    "renderer",
+    isOver && "overing",
   ]);
 
   return (
     <div
       ref={drop}
       onClick={(e) => {
-        onStageClick && onStageClick();
+        onStageClick?.();
       }}
       className={stageClasses}
       style={style}

@@ -12,7 +12,7 @@
     display: none;
     .action-btn {
       display: inline-block;
-      background-color: #FFF;
+      background-color: #fff;
       text-align: center;
       height: 40px;
       width: 40px;
@@ -49,7 +49,7 @@
         padding: 5px 20px;
         background-color: #fafafa;
         width: 47%;
-        border: 1px solid #EEE;
+        border: 1px solid #eee;
       }
     }
   }
@@ -57,7 +57,7 @@
 
 .comp-renderer {
   padding: 10px;
-  background-color: #FFF;
+  background-color: #fff;
   // pointer-events: none;
   .form-title {
     margin-bottom: 10px;
@@ -84,10 +84,15 @@
     position: relative;
     padding: 0.1px;
     &.overing {
-      box-shadow: 0 0 1px 1px rgba(30,89,251, 0.5);
+      box-shadow: 0 0 1px 1px rgba(30, 89, 251, 0.5);
+    }
+    &.isDragging {
+      .comp-renderer {
+        background-color: #d7f0ff;
+      }
     }
   }
-  >.state-mark {
+  > .state-mark {
     z-index: 0;
   }
   &:hover {
@@ -95,8 +100,8 @@
     z-index: 2;
   }
   &.selected {
-    box-shadow: 0 0 3px rgba(#376BFB, 1);
-    >.drag-item >.action-area {
+    box-shadow: 0 0 3px rgba(#376bfb, 1);
+    > .drag-item > .action-area {
       display: block;
     }
     z-index: 3;
@@ -104,7 +109,8 @@
 }
 
 /** 页面设置弹窗 */
-.page-config-container .page-action-selector, .page-action-submit-data {
+.page-config-container .page-action-selector,
+.page-action-submit-data {
   .search-area {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;

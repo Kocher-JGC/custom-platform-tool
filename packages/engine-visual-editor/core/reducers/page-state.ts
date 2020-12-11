@@ -74,7 +74,7 @@ export function pageMetadataReducer(
       });
     case DEL_ENTITY:
       return produce(state, (draft) => {
-        const { idx, entity: delE } = action;
+        const { entity: delE } = action;
         const { id: delEntityID } = delE;
 
         // 删除变量
@@ -99,7 +99,8 @@ export function pageMetadataReducer(
           if(relyID) draft._rely[metaID].push(relyID);
         };
         const { changeDatas } = action;
-        for (const changeData of changeDatas) {
+        for (let i = 0; i < changeDatas.length; i++) {
+          const changeData = changeDatas[i];
           // .forEach((changeData) => {
 
           /**

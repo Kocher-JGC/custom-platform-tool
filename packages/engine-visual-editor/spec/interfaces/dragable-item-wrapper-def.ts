@@ -12,7 +12,7 @@ import { WidgetEntity, WidgetEntityState } from '../../data-structure';
  * DnD 的回调的 context
  */
 export interface DnDContext {
-  idx: number
+  nestingInfo: ElemNestingInfo
   dropTargetItem: WidgetEntity
 }
 
@@ -20,7 +20,7 @@ export type DragItemConfig = any;
 
 export type OnItemDrop = (dragItem, dndContext: DnDContext) => void
 export type OnItemDrag = (dragItem, dndContext: DnDContext) => void
-export type DragItemMove = (dragIndex: number, hoverIndex: number, compClass: any) => void
+export type DragItemMove = (dragIndex: ElemNestingInfo, hoverIndex: ElemNestingInfo, compClass: any) => void
 export type CancelDrag = (originalIndex: number) => void
 
 export interface GetStateContext {
@@ -41,8 +41,8 @@ interface ActionCtx {
 export type GetEntityProps = (ctx: GetStateContext) => WidgetEntityState | undefined
 export type GetSelectedState = (ctx: GetStateContext) => boolean
 export type GetLayoutNode = (ctx: GetStateContext) => WidgetEntity
-export type WrapperItemClickEvent = (event, actionCtx: ActionCtx) => void
-export type WrapperItemDeleteEvent = (event, actionCtx: ActionCtx) => void
+export type WrapperItemClickEvent = (actionCtx: ActionCtx) => void
+export type WrapperItemDeleteEvent = (actionCtx: ActionCtx) => void
 
 /**
  * 可拖拽元素的 actions

@@ -1,5 +1,6 @@
 /// //////////////// 拖拽 ///////////////////
 
+import { ElemNestingInfo } from "@engine/layout-renderer";
 import { EditableWidgetMeta } from "./widget";
 
 /**
@@ -7,7 +8,7 @@ import { EditableWidgetMeta } from "./widget";
  */
 export interface BasicDragableItemType {
   /** 用于临时记录拖拽时的位置，被拖拽时动态赋值的 */
-  index?: number
+  nestingInfo?: ElemNestingInfo
   /** 可拖拽的项的类型 */
   type: string
   /** 拖拽带的 item 参数 */
