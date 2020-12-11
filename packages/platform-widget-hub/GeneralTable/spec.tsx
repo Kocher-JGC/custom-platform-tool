@@ -32,11 +32,11 @@ import { GeneralTableComp } from '.';
   },
 })
 export class NormalTable implements PlatformWidgetComp {
-  render(widgetState: WidgetEntityState) {
+  render(widgetState: WidgetEntityState, eventsHandler) {
     // console.log('NormalTable.widgetState', widgetState);
 
     return (
-      <GeneralTableComp {...widgetState} />
+      <GeneralTableComp {...widgetState} eventsHandler={eventsHandler} />
     );
   }
 }
