@@ -1,6 +1,5 @@
 
-import { DATATYPE } from '@provider-app/table-editor/constants'
-;
+import { DATATYPE } from '@provider-app/table-editor/constants';
 
 type BasicVarItem = {title: string, code: string, varType: string, id: string}
 type PageVarItem = BasicVarItem & {type: 'page'}
