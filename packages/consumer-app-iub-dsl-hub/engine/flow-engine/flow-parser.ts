@@ -31,6 +31,8 @@ export const flowParser = (flows: FlowCollection) => {
     /**
      * 最后一层包装函数
      * 优化: 惰性函数储存
+     * 1. 若绑定时候解析, 则调用的是未解析完整的「需要支持, 运行:解析并运行」
+     * 2. 目前: 在一个地方, 统一额外解析
      */
     const flowFn = (context: RunTimeCtxToBusiness) => {
       /** 外部会对运行函数进行修改, 惰性赋值 */

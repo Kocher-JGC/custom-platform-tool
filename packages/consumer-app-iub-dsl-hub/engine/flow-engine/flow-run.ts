@@ -14,10 +14,10 @@ export const flowOutRunWrap = (
     /** 条件过滤流程出口的处理 */
     const runflowOutFns: any[] = [];
     const filterFlowOut = async (cond: any[], idx: number) => {
-      const onceCondFn = cond[idx];
-      if (await onceCondFn(context)) {
-        runflowOutFns.push(flowOutFns[idx]);
-      }
+      // const onceCondFn = cond[idx];
+      // if (await onceCondFn(context)) {
+      runflowOutFns.push(flowOutFns[idx]);
+      // }
       if (idx < flowOutNum - 1) {
         await filterFlowOut(cond, idx + 1);
       }
