@@ -9,12 +9,11 @@ import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 import { effectRelationship as genEffectRelationship } from './relationship';
 import { RunTimeCtxToBusiness } from './runtime/types';
 import { widgetRenderer } from "./widget-manage";
-
+  
 /**
  * 要提供一种注册机制, 动态注册上下文内容
  */
-
-const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
+const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler, PageRenderer }) => {
   const {
     schemaParseRes,
     getWidgetParseInfo,
@@ -27,10 +26,12 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
 
   /** 页面运行时上下文 */
   const runTimeCtxToBusiness = useRef<RunTimeCtxToBusiness>({
+    PageRenderer,
     pageStatus,
     pageId,
     pageMark: '',
     action: {},
+    requestHandler,
     pageManage: pageManageInstance,
     asyncDispatchOfIUBEngine: async (dispatchCtx) => false,
     dispatchOfIUBEngine: (dispatchCtx) => false
