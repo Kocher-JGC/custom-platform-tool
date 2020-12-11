@@ -18,8 +18,8 @@
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap",
     "start:all": "lerna run --parallel --stream start",
-    "start:consumer-app": "yarn && cd ./packages/consumer-app/web-client && npm start",
-    "start:provider-app": "yarn && cd ./packages/provider-app/provider-app-entry && npm start",
+    "start:consumer-app": "sh ./scripts/start-consumer-app.sh",
+    "start:provider-app": "sh ./scripts/start-provider-app.sh",
     "start:platform-web-server": "sh ./scripts/start-platform-web-server.sh",
     "start:debug:platform-web-server": "sh ./scripts/debug-platform-web-server.sh",
     "start:website-doc": "cd ./_website-doc && npm run start",

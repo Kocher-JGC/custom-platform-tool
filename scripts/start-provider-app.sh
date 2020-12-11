@@ -3,8 +3,8 @@ pwd=$PWD
 
 source_dir=$pwd/packages/provider-app/provider-app-entry
 
+cd $source_dir
 yarn && yarn start
 
 # 构建 web 服务
-# cd $source_dir/web-server
 # yarn && npm start
