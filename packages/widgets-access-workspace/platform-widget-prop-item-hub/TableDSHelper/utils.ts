@@ -1,19 +1,20 @@
 
 import { nanoid } from 'nanoid';
+import { DATATYPE } from '@provider-app/table-editor/constants';
 /**
  * 模拟生成 row 数据
  */
 export const genRowData = (usingColumns, rowCount = 3) => {
-  const resData = [];
+  const resData:{[key:string]: string|number}[] = [];
   [...Array(rowCount)].forEach((_, _idx) => {
-    const rowItem = {};
+    const rowItem:{[key:string]: string|number} = {};
     usingColumns.forEach((col, idx) => {
       // const { id, name, fieldCode } = col;
-      for (const colKey in col) {
+      Object.keys(col).forEach(colKey=>{
         if (Object.prototype.hasOwnProperty.call(col, colKey)) {
           rowItem[colKey] = '';
         }
-      }
+      });
       rowItem.id = _idx;
     });
     resData.push(rowItem);
@@ -22,16 +23,21 @@ export const genRowData = (usingColumns, rowCount = 3) => {
 };
 
 
+export const isReferenceField = (dataType) => {
+  return [DATATYPE.DICT, DATATYPE.FK, DATATYPE.QUOTE].includes(dataType);
+};
 /**
  * 模拟生成 row 数据
  */
 export const genRenderColumn = (usingColumn) => {
-  const { id: fieldID, name: title, tableID: dsID, dataType } = usingColumn;
+  const { id: fieldID, name: title, tableID: dsID, colDataType } = usingColumn;
+  const id = `field.dsColumn.${nanoid(8)}`;
   return {
     title, dsID, fieldID,
-    id: `field.dsColumn.${nanoid(8)}`,
+    id, dataIndex: id,
     width: '60px',
     type: 'dsColumn',
+    fieldShowType: isReferenceField(colDataType) ? 'showVal' : 'realVal',
     show: true
   };
 };
