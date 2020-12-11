@@ -11,12 +11,14 @@ import { FormButtonComp } from '.';
   },
 })
 export class FormButton implements PlatformWidgetComp {
-  render(widgetState: WidgetEntityState) {
+  render(widgetState: WidgetEntityState, eventHandle = {}) {
     const { title } = widgetState;
+    const { onClick } = eventHandle;
     return (
       <FormButtonComp
         text={title}
         onClick={() => {
+          onClick?.();
           console.log('click');
         }}
       />
