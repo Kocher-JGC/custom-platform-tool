@@ -6,7 +6,7 @@ export const TypeofMetaChangerReplace = 'replace';
 export const TypeofMetaChangerUpdate = 'update';
 export const TypeofMetaChangerUpdateBatch = 'update/batch';
 export const TypeofMetaChangerRM = 'rm';
-export const TypeofMetaChangerRMAdd = 'create/rm';
+export const TypeofMetaChangerRMAdd = 'create&rm';
 // }
 
 export interface CreateMeta<D> {

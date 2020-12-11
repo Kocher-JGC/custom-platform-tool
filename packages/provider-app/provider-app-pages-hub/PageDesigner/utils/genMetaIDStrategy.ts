@@ -26,7 +26,7 @@ export const genMetaIDStrategy = (
 
     const nextItem = { ...optItem };
 
-    if(optItem.type === 'create' || optItem.type === 'create/rm') {
+    if(optItem.type === 'create' || optItem.type === 'create&rm') {
       /** 如果是新增 meta */
       const { metaID, data, relyID } = optItem;
       let newMetaID = metaID;
