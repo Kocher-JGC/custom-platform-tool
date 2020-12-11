@@ -7,7 +7,6 @@ import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-
 import { useCacheState } from '../utils';
 import { APBDSLrequest as originReq } from '../utils/apb-dsl';
 import { conditionEngine } from '../condition-engine/condition-engine';
-import { APBDSLCondControlResHandle, getAPBDSLCondOperatorHandle } from '../actions-manage/business-actions/APBDSL';
 import { transMarkValFromArr, validTransMarkValFromArr } from './utils/transform-mark-value';
 import {
   DispatchCtxOfIUBEngine, Dispatch,
@@ -156,8 +155,6 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
         runTimeCtxToBusiness.current,
         params[0], {
           expsValueHandle,
-          condControlResHandle: APBDSLCondControlResHandle,
-          getOperatorHandle: getAPBDSLCondOperatorHandle
         }
       );
     }
