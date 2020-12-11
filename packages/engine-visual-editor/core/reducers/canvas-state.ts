@@ -39,11 +39,11 @@ export function selectedInfoReducer(
       return defaultSelectedEntities;
     case ADD_ENTITY:
     case SELECT_ENTITY:
-      const { entity, idx, nestingInfo } = action;
+      const { entity, nestingInfo } = action;
       const entityID = entity.id;
       return {
-        nestingInfo: nestingInfo || [idx],
-        index: idx,
+        // entity,
+        nestingInfo,
         id: entityID,
       };
     default:

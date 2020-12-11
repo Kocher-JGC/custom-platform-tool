@@ -1,23 +1,28 @@
 module.exports = {
-  "extends": [
+  extends: [
     "plugin:@typescript-eslint/recommended",
     "react-app",
+    "airbnb-base",
     "prettier",
   ],
-  "plugins": [
-    "react", "@typescript-eslint"
+  plugins: [
+    "react",
+    "@typescript-eslint"
   ],
-  "rules": {
-    "@typescript-eslint/indent": ["error", 2],
+  rules: {
+    "@typescript-eslint/indent": 0,
     // "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/explicit-member-accessibility": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-empty-function": 0,
     "@typescript-eslint/no-unused-vars": 1,
-    "indent": ["error", 2, {
-      "SwitchCase": 1
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "no-use-before-define": "off",
+    indent: ["error", 2, {
+      SwitchCase: 1
     }],
-    "semi": ["error", "always"],
+    semi: ["error", "always"],
+    "no-unused-vars": 0,
     "linebreak-style": 0,
     "import/prefer-default-export": 0,
     "no-underscore-dangle": 0,
@@ -34,7 +39,7 @@ module.exports = {
     "guard-for-in": 0,
     "comma-dangle": 0,
     "global-require": 0,
-    "quotes": 0,
+    quotes: 0,
     "no-return-await": 0,
     "max-classes-per-file": 0,
     "object-curly-spacing": ["error", "always"],
@@ -52,15 +57,15 @@ module.exports = {
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx", "tsx", "ts"]
+        extensions: [".js", ".jsx", "tsx", "ts"]
       }
     ]
   },
-  "settings": {
+  settings: {
     "import/resolver": {
-      "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx"],
-        "moduleDirectory": [
+      node: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+        moduleDirectory: [
           "node_modules",
           "packages/*"
         ]

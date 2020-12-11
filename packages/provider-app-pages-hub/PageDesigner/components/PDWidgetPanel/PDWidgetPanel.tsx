@@ -2,51 +2,52 @@
  * 左边的组件面板
  */
 
-import React from 'react';
-import { ComponentPanelProps } from '@engine/visual-editor/components/WidgetPanel';
-import DragItemComp from '@engine/visual-editor/spec/DragItemComp';
-import { DragableItemTypes } from '@engine/visual-editor/spec';
-import { Tab, Tabs } from '@infra/ui';
-import { GroupItemsRender, ItemRendererType } from '@engine/visual-editor/components/GroupPanel';
-import { LoadingTip } from '@provider-ui/loading-tip';
-import { PageMetadata } from '@engine/visual-editor/data-structure';
-import { getWidgetMetadata } from '@platform-widget-access/loader';
+import React from "react";
+import { ComponentPanelProps } from "@engine/visual-editor/components/WidgetPanel";
+import DragItemComp from "@engine/visual-editor/spec/DragItemComp";
+import { Tab, Tabs } from "@infra/ui";
+import {
+  GroupItemsRender,
+  ItemRendererType,
+} from "@engine/visual-editor/components/GroupPanel";
+import { LoadingTip } from "@provider-ui/loading-tip";
+import { PageMetadata } from "@engine/visual-editor/data-structure";
+import { getWidgetMetadata } from "@platform-widget-access/loader";
 
-import { DataSourceDragItem } from '../PDDataSource';
-import { useWidgetMeta, useWidgetPanelData } from '../../utils';
-import { DataSourceTitle } from './DataSourceTitle';
-import { groupWidget } from './group-shape';
+import { DataSourceDragItem } from "../PDDataSource";
+import { useWidgetMeta, useWidgetPanelData } from "../../utils";
+import { DataSourceTitle } from "./DataSourceTitle";
+import { groupWidget } from "./group-shape";
+import { PDDragableItemTypes } from "../../const";
 
 export interface PageDesignerComponentPanelProps {
-  pageMetadata: PageMetadata
-  onUpdatedDatasource
-  getDragItemConfig?: ComponentPanelProps['getDragItemConfig']
+  pageMetadata: PageMetadata;
+  onUpdatedDatasource;
+  getDragItemConfig?: ComponentPanelProps["getDragItemConfig"];
 }
 
 /**
  * 左边组件面板的组件工厂函数
- * @param getDragItemConfig 
+ * @param getDragItemConfig
  */
-const itemRendererFac = (
-  getDragItemConfig
-): ItemRendererType => (widgetRef, groupType) => {
+const itemRendererFac = (getDragItemConfig): ItemRendererType => (
+  widgetRef,
+  groupType
+) => {
   const [ready, widgetMeta] = useWidgetMeta(widgetRef);
   if (!ready) return null;
   if (!widgetMeta) {
-    return (
-      <div className="t_red">widget 未定义</div>
-    );
+    return <div className="t_red">widget 未定义</div>;
   }
-  const {
-    label
-  } = widgetMeta;
+  const { label } = widgetMeta;
   switch (groupType) {
-    case 'dragableItems':
+    case "dragableItems":
       return (
         <DragItemComp
           id={widgetRef}
+          accept={[]}
           className="drag-comp-item"
-          type={DragableItemTypes.DragableItemType}
+          type={PDDragableItemTypes.staticWidget}
           dragConfig={getDragItemConfig ? getDragItemConfig(widgetMeta) : {}}
           dragableWidgetType={{
             ...widgetMeta,
@@ -55,10 +56,8 @@ const itemRendererFac = (
           {label}
         </DragItemComp>
       );
-    case 'dataSource':
-      return (
-        <div>dataSource</div>
-      );
+    case "dataSource":
+      return <div>dataSource</div>;
     default:
       return null;
   }
@@ -84,11 +83,13 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
   // }, []);
   const [ready, widgetPanelData] = useWidgetPanelData();
   if (!ready) {
-    return (
-      <LoadingTip />
-    );
+    return <LoadingTip />;
   }
-  const { title: compPanelTitle, type: groupType, ...otherPanelConfig } = widgetPanelData;
+  const {
+    title: compPanelTitle,
+    type: groupType,
+    ...otherPanelConfig
+  } = widgetPanelData;
   // const interDatasources = [];
   const interDatasources = Object.values(pageMetadata?.dataSource);
 
@@ -108,20 +109,18 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
             // itemsGroups={widgetPanelData}
           />
         </Tab>
-        <Tab 
-          label={(
+        <Tab
+          label={
             <DataSourceTitle
               interDatasources={interDatasources}
               onAddDataSource={(addData) => {
-              // return console.log(addData);
+                // return console.log(addData);
                 onUpdatedDatasource(addData);
               }}
             />
-          )}
+          }
         >
-          <DataSourceDragItem
-            interDatasources={interDatasources}
-          />
+          <DataSourceDragItem interDatasources={interDatasources} />
         </Tab>
         <Tab label="控件模版">
           <div>敬请期待</div>
