@@ -7,6 +7,7 @@ import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata 
 import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 import { setOfSchemaPath } from './utils';
 import { isSchema, pickSchemaMark } from '../IUBDSL-mark';
+import { set as LSet } from 'lodash';
 
 const reg = /(?<=[\\/\\[]?)([^\\/\\[\]]+)(?=[\\/\]\\[]?)/g;
 
@@ -90,29 +91,24 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       }
     };
     const getWatchDeps = getPageState;
-
-    const getPageState2 = (ctx: RunTimeCtxToBusiness, struct: string[]) => {
-      const state = struct.reduce((res, key) => ({ ...res, [key]: LGet(IUBPageStore, key, '') }), {});
-      return state;
-    };
-    /** 复杂数据的更新 */
+    
+    /** 复杂数据的更新, 现在先都更新 */
     const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: any) => {
-      // const newState = IUBPageStore;
-      // changeMaps.forEach(({ from, target }) => {
-      //   setOfSchemaPath(newState, target, from);
-      // });
-      setIUBPageStore(changeMaps);
+      const newState = IUBPageStore;
+      if (typeof changeMaps === 'object') {
+        for (const mark in changeMaps) {
+          if (isSchema(mark)) {
+            const key = pickSchemaMark(mark).split('/');
+            const val = changeMaps[mark];
+            LSet(newState, key, val);
+          }
+        }
+      }
+      setIUBPageStore(newState);
     };
     
 
     const handleFn = useMemo(() => {
-      /** 单个数据的更新 */
-      const targetUpdateState = (ctx: RunTimeCtxToBusiness, target, value) => {
-        target = pickSchemaMark(target);
-        setIUBPageStore({
-          [target]: value
-        });
-      };
 
       /** 元数据映射进行更新页面状态 @(metadata).dId: val */
       const updatePageStateFromMetaMapping = (ctx: RunTimeCtxToBusiness, fieldMappingValue: any) => {
@@ -157,7 +153,6 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       };
 
       return {
-        targetUpdateState,
         getSchemaMetadata,
         updatePageStateFromTableRecord,
         updatePageStateFromMetaMapping
@@ -166,7 +161,6 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
 
     return {
       getPageState,
-      getPageState2,
       getWatchDeps,
       mappingUpdateState,
       ...handleFn
