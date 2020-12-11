@@ -120,16 +120,29 @@ class PageDesignerApp extends React.Component<
    */
   onUpdatedDatasource = async (interDatasources: PD.Datasources) => {
     const nextDSState = {};
+    /** 过滤出来源于组件属性配置的数据源 */
+    const getDsFromNotPage = () => {
+      const { dataSource } = this.props.pageMetadata;
+      const result = {};
+      Object.keys(dataSource).forEach((dsID) => {
+        const ds = dataSource[dsID];
+        if (ds.createdBy === "page") return;
+        result[dsID] = ds;
+      });
+      return result;
+    };
+    /** 转成对象格式 */
     interDatasources.forEach((dsItem, idx) => {
       const dsRefID = genMetaRefID("dataSource", {
         idStrategy: dsItem.id,
       });
-      nextDSState[dsRefID] = { ...dsItem, dsType: "pageDS" };
+      nextDSState[dsRefID] = { ...dsItem, dsType: "page" };
     });
+    const dsFromNotPage = getDsFromNotPage();
     this.changePageMetaStradegy({
       type: "replace",
       metaAttr: "dataSource",
-      datas: nextDSState,
+      datas: { ...nextDSState, ...dsFromNotPage },
     });
   };
 
