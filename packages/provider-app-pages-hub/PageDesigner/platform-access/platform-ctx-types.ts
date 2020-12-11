@@ -44,7 +44,7 @@ export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) =>
 export type ChangeWidgetType = (widgetType: string) => void
 
 export type VariableType = 'system'|'page'|'pageInput'|'widget'
-export type VariableDataType = 'number'|'string'|'date'|'dateTime'
+export type VariableDataType = 'number'|'string'|'date'|'dateTime'|'numberArray'|'stringArray'|'dateArray'|'dateTimeArray'
 export type VariableItem = {
   title: string
   code: string

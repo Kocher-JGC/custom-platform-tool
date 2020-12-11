@@ -15,6 +15,7 @@ export const takeColumnsData = (columns: any[], tableID: string): {[key:string]:
       colDataType: column.dataType,
       fieldSize: column.fieldSize,
       fieldType: column.fieldType,
+      dataType: column.dataType,
       fieldCode: column.code,
       tableID
     };
@@ -128,7 +129,7 @@ export const takeDictField = (datasourceData:RemoteDSData) => {
 };
 export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
   // const nextState: PD.Datasources = [];
-  const tableList: RemoteDSData[] = [], nextDictList = [], remoteDictList: RemoteDSData[] = [];
+  const tableList: RemoteDSData[] = []; const nextDictList = []; const remoteDictList: RemoteDSData[] = [];
   remoteDSData.length > 0 && remoteDSData.forEach((data, order) => {
     if (!data) return;
     switch (data.type) {

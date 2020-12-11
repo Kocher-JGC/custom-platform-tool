@@ -26,7 +26,7 @@ export const genRowData = (usingColumns, rowCount = 3) => {
  * 模拟生成 row 数据
  */
 export const genRenderColumn = (usingColumn) => {
-  const { id: fieldID, name: title, tableID: dsID } = usingColumn;
+  const { id: fieldID, name: title, tableID: dsID, dataType } = usingColumn;
   return {
     title, dsID, fieldID,
     id: `field.dsColumn.${nanoid(8)}`,
