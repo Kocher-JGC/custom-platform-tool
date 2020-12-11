@@ -132,8 +132,8 @@ export const locationForm: TypeOfIUBDSL = {
   flowCollection: Object.assign({}, widgetFlowCollection),
   /** hub数据 */
   conditionCollection: Object.assign({}, actionCond),
-  ref2ValueCollection: Object.assign({}, interSetDataCollection),
-  interCollection: Object.assign({}, interCollection),
+  ref2ValCollection: Object.assign({}, interSetDataCollection),
+  APIReqCollection: Object.assign({}, interCollection),
   lowcodeCollection: {},
   /** TEMP */
   openPageUrl: '',

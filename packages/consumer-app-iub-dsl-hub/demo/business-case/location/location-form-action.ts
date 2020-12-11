@@ -11,19 +11,19 @@ export const interSetDataCollection: Ref2ValCollection = {
     struct: [
       {
         key: '@(interMeta).1330690108524994560/1330690108566937616',
-        value: '@(schema).id',
+        val: '@(schema).id',
       },
       {
         key: '@(interMeta).1330690108524994560/1330690108566937605',
-        value: '@(schema).mIEF110a' // 名称
+        val: '@(schema).mIEF110a' // 名称
       },
       {
         key: '@(interMeta).1330690108524994560/1330690108566937614',
-        value: '@(schema).wnlmddk6/wnlmddk6_id1' // 上级位置id
+        val: '@(schema).wnlmddk6/wnlmddk6_id1' // 上级位置id
       },
       {
         key: '@(interMeta).1330690108524994560/1330692953483649025',
-        value: '@(schema).hZuHwTTk/code' // 位置类型
+        val: '@(schema).hZuHwTTk/code' // 位置类型
       }
     ]
   },
@@ -31,7 +31,7 @@ export const interSetDataCollection: Ref2ValCollection = {
     type: ComplexType.structObject,
     struct: [
       {
-        value: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
+        val: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
         key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
       }
     ]
@@ -41,7 +41,7 @@ export const interSetDataCollection: Ref2ValCollection = {
     struct: [
       {
         // 需要根据打开目标{页面输出回填, 如何对应问题}
-        value: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
+        val: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
         key: '@(schema).mIEF110a', // 目标: 页面变量的标示位
       }
     ]
@@ -50,24 +50,24 @@ export const interSetDataCollection: Ref2ValCollection = {
     type: ComplexType.structArray,
     struct: [
       // {
-      //   value: '@(runCtx).payload', // 根据meta转换成schema
+      //   val: '@(runCtx).payload', // 根据meta转换成schema
       //   key: '@(schema).hZuHwTTk_Arr',
       // },
       // {
-      //   value: '固定值',
+      //   val: '固定值',
       //   key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
       // },
       {
-        value: '@(runCtx).payload[#(idx)]/code',
+        val: '@(runCtx).payload[#(idx)]/code',
         key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id1',
       },
       {
-        value: '@(runCtx).payload[#(idx)]/name',
+        val: '@(runCtx).payload[#(idx)]/name',
         key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id2',
       },
       // {
       //   key: '@(schema).hZuHwTTk[#(idx)]/hZuHwTTk_id3',
-      //   value: {
+      //   val: {
       //     type: ComplexType.structArray,
       //     /** 树形结构, 结构一致 */
       //     struct: []
@@ -80,7 +80,7 @@ export const interSetDataCollection: Ref2ValCollection = {
     struct: [
       {
         /** 第一种, 整个表转换的 */
-        value: '@(runCtx).payload', // 根据meta转换成schema
+        val: '@(runCtx).payload', // 根据meta转换成schema
         key: '@(schema).hZuHwTTk', // TODO onChange仅拿到单个值, 需要转换、 可以在event统一转换
       }
       /** 
