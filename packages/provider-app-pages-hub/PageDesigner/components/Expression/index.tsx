@@ -1,2 +1,1 @@
-// export { Expression } from './expressionEditor';
-export { Expression } from "./src";
+export { Expression } from "./ExpressionEditor";

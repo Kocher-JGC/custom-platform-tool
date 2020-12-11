@@ -40,7 +40,7 @@ export function getProxyPropertyValue(getter: CallableFunction) {
 export function getProxyPropertyGetter(proxy: WindowProxy, property: PropertyKey): any {
   const getters = proxyPropertyGetterMap.get(proxy);
   if (getters) {
-    return getters![property as string];
+    return getters[property as string];
   }
 
   return undefined;
