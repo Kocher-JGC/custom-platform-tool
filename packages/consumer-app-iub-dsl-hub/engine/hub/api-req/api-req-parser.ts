@@ -1,9 +1,8 @@
-import { noopError, reSetFuncWrap } from '../../utils';
+import { pickapiReqMark } from './../../IUBDSL-mark';
+import { noopBind, reSetFuncWrap } from '../../utils';
 import { 
-  APIReq, APIReqType, 
-  FuncCodeOfAPB, 
-  ConditionCollection, ConditionOperator,
-  APBDSLReq 
+  APIReqType, APBDSLReq, 
+  APIReqCollection
 } from '@iub-dsl/definition';
 import { RunTimeCtxToBusiness } from '../../runtime/types';
 
@@ -25,93 +24,6 @@ import { RunTimeCtxToBusiness } from '../../runtime/types';
  * 「page、sort」分页、排序
  */
 
-const cond: ConditionCollection = {
-  cond1: {
-    condition: {
-      conditionList: {
-        c1: {
-          operator: ConditionOperator.EQU,
-          exp1: {
-            table: "assets",
-            field: "field1"
-          },
-          exp2: {
-            table: "device",
-            field: "code"
-          },
-        }
-      },
-      conditionControl: {
-        and: ['c1']
-      }
-    }
-  },
-  cond2: {
-    condition: {
-      conditionList: {
-        c1: {
-          operator: ConditionOperator.EQU,
-          exp1: {
-            table: "assets",
-            field: "field1"
-          },
-          exp2: {
-            table: "device",
-            field: "code"
-          },
-        }
-      },
-      conditionControl: {
-        and: ['c1']
-      }
-    }
-  },
-  cond3: {
-    condition: {
-      conditionList: {
-        c1: {
-          operator: ConditionOperator.EQU,
-          exp1: {
-            table: "assets",
-            field: "locationId"
-          },
-          exp2: {
-            table: "location",
-            field: "id"
-          },
-        }
-      },
-      conditionControl: {
-        and: ['c1']
-      }
-    }
-  },
-};
-
-const confv: { [str: string]: APIReq } = {
-  req1:  {
-    reqType: APIReqType.APBDSL,
-    list: {
-      set1: {
-        funcCode: FuncCodeOfAPB.C,
-        table: '',
-        set: '',
-      },
-      set2: {
-        funcCode: FuncCodeOfAPB.C,
-        table: '',
-        set: '',
-      },
-      set3: {
-        funcCode: FuncCodeOfAPB.C,
-        table: '',
-        set: '',
-      },
-    },
-    steps: ['set1', 'set2', 'set3'],
-  },
-};
-
 /**
  * APBDSL请求的解析器
  * 1). 额外解析 每一项请求 「子」
@@ -122,33 +34,34 @@ const confv: { [str: string]: APIReq } = {
  * @param conf APBDSL请求的配置
  */
 const APBReqParser = (conf: APBDSLReq) => {
-  const { list } = conf;
+  const { list, steps } = conf;
   const listPRes = {};
-  const listKeys = Object.keys(list);
+  // const funcList = Object.values(list);
+  const listKeys = Object.keys(list || []);
 
   /**
    * APBDSL请求函数的包装函数
    * @param param0 额外的请求配置解析器
    */
   const APBReqFnWrap = ({
-    extralReqParser,
-    extralAPBItemParser,
+    extraReqParser,
+    extraAPBItemParser,
     // extralAPBStepsParser, /** 暂无steps的额外解析 */
   }) => {
     /**
      * 方式二: 请求的额外解析和每一项的额外解析分开传入
-     * 其实可以考虑仅传入 extralReqParser
+     * 其实可以考虑仅传入 extraReqParser
      * 但是这样可以更灵活的分离函数
      */
     listKeys.forEach(key => {
       const APBItemConf = list[key];
       /** 每一项APB的转换函数 APBItemTransformFn */
-      listPRes[key] = extralAPBItemParser({ key, APBItemConf, /** originFn // 暂无原始运行函数 */ });
+      listPRes[APBItemConf.stepsId] = extraAPBItemParser({ key, APBItemConf, /** originFn // 暂无原始运行函数 */ });
     });
     /** 
      * APBDSL请求的配置的 解析的结果
      */
-    const APBReqPRes = extralReqParser({ ...conf, listPRes, listKeys });
+    const APBReqPRes = extraReqParser({ steps, list, listPRes, listKeys });
     const { reqTransfFn, resTransfFn  } = APBReqPRes;
     /**
      * 绑定运行时候需要的插件
@@ -162,18 +75,27 @@ const APBReqParser = (conf: APBDSLReq) => {
       /**
        * APBDSL 请求运行的实际函数
       */
-      return async (ctx: RunTimeCtxToBusiness) => {
+      return async (IUBCtx: RunTimeCtxToBusiness) => {
         /** 每一项的运行 */
-        const listRunRes = await listKeys.map(key => listPRes[key](ctx));
+        const listRunRes = {};
+        await Promise.all(listKeys.map(async key => {
+          listRunRes[key] = await listPRes[key](IUBCtx); 
+        }));
 
         /** 最终的运行: APBDSL + 一些必要的记录信息「请求的: 表+字段」*/
-        const transfRes = await reqTransfFn(ctx, listRunRes);
+        const transfRes = await reqTransfFn(IUBCtx, listRunRes);
+        // console.log(transfRes);
+        
         /** 请求 */
         const reqRes = await requestHandler(transfRes);
+        // console.log(reqRes);
+        
       
         /** 根据上述描述数据 --> 对数据进行转换 */
         /** 根据配置数据 --> 对数据转换并写入变量 */
-        return await resTransfFn(ctx, reqRes);
+        return await resTransfFn(IUBCtx, reqRes);
+
+        /** 最后还有一步,分发数据 */
       };
     };
   };
@@ -186,7 +108,7 @@ const APBReqParser = (conf: APBDSLReq) => {
  * 解析API请求, 返回 请求函数的包装函数, 外部添加额外解析, 生成实际得请求函数
  * @param conf API请求配置
  */
-export const APIReqParser = (conf: { [str: string]: APIReq }) => {
+export const APIReqParser = (conf: APIReqCollection) => {
   const APIReqIds = Object.keys(conf);
   const APIReqList = {};
   const typeMaps = {};
@@ -208,17 +130,22 @@ export const APIReqParser = (conf: { [str: string]: APIReq }) => {
   const reSetAPIReq = reSetFuncWrap(APIReqIds, APIReqList);
 
   const bindAPIReq = (id: string, plugins) => {
-    const reqHandler = APIReqList[id] || noopError;
-    return async (ctx: RunTimeCtxToBusiness) => {
+    /** 绑定时, 额外解析并生成运行函数 */
+    id = pickapiReqMark(id);
+    let reqHandler = APIReqList[id] || noopBind;
+    reqHandler = APIReqList[id] = reqHandler(plugins);
+    return async (IUBCtx: RunTimeCtxToBusiness) => {
+      const { requestHandler } = IUBCtx;
       /** 在上下文获取的 实际运行时的 请求函数 */
-      const getRequestFn: any = () => {};
-      const requestHandler = getRequestFn();
+      if (typeof reqHandler === 'function') {
+        return await reqHandler({ requestHandler })(IUBCtx);
+      }
       /**
        * 请求时 + 请求后
        * 1. 转换/ 平级转换成嵌套
        * 2. 根据配置赋值
        */
-      return await reqHandler({ requestHandler })(ctx);
+      // return await reqHandler({ requestHandler })(ctx);
     };
   };
 
@@ -230,3 +157,5 @@ export const APIReqParser = (conf: { [str: string]: APIReq }) => {
     APIReqIds,
   };
 };
+
+const commonWrapFn = (originFn) => (...args) => originFn(...args);
