@@ -17,8 +17,17 @@ import { GeneralTableComp } from '.';
     title: {
       type: 'string'
     },
-    titlePlace: {
+    titleAlign: {
       type: 'string'
+    },
+    defaultPageSize: {
+      type: 'number'
+    },
+    showOrderColumn: {
+      type: 'boolean'
+    },
+    queryType: {
+      type: '{[key: string]: {queryStyle: string, maxNum?:number}|null}'
     }
   },
 })

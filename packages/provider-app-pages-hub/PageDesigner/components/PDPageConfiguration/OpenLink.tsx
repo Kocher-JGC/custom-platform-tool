@@ -89,7 +89,7 @@ const InputVarList = ({
     <Table 
       dataSource={inputVarList}
       columns = {[
-        { dataIndex: 'title', key: 'title', title: ()=>{
+        { dataIndex: 'title', key: 'title', width: 300, title: ()=>{
           return (
             <>
               <span>输入参数名称</span>
@@ -101,8 +101,8 @@ const InputVarList = ({
             </>
           );
         } },
-        { dataIndex: 'varType', key: 'varType', title: '类型', render: (_t)=> VarAttrTypeMap[_t] },
-        { dataIndex: 'id', key: 'id', title: '值', render: (_t, _r, _i)=>{
+        { dataIndex: 'varType', key: 'varType', title: '类型', width: 100, render: (_t)=> VarAttrTypeMap[_t] },
+        { dataIndex: 'id', key: 'id', title: '值', width: 400, render: (_t, _r, _i)=>{
           return (
             <ValueHelper
               editedState = {inputVarConfig[_t] || {}}

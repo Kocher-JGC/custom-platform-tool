@@ -1,19 +1,19 @@
 import React from 'react';
 import { PropItem, PropItemRenderContext } from '@platform-widget-access/spec';
-import { TitlePlaceComp } from './comp';
+import { PageSizeComp } from './comp';
 
 /** 属性项编辑的组件属性 */
 // const whichAttr = 'title';
-const attr = 'titlePlace';
+const attr = 'defaultPageSize';
 @PropItem({
-  id: 'prop_title_place',
-  label: '标题位置',
+  id: 'prop_page_size',
+  label: '显示分页',
   whichAttr: [attr],
   // defaultValues: {
   //   title: '标题'
   // },
 })
-export class TitlePlaceSpec {
+export class PageSizeSpec {
   render(ctx: PropItemRenderContext) {
     const {
       changeEntityState,
@@ -25,7 +25,7 @@ export class TitlePlaceSpec {
       });
     };
     return (
-      <TitlePlaceComp onChange = {handleChange} editingWidgetState = {editingWidgetState} />
+      <PageSizeComp onChange = {handleChange} editingWidgetState = {editingWidgetState} />
     );
   }
 }

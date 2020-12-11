@@ -41,9 +41,28 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   onChange,
 }) => {
   const [selectedItem, setSelectedItem] = useState('realVal');
-  const [variableList, setVariableList] = useState<VariableListInState[]>([]);
   const { exp, realVal, variable } = editedState;
   let Comp;
+  
+  const initVariableList = () => {
+    const constructVarList = (list: VariableItem[])=>{
+      return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
+    };
+    const constructVarItem = (item: VariableItem) => {
+      const { id, title } = item;
+      return { value: id, title };
+    };
+    return [
+      { title: '自定义变量', value: 'customed', variableList: variableData.customed, disabled: true },
+      { title: '页面变量', value: 'page', variableList: variableData.page, disabled: true },
+      { title: '系统变量', value: 'system', variableList: variableData.system, disabled: true },
+      { title: '控件变量', value: 'widget', variableList: variableData.widget, disabled: true },
+      { title: '输入参数变量', value: 'pageInput', variableList: variableData.pageInput, disabled: true }
+    ].filter(item=>item.variableList?.length>0).map(item=>{
+      const { variableList, ...rest } = item;
+      return { ...rest, children: constructVarList(variableList) };
+    });
+  };
   switch (selectedItem) {
     case 'realVal':
       Comp = (
@@ -105,30 +124,11 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
             variable: value
           })}
           treeDefaultExpandAll
-          treeData = {variableList}
+          treeData = {initVariableList()}
         />
       );
       break;
   }
-  const initVariableList = () => {
-    const constructVarList = (list: VariableItem[])=>{
-      return Array.isArray(list) ? list.map(item=>constructVarItem(item)) : [];
-    };
-    const constructVarItem = (item: VariableItem) => {
-      const { id, title } = item;
-      return { value: id, title };
-    };
-    return [
-      { title: '自定义变量', value: 'customed', variableList: variableData.customed, disabled: true },
-      { title: '页面变量', value: 'page', variableList: variableData.page, disabled: true },
-      { title: '系统变量', value: 'system', variableList: variableData.system, disabled: true },
-      { title: '控件变量', value: 'widget', variableList: variableData.widget, disabled: true },
-      { title: '输入参数变量', value: 'pageInput', variableList: variableData.pageInput, disabled: true }
-    ].filter(item=>item.variableList?.length>0).map(item=>{
-      const { variableList, ...rest } = item;
-      return { ...rest, children: constructVarList(variableList) };
-    });
-  };
   useEffect(() => {
     // const selectedKey = 'customValue'; 
     const keyMenu = SELECT_TYPE_MENU.map(item=>item.value);
@@ -136,7 +136,6 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
       if(!editedState[key] || !keyMenu.includes(key)) continue;
       setSelectedItem(key);
     }
-    setVariableList(initVariableList());
   }, []);
   return (
     <div className="value-helper">

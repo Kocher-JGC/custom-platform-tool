@@ -10,7 +10,7 @@ import ToolBar from './components/PDToolbar';
 import WidgetPanel from './components/PDWidgetPanel';
 import CanvasStage from './components/PDCanvasStage';
 import { PDPropertiesEditor } from './components/PDPropertiesEditor';
-import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext, genMetaRefID, genMetaIDStrategy } from "./utils";
+import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext, genMetaRefID, genMetaIDStrategy, getVariableData } from "./utils";
 
 import { ChangeEntityState, NextEntityState, NextEntityStateType } from "@engine/visual-editor/data-structure";
 
@@ -90,7 +90,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       const dsRefID = genMetaRefID('dataSource', {
         idStrategy: dsItem.id
       });
-      nextDSState[dsRefID] = dsItem;
+      nextDSState[dsRefID] = { ...dsItem, dsType: 'pageDS' };
     });
     this.changePageMetaStradegy({
       type: 'replace',
@@ -281,91 +281,6 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     return retData;
   }
 
-  /**
-   * 获取变量数据
-   */
-  getVariableData = async (filter: string[] = [], options) => {
-    const varRely = options ? options.varRely : this.props.pageMetadata.varRely;
-    const flatLayoutItems = options ? options.flatLayoutItems : this.props.flatLayoutItems;
-    /** 获取自定义变量 */
-    const getCustomedVariable = () => {
-      return [];
-    };
-    /** 获取控件变量 */
-    const getWidgetVariable = () => {
-      const varList = [];
-      if(!varRely) return [];
-      for(const varID in varRely ){
-        if (!Object.prototype.hasOwnProperty.call(varRely, varID)) continue;
-        const variableItems = varRely[varID];
-        const { type, varAttr, widgetRef } = variableItems;
-        /** 只检索控件类型变量 */
-        if(type !== 'widget' || !widgetRef) continue;
-        /** 获取对应控件数据 */
-        const widgetEntity = flatLayoutItems[widgetRef];
-        if(!widgetEntity) continue;
-        const { propState, id } = widgetEntity;
-        if (!propState) continue;
-        // TODO: 这里取了特定的值，后续需要改进
-        const { widgetCode, title } = propState;
-        /** 控件对应变量 */
-        varAttr && varAttr.forEach((varItem) => {
-          const { alias, attr, type: varType } = varItem;
-          const code = `${widgetCode}.${attr}`;
-          varList.push({
-            code, varType, type,
-            title: `${title}.${alias}`,
-            id: `${id}.${attr}`,
-          });
-        });
-      }
-      return varList;
-    };
-    /** 获取页面变量 */
-    const getPageVariable = () => {
-      return [
-        { code: 'var.page.name', title: '页面名称', id: 'var.page.name', varType: 'string', type: 'page' },
-        { code: 'var.page.code', title: '页面编码', id: 'var.page.code', varType: 'string', type: 'page' },
-      ];
-    };
-    /** 获取系统变量 */
-    const getSystemVaraible = () => {
-      return [];
-    };
-    /** 获取输入参数变量 */
-    const getInputVariable = () => {
-      if(!varRely) return [
-        { title: '页面模式', type: 'pageInput', varType: 'string', realVal: 'insert', code: 'var.page.mode', id: 'var.page.0.mode' }
-      ];
-      const varList = [];
-      for(const id in varRely ){
-        if (!Object.prototype.hasOwnProperty.call(varRely, id)) continue;
-        const variableItems = varRely[id];
-        const { type, alias, varType, code, realVal, title } = variableItems || {};
-        if(type !== 'pageInput') continue;
-        varList.push({
-          code, type, varType, alias, id, realVal, title
-        });
-      }
-      return varList;
-    };
-    const getVariable = {
-      customed: getCustomedVariable,
-      system: getSystemVaraible,
-      widget: getWidgetVariable,
-      page: getPageVariable,
-      pageInput: getInputVariable
-    };
-    const result = {};
-    for(const key in getVariable){
-      if(filter.includes(key)) continue;
-      if(typeof getVariable[key] !== 'function') continue;
-      const resultTmpl = await getVariable[key]();
-      Object.assign(result, { [key]: resultTmpl });
-    }
-    return result;    
-  }
-
   updateEntityState = (nextState) => {
     const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
     const { entity, nestingInfo } = selectedInfo;
@@ -380,7 +295,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     genMetaRefID: genMetaRefID,
     takeMeta: this.takeMeta,
     changeWidgetType: this.changeWidgetType,
-    getVariableData: this.getVariableData,
+    getVariableData: getVariableData.bind(this),
     // changeEntityState: this.changeEntityState,
   });
 
