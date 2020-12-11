@@ -1,11 +1,26 @@
+import { isRunCtx } from './../../IUBDSL-mark';
 import { 
   Ref2ValParseCtx,
   PathInfo, Ref2ValRunCtx, LayerParseRes
 } from "./types";
 import { arrayAsyncHandle } from '../../utils';
 import { Ref2ValDef, ref2ValStructMap, ComplexType } from '@iub-dsl/definition';
+import { isSchema } from "../../IUBDSL-mark";
+import { DispatchModuleName, DispatchMethodNameOfIUBStore } from '../../runtime/types';
+
+// const run = bindRef2Value(conf.set, {
+//   parse:{ 
+//   },
+//   run: {
+// itemKeyHandler: () => (key: string) => {
+//   console.log(key);
+//   return key;
+// }
+// }
+// })
 
 /**
+ * 
  * 项的运行可以获取
  *  1. 当前组的运行结果
  *  2. 当前层的运行结果
@@ -57,7 +72,9 @@ export const shouldLoop = (IUBctx, runCtx: Ref2ValRunCtx, { layerRunRes, loopNum
     }
     return false;
   }).map(info => info.rootPath + info.prevPath);
-
+  
+  /** 都是对象那么就运行一次 */
+  if (sameLevelPaths.length === 0 && loopNum === 0) return true;
 
   /** 验证是否可以循环, 待修改 */
   return !sameLevelPaths.every((path) => {
@@ -73,7 +90,7 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
   const { struct2ParseRes } = parseCtx;
   return async (IUBctx, runCtx: Ref2ValRunCtx) => {
     const { 
-      getScope, levelArr, itemHandler,
+      getScope, levelArr, itemHandler, itemKeyHandler,
       groupHandler, refPathInfoList, layerHandler 
     } = runCtx;
 
@@ -93,6 +110,8 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
           const itemRunFn = async (structItem: ref2ValStructMap) => {
             /** 一项里面有很多path, { val: path1, key: path2, xxx: path3, ....  } */
             const { key, val, extral } = structItem;
+            structItem.key = await itemKeyHandler(key);
+           
             /** 新的一层: 后续再思考优化 */
             if (typeof val === 'object') {
               const onceLayerRes = await layerRunFn(val);
@@ -161,9 +180,22 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
  * @param itemInfo 每一项的引用路径信息
  */
 export const getRootData = async (IUBctx, runCtx: Ref2ValRunCtx, rootPathInfo: PathInfo) => {
-  const { action: { payload } } = IUBctx;
-  /** isRunCtx */
-  return { payload };
+  const { action: { payload }, asyncDispatchOfIUBEngine } = IUBctx;
+  const { rootPath } = rootPathInfo;
+  if (isSchema(rootPath)) {
+    const IUBRunState = await asyncDispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.IUBStore,
+        method: DispatchMethodNameOfIUBStore.getPageState,
+        params: ['']
+      }
+    });
+    
+    return IUBRunState;
+  } else if (isRunCtx(rootPath)){
+    /** isRunCtx */
+    return { payload };
+  }
 };
 
 /**
@@ -216,7 +248,7 @@ export const ensureRootData = async (IUBctx, runCtx: Ref2ValRunCtx, rootPathInfo
       const { path: rootPath } = info;
       /** 确保rootData存在 */
       if(!rootData[rootPath]) {
-        const onceRootData = await getRootData(IUBctx, runCtx, rootPathInfo);
+        const onceRootData = await getRootData(IUBctx, runCtx, info);
         /** 无顶级数据 */
         if (!onceRootData) { return false; }
         rootData[rootPath] = onceRootData;

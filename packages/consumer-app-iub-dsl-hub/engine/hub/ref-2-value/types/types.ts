@@ -12,7 +12,10 @@ import { ComplexType, Ref2ValDef } from "@iub-dsl/definition";
 /*———————————————— Base ————————————————*/
 
 /** 引用结构转为值结构 所有可以引入的插件 */
-export type Ref2ValPlugins = Partial<Ref2ValRunPlugins & Ref2ValParserPlugins>;
+export interface Ref2ValPlugins {
+  run?: Partial<Ref2ValRunPlugins>;
+  parse?: Partial<Ref2ValParserPlugins>;
+}
 
 /** 
  * 引用结构转为值结构的基础的上下文
@@ -54,6 +57,7 @@ interface levelMath {
   level: string;
   idx: string;
 }
+
 
 
 /*———————————————— Parse ————————————————*/
@@ -111,6 +115,7 @@ export interface Ref2ValRunPlugins {
   getRootData?: any;
   getScopeData?: any;
   itemHandler?: any;
+  itemKeyHandler?: any;
   groupHandler?: any;
   layerHandler?: any;
 }

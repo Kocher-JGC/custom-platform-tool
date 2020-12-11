@@ -1,16 +1,18 @@
 import { isPlainObject } from 'lodash';
 import { 
   Ref2ValParseCtx, Ref2ValParserPlugins, PathInfo,
-  Ref2ValRunCtx, RefPathInfoList, LayerParseRes
+  Ref2ValRunCtx, RefPathInfoList, LayerParseRes, Ref2ValRunPlugins, Ref2ValPlugins
 } from "./types";
 import { mockRefStruct, mockData } from "./mock";
-import { isIUBDSLMark, defaultPickMark } from "../../IUBDSL-mark";
+import { isIUBDSLMark, defaultPickMark, pickRef2ValMark } from "../../IUBDSL-mark";
 import {
   ref2ValRunWrap,
   getScope, getRootData, getScopeData,
   itemHandler, groupHandler, layerHandler 
 } from './ref-2-value-run';
 import { Ref2ValDef, ref2ValStructMap, Ref2ValCollection } from '@iub-dsl/definition';
+import { RunTimeCtxToBusiness } from '../../runtime/types';
+import { noopError, noopRun } from '../../utils';
 
 const vaildPath = isIUBDSLMark;
 
@@ -61,27 +63,30 @@ export const ref2ValueParser = (confCollection: Ref2ValCollection = mockRefStruc
     }
   });
 
-  // const parserPlugins = 
-
-  ref2ValCKeys.forEach(id => {
-    ref2ValList[id] = ref2ValList[id]();
-  });
-
-  // console.log(refPathInfoList);
-  // console.log(parseCtx);
-  // console.log(ref2ValList);
-  // const runCtx: Ref2ValRunCtx = {
-  //   levelArr: [], level: -1, rootData: {}, scope: {},
-  //   refPathInfoList, struct2ParseRes,
-  //   getScope, getRootData, getScopeData,
-  //   itemHandler, groupHandler, layerHandler
-  // };
   // ref2ValList.id({
   //   action: { payload: mockData }
   // }, runCtx);
   
-  const bindRef2Value = () => {
-
+  const bindRef2Value = (ref2ValId: string, plugins: Ref2ValPlugins = {}) => {
+    ref2ValId = pickRef2ValMark(ref2ValId);
+    /**
+     * 最后一层包装函数
+     */
+    return (context: RunTimeCtxToBusiness, runPlugins: Ref2ValRunPlugins = {}) => {
+      let ref2ValIdRunFn = ref2ValList[ref2ValId];
+      if (typeof ref2ValIdRunFn !== 'function') {
+        console.error(`获取引用结构转值结构函数失败!: ${ref2ValId}`);
+        ref2ValIdRunFn = noopError;
+      }
+      const runCtx: Ref2ValRunCtx = mergeFn({
+        levelArr: [], level: -1, rootData: {}, scope: {},
+        refPathInfoList, struct2ParseRes,
+        getScope, getRootData, getScopeData,
+        itemHandler, groupHandler, layerHandler, itemKeyHandler: noopRun
+      }, runPlugins, plugins.run);
+      
+      return ref2ValIdRunFn(plugins.parse)(context, runCtx);
+    };
   };
 
   return {
@@ -254,9 +259,6 @@ const genPathInfo = ({ match, path }) => {
 };
 
 
-
-
-
 const parserControl = (keys: string[]) => {
   /**
    * 扩展: lazyParser
@@ -275,13 +277,18 @@ const parserControl = (keys: string[]) => {
 /**
  * 合并插件的函数
  */
-const mergeFn = (target, source) => {
+const mergeFn = (target, ...sources) => {
   const res = Object.assign({}, target);
-  const sourceKeys = Object.keys(source);
-  sourceKeys.forEach(key => {
-    const item = source[key];
-    if (typeof item === 'function') {
-      res[key] = item(res[key]);
+  
+  sources?.forEach((source) => {
+    if (source && typeof source === 'object') {
+      const sourceKeys = Object.keys(source);
+      sourceKeys.forEach(key => {
+        const item = source[key];
+        if (typeof item === 'function') {
+          res[key] = item(res[key]);
+        }
+      });
     }
   });
   return res;

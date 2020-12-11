@@ -6,6 +6,7 @@ import { ComplexType } from "@iub-dsl/definition";
  * 2. a[#(0|0)]/b[#(1|*)], #(0|0), 仅使用第0层的idx = 0
  * 3. #(exp1|exp2), 层级/idx都可以是表达式计算的数字 「扩展、但挺难的」
  */
+
 export const mockRefStruct = {
   id: {
     type: ComplexType.structArray,
