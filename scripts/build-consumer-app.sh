@@ -4,7 +4,7 @@ pwd=$PWD
 # rm -rf node_modules
 # rm yarn.lock
 
-source_dir=$pwd/packages/consumer-app-hub
+source_dir=$pwd/packages/consumer-app
 
 # 构建 web 服务
 cd $source_dir/web-server

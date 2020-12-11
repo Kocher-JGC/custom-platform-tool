@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { IHyMethod } from "./interface";
+
 export const HY_METHODS: IHyMethod[] = [
   {
     type: "STRING",

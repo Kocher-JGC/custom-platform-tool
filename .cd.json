@@ -8,22 +8,22 @@
       {
         "name": "provider_app",
         "buildCmd": "yarn build:provider-app-entry",
-        "dockerfilePath": "./packages/provider-app-entry"
+        "dockerfilePath": "./packages/provider-app/provider-app-entry"
       },
       {
         "name": "consumer_app",
         "buildCmd": "yarn build:consumer-app",
-        "dockerfilePath": "./packages/consumer-app-hub"
+        "dockerfilePath": "./packages/consumer-app/consumer-app-hub"
       },
       {
         "name": "node_web_server",
         "buildCmd": "yarn build:platform-web-server",
-        "dockerfilePath": "./packages/platform-web-server"
+        "dockerfilePath": "./platform-web-server"
       },
       {
         "name": "doc_website",
         "buildCmd": "yarn build:website-doc",
-        "dockerfilePath": "./website-doc"
+        "dockerfilePath": "./_website-doc"
       }
     ]
   }

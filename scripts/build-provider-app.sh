@@ -5,7 +5,7 @@ pwd=$PWD
 # rm $pwd/yarn.lock
 # rm -rf $pwd/node_modules
 
-source_dir=$pwd/packages/provider-app-entry
+source_dir=$pwd/packages/provider-app/provider-app-entry
 
 # 构建所有项目
 cd $source_dir && yarn build

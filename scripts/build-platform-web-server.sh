@@ -1,7 +1,7 @@
 # 保存当前的路径
 pwd=$PWD
 
-source_dir=$pwd/packages/platform-web-server
+source_dir=$pwd/platform-web-server
 # work_dir=$pwd/dist/web-server
 # dist_dir=$work_dir/dist
 
