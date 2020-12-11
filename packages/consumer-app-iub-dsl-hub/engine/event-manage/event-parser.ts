@@ -13,7 +13,7 @@ const eventRunWrapFn = ({
 }) => (
   /** 传入运行上下文 */
   runtimeCtxRef: React.MutableRefObject<RunTimeCtxToBusiness>
-) => (e) => { // 组件的事件触发
+) => async (e) => { // 组件的事件触发
   /** 标准化事件的参数 */
   const eventParam = normalEventParamFn(e);
   /** 取出useRef的缓存引用 */
@@ -23,7 +23,9 @@ const eventRunWrapFn = ({
     ...runtimeCtx
   };
   /** 触发标准的事件, 传入上下文, 需要create不然第一次动作将丢失 */
-  eventHandlerFn(Object.create(eventContext));
+  const eventRes = await eventHandlerFn(Object.create(eventContext));
+  /** flow 返回是按出口导出 */
+  return Array.isArray(eventRes) ? eventRes[0] : eventRes;
 };
 
 /**
