@@ -26,7 +26,13 @@ export const getWidgetRender = (type: AllWidgetType) => {
     };
   }
   
-  return widgetRenderMeta;
+  /**
+   * 其他数据暂时不知道还有什么用
+   */
+  // return widgetRenderMeta;
+  return {
+    render: widgetRenderMeta.render
+  };
 };
 
 /**

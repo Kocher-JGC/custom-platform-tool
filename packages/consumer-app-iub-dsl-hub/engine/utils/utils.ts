@@ -2,6 +2,11 @@ export const noopError = (...args) => {
   // console.error('空函数, 空调用~~!!', args); return false;
 };
 
+export const noopRun = <T = any>(p: T) => p;
+
+
+export const noopBind: any = (...info) => {console.warn('空的函数绑定!', info); return noopError;};
+
 export const sleep = (time = 1) => new Promise(
   (resolve) => setTimeout(() => resolve(), time * 1000)
 );
