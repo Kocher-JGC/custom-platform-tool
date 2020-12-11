@@ -5,7 +5,8 @@
 //   RefType, InterRefRelation
 // } from '@iub-dsl/definition';
 
-import { InterRefRelation, FieldMeta, InterMeta } from "@iub-dsl/definition";
+import { InterRefRelation, FieldMeta, InterMeta, RefType } from "@iub-dsl/definition";
+import { RunTimeCtxToBusiness } from "../../runtime/types";
 
 /**
  * 接口元数据解析的结果
@@ -23,24 +24,31 @@ export interface InterMetaParseRes {
   };
 }
 
+export interface FindRefRelationParam {
+  tables?: string[];
+  refType?: RefType;
+  fields?: string[];
+}
+
 /**
  * 接口元数据管理暴露的接口
  */
 export interface InterMetaEntity {
   /** id和code的相互转换 */
-  id2Code: (mark: string) => string;
-  code2Id: (mark: string) => string;
+  id2Code: (IUBCtx: RunTimeCtxToBusiness, mark: string) => string;
+  code2Id: (IUBCtx: RunTimeCtxToBusiness, mark: string) => string;
   /** 获取某个接口所有mark */
-  getInterFieldMark: (opts: GetInterFieldMark) => any;
+  getInterFieldMark: (IUBCtx: RunTimeCtxToBusiness, opts: GetInterFieldMark) => any;
   /** 
    * 获取表/接口的信息 
    * mark{
    *  user/username
    *  @(interMeta).user/@(interMeta).user.username} 
    **/
-  getInterMeta: (mark: string) => InterMeta;
+  getInterMeta: (IUBCtx: RunTimeCtxToBusiness, mark: string) => InterMeta;
   /** 添加新的接口元数据 */
-  addInter: (...args: any[]) => any;
+  addInter: (IUBCtx: RunTimeCtxToBusiness, ...args: any[]) => any;
+  findRefRelation: (IUBCtx: RunTimeCtxToBusiness, p: FindRefRelationParam) => InterRefRelation[]
   /**
    * 标示转换 「user/@(interMeta)」互转
    * 比较复杂
