@@ -7,5 +7,5 @@ export interface DispatchModuleActionManage {
 
 export type TDispatchMethodNameOfActionManage = keyof typeof DispatchMethodNameOfActionManage
 
-export enum DispatchMethodNameOfActionManage {
+export const enum DispatchMethodNameOfActionManage {
 }

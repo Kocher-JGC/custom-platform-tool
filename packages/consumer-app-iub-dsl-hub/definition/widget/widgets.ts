@@ -3,7 +3,7 @@ type FieldHook = {
   after: () => {};
 };
 
-export enum AllWidgetType {
+export const enum AllWidgetType {
   FormInput = "FormInput",
   DropdownSelector = "DropdownSelector",
   Selector = "Selector",

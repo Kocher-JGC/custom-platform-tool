@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Request, Response } from "express";
-import { Controller, Get, Param, Query, Req, Res } from "@nestjs/common";
+import { Controller, Get, Param, Query, Req, Res, Inject, Logger } from "@nestjs/common";
 import { pageData2IUBDSL } from "src/page-data/transform-data";
+import { getRTablesMeta } from "@src/page-data/remote";
+import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { PageDataService } from "../page-data/page-data.service";
 import { ReleaseAppService } from "./release-app.service";
 import config from "../../config";
@@ -11,7 +13,8 @@ const { mockToken } = config;
 export class ReleaseAppController {
   constructor(
     private readonly pageDataService: PageDataService,
-    private readonly releaseAppService: ReleaseAppService
+    private readonly releaseAppService: ReleaseAppService,
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
 
   /**
@@ -53,14 +56,22 @@ export class ReleaseAppController {
         if (Array.isArray(pageDataRes) && pageDataRes.length > 0) {
           await generatePageDataFolder(folderName, releaseId);
           await generateAppConfig(folderName, { lesseeCode, applicationCode }, releaseId);
-          // TODO 循环生成实现方式
+          const processCtx = {
+            token: mockToken,
+            lessee: lesseeCode,
+            app: applicationCode
+          };
+          /** 转换IUBDSL需要的上下文 */
+          const transfCtx = { 
+            getRemoteTableMeta: async (tableIds: string[]) => {
+              return await getRTablesMeta(tableIds as any, processCtx);
+            },
+            logger: this.logger
+          };
           const genPageFilesPromise = pageDataRes.map((pageData) =>
-            this.genFileFromPageData(pageData, {
+            this.genFileFromPageData(pageData, transfCtx, {
               folderName,
               releaseId,
-              token: mockToken,
-              lessee: lesseeCode,
-              app: applicationCode
             })
           );
           const result = await Promise.all(genPageFilesPromise);
@@ -83,12 +94,12 @@ export class ReleaseAppController {
     console.log(res);
   }
 
-  async genFileFromPageData(pageData, { folderName, releaseId, token, lessee, app }) {
+  async genFileFromPageData(pageData, transfCtx , { folderName, releaseId }) {
     const { generatePageDataJSONFile } = this.releaseAppService;
     const { id } = pageData;
     let dsl;
     try {
-      dsl = await pageData2IUBDSL(pageData, { token, lessee, app });
+      dsl =  await pageData2IUBDSL(pageData, transfCtx);
     } catch(e) {
       console.error(e);
     }

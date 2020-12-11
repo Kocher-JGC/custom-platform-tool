@@ -1,5 +1,5 @@
 import { BasicActionConf } from '../action';
-import { Ref2ValueOfObj } from '../../hub';
+// import { Ref2ValueOfObj } from '../../hub';
 /**
  * 设置值时, 必须是对象 ComplexType.structObject
  * 对于 IUBStore.set时候而言 key:value 都是固定的
@@ -15,7 +15,7 @@ import { Ref2ValueOfObj } from '../../hub';
  * 2. OnChange: 值+schema
  * 3. Config: conf+[值/选择形式的(弹窗选择)]
 */
-enum ValueSource {
+const enum ValueSource {
   Selector = 'Selector', // 选择器产生的「下拉/选择框」 「额外: 穿梭/表格选择/树形选择」
   OnChange = 'OnChange', // 用户OnChange
   Config = 'Config', // 控件赋值/联动/传入值/传出值/弹窗选择+Selector[显示实际、等]/

@@ -9,7 +9,6 @@ export type IUBStoreMethod = keyof IUBStoreEntity;
 
 export interface IUBStoreEntity {
   mappingUpdateState: (ctx: RunTimeCtxToBusiness, changeMaps: ChangeMapping[]) => void;
-  targetUpdateState: (ctx: RunTimeCtxToBusiness, target: any, value: any) => void;
   getPageState: (ctx: RunTimeCtxToBusiness, strOrStruct?: GetStruct) => any;
   getWatchDeps: (ctx: RunTimeCtxToBusiness, strOrStruct?: GetStruct) => any;
   getSchemaMetadata: (ctx: RunTimeCtxToBusiness, schemaPath: string) => any;

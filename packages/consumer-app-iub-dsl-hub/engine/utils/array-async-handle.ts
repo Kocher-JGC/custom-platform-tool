@@ -13,6 +13,7 @@ export const arrayAsyncHandle = async <R = any>(originArr: any[], {
   handle,
   handleExtralParam = []
 }: ArrayAsyncHandleOptions) => {
+  if (!originArr.length) return [];
   /** 复制数组 */
   const needHandleArr = originArr.slice();
   /** 定义结果 */

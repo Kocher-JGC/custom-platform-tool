@@ -1,20 +1,13 @@
 import { pickFlowMark } from '../IUBDSL-mark';
 import { FlowCollection, FlowItemInfo } from "@iub-dsl/definition";
 import { RunTimeCtxToBusiness } from '../runtime/types';
-import { noopError } from '../utils';
-/** 
- * Promise
- * all: 所有resolve时返回, 或者有一个reject --> catch
- * race: 返回最快有处理结果的「reject/resolve」(N个请求, 仅有一个返回)
- * allSettled: 所有promise处理完成时返回, 不管成功还是失败都返回「then」 
- */
-
-const isPromise = (fn) => typeof fn?.then === 'function' || fn instanceof Promise;
+import { noopError, reSetFuncWrap } from '../utils';
+import { flowOutRunWrap, flowItemRunWrap, onceFlowOutRunWrap } from './flow-run';
 
 /**
  * 流程集合描述的解析器
  * @param flows 流程集合的描述
- * @param param1 TODO: 解析上下文的信息 「如何传递和处理」
+ * @think 解析上下文的信息 「如何传递和处理」? answer: 可以通过分开函数/合并函数解决
  */
 export const flowParser = (flows: FlowCollection) => {
   const flowIds = Object.keys(flows);
@@ -38,6 +31,8 @@ export const flowParser = (flows: FlowCollection) => {
     /**
      * 最后一层包装函数
      * 优化: 惰性函数储存
+     * 1. 若绑定时候解析, 则调用的是未解析完整的「需要支持, 运行:解析并运行」
+     * 2. 目前: 在一个地方, 统一额外解析
      */
     const flowFn = (context: RunTimeCtxToBusiness) => {
       /** 外部会对运行函数进行修改, 惰性赋值 */
@@ -68,11 +63,14 @@ export const flowParser = (flows: FlowCollection) => {
     };
     return flowFn;
   };
-  
 
+  const reSetFlow = reSetFuncWrap(flowIds, flowItemList);
+  
+  
   return {
     flowIds,
     flowItemList,
+    reSetFlow,
     bindFlows,
     bindFlow
   };
@@ -88,11 +86,15 @@ const flowItemParser = (flowItem: FlowItemInfo) => {
   if (!Array.isArray(flowItem.flowOut)) flowItem.flowOut = [];
   if (!Array.isArray(flowItem.flowOutCondition)) flowItem.flowOutCondition = [];
   
-  return (extralFlowParse) => {
+  /**
+   * 方式一: flowOut的额外解析和flowItem的额外解析, 统一传入
+   * @description flow的额外解析器
+   */
+  return (flowExtralParser) => {
     const { 
       actionRunFn, condRunFn,
       flowOutFns, flowOutCondFns,
-    } = extralFlowParse(flowItem);
+    } = flowExtralParser(flowItem);
 
     const flowOutRunFn = flowOutRunWrap({ flowOutFns, flowOutCondFns });
 
@@ -102,89 +104,4 @@ const flowItemParser = (flowItem: FlowItemInfo) => {
 
     return flowItemRunFn;
   };
-};
-
-/**
- * 返回流程出口运行的函数的包装函数
- * 条件成了才能运行某个出口 {多个出口的运行也应该是非阻塞的}
- * 生成流程每项流程运行的出口运行函数
- * @param flowOutFns: FlowOutItemWires {所有出口运行的函数}
- */
-const flowOutRunWrap = (
-  { flowOutFns = [], flowOutCondFns = [] }
-) => {
-  const flowOutNum = flowOutFns.length;
-
-  return async (context) => {
-
-    /** 条件过滤流程出口的处理 */
-    const runflowOutFns: any[] = [];
-    const filterFlowOut = async (cond: any[], idx: number) => {
-      const onceCondFn = cond[idx];
-      if (await onceCondFn(context)) {
-        runflowOutFns.push(flowOutFns[idx]);
-      }
-      if (idx < flowOutNum - 1) {
-        await filterFlowOut(cond, idx + 1);
-      }
-    };
-
-    if (flowOutFns.length) {
-      await filterFlowOut(flowOutCondFns, 0);
-    }
-    
-    /** 条件过滤流程出口的处理 */
-    return await Promise.all(runflowOutFns.map((fn) => fn(context)));
-  };
-};
-
-/**
- * 一个流程出口所有线的运行. 全都promise化「一个出口运行的函数」
- * @param flowCtx 流程上下文
- * @param param1 上下文
- */
-const onceFlowOutRunWrap = (flowFns) => {
-  return async (flowCtx) => {
-    /** 不阻塞 */
-    const onceFlowOutRunRes = flowFns.map((fns, index) => {
-      const flowItemRunRes = fns(flowCtx);
-        
-      if (!isPromise(flowItemRunRes)) {
-        return Promise.resolve(flowItemRunRes);
-      }
-      return flowItemRunRes;
-    });
-    
-    /** TODO: 是否应该使用allSettled */
-    return await Promise.all(onceFlowOutRunRes);
-  };
-};
-
-/**
- * 流程单项动作的运行函数生成器 {包装函数}
- * @param FlowItemRunWrapParam
- * @return Fn 单项流程运行的实际函数
- */
-const flowItemRunWrap = ({
-  actionRunFn, condRunFn, flowOutRunFn,
-}) => {
-  return async (context = {}) => {
-    let newCtx = context;
-    if (await condRunFn(context)) {
-      let actionRunRes: any = actionRunFn(context);
-      /** TODO: context与动作的运行结果的合并处理 */
-      if (isPromise(actionRunRes)) {
-        actionRunRes = await actionRunRes || {};
-      }
-      newCtx = mergeActionRunRes(context, actionRunRes);
-      /** 当前项流程运行完, 运行出口 */
-      await flowOutRunFn?.(newCtx);
-    }
-    return newCtx;
-  };
-};
-
-/** 记得需要保持原型链一致 */
-const mergeActionRunRes = (originContext, actionRes) => {
-  return Object.assign(originContext, actionRes || {});
 };

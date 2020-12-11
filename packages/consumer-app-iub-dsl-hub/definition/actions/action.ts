@@ -1,4 +1,4 @@
-import { CommonConditionRef } from "../hub";
+import { refIdOfCondition } from "../hub";
 import { ComplexType } from '../schema';
 import {
   ChangeState, ChangeStateType,
@@ -7,10 +7,9 @@ import {
   FeedBackType, FeedBack
 } from "./sys-actions";
 import { 
-  APBDSLCURD, APBDSLCURDActionType,
   LinkageType, Linkage,
-  InterfaceRequestType, InterfaceRequestAction,
   LowcodeType, LowcodeAction,
+  APIReqActionType, APIReqAction
 } from './business-actions';
 
 type  RefActionType = 'lowcode' | 'inter'
@@ -38,7 +37,7 @@ export interface BasicActionConf {
   actionOptions: any;
   /** 单个动作的输出, TODO: 实际如何使用 */
   actionOutput?: ActionOutput;
-  condition?: CommonConditionRef
+  condition?: refIdOfCondition
 }
 
 /** 
@@ -54,10 +53,9 @@ type SysActionType =
  * 业务相关动作类型
  */
 type BusinessActionType =
-  APBDSLCURDActionType |
-  InterfaceRequestType | 
   LowcodeType |
-  LinkageType
+  LinkageType |
+  APIReqActionType
 
 /**
  * 所有动作类型
@@ -68,8 +66,8 @@ export type AllActionType = SysActionType | BusinessActionType
  * 所有动作的定义
  */
 export type ActionDef = 
-  OpenPage | ChangeState | InterfaceRequestAction | LowcodeAction |
-  FeedBack | APBDSLCURD | OpenPageFromTableClick | Linkage
+  OpenPage | ChangeState  | LowcodeAction | APIReqAction |
+  FeedBack | OpenPageFromTableClick | Linkage
 export type ActionOutput = any; // 'string' | 'boolean' | 'undefined' | 'number' | FlowOutputOfObj;
 
 export interface FlowOutputOfObj {

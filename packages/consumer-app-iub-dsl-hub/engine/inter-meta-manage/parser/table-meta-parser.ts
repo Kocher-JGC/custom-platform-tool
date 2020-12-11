@@ -21,7 +21,7 @@ export const tableMetaParser = (meta: InterMeta, res: InterMetaParseRes) => {
   allInterList[baseIdMark] = meta;
 
   meta.fields.forEach((fieldMeta) => {
-    const { fieldCode, id: fieldId } = fieldMeta;
+    const { fieldCode, fieldId } = fieldMeta;
     const fieldIdMark = baseIdMark + TABLE_PATH_SPLIT_MARK + fieldId;
     const fieldCodeMark = baseCodeMark + TABLE_PATH_SPLIT_MARK + fieldCode;
 

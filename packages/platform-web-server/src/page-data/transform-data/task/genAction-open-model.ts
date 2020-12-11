@@ -1,4 +1,4 @@
-import { TransfromCtx } from "../types";
+import { TransfromCtx } from "../../types/types";
 
 export const genOpenPageAction = (transfromCtx: TransfromCtx, actionId: string, actionConf) => {
   const { extralDsl } = transfromCtx;

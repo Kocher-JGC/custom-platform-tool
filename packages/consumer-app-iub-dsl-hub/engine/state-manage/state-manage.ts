@@ -7,6 +7,10 @@ import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata 
 import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 import { setOfSchemaPath } from './utils';
 import { isSchema, pickSchemaMark } from '../IUBDSL-mark';
+import { set as LSet } from 'lodash';
+
+const reg = /(?<=[\\/\\[]?)([^\\/\\[\]]+)(?=[\\/\]\\[]?)/g;
+
 
 // TODO
 const getFullInitStruct = ({ baseStruct, pathMapInfo }: {
@@ -58,7 +62,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   return (): IUBStoreEntity => {
     const [IUBPageStore, setIUBPageStore] = useCacheState(fullStruct);
 
-    console.log(IUBPageStore);
+    // console.log(IUBPageStore);
     
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
     const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
@@ -68,7 +72,8 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       if (typeof strOrStruct === 'string') {
         if (isSchema(strOrStruct)) {
           // _.at(object, [paths])
-          return LGet(IUBPageStore, pickSchemaMark(strOrStruct), '');
+          strOrStruct = pickSchemaMark(strOrStruct);
+          return LGet(IUBPageStore, strOrStruct.match(reg), '');
         }
         // console.warn('stateManage: 非schemas描述');
         // TODO
@@ -86,25 +91,24 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       }
     };
     const getWatchDeps = getPageState;
-
-    /** 复杂数据的更新 */
-    const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: ChangeMapping[]) => {
+    
+    /** 复杂数据的更新, 现在先都更新 */
+    const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: any) => {
       const newState = IUBPageStore;
-      changeMaps.forEach(({ from, target }) => {
-        setOfSchemaPath(newState, target, from);
-      });
+      if (typeof changeMaps === 'object') {
+        for (const mark in changeMaps) {
+          if (isSchema(mark)) {
+            const key = pickSchemaMark(mark).split('/');
+            const val = changeMaps[mark];
+            LSet(newState, key, val);
+          }
+        }
+      }
       setIUBPageStore(newState);
     };
     
 
     const handleFn = useMemo(() => {
-      /** 单个数据的更新 */
-      const targetUpdateState = (ctx: RunTimeCtxToBusiness, target, value) => {
-        target = pickSchemaMark(target);
-        setIUBPageStore({
-          [target]: value
-        });
-      };
 
       /** 元数据映射进行更新页面状态 @(metadata).dId: val */
       const updatePageStateFromMetaMapping = (ctx: RunTimeCtxToBusiness, fieldMappingValue: any) => {
@@ -149,7 +153,6 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
       };
 
       return {
-        targetUpdateState,
         getSchemaMetadata,
         updatePageStateFromTableRecord,
         updatePageStateFromMetaMapping

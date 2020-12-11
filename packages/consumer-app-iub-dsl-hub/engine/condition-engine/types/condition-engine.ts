@@ -1,5 +1,5 @@
 export interface ConditionEngineCtx {
   expsValueHandle: any;
-  getOperatorHandle: any;
-  condControlResHandle: any;
+  getOperatorHandle?: any;
+  condControlResHandle?: any;
 }

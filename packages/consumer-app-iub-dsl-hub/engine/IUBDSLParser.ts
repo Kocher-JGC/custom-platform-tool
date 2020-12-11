@@ -1,24 +1,52 @@
 import { TypeOfIUBDSL } from "@iub-dsl/definition";
 /** dont Overengineering */
 import { schemaParser } from "./state-manage";
-// import widgetParser from "./component-manage/widget-parser";
-import { actionsCollectionParser } from "./actions-manage/actions-parser";
-import { flowParser } from './flow-engine';
+import { flowParser, flowExtraParser } from './flow-engine';
 import { interMetaManage } from "./inter-meta-manage";
 import { widgetParser } from "./widget-manage";
-import { noopError } from "./utils";
-import { ref2ValueParser, conditionParser, interParser } from "./hub";
+import { noopError, pickObj } from "./utils";
+import { ref2ValueParser, conditionParser, APIReqParser } from "./hub";
+import { actionExtralParser, actionsCollectionParser } from "./actions-manage";
+
+/**
+ * 1. 额外解析, 添加额外的业务处理逻辑
+ * 2. 绑定其他的处理函数 「绑定函数的时候, 应该把模块需要的插件传入」
+ */
+const demoParser = () => { /** 解析器 */
+  return (plugins?) => { /** 扩展解析、绑定时候函数时传入的运行时需要使用的插件 */
+    return (ctx) => { /** 运行时真实的函数 */
+    };
+  };
+};
+const xxxlist = {};
+/**
+ * 绑定解析完成的函数
+ * @param mark 用于绑定的唯一标示
+ * @param plugins 运行时需要的插件「也支持运行时动态获取插件」
+ */
+const demoBindFn = (mark, plugins?) => {
+  let fn = xxxlist[mark];
+  /** 绑定时进行扩展解析 */
+  fn = fn(plugins);
+  return (ctx) => {
+    /** 也可以在运行时候ctx, 获取插件 */
+    return fn(plugins)(ctx);
+  };
+};
+
+/**
+ * 几种主要运行流程的情况 「TODO: 还未优化至这种情况」
+ * parser --> extralParser{plugins「parse+run」} --> runFn「runPlguins」「预解析、组合解析、绑定/使用、运行」
+ * 1. 先解析, 统一进行extralParser, runFn
+ * 2. 先解析, (bind)绑定时extralParser,  runFn
+ * 3. 直接bind, 解析 + runFn
+ * 4. 直接运行  (parse+run)
+ */
 
 /**
  * 不推荐使用的默认解析
  */
 export const defaultExtralParser = (any) => any;
-
-const noopTrueFn = () => true;
-
-const pickObj = (obj, keys: string[]) => {
-  return keys.reduce((res, k) => ({ ...res, [k]: obj[k] }), {});
-};
 
 const pickKeys = ['layoutContent', 'pageID', 'name', 'type', 'isSearch', 'businessCode', 'openPageUrl'];
 /**
@@ -29,39 +57,25 @@ const pickKeys = ['layoutContent', 'pageID', 'name', 'type', 'isSearch', 'busine
  * 4. 事件 「注入流程函数」
  */
 
-const composeParser = (parseRes) => {
+const IUBDSLExtraParser = (parseRes) => {
   const { 
     actionParseRes, widgetParseRes,
-    flowParseRes, ref2ValueParseRes: { bindRef2Value }
+    flowParseRes,
+    ref2ValueParseRes,
+    condParseRes,
+    APIReqParseRes
   } = parseRes;
 
-  const { actionIds, actionList, bindAction } = actionParseRes;
+  const { reSetAction, bindAction } = actionParseRes;
+  const { reSetFlow, bindFlows, bindFlow } = flowParseRes;
+  const { bindRef2Value } = ref2ValueParseRes;
+  const { bindCondition } = condParseRes;
+  const { bindAPIReq, APIReqList, APIReqIds } = APIReqParseRes;
 
-  const { flowIds, flowItemList, bindFlows, bindFlow } = flowParseRes;
-
-  /** AOP */
-  const actionExtralParser = (conf) => {
-    console.log(conf);
-    const { actionBaseConf, actionOpts } = conf;
-    if (actionBaseConf.actionType === 'changeState') {
-      actionOpts.changeMapping = bindRef2Value(actionOpts.changeMapping);
-    }
-    return conf;
-  };
-
-  const flowExtralParser = (conf) => {
-    const {  actionId, flowOutCondition, flowOut, condition } = conf;
-    /** 解析和绑定 */
-    const actionRunFn = bindAction(actionId);
-    const flowOutFns = flowOut.map(bindFlows);
-    const condRunFn = noopTrueFn;
-    const flowOutCondFns = flowOutCondition.map(() => noopTrueFn);
-
-    return  { 
-      actionRunFn, condRunFn,
-      flowOutFns, flowOutCondFns,
-    };
-  };
+  /** 流程的额外解析 */
+  flowExtraParser(parseRes);
+  /** 动作的额外解析 */
+  actionExtralParser(parseRes);
 
   /**
    * 事件扩展解析, 在外部绑定实际调用函数
@@ -81,18 +95,6 @@ const composeParser = (parseRes) => {
     return eventHandlerFn;
   };
 
-  /** 所有action的额外的解析 */
-  actionIds.forEach(actId => {
-    const actionFnWrap = actionList[actId];
-    actionList[actId] = actionFnWrap(actionExtralParser);
-  });
-
-  /** 所有flow的额外的解析 */
-  flowIds.forEach(actId => {
-    const flowFnWrap = flowItemList[actId];
-    flowItemList[actId] = flowFnWrap(flowExtralParser);
-  });
-
   /** 所有widgetEvent的额外解析 */
   const widgetIds = Object.keys(widgetParseRes);
   widgetIds.forEach(id => {
@@ -103,25 +105,27 @@ const composeParser = (parseRes) => {
       /** 断言 */
       if (typeof eventHandlers[eKey] !== 'function') {
         console.error('事件绑定失败!!!', onceWidgetPRes, eventHandlers, eKey);
-        eventHandlers[eKey] = noopError;
+        eventHandlers[eKey] = () => noopError;
       }
     });
   });
   
 };
 
-
+/**
+ * IUBDSL 解析器
+ * @param param0 DSL
+ */
 const IUBDSLParser = ({ dsl }) => {
   console.log(dsl);
   
   const {
     schema, interMetaCollection,
     actionsCollection, flowCollection,
-    ref2ValueCollection, conditionCollection, interCollection,
-    widgetCollection,
+    ref2ValCollection, conditionCollection,
+    widgetCollection, APIReqCollection,
   } = dsl as TypeOfIUBDSL;
 
-  let parseRes: any = pickObj(dsl, pickKeys);
 
   /** 临时代码 */
   const renderWidgetIds = Object.keys(widgetCollection);
@@ -137,31 +141,26 @@ const IUBDSLParser = ({ dsl }) => {
   /** 流程解析 */
   const flowParseRes = flowParser(flowCollection);
 
-  // const { getFlowItemInfo } = flowParseRes;
-  // const { flowItemRun } = getFlowItemInfo('flow1');
-  // console.log(flowItemRun({
-  //   getFlowItemInfo
-  // })?.then());
-
   /**
    * hub Parser
    */
-  const ref2ValueParseRes = ref2ValueParser(ref2ValueCollection || {});
-  const conditionParseRes = conditionParser(conditionCollection || {});
-  const interParseRes = interParser(interCollection || {});
-  
+  const ref2ValueParseRes = ref2ValueParser(ref2ValCollection || {});
+  const condParseRes = conditionParser(conditionCollection || {});
+  const APIReqParseRes = APIReqParser(APIReqCollection || {});
 
-  parseRes = {
-    ...parseRes,
+  const parseRes = {
+    ...pickObj(dsl, pickKeys),
     flowParseRes,
     widgetParseRes,
     getWidgetParseInfo: (widgetId: string) => widgetParseRes[widgetId],
     interMetaEntity,
     schemaParseRes,
     actionParseRes,
-    ref2ValueParseRes,
     renderWidgetIds,
-    // getCompParseInfo: (compId) => componentParseRes[compId]
+    /** hub */
+    ref2ValueParseRes,
+    condParseRes,
+    APIReqParseRes
   };
 
   console.log(parseRes);
@@ -169,7 +168,7 @@ const IUBDSLParser = ({ dsl }) => {
   /**  
    * 注意: 都是引用改变, 不改变结构Key, 可以扩展更多key
    */
-  composeParser(parseRes);
+  IUBDSLExtraParser(parseRes);
 
   return parseRes;
 };

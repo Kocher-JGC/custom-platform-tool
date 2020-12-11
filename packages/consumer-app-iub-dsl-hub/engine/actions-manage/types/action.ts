@@ -15,6 +15,7 @@ export interface ActionParserRes {
   actionIds: string[];
   actionList: ActionList;
   bindAction: (actionID: string) => ActionDoFn
+  reSetAction: any;
 }
 
 /**

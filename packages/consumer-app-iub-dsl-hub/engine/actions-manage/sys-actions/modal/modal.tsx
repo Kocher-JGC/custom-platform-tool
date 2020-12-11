@@ -9,7 +9,7 @@ import { IUBDSLRenderer } from '@iub-dsl/platform/react';
 import D from '@iub-dsl/demo/pd/2';
 import { ActionDoFn } from '../../types';
 
-enum ModalType {
+const enum ModalType {
   info = 'info',
   success = 'success',
   error = 'error',

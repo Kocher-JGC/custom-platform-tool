@@ -7,10 +7,11 @@ export interface DispatchModuleMetadata {
 
 export type TDispatchMethodNameOfDatasourceMeta = keyof typeof DispatchMethodNameOfMetadata
 
-export enum DispatchMethodNameOfMetadata {
+export const enum DispatchMethodNameOfMetadata {
   getMetaKeyInfo = 'getMetaKeyInfo',
   getFieldKeyInfo = 'getFieldKeyInfo',
   getMetaFieldKey = 'getMetaFieldKey',
   getMetaFromMark = 'getMetaFromMark',
-  fieldDataMapToFieldMarkData = 'fieldDataMapToFieldMarkData'
+  fieldDataMapToFieldMarkData = 'fieldDataMapToFieldMarkData',
+  findRefRelation = 'findRefRelation'
 }

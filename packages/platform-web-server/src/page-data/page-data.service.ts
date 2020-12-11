@@ -7,6 +7,7 @@ import { PreviewAppService } from 'src/preview-app/preview-app.service';
 import config from '../../config';
 import { genUrl } from './utils';
 import { pageData2IUBDSL } from './transform-data';
+import { getRTablesMeta } from "./remote/get-remote";
 
 const { mockToken } = config;
 
@@ -45,8 +46,16 @@ export class PageDataService {
     if(!data) {
       this.logger.error(`没有页面数据: ${data}`);
       throw Error('没有页面数据');
-    } 
+    }
     this.logger.info(`请求页面数据成功`);
-    return await pageData2IUBDSL(data, processCtx);
+    
+    const transfCtx = { 
+      getRemoteTableMeta: async (tableIds: string[]) => {
+        return await getRTablesMeta(tableIds, processCtx);
+      },
+      logger: this.logger
+    };
+    
+    return await pageData2IUBDSL(data, transfCtx);
   }
 }

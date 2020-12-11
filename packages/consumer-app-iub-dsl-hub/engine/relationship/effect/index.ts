@@ -1,4 +1,3 @@
-import { ApbFunction } from "@iub-dsl/definition";
 import { APBDSLActionEffect, EffectType, EffectRelationshipEntity } from "../types";
 import {
   DispatchModuleName, DispatchMethodNameOfRelationship, DispatchMethodNameOfFlowManage, DispatchCtxOfIUBEngine,
@@ -8,32 +7,33 @@ import {
 /**
   * apbdsl的副作用分析
   */
-const effectAnalysisOfAPBDSLCURD = (APBDSLCURDParam): APBDSLActionEffect[] => {
-  const { businesscode, steps, actionId } = APBDSLCURDParam;
-  const effectInfo: APBDSLActionEffect[] = [];
-  steps.forEach(({ function: { code, params } }) => {
-    const { table } = params;
-    switch (code) {
-      case ApbFunction.DEL:
-      case ApbFunction.UPD:
-      case ApbFunction.SET:
-        effectInfo.push({
-          actionId,
-          isImmed: code === ApbFunction.DEL,
-          effectType: EffectType.tableSelect,
-          effectInfo: {
-            table,
-          },
-          triggerInfo: {
-            businesscode
-          }
-        });
-        break;
-      default:
-        break;
-    }
-  });
-  return effectInfo;
+const effectAnalysisOfAPBDSLCURD = (APBDSLCURDParam) => {
+  // const { businesscode, steps, actionId } = APBDSLCURDParam;
+  // const effectInfo: APBDSLActionEffect[] = [];
+  // steps.forEach(({ function: { code, params } }) => {
+  //   const { table } = params;
+  //   switch (code) {
+  //     case ApbFunction.DEL:
+  //     case ApbFunction.UPD:
+  //     case ApbFunction.SET:
+  //       effectInfo.push({
+  //         actionId,
+  //         isImmed: code === ApbFunction.DEL,
+  //         effectType: EffectType.tableSelect,
+  //         effectInfo: {
+  //           table,
+  //         },
+  //         triggerInfo: {
+  //           businesscode
+  //         }
+  //       });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // });
+  // return effectInfo;
+  return [];
 };
 
 export const effectRelationship = (): EffectRelationshipEntity => {

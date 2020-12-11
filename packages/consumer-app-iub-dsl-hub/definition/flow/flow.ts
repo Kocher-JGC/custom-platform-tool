@@ -1,4 +1,4 @@
-import { CommonConditionRef } from "../hub";
+import { refIdOfCondition } from "../hub";
 
 /**
  * 条件:
@@ -140,10 +140,10 @@ export interface FlowItemInfo {
   /** 该项流程执行的动作 */
   actionId: string;
   /** 条件控制某个出口是否可以使用 */
-  flowOutCondition: (CommonConditionRef)[];
+  flowOutCondition: (refIdOfCondition)[];
   /** 流程的出口个数 */
   flowOut: FlowOutItemWires[];
-  condition?: CommonConditionRef;
+  condition?: refIdOfCondition;
 }
 
 /**

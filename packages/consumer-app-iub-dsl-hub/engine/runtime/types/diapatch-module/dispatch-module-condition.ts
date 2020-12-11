@@ -7,7 +7,7 @@ export interface DispatchModuleCondition {
 
 export type TDispatchMethodNameOfCondition = keyof typeof DispatchMethodNameOfCondition
 
-export enum DispatchMethodNameOfCondition {
+export const enum DispatchMethodNameOfCondition {
   ConditionHandleOfAPBDSL = 'ConditionHandleOfAPBDSL',
   ConditionHandle = 'ConditionHandle'
 }

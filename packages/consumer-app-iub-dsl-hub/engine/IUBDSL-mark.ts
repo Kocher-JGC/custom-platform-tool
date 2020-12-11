@@ -1,5 +1,15 @@
-const pubTestFn = (regExp: RegExp) => (text: string) => regExp.test(text);
-const pubPickFn = (regExp: RegExp) => (text:string) => text.replace(regExp, '') || text;
+const pubTestFn = (regExp: RegExp) => (text = '') => regExp.test(text);
+const pubPickFn = (regExp: RegExp) => (text = '') => text.replace(regExp, '') || text;
+
+
+// /^@\([^\\)]+\)\./g
+
+export const isIUBDSLMark = (str: string) => /^@\([^\\)]+\)\./.test(str);
+
+export const defaultPickMark = (str: string) => {
+  const idx = str.indexOf(').') + 2;
+  return [str.slice(0, idx), str.slice(idx)];
+};
 
 /** 
  * 接口元数据的mark部分
@@ -20,13 +30,13 @@ export const isSchema = pubTestFn(schemaRegExp);
 export const pickSchemaMark = pubPickFn(schemaRegExp);
 
 /** 
- * 上下文载体的mark
+ * 运行时上下文
  */
-export const payloadMark = '@(payload).';
+export const runCtxMark = '@(runCtx).';
 /** 数据源的元数据 AOP/util */
-const payloadRegExp = /^@\(payload\)\./;
-export const isPayload = pubTestFn(payloadRegExp);
-export const pickPayloadMark = pubPickFn(payloadRegExp);
+const runCtxRegExp = /^@\(runCtx\)\./;
+export const isRunCtx = pubTestFn(runCtxRegExp);
+export const pickRunCtxMark = pubPickFn(runCtxRegExp);
 
 /** 
  * 动作的mark
@@ -52,11 +62,11 @@ export const pickFlowMark = pubPickFn(flowRegExp);
 /** 
  * 数据转换通用结构的mark 「数据收集结构/数据赋值」
  */
-export const ref2ValueMark = '@(ref2Value).';
+export const ref2ValMark = '@(ref2Val).';
 /** 数据源的元数据 AOP/util */
-const ref2ValueRegExp = /^@\(ref2Value\)\./;
-export const isRef2Value = pubTestFn(ref2ValueRegExp);
-export const pickRef2ValueMark = pubPickFn(ref2ValueRegExp);
+const ref2ValRegExp = /^@\(ref2Val\)\./;
+export const isRef2Val = pubTestFn(ref2ValRegExp);
+export const pickRef2ValMark = pubPickFn(ref2ValRegExp);
 /** 
  * 条件配置的mark
  */
@@ -69,10 +79,10 @@ export const pickCondMark = pubPickFn(condRegExp);
 /** 
  * 接口的mark
  */
-// @(inter).
-export const interMark = '@(inter).';
+// @(apiReq).
+export const apiReqMark = '@(apiReq).';
 /** 数据源的元数据 AOP/util */
-const interRegExp = /^@\(inter\)\./;
-export const isInter = pubTestFn(interRegExp);
-export const pickInterMark = pubPickFn(interRegExp);
+const apiReqRegExp = /^@\(apiReq\)\./;
+export const isapiReq = pubTestFn(apiReqRegExp);
+export const pickapiReqMark = pubPickFn(apiReqRegExp);
 /* ———————————————————公用 hub——————————————————————— */

@@ -7,14 +7,21 @@
 // }
 
 import { BasicActionConf } from '../action';
-import { CommonConditionRef } from '../../hub';
+import { refIdOfCondition } from '../../hub';
 
 /** 打开类型「model/page/_blank」 */
-export enum OpenType {
-  modal = 'modal',
+export const enum OpenType {
+  /** 模态框 */
+  openModal = 'openModal',
+  /** 替换当前页 */
+  replaceCurrentPage = 'replaceCurrentPage',
+  /** 应用内tab页 */
+  newTabInApp = 'newTabInApp',
+  /** 浏览器内tab */
+  newTabInBrowser = 'newTabInBrowser'
 }
 /** 打开的页面类型 */
-export enum PageType {
+export const enum PageType {
   IUBDSL = 'IUBDSL'
 }
 
@@ -24,7 +31,7 @@ export interface OpenPageOptions {
   pageType: PageType;
   pageUrl: string;
   emitConf?: { // 传入的配置
-    condition: CommonConditionRef;
+    condition: refIdOfCondition;
   }
 }
 

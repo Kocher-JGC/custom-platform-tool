@@ -25,9 +25,9 @@ export class FormInput implements PlatformWidgetComp {
     console.log('A');
   }
 
-  render(widgetState: WidgetEntityState) {
+  render(widgetState: WidgetEntityState, eventProp) {
     return (
-      <FormInputComp {...widgetState} />
+      <FormInputComp {...widgetState} {...eventProp} />
     );
   }
 }

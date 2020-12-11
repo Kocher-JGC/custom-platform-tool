@@ -2,7 +2,7 @@
 import { notification } from 'antd';
 import { AxiosResponse } from 'axios';
 
-enum APBDSLResponeCode {
+const enum APBDSLResponeCode {
   SA0000 = 'SA0000',  SA0002 = 'SA0002',  SA0003 = 'SA0003',  SA0004 = 'SA0004',
   SA0005 = 'SA0005',  SA0006 = 'SA0006',  SA0007 = 'SA0007',  SA0008 = 'SA0008',
   SA0009 = 'SA0009',  SA0010 = 'SA0010',  SA0017 = 'SA0017',  SA0018 = 'SA0018',

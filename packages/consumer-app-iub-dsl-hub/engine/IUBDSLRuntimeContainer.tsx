@@ -4,14 +4,16 @@ import React, {
 } from 'react';
 import { LayoutRenderer } from '@engine/layout-renderer';
 import { pageManage } from './page-manage';
-import Modal from 'antd/lib/modal/Modal';
 import { createIUBStore } from './state-manage';
 import { DefaultCtx, genRuntimeCtxFn } from './runtime';
 import { effectRelationship as genEffectRelationship } from './relationship';
 import { RunTimeCtxToBusiness } from './runtime/types';
 import { widgetRenderer } from "./widget-manage";
-
-const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
+  
+/**
+ * 要提供一种注册机制, 动态注册上下文内容
+ */
+const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler, PageRenderer }) => {
   const {
     schemaParseRes,
     getWidgetParseInfo,
@@ -24,10 +26,12 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus }) => {
 
   /** 页面运行时上下文 */
   const runTimeCtxToBusiness = useRef<RunTimeCtxToBusiness>({
+    PageRenderer,
     pageStatus,
     pageId,
     pageMark: '',
     action: {},
+    requestHandler,
     pageManage: pageManageInstance,
     asyncDispatchOfIUBEngine: async (dispatchCtx) => false,
     dispatchOfIUBEngine: (dispatchCtx) => false

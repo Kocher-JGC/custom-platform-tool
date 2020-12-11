@@ -7,7 +7,7 @@ import { LayoutContent } from "../layout";
 import { PageVariable } from '../page-variable';
 import { InterMetaCollection } from '../interface';
 /** 公共的hub */
-import { ConditionCollection, LowcodeCollection, Ref2ValueCollection, InterCollection } from '../hub';
+import { ConditionCollection, LowcodeCollection, Ref2ValCollection, InterCollection, APIReqCollection } from '../hub';
 
 export interface PageCommunication {
   pageInfo: {
@@ -58,11 +58,11 @@ export interface TypeOfIUBDSL extends PageMetadata {
   /** 公共条件描述 */
   conditionCollection: ConditionCollection;
   /** 数据转换的描述配置「获取值/赋值」  */
-  ref2ValueCollection: Ref2ValueCollection;
+  ref2ValCollection: Ref2ValCollection;
   /** 低代码的描述 */
   lowcodeCollection: LowcodeCollection;
   /** 页面所有接口请求的配置的描述 */
-  interCollection: InterCollection;
+  APIReqCollection: APIReqCollection;
   
   /** hub 可以在适当的业务节点动态插入的抽象公共提取 --------- end */
 
