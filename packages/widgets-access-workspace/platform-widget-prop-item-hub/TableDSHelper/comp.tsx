@@ -348,7 +348,7 @@ export class TableDSHelperComp extends React.Component<
                 return close();
               }
               const nextMetaID = changePageMeta({
-                type: "create/rm",
+                type: "create&rm",
                 metaAttr: "dataSource",
                 // metaID: DSOptionsRef,
                 rmMetaID: DSOptionsRef,
