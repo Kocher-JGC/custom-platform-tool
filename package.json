@@ -4,11 +4,11 @@
   "private": true,
   "description": "自定义 3.0 前端工程",
   "workspaces": [
-    "packages/provider-app-*/",
-    "packages/engine-*/",
-    "packages/infra-*/",
-    "packages/ui-*/",
-    "packages/platform-widget-access-*/",
+    "packages-consumer-app/*",
+    "packages-platform-widget-access-spec/*",
+    "packages-platform-widgets-access-space/*",
+    "packages-provider-app/*",
+    "packages-web-client-shared/*",
     "packages/*-hub/*"
   ],
   "scripts": {
