@@ -5,6 +5,10 @@ import { PageRenderCtx } from "@engine/ui-admin-template";
 import { queryPageData } from "../../services/page";
 import "./index.less";
 
+import { locationForm } from '@iub-dsl/demo';
+import { APBDSLrequest } from "../../utils";
+import { originGenUrl, SYS_MENU_BUSINESSCODE } from "../../utils/gen-url";
+
 export interface PageContainerProps extends PageRenderCtx {
   /** 页面 id */
   pageID: string
@@ -18,6 +22,12 @@ export interface PageContainerProps extends PageRenderCtx {
   mode?: string
 }
 
+const genPageRenderer = (props, Renderer) => {
+  return ({ pageId }) => {
+    return <Renderer {...props} pageID={pageId} />;
+  };
+};
+
 
 /**
  * 页面加载容器，主要功能：
@@ -25,14 +35,19 @@ export interface PageContainerProps extends PageRenderCtx {
  * 2. 提供页面内的 UI 是否可以显示的授权功能
  * TODO: 完善功能
  */
-export class PageContainer extends React.Component<PageContainerProps> {
+export class PageContainer extends React.PureComponent<PageContainerProps> {
+  static PageRenderer: any = () => '错误的PageRenderer渲染';
+  static requestHandler: any = (...args) => false;
   state = {
     pageData: {},
-    ready: false
+    ready: false,
+    requestHandler: () => {},
   }
 
   componentDidMount() {
     const { pageID, app, lessee, mode, t } = this.props;
+    PageContainer.requestHandler = async (reqParam, bizCode = SYS_MENU_BUSINESSCODE) => { return await APBDSLrequest(originGenUrl({ lesseeCode: lessee, bizCode, appCode: app }),reqParam); };
+    PageContainer.PageRenderer = genPageRenderer(this.props, PageContainer);
     queryPageData({
       id: pageID,
       app,
@@ -48,19 +63,25 @@ export class PageContainer extends React.Component<PageContainerProps> {
       });
   }
 
+
   render() {
-    const { children } = this.props;
+    const { children, pageID } = this.props;
     const { ready, pageData } = this.state;
-    
+    // console.log('-------------PageContainer Render--------------');
     return (
       <div
         className="__page_container" style={{
           minHeight: 400
         }}
       >
+        {/* <IUBDSLRenderer dsl={locationForm} key={pageID} /> */}
         {
           ready ? (
-            <IUBDSLRenderer dsl={pageData} />
+            <IUBDSLRenderer 
+              PageRenderer={PageContainer.PageRenderer}
+              requestHandler={PageContainer.requestHandler}
+              dsl={pageData} 
+            />
           ) : (
             <div>
               Loading
