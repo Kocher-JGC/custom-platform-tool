@@ -84,7 +84,6 @@ export default class CodeCompiler {
     const res = generate(this.ast as File, {
       comments: false
     });
-    console.log("转换结果: ", res);
     return res.code;
   }
 

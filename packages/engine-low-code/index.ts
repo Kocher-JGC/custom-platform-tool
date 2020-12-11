@@ -6,5 +6,9 @@ export default function codeEngine(code: string, options: IOptions) {
     ? `(async function() { return ${code} })()`
     : `(async function() { ${code} })()`;
   compiler.setCode(runCode);
-  return compiler.getCompileCode();
+  if (options.identifierMapping) {
+    return compiler.getCompileCode();
+  }else{
+    return runCode;
+  }
 }

@@ -57,10 +57,9 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
           onClick={(e) => {
             const closeModal = platformCtx.selector.openExpressionImporter({
               defaultValue: exp,
-              onSubmit: ({ value }) => {
-                console.log("表达式结果", value);
+              onSubmit: (exp) => {
                 onChange([
-                  { value: value, attr: 'exp' },
+                  { value: exp.code && exp.variable ? exp : "", attr: 'exp' },
                   /** 需要将 value 清空 */
                   { value: null, attr: 'realVal' },
                   { value: null, attr: 'variable' },

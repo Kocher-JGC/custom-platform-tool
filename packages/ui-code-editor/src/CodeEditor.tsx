@@ -83,7 +83,7 @@ interface ICodeEditorProps extends EditorConfiguration, IEvent {
   /**  */
   hintOptions?: { completeSingle: boolean; keywords?: string[] };
   /** 获取 Editor 实例 */
-  getEditor?: (editor: Editor) => void;
+  getEditor?: (editor: EditorFromTextArea) => void;
   /** 自定义注册 */
   registerHelper?: (editor: Editor, options: EditorConfiguration) => void;
   /** 实例化完成 */

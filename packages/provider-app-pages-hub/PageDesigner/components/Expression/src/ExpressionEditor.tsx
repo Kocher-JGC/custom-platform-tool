@@ -12,14 +12,16 @@ import {
   Popover,
   Input,
   InputNumber,
+  Tooltip,
   message
 } from "antd";
-import { Editor } from "codemirror";
+import { EditorFromTextArea } from "codemirror";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
 import codeEngine from "@engine/low-code";
 import createSandbox from "@engine/js-sandbox";
 import { PlatformCtx } from "@platform-widget-access/spec";
 import { HY_METHODS } from "@library/expression-methods";
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { SHOW_FUNCTION_FIELD, HY_METHODS_TYPE, VARIABLE_TYPE, VAR_VALUE_TYPE } from "./constants";
 import { IHyMethod } from "./interface";
 import "./index.less";
@@ -41,33 +43,44 @@ const HY = HY_METHODS.reduce((a, b) => {
 const ExpressionEditor = React.lazy(
   () => import(/* webpackChunkName: "code_editor" */ "@engine/code-editor")
 );
+
+interface ISubmitRes {code: string | null, variable: { field: string, value: string }[]}
 interface IProps {
   metaCtx: PlatformCtx["meta"];
   /** 表达式提交回调函数 */
-  onSubmit: (res: { value: string }) => void;
-  defaultValue?: string;
+  onSubmit: (transformRes: ISubmitRes) => void;
+  defaultValue?: ISubmitRes;
 }
 
+interface ITransformRes {
+  code: string;
+  fieldMap: { [key: string]: string };
+  titleMap: { [key: string]: string };
+}
+
+type TVariableItem = VariableItem & { field: string };
+type TVariableTree<T> = { [key: string]: T[] };
 export const Expression: React.FC<IProps> = (props) => {
   /** 编辑器对象 */
-  const [editor, setEditor] = useState<Editor | null>(null);
+  const [editor, setEditor] = useState<EditorFromTextArea | null>(null);
   /** 编辑器是否准备就绪 */
   const [ready, setReady] = useState<boolean>(false);
+  const [defaultCode, setDefaultCode] = useState<string>(false);
   /** 当前正在查看简介的函数对象 */
   const [curFunction, setCurFunction] = useState<IHyMethod | null>(null);
   /** 用于调试的变量-键值对，用于沙箱的上下文 */
-  const [debugCodeValue, setDebugCodeValue] = useState({});
+  const [debugCodeValue, setDebugCodeValue] = useState<{ [key: string]: number | string }>({});
+  /** 变量分类内标题是否重复 */
+  const [variableTitleRepeat, setVariableTitleRepeat] = useState<{ [key: string]: boolean }>({});
   /** 变量是否正在编辑-键值对 */
-  const [variableVisible, setVariableVisible] = useState({});
-  /** 变量 key 值的显示值和实际值-键值对，用于低代码引擎替换变量 */
-  const [variableMapping, setVariableMapping] = useState<{ [key: string]: string } | null>(null);
+  const [variableVisible, setVariableVisible] = useState<{ [key: string]: boolean }>({});
   /** 变量树 */
-  const [variableTree, setVariableTree] = useState<{ [key: string]: VariableItem[] }>({});
+  const [variableTree, setVariableTree] = useState<TVariableTree<TVariableItem>>({});
   /** 编辑器下拉提示 */
-  const [hintOptions, setHintOptions] = useState<{ completeSingle: boolean; keywords: string[] }>({
-    completeSingle: false,
-    keywords: []
-  });
+  // const [hintOptions, setHintOptions] = useState<{ completeSingle: boolean; keywords: string[] }>({
+  //   completeSingle: false,
+  //   keywords: []
+  // });
   /** 调试结果 */
   const [operationResult, setOperationResult] = useState("");
 
@@ -87,78 +100,39 @@ export const Expression: React.FC<IProps> = (props) => {
     }, 500);
   };
   /**
-   * 调试代码
-   */
-  const debugCode = async () => {
-    if (!editor) return;
-    const code = editor.getValue();
-    console.log("编辑器内容", code);
-    if (code && variableMapping) {
-      try {
-        const str = codeEngine(code, { identifierMapping: variableMapping });
-        console.dir("低代码引擎处理结果: ", str);
-        const context = getVariableValue();
-        console.log("变量上下文: ", context);
-        const sandbox = createSandbox({ ...context, HY }, {});
-        const res = await sandbox(str);
-        console.log("调试结果: ", res);
-        message.success(`调试结果: ${res}`);
-        setOperationResult(res);
-      } catch (error) {
-        console.dir("调试失败: ", error);
-        setOperationResult(error.toString());
-        message.error(`调试失败，${error.message}`);
-      }
-    }
-  };
-  /**
-   * 初始化时格式化变量树
-   */
-  const initVariableMapping = (res) => {
-    const obj = {};
-    Object.keys(res).forEach((type) => {
-      res[type].forEach((item) => {
-        obj[item.title] = `${item.type}.${item.id}`;
-      });
-    });
-    setVariableMapping(obj);
-  };
-  /**
-   * 将用于调试的变量-键值对转换成沙箱可用的上下文
-   */
-  const getVariableValue = () => {
-    const variableValue = {};
-    Object.keys(debugCodeValue).forEach((key) => {
-      const tmp = key.split("~");
-      if (tmp[0] && tmp[1]) {
-        if (!variableValue[tmp[0]]) variableValue[tmp[0]] = {};
-        variableValue[tmp[0]][tmp[1]] = debugCodeValue[key];
-      }
-    });
-    return variableValue;
-  };
-  /**
    * 替换变量的特殊字符 . (在低代码引擎中会误认为获取对象键值)
    */
-  const replacePoint = (res: {
-    [key: string]: VariableItem[];
-  }): { [key: string]: VariableItem[] } => {
+  const formatVariable = (res: TVariableTree<VariableItem>): TVariableTree<TVariableItem> => {
     const obj = {};
     Object.keys(res).forEach((type) => {
       obj[type] = res[type].map((item) => ({
         ...item,
-        code: item.code?.replace(/\./g, "_"),
-        id: item.id?.replace(/\./g, "_"),
-        title: item.title?.replace(/\./g, "_")
+        field: `${type}$${item.id?.replace(/\./g, "$")}`,
+        title: item.title?.replace(/\./g, "")
       }));
     });
     return obj;
   };
   /**
+   * 检查变量分类内标题是否重复
+   * @param res
+   */
+  const checkVariableTitle = (res: TVariableTree<TVariableItem>): void => {
+    setVariableTitleRepeat(Object.keys(res).reduce((a, b) => {
+      const tmp = res[b].map((item)=>item.title);
+      for(let i = 0; i < tmp.length; i++){
+        if(tmp.indexOf(tmp[i]) !== tmp.lastIndexOf(tmp[i])){
+          a[b]= true;
+          break;
+        }
+      }
+      return a;
+    }, {}));
+  };
+  /**
    * 根据变量类型初始化变量编辑组件
    */
-  const initVariableEdit = (varType: string, type: string, id: string) => {
-    const type_id = `${type}~${id}`;
+  const initVariableEdit = (varType: string, field: string) => {
     switch (varType) {
       case "number":
         return (
@@ -166,11 +140,11 @@ export const Expression: React.FC<IProps> = (props) => {
             onPressEnter={(e) => {
               setDebugCodeValue((preDebugCodeValue) => ({
                 ...preDebugCodeValue,
-                [type_id]: e.target.value
+                [field]: e.target.value
               }));
               setVariableVisible((pre) => ({
                 ...pre,
-                [id]: !pre[id]
+                [field]: !pre[field]
               }));
             }}
           />
@@ -181,11 +155,11 @@ export const Expression: React.FC<IProps> = (props) => {
             onPressEnter={(e) => {
               setDebugCodeValue((preDebugCodeValue) => ({
                 ...preDebugCodeValue,
-                [type_id]: e.target.value
+                [field]: e.target.value
               }));
               setVariableVisible((pre) => ({
                 ...pre,
-                [id]: !pre[id]
+                [field]: !pre[field]
               }));
             }}
           />
@@ -207,35 +181,169 @@ export const Expression: React.FC<IProps> = (props) => {
     editor.setValue("");
   };
   /**
+   * 选择变量
+   * @param variable
+   */
+  const selectVariable = (variable: TVariableItem) => {
+    // insertValue(variable.title, 0);
+    if (!editor) return;
+    const preCur = editor.getCursor();
+    editor.replaceRange(variable.title, preCur, preCur, '+insert');
+    const cur = editor.getCursor();
+    editor.doc.markText(preCur, cur, { className: "cm-field cm-field-value", attributes: { "data-id": variable.id, "data-field": variable.field }, atomic: true });
+    editor.focus();
+  };
+  /**
    * 选择方法，异步函数需要多加 await
    */
   const selectMethod = (item: IHyMethod) => {
     insertValue(`${item.type === "ASYNC" ? "await " : ""}${item.namespace}.${item.name}()`, 1);
     setCurFunction(item);
   };
-
+  /**
+   * 保存表达式
+   */
   const onSubmit = () =>{
     if (!editor) return;
     const code = editor.getValue();
-    if (code && variableMapping) {
+    if (code) {
       try {
-        // const value = codeEngine(code, { identifierMapping: variableMapping });
-        props.onSubmit && props.onSubmit({ value: code });
-      }catch (error){
+        const { code, fieldMap } = replaceVariablesTitleToId();
+        if(code && fieldMap){
+          props.onSubmit && props.onSubmit({ code, variable: Object.keys(fieldMap).reduce((a, b)=>{
+            a.push({
+              field: b,
+              value: fieldMap[b]
+            });
+            return a;
+          }, [] as ISubmitRes['variable']) });
+        } else {
+          message.error("生成代码失败，请检查表达式是否无误");
+        }
+      } catch (error) {
         message.error("生成代码失败，请检查表达式是否无误");
       }
+    } else {
+      props.onSubmit && props.onSubmit({ code: null, variable: [] });
+    }
+  };
+  /**
+   * 转换编辑器内容为低代码字符串和包含变量
+   * @param str 编辑器内容
+   */
+  const replaceVariablesTitleToId = (): ITransformRes => {
+    if (!editor) return { code: "", fieldMap: {}, titleMap: {} };
+    let code = "";
+    const fieldMap = {};
+    const titleMap = {};
+    editor.doc.eachLine((line) => {
+      let lineText = line.text;
+      const tmp: {title: string, field: string}[] = [];
+      const sortMarks = line.markedSpans?.sort((a, b) => a.from - b.from);
+      sortMarks.forEach((textMark) => {
+        if(textMark.marker.className?.indexOf("cm-field") !== -1) {
+          const title = line.text.substring(textMark.from, textMark.to);
+          const field = textMark.marker.attributes["data-field"];
+          const id = textMark.marker.attributes["data-id"];
+          tmp.push({ title, field });
+          fieldMap[field] = id;
+          titleMap[field] = title;
+        }
+      });
+      tmp.forEach(({ title, field })=>{
+        lineText = lineText.replace(title, field);
+      });
+      code += lineText;
+    });
+    return { code, fieldMap, titleMap };
+  };
+  /**
+   * 检查变量的设置值是否满足调试需要
+   * @param { fieldMap, titleMap } 字段映射和标题映射
+   * @param Values 变量设置值键值对
+   */
+  const checkDebugCodeContext = ({ fieldMap, titleMap }: ITransformRes, Values: { [key: string]: number | string }): boolean => {
+    let success = true;
+    for (let i = 0, fieldMapKey = Object.keys(fieldMap); i < fieldMapKey.length; i++) {
+      if(!Values[fieldMapKey[i]]) {
+        message.error(`缺少调试变量 ${titleMap[fieldMapKey[i]]}`);
+        success = false;
+        break;
+      }
+    }
+    return success;
+  };
+  /**
+   * 调试代码
+   */
+  const debugCode = async () => {
+    if (!editor) return;
+    const code = editor.getValue();
+    console.log("编辑器内容", code);
+    if (code) {
+      try {
+        // console.dir("低代码引擎处理结果: ", str);
+        const transformRes = replaceVariablesTitleToId();
+        console.log("转换结果: ", transformRes);
+        console.log("变量上下文: ", debugCodeValue);
+        // 检查所需参数/变量是否存在
+        if (checkDebugCodeContext(transformRes, debugCodeValue)) {
+          const str = codeEngine(code, {});
+          console.dir("低代码引擎处理结果: ", str);
+          const sandbox = createSandbox({ ...debugCodeValue, HY }, {});
+          const res = await sandbox(transformRes.code);
+          console.log("调试结果: ", res);
+          message.success(`调试结果: ${res}`);
+          setOperationResult(res);
+        }
+      } catch (error) {
+        console.dir("调试失败: ", error);
+        setOperationResult(error.toString());
+        message.error(`调试失败，${error.message}`);
+      }
+    } else {
+      message.warn("编辑器没有内容");
     }
   };
 
   useEffect(() => {
+    console.log("初始值: ", props.defaultValue);
     props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
       // 替换特殊字符 . 为 _
-      const variable = replacePoint(res);
+      const variable = formatVariable(res);
+      // 检查变量标题是否存在重复
+      checkVariableTitle(variable);
+      // 生成选择变量（折叠面板）所需数据
       setVariableTree(variable);
-      initVariableMapping(variable);
+      // 初始化默认值
+      if (props.defaultValue && props.defaultValue.code && props.defaultValue.variable) {
+        let isNormal = true;
+        let code = props.defaultValue.code;
+        const useVariable = props.defaultValue.variable;
+        for (let j = 0; j < useVariable.length; j++) {
+          const { field } = useVariable[j];
+          let has = false;
+          for (let i = 0, list = Object.keys(variable); i < list.length; i++) {
+            const item = variable[list[i]].find((item) => item.field === field);
+            if (item) {
+              has = true;
+              code = code.replace(new RegExp(item.field.replace(/\$/g, "\\$"), "g"), item.title);
+            }
+          }
+          if (!has) {
+            isNormal = false;
+            message.error(`变量已移除，表达式失效`);
+            break;
+          }
+        }
+        if (isNormal) {
+          console.log("初始编辑器内容", code);
+          setDefaultCode(code);
+        }
+      }
       console.log("全部变量: ", res, variable);
     });
-  }, []);
+  }, [props.defaultValue]);
 
   return (
     <Suspense fallback={<span></span>}>
@@ -259,7 +367,7 @@ export const Expression: React.FC<IProps> = (props) => {
               mode="javascript"
               lint={false}
               height="200px"
-              defaultValue={props.defaultValue || ""}
+              defaultValue={defaultCode || ""}
               getEditor={(editor) => setEditor(editor)}
               ready={() => {
                 setReady(true);
@@ -277,18 +385,18 @@ export const Expression: React.FC<IProps> = (props) => {
               <div className="expression-option-body">
                 <Collapse defaultActiveKey={["1"]} bordered={false}>
                   {Object.keys(variableTree).map((type) => (
-                    <Panel header={VARIABLE_TYPE[type]} key={type}>
+                    <Panel header={<Space className="expression-option-title"><span>{VARIABLE_TYPE[type]}</span>{variableTitleRepeat && variableTitleRepeat[type] && <Tooltip title="标题存在重复，请注意区分"><ExclamationCircleOutlined style={{ color: "#ffe58f" }} /></Tooltip>}</Space>} key={type}>
                       <List
                         size="small"
                         bordered={false}
                         dataSource={variableTree[type]}
-                        renderItem={(item: VariableItem) => (
+                        renderItem={(item: TVariableItem) => (
                           <List.Item
                             actions={[
                               <Tag color="processing">{VAR_VALUE_TYPE[item.varType]}</Tag>,
                               <Popover
-                                visible={!!variableVisible[item.id]}
-                                content={initVariableEdit(item.varType, item.type, item.id)}
+                                visible={!!variableVisible[item.field]}
+                                content={initVariableEdit(item.varType, item.field)}
                                 trigger="click"
                               >
                                 <Tag
@@ -296,18 +404,18 @@ export const Expression: React.FC<IProps> = (props) => {
                                   onClick={() => {
                                     setVariableVisible((pre) => ({
                                       ...pre,
-                                      [item.id]: !pre[item.id]
+                                      [item.field]: !pre[item.field]
                                     }));
                                   }}
                                 >
-                                  {debugCodeValue[`${item.type}~${item.id}`] || "编辑"}
+                                  {debugCodeValue[item.field] || "编辑"}
                                 </Tag>
                               </Popover>
                             ]}
                           >
                             <span
                               onClick={() => {
-                                insertValue(item.title, 0);
+                                selectVariable(item);
                               }}
                             >
                               {item.title}
