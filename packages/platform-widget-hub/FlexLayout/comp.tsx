@@ -20,7 +20,12 @@ export const FlexLayoutComp: React.FC<FlexLayoutCompProps> = (props) => {
   } = props;
 
   return (
-    <div>
+    <div
+      style={{
+        minHeight: 100,
+      }}
+      className="bg_default"
+    >
       {children}
     </div>
   );

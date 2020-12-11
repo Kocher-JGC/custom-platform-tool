@@ -35,7 +35,7 @@ export default class ProxySandbox {
   }
 
   public createProxy() {
-    const blackmap = this.options && this.getBlackMap() || {};
+    const blackMap = this.options && this.getBlackMap() || {};
     const context = Object.assign({}, window, this.context);
     const { fakeWindow, propertiesWithGetter } = createFakeWindow(window);
     const descriptorTargetMap = new Map<PropertyKey, SymbolTarget>();
@@ -60,7 +60,7 @@ export default class ProxySandbox {
        * @param p
        */
       get(target: IFakeWindow, p: PropertyKey): any {
-        if (blackmap.hasOwnProperty(p)) {
+        if (blackMap.hasOwnProperty(p)) {
           console.error(`属性${p as string}被拦截`);
           return undefined;
         }
@@ -151,12 +151,12 @@ export default class ProxySandbox {
    * 获取黑名单属性
    */
   public getBlackMap() {
-    const blackmap: IBlackMap = {};
+    const blackMap: IBlackMap = {};
     const { blackList = [] } = this.options;
     for (let i = 0; i < blackList.length; i++) {
       const name = blackList[i];
-      blackmap[name] = true;
+      blackMap[name] = true;
     }
-    return blackmap;
+    return blackMap;
   }
 }

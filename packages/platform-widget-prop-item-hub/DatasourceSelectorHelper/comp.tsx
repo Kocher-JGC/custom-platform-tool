@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { Radio } from 'antd';
 import { PropItemRenderContext } from '@platform-widget-access/spec';
-// import { PopModelSelector } from '@infra/ui';
-// import { DictSelector } from './DictSelector';
-// import { TableSelector } from './TableSelector';
 
 interface OptionsType {
   type: 'TABLE' | 'DICT'
@@ -43,18 +40,18 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     metaAttr: 'dataSource',
     metaRefID: DSOptionsRef
   }) as OptionsType : null;
-  const [dsType, setDsType] = useState(datasourceMeta?.type);
 
-  const dsBinder = dsType ? (
+  const dsBinder = (
     <div 
       className="px-4 py-2 border cursor-pointer"
       onClick={e => {
         platformCtx.selector.openDatasourceSelector({
           defaultSelected: datasourceMeta ? [datasourceMeta] : [],
-          modalType: 'side',
-          position: 'right',
+          modalType: 'normal',
+          position: 'top',
           single: true,
-          type: dsType,
+          typeSingle: true,
+          typeArea: ['TABLE', 'DICT'],
           onSubmit: ({ close, interDatasources }) => {
             // 由于是单选的，所以只需要取 0
             const bindedDS = interDatasources[0];
@@ -79,21 +76,10 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     >
       {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
     </div>
-  ) : null;
+  );
 
   return (
     <div>
-      <div className="py-2">
-        <Radio.Group
-          onChange={(e) => {
-            setDsType(e.target.value);
-          }}
-          value={dsType}
-        >
-          <Radio value={'TABLE'}>数据表</Radio>
-          <Radio value={'DICT'}>字典表</Radio>
-        </Radio.Group>
-      </div>
       {
         dsBinder
       }

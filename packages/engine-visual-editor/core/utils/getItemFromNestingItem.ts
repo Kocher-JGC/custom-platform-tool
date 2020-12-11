@@ -18,12 +18,17 @@ export const getItemFromNestingItems = <T>(
   if (!nestingInfo) {
     throw Error('需要传入 nestingInfo，否则不要调用此方法，请检查调用链路');
   }
+  const _nestingInfo = [...nestingInfo];
+  const targetItemIdx = _nestingInfo.pop() as number;
+  if(_nestingInfo.length === 0) {
+    return nestingData[targetItemIdx];
+  }
   let resData;
   const recusive = (d, deep: number) => {
-    const i = nestingInfo[deep];
+    const i = _nestingInfo[deep];
     const _d = d[i];
     const nextDeep = deep++;
-    if (_d && _d[nestingKey] && typeof nestingInfo[nextDeep] !== 'undefined') {
+    if (_d && _d[nestingKey] && typeof _nestingInfo[nextDeep] !== 'undefined') {
       recusive(_d[nestingKey], nextDeep);
     } else {
       resData = _d;

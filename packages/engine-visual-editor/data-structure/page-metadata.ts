@@ -7,14 +7,14 @@ export interface VarAttrType {
   /** 该属性变量的别名 */
   attr: string
   /** 变量类型 */
-  type: 'string' | 'number'
+  type: 'string' | 'number' | 'array' | 'date' | 'dateTime' | 'stringArray' | 'numberArray' | 'dateArray' | 'dateTimeArray'
 }
 
 export interface EventAttrType {
   /** 该事件变量的别名 */
   alias: string
   /** 事件类型 */
-  type: 'onClick'|'onDbClick'|'onMouseIn'|'onMouseOut'|'onChange'
+  type: 'onClick'|'onDbClick'|'onMouseIn'|'onMouseOut'|'onChange'|'onQuery'|'onRowCheck'|'onRowDbClick'|'onRowClick'|'onCellDbClick'|'onCellClick' | 'onRowBlur' | 'onCellBlur'
 }
 
 /**
@@ -174,11 +174,27 @@ export interface WriteFormData extends BasicActionsMeta {
   actionType: "writeFormData"
   configCn: ''
 }
+/**
+ * 表格回写
+ */
+export interface WriteTableData extends BasicActionsMeta {
+  actionType: 'writeTableData'
+  configCn: ''
+  writeTableData: {control: string[]}
+}
+/**
+ * 表格读取
+ */
+export interface ReadTableData extends BasicActionsMeta {
+  actionType: 'readTableData'
+  configCn: ''
+  readTableData: {control: string[]}
+}
 
 /**
  * 动作
  */
-export type ActionsMeta = OpenPage | ChangeVariables | SubmitData | DisplayControl | RefreshPage | ClosePage | ReadFormData | WriteFormData
+export type ActionsMeta = OpenPage | ChangeVariables | SubmitData | DisplayControl | RefreshPage | ClosePage | ReadFormData | WriteFormData | WriteTableData | ReadTableData
 /**
  * TODO: 事件类型
  */

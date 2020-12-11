@@ -1,34 +1,55 @@
 /* eslint-disable no-param-reassign */
 import React from "react";
-import produce from 'immer';
-import { AppActionsContext, ChangeMetadataOptions, VEDispatcher, VisualEditorState } from "@engine/visual-editor/core";
-import { getPageDetailService, updatePageService } from "@provider-app/services";
+import produce from "immer";
+import {
+  AppActionsContext,
+  ChangeMetadataOptions,
+  VEDispatcher,
+  VisualEditorState,
+} from "@engine/visual-editor/core";
+import {
+  getPageDetailService,
+  updatePageService,
+} from "@provider-app/services";
 import { LoadingTip } from "@provider-ui/loading-tip";
 import Debounce from "@mini-code/base-func/debounce";
 import pick from "lodash/pick";
-import ToolBar from './components/PDToolbar';
-import WidgetPanel from './components/PDWidgetPanel';
-import CanvasStage from './components/PDCanvasStage';
-import { PDPropertiesEditor } from './components/PDPropertiesEditor';
-import { wrapPageData, takeUsedWidgetIDs, genBusinessCode, takeDatasourcesForRemote, createPlatformCtx, PlatformContext, genMetaRefID, genMetaIDStrategy } from "./utils";
+import {
+  ChangeEntityState,
+  NextEntityState,
+  NextEntityStateType,
+} from "@engine/visual-editor/data-structure";
+import ToolBar from "./components/PDToolbar";
+import WidgetPanel from "./components/PDWidgetPanel";
+import CanvasStage from "./components/PDCanvasStage";
+import { PDPropertiesEditor } from "./components/PDPropertiesEditor";
+import {
+  wrapPageData,
+  takeUsedWidgetIDs,
+  genBusinessCode,
+  takeDatasourcesForRemote,
+  createPlatformCtx,
+  PlatformContext,
+  genMetaRefID,
+  genMetaIDStrategy,
+  getVariableData,
+} from "./utils";
 
-import { ChangeEntityState, NextEntityState, NextEntityStateType } from "@engine/visual-editor/data-structure";
-
-import './style';
-import { entityStateMergeRule } from "@engine/visual-editor/utils";
+import "./style";
 
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
 // const offlineMode = true;
 
 interface VisualEditorAppProps extends VisualEditorState {
-  dispatcher: VEDispatcher
+  dispatcher: VEDispatcher;
 }
 
 const debounce = new Debounce();
 
-class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.ProviderSubAppProps> {
-
+class PageDesignerApp extends React.Component<
+VisualEditorAppProps & HY.ProviderSubAppProps
+> {
   componentDidMount = async () => {
     // 在顶层尝试捕获异常
     try {
@@ -36,7 +57,7 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   /**
    * 更改 page meta 的策略
@@ -45,8 +66,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
    * 3. 通过 replace 控制是否全量替换更新
    * 4. 通过 relyID 指定该 meta 的被依赖项
    */
-  changePageMetaStradegy = (options: ChangeMetadataOptions): string | string[] => {
-    const { selectedInfo, dispatcher: { ChangePageMeta } } = this.props;
+  changePageMetaStradegy = (
+    options: ChangeMetadataOptions
+  ): string | string[] => {
+    const {
+      selectedInfo,
+      dispatcher: { ChangePageMeta },
+    } = this.props;
     const { id: activeEntityID } = selectedInfo;
 
     const isArrayOptions = Array.isArray(options);
@@ -54,13 +80,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     const returnMetaIDs: string[] = [];
     const nextOptions: ChangeMetadataOptions = genMetaIDStrategy(options, {
       entityID: activeEntityID,
-      forEachCalllback: (metaID) => returnMetaIDs.push(metaID)
+      forEachCalllback: (metaID) => returnMetaIDs.push(metaID),
     });
 
     ChangePageMeta(nextOptions);
 
     return isArrayOptions ? returnMetaIDs : returnMetaIDs[0];
-  }
+  };
 
   /**
    * 获取 meta
@@ -68,17 +94,25 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   takeMeta = (options) => {
     const { pageMetadata } = this.props;
     const { metaAttr, metaRefID } = options;
-    return metaRefID ? pageMetadata[metaAttr]?.[metaRefID] : pageMetadata[metaAttr];
-  }
+    return metaRefID
+      ? pageMetadata[metaAttr]?.[metaRefID]
+      : pageMetadata[metaAttr];
+  };
 
   changeWidgetType = (widgetType: string) => {
-    const { dispatcher: { ChangeWidgetType }, selectedInfo } = this.props;
+    const {
+      dispatcher: { ChangeWidgetType },
+      selectedInfo,
+    } = this.props;
     const { nestingInfo, entity } = selectedInfo;
-    ChangeWidgetType({
-      nestingInfo,
-      entity
-    }, widgetType);
-  }
+    ChangeWidgetType(
+      {
+        nestingInfo,
+        entity,
+      },
+      widgetType
+    );
+  };
 
   /**
    * 响应更新数据源的回调
@@ -87,47 +121,47 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
   onUpdatedDatasource = async (interDatasources: PD.Datasources) => {
     const nextDSState = {};
     interDatasources.forEach((dsItem, idx) => {
-      const dsRefID = genMetaRefID('dataSource', {
-        idStrategy: dsItem.id
+      const dsRefID = genMetaRefID("dataSource", {
+        idStrategy: dsItem.id,
       });
-      nextDSState[dsRefID] = dsItem;
+      nextDSState[dsRefID] = { ...dsItem, dsType: 'pageDS' };
     });
     this.changePageMetaStradegy({
-      type: 'replace',
-      metaAttr: 'dataSource',
+      type: "replace",
+      metaAttr: "dataSource",
       datas: nextDSState,
     });
-  }
+  };
 
   /**
    * 获取数据源
    */
   getDatasources = () => {
     return this.props.appContext.payload?.interDatasources;
-  }
+  };
 
   /**
    * 获取远端的页面信息数据
    */
   getCurrPageDataDetail = () => {
-    const {
-      appContext
-    } = this.props;
+    const { appContext } = this.props;
     const { pageDataRes } = appContext?.payload;
     return pageDataRes;
-  }
+  };
 
   /**
    * 获取页面信息
    */
   getPageInfo = () => {
-    const {
-      flatLayoutItems, pageMetadata
-    } = this.props;
+    const { flatLayoutItems, pageMetadata } = this.props;
     const pageDataFormRemote = this.getCurrPageDataDetail();
     // const { pageID, title } = appLocation;
     const submitData = pick(pageDataFormRemote, [
-      'id', 'type', 'moduleID', 'name', 'belongMenus',
+      "id",
+      "type",
+      "moduleID",
+      "name",
+      "belongMenus",
     ]);
     const usedWidgets = takeUsedWidgetIDs(flatLayoutItems, pageDataFormRemote);
     const businessCodes = genBusinessCode(flatLayoutItems, pageDataFormRemote);
@@ -138,31 +172,26 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
       businessCodes,
       dataSources,
     };
-  }
+  };
 
   /**
    * 获取页面内容
    */
   getPageContent = () => {
-    const {
-      layoutInfo,
-      pageMetadata,
-      appLocation,
-      appContext,
-    } = this.props;
+    const { layoutInfo, pageMetadata, appLocation, appContext } = this.props;
     const { pageState } = appContext;
     const { pageID } = appLocation;
     const pageContent = wrapPageData({
       id: pageID,
       pageID,
       pageState,
-      name: '测试页面',
+      name: "测试页面",
       pageMetadata,
       layoutInfo,
     });
 
     return pageContent;
-  }
+  };
 
   /**
    * 准备应用初始化数据，并发进行
@@ -178,15 +207,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
 
     /** 并发获取初始化数据 */
     const [pageDataRes] = await Promise.all([
-      !offlineMode && getPageDetailService(pageID)
+      !offlineMode && getPageDetailService(pageID),
     ]);
 
     /** 准备初始化数据 */
     const initData = produce<AppActionsContext>({}, (draftInitData) => {
       if (!offlineMode) {
-        const {
-          pageContent
-        } = pageDataRes;
+        const { pageContent } = pageDataRes;
         draftInitData.pageContent = pageContent;
         draftInitData.payload = {
           pageDataRes,
@@ -194,32 +221,34 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         draftInitData.initMeta = {
           // 合并初始化 meta
           varRely: {
-            'var.pageInput.0.mode': {
-              title: '页面模式',
-              type: 'pageInput',
-              varType: 'string',
-              realVal: 'insert',
-              code: 'var.page.mode'
-            }
-          }
+            "var.pageInput.0.mode": {
+              title: "页面模式",
+              type: "pageInput",
+              varType: "string",
+              realVal: "insert",
+              code: "var.page.mode",
+            },
+          },
         };
       }
       return draftInitData;
     });
 
     InitApp(initData);
-  }
+  };
 
   /**
    * 更新页面状态
-   * @param nextPageState 
+   * @param nextPageState
    */
   changePageState = (nextPageState) => {
-    const { dispatcher: { UpdateAppContext } } = this.props;
+    const {
+      dispatcher: { UpdateAppContext },
+    } = this.props;
     UpdateAppContext({
-      pageState: nextPageState
+      pageState: nextPageState,
     });
-  }
+  };
 
   updatePage = (options = {}) => {
     // const {
@@ -233,176 +262,77 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
         pageInfoForBN: this.getPageInfo(),
         pageContentForFE: pageContent,
         // extendData: this.wrapDataSourceDataForUpdate(interDatasources),
-      }).then((res) => {
-        resolve(res);
-      }).catch((e) => {
-        reject(e);
-      });
+      })
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((e) => {
+          reject(e);
+        });
     });
-  }
+  };
 
   /**
    * 发布页面
    */
   onReleasePage = () => {
     return this.updatePage();
-  }
+  };
 
   /**
    * 添加控件变量的规则，响应添加
    */
   onAddEntity = (entity) => {
     this.changePageMetaStradegy({
-      type: 'create',
-      metaAttr: 'varRely',
+      type: "create",
+      metaAttr: "varRely",
       relyID: entity.id,
       data: {
-        type: 'widget',
+        type: "widget",
         widgetRef: entity.id,
         varAttr: entity.varAttr,
-        eventAttr: entity.eventAttr
+        eventAttr: entity.eventAttr,
       },
     });
-  }
+  };
 
-  private updateQueue: NextEntityState[] = []
+  private updateQueue: NextEntityState[] = [];
 
   pushToUpdateQueue = (nextEntityState: NextEntityStateType) => {
-    if(Array.isArray(nextEntityState)) {
+    if (Array.isArray(nextEntityState)) {
       this.updateQueue = [...this.updateQueue, ...nextEntityState];
     } else {
       this.updateQueue.push(nextEntityState);
     }
-  }
+  };
 
   consumUpdateQueue = () => {
     const retData = [...this.updateQueue];
     this.updateQueue = [];
     return retData;
-  }
-
-  /**
-   * 获取变量数据
-   */
-  getVariableData = async (filter: string[] = [], options) => {
-    const varRely = options ? options.varRely : this.props.pageMetadata.varRely;
-    const flatLayoutItems = options ? options.flatLayoutItems : this.props.flatLayoutItems;
-    /** 获取自定义变量 */
-    const getCustomedVariable = () => {
-      return [];
-    };
-    /** 获取控件变量 */
-    const getWidgetVariable = () => {
-      const varList = [];
-      if(!varRely) return [];
-      for(const varID in varRely ){
-        if (!Object.prototype.hasOwnProperty.call(varRely, varID)) continue;
-        const variableItems = varRely[varID];
-        const { type, varAttr, widgetRef } = variableItems;
-        /** 只检索控件类型变量 */
-        if(type !== 'widget' || !widgetRef) continue;
-        /** 获取对应控件数据 */
-        const widgetEntity = flatLayoutItems[widgetRef];
-        if(!widgetEntity) continue;
-        const { propState, id } = widgetEntity;
-        if (!propState) continue;
-        // TODO: 这里取了特定的值，后续需要改进
-        const { widgetCode, title } = propState;
-        /** 控件对应变量 */
-        varAttr && varAttr.forEach((varItem) => {
-          const { alias, attr, type: varType } = varItem;
-          const code = `${widgetCode}.${attr}`;
-          varList.push({
-            code, varType, type,
-            title: `${title}.${alias}`,
-            id: `${id}.${attr}`,
-          });
-        });
-      }
-      return varList;
-    };
-    /** 获取页面变量 */
-    const getPageVariable = () => {
-      return [
-        { code: 'var.page.name', title: '页面名称', id: 'var.page.name', varType: 'string', type: 'page' },
-        { code: 'var.page.code', title: '页面编码', id: 'var.page.code', varType: 'string', type: 'page' },
-      ];
-    };
-    /** 获取系统变量 */
-    const getSystemVaraible = () => {
-      return [];
-    };
-    /** 获取输入参数变量 */
-    const getInputVariable = () => {
-      if(!varRely) return [
-        { title: '页面模式', type: 'pageInput', varType: 'string', realVal: 'insert', code: 'var.page.mode', id: 'var.page.0.mode' }
-      ];
-      const varList = [];
-      for(const id in varRely ){
-        if (!Object.prototype.hasOwnProperty.call(varRely, id)) continue;
-        const variableItems = varRely[id];
-        const { type, alias, varType, code, realVal, title } = variableItems || {};
-        if(type !== 'pageInput') continue;
-        varList.push({
-          code, type, varType, alias, id, realVal, title
-        });
-      }
-      return varList;
-    };
-    const getVariable = {
-      customed: getCustomedVariable,
-      system: getSystemVaraible,
-      widget: getWidgetVariable,
-      page: getPageVariable,
-      pageInput: getInputVariable
-    };
-    const result = {};
-    for(const key in getVariable){
-      if(filter.includes(key)) continue;
-      if(typeof getVariable[key] !== 'function') continue;
-      const resultTmpl = await getVariable[key]();
-      Object.assign(result, { [key]: resultTmpl });
-    }
-    return result;    
-  }
-  /**
-   * 更改组件实例状态的统一方法
-   * @param nextEntityState 
-   * TODO: 属性项更改属性追踪器
-   */
-  changeEntityState: ChangeEntityState = (nextEntityState: NextEntityStateType) => {
-    const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
-    const { entity: activeEntity, nestingInfo } = selectedInfo;
-
-    /** 
-     * 这里做批量更新操作，将多个并发的更新 state 操作推入待更新队列中
-     */
-    this.pushToUpdateQueue(nextEntityState);
-    debounce.exec(() => {
-      const entityState = entityStateMergeRule(activeEntity?.propState, this.consumUpdateQueue());
-      UpdateEntityState({
-        nestingInfo: nestingInfo,
-        entity: activeEntity
-      }, entityState);
-    }, 50);
-  }
+  };
 
   updateEntityState = (nextState) => {
-    const { dispatcher: { UpdateEntityState }, selectedInfo } = this.props;
+    const {
+      dispatcher: { UpdateEntityState },
+      selectedInfo,
+    } = this.props;
     const { entity, nestingInfo } = selectedInfo;
     UpdateEntityState({ entity, nestingInfo }, nextState);
-  }
+  };
+
+  getVariableData = getVariableData
 
   /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
   platformCtx = createPlatformCtx({
     changePageMeta: this.changePageMetaStradegy,
-    genMetaRefID: genMetaRefID,
+    genMetaRefID,
     takeMeta: this.takeMeta,
     changeWidgetType: this.changeWidgetType,
     getVariableData: this.getVariableData,
-    changeEntityState: this.changeEntityState,
+    // changeEntityState: this.changeEntityState,
   });
 
   render() {
@@ -417,17 +347,13 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
     } = this.props;
     // console.log(pageMetadata);
     // console.log(layoutInfo);
-    
+
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
-    const {
-      InitEntityState,
-    } = dispatcher;
+    const { InitEntityState } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
     if (!appContext.ready) {
-      return (
-        <LoadingTip />
-      );
+      return <LoadingTip />;
     }
     return (
       <PlatformContext.Provider value={this.platformCtx}>
@@ -439,56 +365,46 @@ class PageDesignerApp extends React.Component<VisualEditorAppProps & HY.Provider
               onReleasePage={this.onReleasePage}
               changePageState={this.changePageState}
               appLocation={appLocation}
-              pageState = {appContext.pageState}
+              pageState={appContext.pageState}
             />
           </header>
           <div
             className="app-content"
-          // style={{ top: 0 }}
+            // style={{ top: 0 }}
           >
-            <div
-              className="comp-panel"
-            >
+            <div className="comp-panel">
               <WidgetPanel
                 pageMetadata={pageMetadata}
                 onUpdatedDatasource={this.onUpdatedDatasource}
               />
             </div>
-            <div
-              className="canvas-container"
-              style={{ height: '100%' }}
-            >
+            <div className="canvas-container" style={{ height: "100%" }}>
               <CanvasStage
                 selectedInfo={selectedInfo}
                 layoutNodeInfo={layoutInfo}
                 pageMetadata={pageMetadata}
                 onAddEntity={this.onAddEntity}
                 onStageClick={() => {
-                // SelectEntity(PageEntity);
+                  // SelectEntity(PageEntity);
                 }}
                 {...dispatcher}
               />
             </div>
-            <div
-              className="prop-panel"
-            >
-              {
-                activeEntity && (
-                  <PDPropertiesEditor
-                    key={activeEntityID}
-                    pageMetadata={pageMetadata}
-                    interDatasources={this.getDatasources()}
-                    selectedEntity={activeEntity}
-                    entityState={activeEntity?.propState}
-                    initEntityState={(entityState) => {
-                      // TODO: 属性项更改属性追踪器
-                      InitEntityState(selectedInfo, entityState);
-                    }}
-                    updateEntityState={this.updateEntityState}
-                    changeEntityState={this.changeEntityState}
-                  />
-                )
-              }
+            <div className="prop-panel">
+              {activeEntity && (
+                <PDPropertiesEditor
+                  key={activeEntityID}
+                  pageMetadata={pageMetadata}
+                  interDatasources={this.getDatasources()}
+                  selectedEntity={activeEntity}
+                  entityState={activeEntity?.propState}
+                  initEntityState={(entityState) => {
+                    // TODO: 属性项更改属性追踪器
+                    InitEntityState(selectedInfo, entityState);
+                  }}
+                  updateEntityState={this.updateEntityState}
+                />
+              )}
             </div>
           </div>
         </div>

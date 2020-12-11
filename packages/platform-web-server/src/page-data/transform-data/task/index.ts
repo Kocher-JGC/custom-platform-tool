@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 export * from './action';
 export * from './flow';
 export * from './genAction-APB';

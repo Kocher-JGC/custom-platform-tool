@@ -19,13 +19,15 @@ export interface IState {
   treeList
   treeMap
   variableData
+  unShowSystemColList: string[]
 }
 export class ChangeFields extends React.PureComponent<IProps, IState> {
   state: IState = {
     treeList: [],
     treeMap: {},
     changeFields: {},
-    variableData: {}
+    variableData: {},
+    unShowSystemColList: []
   }
   componentDidMount(){
     this.getColumnList();
@@ -46,9 +48,11 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
         }] }
       }).then((res)=>{
         const treeList = this.constructTableList(res?.result||[]);
+        const treeMap = this.constructTreeMap(treeList);
         this.setState({
           treeList,
-          treeMap: this.constructTreeMap(treeList)
+          treeMap,
+          unShowSystemColList: treeList.map(item=>item.id)
         }, () => {
           resolve();
         });
@@ -73,33 +77,33 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
       const { name: tableName, id: tableId, code: tableCode } = item;
       return {
         tableCode, tableName, tableId, name: tableName, id: tableId,
-        children: this.constructColumnList(item.columns, { tableCode, tableName })
+        children: this.constructColumnList(item.columns, { tableId, tableName })
       };
     });
     return list;
   }
 
-  constructColumnList = (columns, { tableCode, tableName }) => {
+  constructColumnList = (columns, { tableId, tableName }) => {
     const list = columns.map(item=>{
-      const { name: columnName, id: columnId, code: columnCode } = item;
-      return { id: columnId, columnName, columnId, columnCode, tableCode, tableName,  name: columnName, };
+      const { name: columnName, id: columnId, code: columnCode, species } = item;
+      return { id: columnId, columnName, columnId, columnCode, tableId, tableName,  name: columnName, species };
     });
     return list;
   }
   
   handleSetValue = (_r, changeArea) => {
-    const { tableCode, columnCode, tableName, columnName } = _r;
+    const { tableId, columnId, tableName, columnName } = _r;
     const { changeFields } = this.state;
     const notEmpty = Object.values(changeArea).filter(item=>!!item).length > 0;
     if(notEmpty){
       this.setState({
         changeFields: {
           ...changeFields,
-          [tableCode+'.'+columnCode]: { ...changeArea, tableName, columnName }
+          [tableId+'.'+columnId]: { ...changeArea, tableName, columnName }
         }
       });
     }else {
-      const { [tableCode+'.'+columnCode]: currentOne, ...rest } = changeFields;
+      const { [tableId+'.'+columnId]: currentOne, ...rest } = changeFields;
       this.setState({
         changeFields: rest
       });
@@ -133,8 +137,18 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
     }
     return list.join('，');
   }
+
+  filterDatasource = (treeList, unShowSystemColList) => {
+    const list =  treeList.map(({ children, ...rest })=>{
+      return {
+        ...rest,
+        children: children.filter(item=>!(item.species||'').includes('SYS') || !unShowSystemColList.includes(item.tableId))
+      };
+    });
+    return list;
+  }
   render(){
-    const { treeList, changeFields, variableData } = this.state;
+    const { treeList, changeFields, variableData, unShowSystemColList } = this.state;
     return <>
       <Table
         size="small"
@@ -148,20 +162,38 @@ export class ChangeFields extends React.PureComponent<IProps, IState> {
           key: 'valueConfig',
           title: '值',
           render: (_t, _r)=>{
-            const { tableCode, columnCode } = _r;
-            return columnCode ? (
+            const { tableId, columnId } = _r;
+            return columnId ? (
               <ValueHelper 
                 variableData = {variableData}
-                editedState = {changeFields[tableCode+'.'+columnCode] || {}}
+                editedState = {changeFields[tableId+'.'+columnId] || {}}
                 onChange={(changeArea)=>{
                   this.handleSetValue(_r, changeArea);
                 }}
               />
-            ) : null;
+            ) : (
+              <Button 
+                className="float-right"
+                onClick={()=>{
+                  if(unShowSystemColList.includes(tableId)){
+                    this.setState({
+                      unShowSystemColList: unShowSystemColList.filter(item=>item!==tableId)
+                    });
+                  }else {
+                    this.setState({
+                      unShowSystemColList: [tableId, ...unShowSystemColList]
+                    });
+                  }
+                  
+                }}
+              >
+                {`${unShowSystemColList.includes(tableId) ? '显示': '隐藏'}系统字段`}
+              </Button>
+            );
           }
         }]}
         rowKey="id"
-        dataSource={treeList}
+        dataSource={this.filterDatasource(treeList, unShowSystemColList)}
         pagination={false}
       />
       <Space className="float-right" style={{ height: 52 }}>

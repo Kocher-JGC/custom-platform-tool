@@ -1,16 +1,15 @@
-import React, { PureComponent, RefObject, ReactElement } from 'react';
-import CodeMirror, {
-  Editor, EditorConfiguration, EditorFromTextArea, Doc
-} from 'codemirror';
-import { RESOURCES_LIST, IResources, ALL_EVENTS } from './config';
-import ToolBar from './component/ToolBar';
-import { equals, firstUpperCase } from './util';
-import 'codemirror/addon/display/placeholder'; // 背景提示
-import 'codemirror/addon/edit/matchbrackets'; // 左右括号颜色高亮
-import 'codemirror/addon/edit/closebrackets.js'; // 当键入时将自动关闭方括号和引号。默认情况下，它将自动关闭()[]{}''""
+import React, { PureComponent, RefObject, ReactElement } from "react";
+import CodeMirror, { Editor, EditorConfiguration, EditorFromTextArea, Doc } from "codemirror";
+import { RESOURCES_LIST, IResources, ALL_EVENTS } from "./config";
+import ToolBar from "./component/ToolBar";
+import { equals, firstUpperCase } from "./util";
+import "codemirror/addon/display/placeholder"; // 背景提示
+import "codemirror/addon/edit/matchbrackets"; // 左右括号颜色高亮
+import "codemirror/addon/edit/closebrackets.js"; // 当键入时将自动关闭方括号和引号。默认情况下，它将自动关闭()[]{}''""
 
-import 'codemirror/lib/codemirror.css';
-import './index.less';
+import "codemirror/lib/codemirror.css";
+import "./index.less";
+
 /**
  * 编辑器事件
  * 具体查看  https://codemirror.net/doc/manual.html#events
@@ -39,7 +38,12 @@ interface IEvent {
   /** 单击编辑器装订线（行号区域）时触发。 */
   onGutterClick?: (instance: Editor, line: number, gutter: string, clickEvent: Event) => void;
   /** 当编辑器装订线（行号区域）接收到上下文菜单事件时触发。 */
-  onGutterContextMenu?: (instance: Editor, line: number, gutter: string, contextMenu: Event) => void;
+  onGutterContextMenu?: (
+    instance: Editor,
+    line: number,
+    gutter: string,
+    contextMenu: Event
+  ) => void;
   /** 每当编辑器聚焦触发 */
   onFocus?: (instance: Editor, event: Event) => void;
   /** 每当编辑器失去焦点时触发。 */
@@ -57,16 +61,15 @@ interface IEvent {
  * 编辑器对外暴露属性
  */
 interface ICodeEditorProps extends EditorConfiguration, IEvent {
-  /**  */
-  hintOptions: any;
   /** 是否只读 */
   readOnly?: string | boolean;
   /** 初始值 */
-  value?: string | undefined;
+  defaultValue?: string | undefined;
   /** 是否加载hint */
   hint?: boolean;
   /** 是否加载lint */
   lint?: boolean;
+  foldGutter?: boolean;
   /** 是否加载search */
   search?: boolean;
   /** 是否可以全屏 */
@@ -77,16 +80,18 @@ interface ICodeEditorProps extends EditorConfiguration, IEvent {
   width?: string;
   /** 高度 */
   height?: string;
+  /**  */
+  hintOptions?: { completeSingle: boolean; keywords?: string[] };
   /** 获取 Editor 实例 */
-  getEditor?: (editor: any) => any;
+  getEditor?: (editor: EditorFromTextArea) => void;
   /** 自定义注册 */
   registerHelper?: (editor: Editor, options: EditorConfiguration) => void;
   /** 实例化完成 */
-  ready?: (editor: Editor, codeMirror: any) => void;
+  ready?: (editor: Editor) => void;
   renderSelectTheme?: () => ReactElement;
   renderSelectMode?: () => ReactElement;
   renderSelectFontSize?: () => ReactElement;
-  renderToolBar?: (() => ReactElement) | false;
+  renderToolBar?: (() => ReactElement) | boolean;
 }
 interface IICodeEditorState {
   /** 函数输出结果 */
@@ -97,9 +102,9 @@ interface IICodeEditorState {
   funcParams: string[];
 }
 class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
-  private codeRef: RefObject<HTMLTextAreaElement> = React.createRef()
+  private codeRef: RefObject<HTMLTextAreaElement> = React.createRef();
 
-  public editor: EditorFromTextArea | undefined
+  public editor: EditorFromTextArea | undefined;
 
   public static defaultProps: ICodeEditorProps = {
     readOnly: false,
@@ -110,21 +115,21 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
     search: false,
     fullscreen: false,
     autofocus: false,
-    value: "",
+    defaultValue: "",
     hintOptions: {
-      completeSingle: false,
+      completeSingle: false
     },
     width: "100%",
     height: "100%",
-    cusResourceList: [],
-  }
+    cusResourceList: []
+  };
 
   public constructor(props: ICodeEditorProps) {
     super(props);
     this.state = {
       funcResult: "",
       visibleRunModal: false,
-      funcParams: [],
+      funcParams: []
     };
   }
 
@@ -138,10 +143,22 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    */
   public initCodeMirror(): void {
     const {
-      mode, theme, lint, foldGutter, autofocus, extraKeys, hintOptions, value, registerHelper, width, height, ...configuration
+      mode,
+      theme,
+      lint,
+      foldGutter,
+      autofocus,
+      extraKeys,
+      hintOptions,
+      defaultValue,
+      width,
+      height,
+      registerHelper,
+      ...configuration
     } = this.props;
     const gutters = this.getGutters();
-    this.editor = CodeMirror.fromTextArea(this.codeRef.current!, {
+    if (!this.codeRef.current) return;
+    this.editor = CodeMirror.fromTextArea(this.codeRef.current, {
       mode,
       tabSize: 2,
       lineNumbers: true,
@@ -156,23 +173,23 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
       foldGutter,
       lint,
       gutters,
-      hintOptions: {
-        completeSingle: false,
-        ...hintOptions,
-      },
-      ...configuration,
+      // hintOptions: {
+      //   completeSingle: false,
+      //   ...hintOptions
+      // },
+      ...configuration
     });
     /** 设置窗口大小 */
     this.editor.setSize(width, height);
     /** 设置编辑器初始值 */
-    value && this.setCodeMirrorValue(value);
+    defaultValue && this.setCodeMirrorValue(defaultValue);
     this.onInputRead({ completeSingle: false });
     /** 外部获取editor 实例 */
     this.props.getEditor && this.props.getEditor(this.editor);
-    /** 初始化编辑器后 获取editor 和  CodeMirror */
-    this.props.ready && this.props.ready(this.editor, CodeMirror);
+    /** 初始化编辑器后 获取 editor */
+    this.props.ready && this.props.ready(this.editor);
     /** 初始化事件 */
-    this.inintEvent();
+    this.initEvent();
   }
 
   /**
@@ -185,19 +202,18 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   /**
    * 初始化事件
    */
-  public inintEvent(): void {
+  public initEvent(): void {
     ALL_EVENTS.forEach((event) => {
-      this.props[`on${firstUpperCase(event)}`] && this.editor!.on(event, this.props[`on${firstUpperCase(event)}`]);
+      this.props[`on${firstUpperCase(event)}`] &&
+        this.editor?.on(event, this.props[`on${firstUpperCase(event)}`]);
     });
   }
 
   /**
    * 默认加载资源列表里 mode 和对应的提示 hint 对应主题样式theme
-  */
+   */
   public async defaultImportCodeMirror() {
-    const {
-      lint, foldGutter, hint, search, fullscreen
-    } = this.props;
+    const { lint, foldGutter, hint, search, fullscreen } = this.props;
     if (foldGutter) await this.loadFoldResource();
     if (lint) await this.loadLintResource();
     if (hint) await this.loadHintResource();
@@ -214,9 +230,9 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
     const cusResources = this.mergeResource();
     const findResource = cusResources.find((item) => item.mode === mode);
     if (findResource) {
-      findResource.dependentJs && await findResource.dependentJs();
-      findResource.dependentHint && await findResource.dependentHint();
-      findResource.dependentLint && await findResource.dependentLint();
+      findResource.dependentJs && (await findResource.dependentJs());
+      findResource.dependentHint && (await findResource.dependentHint());
+      findResource.dependentLint && (await findResource.dependentLint());
     }
     await import(`codemirror/theme/${theme}.css`);
   }
@@ -224,58 +240,58 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   /**
    *  加载全屏资源
    */
-  public loadFullScreenResource(): Promise<any> {
+  public loadFullScreenResource(): Promise<void> {
     return Promise.all([
-      require('codemirror/addon/display/fullscreen.css'),
-      require('codemirror/addon/display/fullscreen.js'),
-    ]);
+      require("codemirror/addon/display/fullscreen.css"),
+      require("codemirror/addon/display/fullscreen.js")
+    ]).then(() => {});
   }
 
   /**
    *  加载搜索资源
    */
-  public loadSearchResource(): Promise<any> {
+  public loadSearchResource(): Promise<void> {
     return Promise.all([
-      require('codemirror/addon/dialog/dialog.css'),
-      require('codemirror/addon/search/matchesonscrollbar.css'),
-      require('codemirror/addon/search/searchcursor.js'),
-      require('codemirror/addon/search/search.js'),
-      require('codemirror/addon/scroll/annotatescrollbar.js'),
-      require('codemirror/addon/search/matchesonscrollbar.js'),
-      require('codemirror/addon/search/jump-to-line.js'),
-    ]);
+      require("codemirror/addon/dialog/dialog.css"),
+      require("codemirror/addon/search/matchesonscrollbar.css"),
+      require("codemirror/addon/search/searchcursor.js"),
+      require("codemirror/addon/search/search.js"),
+      require("codemirror/addon/scroll/annotatescrollbar.js"),
+      require("codemirror/addon/search/matchesonscrollbar.js"),
+      require("codemirror/addon/search/jump-to-line.js")
+    ]).then(() => {});
   }
 
   /**
    * 代码折叠 所需加载资源
    */
-  public loadFoldResource(): Promise<any> {
+  public loadFoldResource(): Promise<void> {
     return Promise.all([
-      require('codemirror/addon/fold/foldgutter.js'),
-      require('codemirror/addon/fold/foldcode.js'),
-      require('codemirror/addon/fold/brace-fold.js'),
-      require('codemirror/addon/fold/foldgutter.css')
-    ]);
+      require("codemirror/addon/fold/foldgutter.js"),
+      require("codemirror/addon/fold/foldcode.js"),
+      require("codemirror/addon/fold/brace-fold.js"),
+      require("codemirror/addon/fold/foldgutter.css")
+    ]).then(() => {});
   }
 
   /**
    * 需要用到lint 加载的公共资源 每个lint还需单独加载
    */
-  public loadLintResource(): Promise<any> {
+  public loadLintResource(): Promise<void> {
     return Promise.all([
-      require('codemirror/addon/lint/lint.js'),
-      require('codemirror/addon/lint/lint.css')
-    ]);
+      require("codemirror/addon/lint/lint.js"),
+      require("codemirror/addon/lint/lint.css")
+    ]).then(() => {});
   }
 
   /**
    * 需要hint加载资源
    */
-  public loadHintResource(): Promise<any> {
+  public loadHintResource(): Promise<void> {
     return Promise.all([
-      require('codemirror/addon/hint/show-hint.js'),
-      require('codemirror/addon/hint/show-hint.css')
-    ]);
+      require("codemirror/addon/hint/show-hint.js"),
+      require("codemirror/addon/hint/show-hint.css")
+    ]).then(() => {});
   }
 
   /**
@@ -284,30 +300,9 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
   public getGutters(): string[] {
     const { lint, foldGutter } = this.props;
     let gutters: string[] = [];
-    if (lint) gutters = [...gutters, 'CodeMirror-lint-markers'];
-    if (foldGutter) gutters = [...gutters, 'CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
+    if (lint) gutters = [...gutters, "CodeMirror-lint-markers"];
+    if (foldGutter) gutters = [...gutters, "CodeMirror-linenumbers", "CodeMirror-foldgutter"];
     return gutters;
-  }
-
-  /**
-   * @TODO 有 closebrackets 插件 没用
-   * 自动补全功能
-   * 目前自动补全() 和 {}
-   */
-  public AutoInsertParentheses(): void {
-    this.editor!.addKeyMap({
-      name: 'autoInsertParentheses',
-      "'('": (cm) => {
-        const cur = cm.getCursor();
-        cm.replaceRange('()', cur, cur, '+insert');
-        cm.setCursor({ line: cur.line, ch: cur.ch + 1 });
-      },
-      "'{'": (cm) => {
-        const cur = cm.getCursor();
-        cm.replaceRange('{}', cur, cur, '+insert');
-        cm.setCursor({ line: cur.line, ch: cur.ch + 1 });
-      },
-    });
   }
 
   /**
@@ -316,12 +311,12 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    */
   public componentDidUpdate(prevProps: ICodeEditorProps) {
     if (!equals(prevProps.hintOptions, this.props.hintOptions)) {
-      this.editor!.setOption('hintOptions', this.props.hintOptions);
+      // this.editor?.setOption('hintOptions', this.props.hintOptions);
       this.onInputRead(this.props.hintOptions);
     }
-    if (prevProps.value !== this.props.value) {
-      this.setCodeMirrorValue(this.props.value!);
-    }
+    // if (prevProps.value !== this.props.value) {
+    //   this.setCodeMirrorValue(this.props.value);
+    // }
   }
 
   /**
@@ -329,24 +324,24 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    * @param value
    */
   public setCodeMirrorValue = (value: string) => {
-    this.editor!.setValue(value);
-  }
+    this.editor?.setValue(value);
+  };
 
   /**
    * 每当从隐藏的文本区域中读取新输入（由用户键入或粘贴）时，就会触发
    */
-  public onInputRead = (hintOptions: any) => {
-    this.editor!.on('inputRead', (cm, change) => {
-      cm.execCommand('autocomplete');
+  public onInputRead = (hintOptions) => {
+    this.editor?.on("inputRead", (cm, change) => {
+      // cm.execCommand("autocomplete");
     });
-  }
+  };
 
   /**
    * 设置语法模式
    * @param mode
    */
   public setCodeMirrorOption<K extends keyof EditorConfiguration>(option: K, value: string) {
-    this.editor!.setOption(option, value);
+    this.editor?.setOption(option, value);
   }
 
   /**
@@ -355,7 +350,7 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    */
   public handleThemeChange = (value: string) => {
     this.setCodeMirrorOption("theme", value);
-  }
+  };
 
   /**
    * toolBar 改变编辑语法 设置编辑器语法
@@ -363,30 +358,37 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
    */
   public handleModeChange = (value: string): void => {
     this.setCodeMirrorOption("mode", value);
-  }
+  };
 
   /**
    * 根据 cusResourceList 类型 进行合并
    */
   public mergeResource() {
     const { cusResourceList } = this.props;
-    return Object.prototype.toString.call(cusResourceList) === "[object Object]" ? [...RESOURCES_LIST, cusResourceList as IResources] : [...RESOURCES_LIST, ...cusResourceList as IResources[]];
+    return Object.prototype.toString.call(cusResourceList) === "[object Object]"
+      ? [...RESOURCES_LIST, cusResourceList as IResources]
+      : [...RESOURCES_LIST, ...(cusResourceList as IResources[])];
   }
 
   public render(): ReactElement {
     const {
-      mode, renderSelectTheme, renderSelectMode, renderSelectFontSize, renderToolBar
+      mode,
+      renderSelectTheme,
+      renderSelectMode,
+      renderSelectFontSize,
+      renderToolBar
     } = this.props;
     const cusResources = this.mergeResource();
+
     return (
       <>
         <textarea ref={this.codeRef}></textarea>
-        {
-          (()=>{
-            if(renderToolBar && typeof renderToolBar === 'function'){
-              return renderToolBar();
-            }else if (renderToolBar !== false) {
-              return <ToolBar
+        {(() => {
+          if (renderToolBar && typeof renderToolBar === "function") {
+            return renderToolBar();
+          } else if (renderToolBar) {
+            return (
+              <ToolBar
                 onThemeChange={this.handleThemeChange}
                 onModeChange={this.handleModeChange}
                 mode={mode}
@@ -394,10 +396,10 @@ class CodeEditor extends PureComponent<ICodeEditorProps, IICodeEditorState> {
                 renderSelectTheme={renderSelectTheme}
                 renderSelectMode={renderSelectMode}
                 renderSelectFontSize={renderSelectFontSize}
-              />;
-            }
-          })()
-        }
+              />
+            );
+          }
+        })()}
       </>
     );
   }

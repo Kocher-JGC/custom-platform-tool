@@ -1,0 +1,21 @@
+.column-editor#columnEditor {
+  position: fixed;
+  top: 50px;
+  bottom: 0;
+  width: 300px;
+  .edit-area {
+    height: calc( 100% - 50px );
+    padding: 10px;
+    .content {
+      min-height: auto;
+    }
+  }
+  .confirm-area {
+    .divider {
+      margin: 2px 0;
+    }
+    // position: fixed;
+    // bottom: 0;
+    // right: 3rem;
+  }
+}

@@ -5,18 +5,21 @@ type RemoteDSData = {id: string, name: string, type: string, auxTable: {containA
 /**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeColumnsData = (columns: any[]): PD.Column[] => {
-  return columns.map((column) => {
+export const takeColumnsData = (columns: any[], tableID: string): {[key:string]: PD.Column} => {
+  const result = {};
+  columns.forEach((column) => {
     // console.log('column', column);
-    return {
+    result[column.id] = {
       id: column.id,
       name: column.name,
       colDataType: column.dataType,
       fieldSize: column.fieldSize,
       fieldType: column.fieldType,
       fieldCode: column.code,
+      tableID
     };
   });
+  return result;
 };
 
 /**
@@ -32,7 +35,7 @@ export const takeTableField = (datasourceData): PD.Datasource => {
       'code',
     ]
   ), {
-    columns: takeColumnsData(datasourceData.columns)
+    columns: takeColumnsData(datasourceData.columns, datasourceData.id)
   });
   return resData;
 };
@@ -101,12 +104,12 @@ export const takeTable = async (tableList: RemoteDSData[]) => {
 /**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeDictItems = () => {
-  return [
-    { name: '编码', code: 'code', id: 'code' },
-    { name: '名称', code: 'name', id: 'name' },
-    { name: '父编码', code: 'pid', id: 'pid' }
-  ];
+export const takeDictItems = (dictID) => {
+  return {
+    code: { name: '编码', code: 'code', id: 'code', dictID },
+    name: { name: '名称', code: 'name', id: 'name', dictID },
+    pid: { name: '父编码', code: 'pid', id: 'pid', dictID }
+  };
 };
 /**
  * 从后端返回的字典数据提取前端需要用到的数据
@@ -120,7 +123,7 @@ export const takeDictField = (datasourceData:RemoteDSData) => {
       'code',
     ]
   ), {
-    columns: takeDictItems()
+    columns: takeDictItems(datasourceData.id)
   });
 };
 export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {

@@ -6,3 +6,4 @@ export * from './takeDatasourcesForRemote';
 export * from './platform-ctx';
 export * from './genMetaRefID';
 export * from './genMetaIDStrategy';
+export * from './getVariableData';

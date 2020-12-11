@@ -1,0 +1,9 @@
+{
+  "name": "@platform-widget/rate",
+  "description": "评分组件",
+  "version": "0.0.1",
+  "author": "ywq",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

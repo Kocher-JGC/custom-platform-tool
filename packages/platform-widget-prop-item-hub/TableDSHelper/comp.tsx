@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Radio, InputNumber } from 'antd';
+import { Menu, Dropdown } from 'antd';
 import { PropItemRenderContext, CustomEditor, PTColumn } from '@platform-widget-access/spec';
-import { Button, Input, DropdownWrapper, ShowModal } from '@infra/ui';
+import { CloseModal, DropdownWrapper, ShowModal } from '@infra/ui';
 import { PlusOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
 import Sortable from "sortablejs";
 import { genRenderColumn, genRowData } from './utils';
-import pick from 'lodash/pick';
+import { ColumnEditableItems } from './ColumnEditableItems';
+import './style.scss';
 
 interface TableDSHelperCompProps extends PropItemRenderContext {
   whichAttr: string
@@ -14,7 +15,6 @@ interface TableDSHelperCompProps extends PropItemRenderContext {
 interface TableEditorState {
   datasourceMeta: PD.Datasource
   usingColumns: PTColumn[]
-  dsType: string
 }
 
 const takeTableInfo = (_tableInfo) => {
@@ -29,7 +29,6 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
 
     this.state = {
       datasourceMeta,
-      dsType: datasourceMeta?.type,
       usingColumns: this.setUsingColumns()
     };
   }
@@ -78,13 +77,12 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
   setCol = (item, id) => {
     const { usingColumns } = this.state;
     const itemIdx = usingColumns.findIndex((col) => col.id === id);
-    let nextState = [...usingColumns];
+    const nextState = [...usingColumns];
     if (itemIdx === -1) {
-      nextState.push(item);
+      nextState.push(genRenderColumn(item));
     } else {
       nextState.splice(itemIdx, 1);
     }
-    nextState = genRenderColumn([...nextState]);
     this.setState({
       usingColumns: nextState
     }, () => this.setupSortableColumnItems());
@@ -93,8 +91,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
   }
 
   onSetCol = (nextState) => {
-    const { platformCtx: { meta: { changeEntityState } } } = this.props;
-
+    const { changeEntityState } = this.props;
     changeEntityState({
       attr: 'columns',
       value: nextState
@@ -120,7 +117,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
               className="column-selector-container"
             >
               {
-                columns.map((col, idx) => {
+                Object.values(columns || []).map((col, idx) => {
                   const { name, id } = col;
                   const isSelected = usingColumns.find(uCol => uCol.id === id);
                   return (
@@ -152,6 +149,67 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
       </DropdownWrapper>
     );
   }
+  constructColumnAttr = (column) => {
+    const { type } = column;
+    if(type === 'dsColumn'){
+      return this.constructDsColumnAttr(column);
+    }
+  }
+  constructDsColumnAttr = (column) => {
+    // TODO 数据源会支持带入附属表，需要改动
+    const { datasourceMeta } = this.state;
+    return Object.assign({}, column, {
+      tableTitle: datasourceMeta.name,
+      fieldCode: datasourceMeta.columns[column.fieldID].fieldCode
+    });
+  }
+
+  
+  updateCol = (item, id) => {
+    const { usingColumns } = this.state;
+    const itemIdx = usingColumns.findIndex((col) => col.id === id);
+    const nextState = [...usingColumns];
+    nextState.splice(itemIdx, 1, item);
+    this.setState({
+      usingColumns: nextState
+    }, () => this.setupSortableColumnItems());
+    this.onSetCol(nextState);
+  }
+
+  renderSelectedColumnMenu = (col, id) => {
+    return (
+      <Menu>
+        <Menu.Item
+          key="0" onClick={e => {
+            const modalID = ShowModal({
+              title: '编辑列',
+              type: 'side',
+              position: 'right',
+              width: 300,
+              children: () => {
+                return (
+                  <div>
+                    <ColumnEditableItems 
+                      defaultValue = {this.constructColumnAttr(col)}
+                      onChange={(column)=>{
+                        this.updateCol(column, col.id);
+                        CloseModal(modalID);
+                      }}
+                    />
+                  </div>
+                );
+              }
+            });
+          }}
+        >
+          <span>编辑列</span>
+        </Menu.Item>
+        <Menu.Item key="1">
+          <span>编辑组件</span>
+        </Menu.Item>
+      </Menu>
+    );
+  }
 
   renderSelectedColumnEditor = () => {
     const { usingColumns, datasourceMeta } = this.state;
@@ -162,8 +220,7 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
           usingColumns.map((col, idx) => {
             if(!col) return null;
             // console.log(col);
-            const { name, id, title, alias, conditionStrategy, rowRenderStrategy } = col;
-            const displayName = title || name || alias;
+            const { id, title } = col;
             // const isActive = usingColumns.find((item) => item && item.id === id);
             return (
               <div 
@@ -171,27 +228,12 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
                 style={{ color: 'inherit' }}
                 key={id}
               >
-                <span
-                  onClick={e => {
-                    ShowModal({
-                      title: '编辑列',
-                      type: 'side',
-                      position: 'right',
-                      children: () => {
-                        return (
-                          <div>
-                            这里编辑列
-                          </div>
-                        );
-                      }
-                    });
-                  }}
-                >
-                  <DownOutlined 
-                    className="selection __action"
-                  />
-                  {displayName}
-                </span>
+                <Dropdown overlay={this.renderSelectedColumnMenu(col, id)} trigger={['click']}>
+                  <span className="ant-dropdown-link">
+                    <DownOutlined className="mr-2"/>
+                    {title}
+                  </span>                  
+                </Dropdown>
                 <CloseOutlined
                   className="close __action"
                   onClick={e => {
@@ -243,73 +285,54 @@ export class TableDSHelperComp extends React.Component<TableDSHelperCompProps, T
       genMetaRefID,
     } = platformCtx.meta;
 
-    const { datasourceMeta, dsType } = this.state;
+    const { datasourceMeta } = this.state;
     // console.log(datasourceMeta);
     // 选项数据源的引用
     const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
-    // const datasourceMeta = DSOptionsRef ? takeMeta({
-    //   metaAttr: 'dataSource',
-    //   metaRefID: DSOptionsRef
-    // }) as OptionsType : null;
-    // const [dsType, setDsType] = useState(datasourceMeta?.type);
   
-    const dsBinder = 
-    // dsType ? 
-      (
-        <div 
-          className="px-4 py-2 border cursor-pointer"
-          onClick={e => {
-            platformCtx.selector.openDatasourceSelector({
-              defaultSelected: datasourceMeta || [],
-              modalType: 'normal',
-              position: 'top',
-              single: true,
-              typeArea: ['TABLE'],
-              selectConfig: { table: { containAuxTable: false } },
-              onSubmit: ({ close, interDatasources }) => {
-              // 由于是单选的，所以只需要取 0
-                const bindedDS = interDatasources[0];
-
-                close();
-              
-                if(DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1) return;
-                const nextMetaID = changePageMeta({
-                  type: 'create/rm',
-                  metaAttr: 'dataSource',
-                  // metaID: DSOptionsRef,
-                  rmMetaID: DSOptionsRef,
-                  data: bindedDS
-                // metaID:
-                });
-                changeEntityState({
-                  attr: whichAttr,
-                  value: nextMetaID
-                });
-                this.setDatasourceMetaForSelf(bindedDS);
+    const dsBinder = (
+      <div 
+        className="px-4 py-2 border cursor-pointer"
+        onClick={e => {
+          platformCtx.selector.openDatasourceSelector({
+            defaultSelected: datasourceMeta ? [datasourceMeta] : [],
+            modalType: 'normal',
+            position: 'top',
+            single: true,
+            typeArea: ['TABLE'],
+            onSubmit: ({ close, interDatasources }) => {
+              if(!Array.isArray(interDatasources) || interDatasources.length === 0){
+                return close();
               }
-            });
-          }}
-        >
-          {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
-        </div>
-      ); 
-      // : null;
+              // 由于是单选的，所以只需要取 0
+              const bindedDS = interDatasources[0];
+
+              close();
+              
+              if(DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1) return;
+              const nextMetaID = changePageMeta({
+                type: 'create/rm',
+                metaAttr: 'dataSource',
+                // metaID: DSOptionsRef,
+                rmMetaID: DSOptionsRef,
+                data: bindedDS
+                // metaID:
+              });
+              changeEntityState({
+                attr: whichAttr,
+                value: nextMetaID
+              });
+              this.setDatasourceMetaForSelf(bindedDS);
+            }
+          });
+        }}
+      >
+        {datasourceMeta ? takeTableInfo(datasourceMeta) : '点击绑定'}
+      </div>
+    ); 
   
     return (
       <div>
-        {/* <div className="py-2">
-          <Radio.Group
-            onChange={(e) => {
-              this.setState({
-                dsType: e.target.value
-              });
-            }}
-            value={dsType}
-          >
-            <Radio value={'TABLE'}>数据表</Radio>
-            <Radio value={'DICT'}>字典表</Radio>
-          </Radio.Group>
-        </div> */}
         {
           dsBinder
         }

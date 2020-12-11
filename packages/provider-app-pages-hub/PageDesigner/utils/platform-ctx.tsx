@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { CloseModal, ShowModal } from '@infra/ui';
 import { PlatformCtx } from '@platform-widget-access/spec';
 import { DataSourceSelector } from '../components/PDDataSource';
+import { Expression } from '../components/Expression';
 
 /**
  * 平台提供给的上下文
@@ -40,6 +41,25 @@ export const createPlatformCtx = (metaCtx: PlatformCtx['meta']): PlatformCtx => 
         });
         return () => {
           CloseModal(ModalID);
+        };
+      },
+      openExpressionImporter: (options) => {
+        const { defaultValue, onSubmit } = options;
+        const modalID = ShowModal({
+          title: '表达式编辑',
+          width: 900,
+          children: () => {
+            return (
+              <Expression
+                defaultValue={defaultValue}
+                metaCtx={metaCtx}
+                onSubmit={onSubmit}
+              />
+            );
+          }
+        });
+        return () => {
+          CloseModal(modalID);
         };
       }
     },

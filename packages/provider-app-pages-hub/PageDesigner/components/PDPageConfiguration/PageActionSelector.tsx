@@ -9,6 +9,8 @@ import { FormInstance } from 'antd/lib/form';
 import { ChangeVariables } from './ChangeVariables';
 import { CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ActionsMeta as BasicActionsMeta } from '@engine/visual-editor/data-structure';
+import { ReadTableWidget } from './ReadTableWidget';
+import { WriteTableWidget } from './WriteTableWidget';
 
 
 export interface IProps {
@@ -105,6 +107,8 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       { label: '关闭页面', value: 'closePage', key: 'closePage' },
       { label: '整表读取', value: 'readFormData', key: 'readFormData' },
       { label: '整表回写', value: 'writeFormData', key: 'writeFormData' },
+      { label: '表格查询', value: 'readTableData', key: 'readTableData' },
+      { label: '表格回写', value: 'writeTableData', key: 'writeTableData' },
     ];
   };
 
@@ -137,6 +141,12 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       },
       writeFormData: {
         readOnly: true
+      },
+      writeTableData: {
+        ModalContent: WriteTableWidget
+      },
+      readTableData: {
+        ModalContent: ReadTableWidget
       }
     };
     return (action && config[action]) || {};

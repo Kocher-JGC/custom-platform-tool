@@ -13,11 +13,11 @@ export const CreateApp = ({
             text: '提交',
             action: ({ value }) => {
               console.log('value', value);
-              const _value = Object.assign({}, value, {
-                appShortNameEn: value.appName,
-                appShortNameCn: value.appName,
-              });
-              CreateApplication(_value).then(((res) => {
+              // const _value = Object.assign({}, value, {
+              //   appShortNameEn: value.appName,
+              //   appShortNameCn: value.appName,
+              // });
+              CreateApplication(value).then(((res) => {
                 onSuccess();
               }));
             }
@@ -27,19 +27,32 @@ export const CreateApp = ({
           {
             ref: 'appName',
             type: 'input',
-            title: '应用名称',
-            required: true
-          },
-          {
-            ref: 'accessName',
-            type: 'input',
-            title: '应用访问编号',
+            title: '系统名称',
             required: true
           },
           {
             ref: 'appCode',
             type: 'input',
-            title: '应用编码',
+            title: '系统编码',
+            required: true
+          },
+          {
+            ref: 'accessName',
+            type: 'input',
+            title: '系统访问编号',
+            required: true
+          },
+
+          {
+            ref: 'appShortNameCn',
+            type: 'input',
+            title: '系统简称',
+            required: true
+          },
+          {
+            ref: 'appShortNameEn',
+            type: 'input',
+            title: '系统英文简称',
             required: true
           },
         ]}

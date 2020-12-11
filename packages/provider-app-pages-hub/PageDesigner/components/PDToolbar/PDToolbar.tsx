@@ -49,7 +49,7 @@ const PropDataDisplayer = () => {
     });
   }, []);
   return (
-    <pre 
+    <pre
       dangerouslySetInnerHTML={{
         __html: syntaxHighlight(JSON.stringify(data, null, 2))
       }}
@@ -137,6 +137,20 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
               <span className="flex"></span>
               {/* 开发用的，查看所有属性项的按钮 */}
               <CheckAllExistPropItems />
+              {/* <Button
+                className='mr10'
+                color='default'
+                onClick={(e) => {
+                  const closeModal = platformCtx.selector.openExpressionImporter({
+                    onSubmit: ({ value }) => {
+                      console.log('表达式结果', value);
+                      closeModal();
+                    },
+                  });
+                }}
+              >
+  离线编辑器
+              </Button> */}
               <Button
                 className="mr10"
                 color="default"
@@ -166,26 +180,28 @@ const ToolbarCustom: React.FC<ToolbarCustomProps> = ({
               <Button
                 color="default"
                 className="mr10"
-                onClick={(e) => {
+                onClick={async (e) => {
                   // $R_P.get('/manage/v1/application/preview/')
-                  previewAppService(appLocation.app);
+                  const res = await previewAppService(appLocation.app);
                   // previewAppService('1319181529431285760');
-                  ShowModal({
-                    title: `PC 预览 ${isDevEnv ? previewUrl : ''}`,
-                    modalType: 'side',
-                    position: 'bottom',
-                    maxHeightable: false,
-                    children: () => {
-                      return (
-                        <div style={{
-                          height: '80vh'
-                        }}
-                        >
-                          <iframe src={previewUrl} width="100%" height="100%" frameBorder="0" />
-                        </div>
-                      );
-                    }
-                  });
+                  if(res.code === "00000"){
+                    ShowModal({
+                      title: `PC 预览 ${isDevEnv ? previewUrl : ''}`,
+                      modalType: 'side',
+                      position: 'bottom',
+                      maxHeightable: false,
+                      children: () => {
+                        return (
+                          <div style={{
+                            height: '80vh'
+                          }}
+                          >
+                            <iframe src={previewUrl} width="100%" height="100%" frameBorder="0" />
+                          </div>
+                        );
+                      }
+                    });
+                  }
                 }}
               >
                 预览

@@ -15,7 +15,6 @@ interface PropsEditorProps {
   selectedEntity
   entityState: PropertiesEditorProps['entityState']
   initEntityState: PropertiesEditorProps['initEntityState']
-  changeEntityState: PropertiesEditorProps['changeEntityState']
   updateEntityState: PropertiesEditorProps['updateEntityState']
 }
 
@@ -109,7 +108,6 @@ export class PDPropertiesEditor extends React.Component<PropsEditorProps> {
   render() {
     const {
       initEntityState,
-      changeEntityState,
       updateEntityState,
       entityState,
     } = this.props;
@@ -123,7 +121,6 @@ export class PDPropertiesEditor extends React.Component<PropsEditorProps> {
           entityState={entityState}
           updateEntityState={updateEntityState}
           initEntityState={initEntityState}
-          changeEntityState={changeEntityState}
           propItemGroupingData={propItemGroupingData}
           widgetBindedPropItemsMeta={widgetBindedPropItemsMeta}
           propItemRenderer={this.propItemRenderer}

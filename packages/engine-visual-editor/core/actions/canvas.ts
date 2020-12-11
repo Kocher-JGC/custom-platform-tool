@@ -15,13 +15,11 @@ export const ADD_ENTITY = 'entity/add';
 export interface AddEntityAction {
   type: typeof ADD_ENTITY
   entity: WidgetEntity
-  idx: number
   nestingInfo: ElemNestingInfo
 }
 
 interface AddEntityOptions {
   nestingInfo: ElemNestingInfo
-  idx: number
 }
 
 export const AddEntity = (
@@ -41,20 +39,28 @@ export const AddEntity = (
 export const DEL_ENTITY = 'entity/del';
 export interface DelEntityAction {
   type: typeof DEL_ENTITY
-  idx: number
+  nestingInfo: ElemNestingInfo
   entity: WidgetEntity
 }
 
 export const DelEntity = (
-  idx: number,
+  nestingInfo: ElemNestingInfo,
   entity
 ): DelEntityAction => {
   return {
     type: DEL_ENTITY,
     entity,
-    idx
+    nestingInfo
   };
 };
+
+/**
+ * ElemNestingInfo
+ * 记录嵌套信息
+ *
+ * 例如 [0] 代表最外层的第 0 个元素中进行排序
+ * 例如 [0, 1, 2] 代表最外层第 0 个元素中的第 1 个元素中的第 2 个元素
+ */
 
 /**
  * 设置 layout info 的值
@@ -63,39 +69,30 @@ export const SORTING_ENTITY = 'entity/sorting';
 export interface SortingEntityAction {
   type: typeof SORTING_ENTITY
   /** 拖动的元素的 index */
-  dragIndex: number
+  dragItemNestIdx: ElemNestingInfo
   /** 拖动的元素移动到了的 index */
-  hoverIndex: number
+  hoverItemNestIdx: ElemNestingInfo
   entity
-  /**
-   * 记录嵌套信息
-   *
-   * 例如 [0] 代表最外层的第 0 个元素中进行排序
-   * 例如 [0, 1, 2] 代表最外层第 0 个元素中的第 1 个元素中的第 2 个元素
-   */
-  nestingInfo?: ElemNestingInfo
   replace?: boolean
 }
 
 export const SortingEntity = (
   /** 拖起的项的 index */
-  dragIndex: number,
+  dragItemNestIdx: SortingEntityAction['dragItemNestIdx'],
   /** 拖起的项移动到的 index */
-  hoverIndex: number,
+  hoverItemNestIdx: SortingEntityAction['hoverItemNestIdx'],
   /** 拖起的 entity */
   entity,
   /** 选项 */
   options?: {
-    /** 嵌套信息 */
-    nestingInfo?: ElemNestingInfo,
-    /** 是否替换在 hoverIndex 的 entity */
+    /** 是否替换在 hoverItemNestIdx 的 entity */
     replace?: boolean
   },
 ): SortingEntityAction => {
   return {
     type: SORTING_ENTITY,
-    dragIndex,
-    hoverIndex,
+    dragItemNestIdx,
+    hoverItemNestIdx,
     entity,
     ...options,
   };
@@ -143,19 +140,16 @@ export const SELECT_ENTITY = 'entity/select';
 export interface SelectEntityAction {
   type: typeof SELECT_ENTITY
   entity: WidgetEntity
-  idx: number
   nestingInfo: ElemNestingInfo
 }
 
 export const SelectEntity = (
   entity: WidgetEntity,
-  idx,
   nestingInfo
 ): SelectEntityAction => {
   return {
     type: SELECT_ENTITY,
     entity,
-    idx,
     nestingInfo
   };
 };

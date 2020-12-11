@@ -1,9 +1,6 @@
 import React from 'react';
-import {
-  CloseModal, Input, Selector, ShowModal
-} from '@infra/ui';
-import { ChangeEntityState } from '@platform-widget-access/spec';
-import { Expression } from './Expression';
+import { Input, Selector } from '@infra/ui';
+import { ChangeEntityState, PropItemRenderContext } from '@platform-widget-access/spec';
 
 /**
  * 可用的值的类型
@@ -17,7 +14,7 @@ const selectTypes = {
 /**
  * ValueHelperProps
  */
-interface ValueHelperProps {
+interface ValueHelperProps extends PropItemRenderContext {
   editingWidgetState
   onChange: ChangeEntityState
 }
@@ -28,10 +25,16 @@ interface ValueHelperProps {
  */
 export const ValueHelper: React.FC<ValueHelperProps> = ({
   editingWidgetState,
+  platformCtx,
   onChange,
 }) => {
-  const [selectedItem, setSelectedItem] = React.useState('costomValue');
   const { exp, realVal, variable } = editingWidgetState;
+  const defaultSelectedItem = (() => {
+    if (exp) return "expression";
+    if (variable) return "variable";
+    return "costomValue";
+  })();
+  const [selectedItem, setSelectedItem] = React.useState(defaultSelectedItem);
   let Comp;
   switch (selectedItem) {
     case 'costomValue':
@@ -42,6 +45,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
             { value, attr: 'realVal' },
             /** 需要将 value 清空 */
             { value: null, attr: 'exp' },
+            { value: null, attr: 'variable' },
           ])}
         />
       );
@@ -51,22 +55,16 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
         <div
           className="px-4 py-2 border"
           onClick={(e) => {
-            const modalID = ShowModal({
-              title: '表达式编辑',
-              width: 900,
-              children: () => {
-                return (
-                  <Expression
-                    defaultValue={exp}
-                    onSubmit={(val) => {
-                      onChange([
-                        { value: val, attr: 'exp' },
-                        { attr: 'realVal', value: null }
-                      ]);
-                      CloseModal(modalID);
-                    }}
-                  />
-                );
+            const closeModal = platformCtx.selector.openExpressionImporter({
+              defaultValue: exp,
+              onSubmit: (exp) => {
+                onChange([
+                  { value: exp.code && exp.variable ? exp : "", attr: 'exp' },
+                  /** 需要将 value 清空 */
+                  { value: null, attr: 'realVal' },
+                  { value: null, attr: 'variable' },
+                ]);
+                closeModal();
               }
             });
           }}
@@ -81,7 +79,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
   }
 
   return (
-    <div className="value-helper">
+    <div className="value-helper flex">
       <div className="mb-2">
         <Selector
           needCancel={false}

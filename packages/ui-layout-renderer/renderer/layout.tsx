@@ -19,7 +19,7 @@ export interface LayoutWrapperContext {
 
 export interface LayoutParserWrapper {
   /** 组件渲染器，由调用方实现 */
-  componentRenderer?: (ctx: LayoutWrapperContext) => JSX.Element
+  componentRenderer?: (ctx: LayoutWrapperContext) => JSX.Element | null
 }
 
 export interface LayoutRendererProps extends LayoutParserWrapper {
@@ -41,23 +41,39 @@ const Elem = ({
 const renderLayout = (
   layoutNode: LayoutNodeItem[],
   wrapper: LayoutParserWrapper,
+  nestingDeep = 0,
+  nextNestingInfo: ElemNestingInfo = []
 ) => {
   const res: React.ElementType[] = [];
   if (Array.isArray(layoutNode)) {
-    let nestingDeep = 0;
-    const nestingInfo: number[] = [];
+    /** 
+     * 1. 记录元素的嵌套层次
+     * 2. 必须切断与原型的连接
+     */
+    const nestingInfo: ElemNestingInfo = [...nextNestingInfo];
     for (let i = 0; i < layoutNode.length; i++) {
       const layoutNodeItem = layoutNode[i];
+
+      /**
+       * 重要策略，用于定位元素在画布中的位置
+       */
       nestingInfo[nestingDeep] = i;
 
       const { id } = layoutNodeItem;
       const { componentRenderer } = wrapper;
+
+      /** 必须切断与原型的连接 */
+      const nextingInfoCtx = [...nestingInfo];
       const wrapperContext: LayoutWrapperContext = {
-        id, idx: i, layoutNodeItem, nestingInfo
+        id, idx: i, layoutNodeItem,
+        nestingInfo: nextingInfoCtx
       };
+      // console.log(layoutNodeItem, wrapperContext);
       if (layoutNodeItem.body) {
-        const childOfContainer = renderLayout(layoutNodeItem.body, wrapper);
-        nestingDeep += 1;
+        /**
+         * 递归获取子元素，通过嵌套层次来确定元素所在位置
+         */
+        const childOfContainer = renderLayout(layoutNodeItem.body, wrapper, nestingDeep + 1, nextingInfoCtx);
         let child;
         if (typeof componentRenderer === 'function') {
           wrapperContext.children = childOfContainer;
@@ -69,13 +85,15 @@ const renderLayout = (
         res.push(child);
         // res.push(<Elem id={id} key={id}>{child}</Elem>);
       } else {
-        const child: any = componentRenderer && componentRenderer(wrapperContext);
+        const child: any = componentRenderer?.(wrapperContext);
         res.push(child);
       }
     }
   }
   return res;
 };
+
+// const mockLayoutData = [{ "widgetRef":"FlexLayout","wGroupType":"layout","label":"Flex 布局","acceptChildStrategy":{ "strategy":"blackList","blackList":[] },"id":"FtpH_iNb","_state":"active","propState":{ "labelColor":null,"columnCount":null },"body":[{ "label":"文本框","widgetRef":"FormInput","wGroupType":"formController","eventAttr":[{ "alias":"值改变事件","type":"onChange" },{ "alias":"鼠标移入事件","type":"onMouseIn" },{ "alias":"鼠标移除事件","type":"onMouseOut" }],"varAttr":[{ "alias":"实际值","attr":"realVal","type":"string" },{ "alias":"显示值","attr":"showVal","type":"string" }],"parentID":"FtpH_iNb","id":"TTIOFQ9S","_state":"active","propState":{ "field":null,"widgetCode":"FormInput.24","labelColor":null,"title":"文本框","unit":null,"realVal":null,"exp":null,"variable":null,"checkFixedRule":null,"checkCustomRule":null,"checkErrorTooltip":null,"eventRef":null } }] },{ "id":"temp-entity_1.5366455678315278","_state":"temp-entity" }];
 
 /**
  * 布局渲染器
@@ -88,6 +106,7 @@ const LayoutRenderer: React.FC<LayoutRendererProps> = (
     RootRender,
     componentRenderer,
   } = props;
+  // console.log(JSON.stringify(layoutNode));
   const layoutRenderRes = renderLayout(layoutNode, {
     componentRenderer,
   });
