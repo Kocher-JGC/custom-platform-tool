@@ -1,6 +1,7 @@
 import { genEquCond } from "../utils";
-import { genDefalutFlow, DEFALUT_FLOW_MARK } from "./flow";
+import { genDefalutFlow } from "./flow";
 import { TransfromCtx } from "../../types/types";
+import { FLOW_MARK } from "../IUBDSL-mark";
 
 /**  TODO: 临时的生成schema和condition的函数 */
 const getDataCollectionFromSchema = (schema) => {
@@ -99,7 +100,7 @@ export const genAPBDSLAction =(transfromCtx: TransfromCtx, actionId: string, act
       { condition: {}, when: ['deleteStatus'] },
     ],
     flowOut: [
-      ...actionIds.map(i => ([`${DEFALUT_FLOW_MARK}${i}`]))
+      ...actionIds.map(i => ([`${FLOW_MARK}${i}`]))
     ]
   });
 

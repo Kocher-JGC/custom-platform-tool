@@ -1,9 +1,16 @@
-export const DEFALUT_FLOW_MARK = 'f_';
+import { actionMark, FLOW_MARK } from "../IUBDSL-mark";
 
 
 export const genDefalutFlow = (id: string, out = []) => ({
-  id: `${DEFALUT_FLOW_MARK}${id}`,
-  actionId: `@(actions).${id}`,
+  id: `${FLOW_MARK}${id}`,
+  actionId: `${actionMark + id}`,
+  flowOutCondition: [],
+  flowOut: [out]
+});
+
+export const genEmptyActionFLows = (id, out: string[] = []) => ({
+  id,
+  actionId: '',
   flowOutCondition: [],
   flowOut: [out]
 });

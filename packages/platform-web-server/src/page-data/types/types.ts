@@ -1,3 +1,5 @@
+import { GenInterMetaRes } from "./interface";
+
 export interface ProcessCtx { 
   token: string; 
   lessee: string; 
@@ -12,7 +14,10 @@ export interface TransfromCtx {
     tempSchema: any[];
     tempWeight: any[];
     tempOpenPageUrl: string;
+    tempRef2Val: any[];
+    tempAPIReq: any[];
     isSearch: boolean
   }
-  tableMetadata: any[]
+  interMeta: GenInterMetaRes;
+  schema: any;
 }

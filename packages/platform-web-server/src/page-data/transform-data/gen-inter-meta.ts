@@ -2,7 +2,8 @@ import {
   RemoteTable, InterMeta, InterMetaType,
   TreeInterfaceMeta, RemoteTableColumn, FieldDataType,
   Species, FieldMeta, FieldType, InterRefRelation,
-  RefType
+  RefType,
+  GenInterMetaRes
 } from "../types";
 
 /** tool */
@@ -25,10 +26,13 @@ const getTableType = (type: string): InterMetaType  => {
  * @param info 表列信息
  */
 const getFieldDataType = (info: RemoteTableColumn): FieldDataType => {
-  if (info.species === Species.SYS || info.species === Species.SYS_TMPL) {
+  if (info.dataType === FieldDataType.PK) return FieldDataType.PK;
+  if (info.dataType === FieldDataType.FK) return FieldDataType.FK;
+
+  if (info.species === Species.SYS_TMPL) {
     return FieldDataType.SYS;
   }
-  return info.dataType as FieldDataType;
+  return info.dataType as FieldDataType || FieldDataType.SYS;
 };
 
 /** tool */
@@ -38,7 +42,9 @@ const getFieldDataType = (info: RemoteTableColumn): FieldDataType => {
  * @param columns 字段列表
  */
 const rMetaCols2FieldsMeta = (columns: RemoteTableColumn[]): FieldMeta[] => {
+  
   return columns
+    // .filter()
     // 过滤系统字段
     .map(info => {
       return {
@@ -83,39 +89,43 @@ const genOnceInterMeta = (dsRefId: string, meta: RemoteTable) => {
 
 const genOnceInterRefRelation = (meta: RemoteTable) => {
   const interRefRelations: InterRefRelation[] = [];
-  const { id: interId, code: interCode } = meta;
-  const genRefRelationItem = (refInfo) => {
+  const { id: interId, code: interCode, columns } = meta;
+  const genRefRelationItem = (refInfo, refType: RefType) => {
     const { 
       id, fieldId, fieldCode,
       refTableId, refTableCode, 
       refFieldCode, refFieldId,
       refDisplayFieldCode, refDisplayFieldId
     } = refInfo;
+    
     return {
-      refType: RefType.QUOTE, refId: id, // 引用类型目前没有特殊区别
+      refType, refId: id,
       interId, interCode, fieldId, fieldCode,
       refInterId: refTableId, refInterCode: refTableCode,
       refFieldCode, refFieldId,
       refShowFieldCode: refDisplayFieldCode, refShowFieldId: refDisplayFieldId
     };
   };
+  /** 字典关系 */
+  columns
+    .filter(({ dataType }) => dataType === FieldDataType.DICT)
+    .forEach(({ dictionaryForeign }) => {
+      interRefRelations.push(genRefRelationItem(dictionaryForeign, RefType.DICT_Q));
+    });
   meta.references.forEach((refInfo) => {
-    interRefRelations.push(genRefRelationItem(refInfo));
+    /** 不知道树形引用是否需要额外处理 */
+    interRefRelations.push(genRefRelationItem(refInfo, RefType.QUOTE));
   });
   meta.foreignKeys.forEach((refInfo) => {
-    interRefRelations.push(genRefRelationItem(refInfo));
+    interRefRelations.push(genRefRelationItem(refInfo, RefType.FK_Q));
   });
   return interRefRelations;
 };
 
 
-interface GenInterMetaRes {
-  interMetas: InterMeta[];
-  interRefRelations: InterRefRelation[];
-}
-
 const addExtralData = (dsRefIds, dataSource) => {
-  const d = ['1330690535979098112', '1330691848745918464', '1330691572144152576', '1330691289989128192', '1330690842020683776'];
+  const d = [];
+  // const d = ['1330690535979098112', '1330691848745918464', '1330691572144152576', '1330691289989128192', '1330690842020683776'];
   dsRefIds.push(...d);
   d.forEach((k) => {
     dataSource[k] = { id:k };

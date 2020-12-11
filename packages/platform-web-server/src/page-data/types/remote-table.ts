@@ -186,28 +186,7 @@ export interface RemoteTableColumn {
   decimalSize: number;
   /** 属性对象,key为列的页面属性, value为对应的属性值 */
   fieldProperty: FieldProperty;
-  dictionaryForeign: DictionaryForeign
-}
-
-interface DictionaryForeign {
-  /** 字典主键 */
-  id: string; 
-  /** 表名 */
-  tableName: string; 
-  /** 字段主键 */
-  fieldId: string; 
-  /** 字典字段 */
-  fieldCode: string; 
-  /** 关联表主键 */
-  refTableId: string; 
-  /** 字典保存字段表中文名 */
-  refTableName: string; 
-  /** 字典保存字段,写死code值 */
-  refFieldCode: string; 
-  /** 字典显示字段,写死name值 */
-  refDisplayFieldCode: string; 
-  /** 业务字段类型 */
-  species: Species; 
+  dictionaryForeign: TableReferenceConfig
 }
 
 interface FieldProperty {

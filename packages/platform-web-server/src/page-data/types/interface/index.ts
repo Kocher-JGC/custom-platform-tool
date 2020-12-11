@@ -4,11 +4,7 @@ import { InterRefRelation } from './interace-relation';
 export * from './interface-meta';
 export * from './interace-relation';
 
-export interface InterMetaCollection {
-  metaList: {
-    [srt: string]: InterMeta
-  };
-  refRelation: {
-    [refId: string]: InterRefRelation;
-  };
+export interface GenInterMetaRes {
+  interMetas: InterMeta[];
+  interRefRelations: InterRefRelation[];
 }

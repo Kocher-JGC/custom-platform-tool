@@ -1,25 +1,10 @@
 import { TransfromCtx } from "../types";
 import { genWidgetFromPageData } from "./widget-fn";
 import { genAction } from './task';
-import { genSchema } from "./schema";
 import { genInterMeta } from "./gen-inter-meta";
-
-const mergeMetadata = (ds1: any[], ds2: any[]) => {
-  const res: any[] = ds1;
-  ds2.forEach(d => {
-    const idx = res.findIndex((dd => dd.id === d.id));
-    if (idx > -1) {
-      /** 取更有效的数据 */
-      if (d.tableRefId || d.tableRefId) {
-        res.splice(idx, 1, d);
-      }
-    } else {
-      res.push(d);
-    }
-  });
-  return res;
-};
-
+import { varRely2Schema } from "./varRely-2-schema";
+import { event2Flows } from "./events-2-flows";
+import { genExtralSchemaOfTablePK } from "./schema";
 
 /**
  * -. 基础数据
@@ -52,42 +37,52 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
       tempSchema: [],
       tempWeight: [],
       tempOpenPageUrl: '',
+      tempRef2Val: [],
+      tempAPIReq: [],
       isSearch: false
     },
-    tableMetadata: [],
+    interMeta: {
+      interMetas: [],
+      interRefRelations: []
+    },
+    schema: {}
   };
   /** dataSource目前绑定的是选项数据源 */
-  const { dataSource, pageInterface, linkpage, schema, actions, varRely } = contentData.meta;
+  const { dataSource, pageInterface, linkpage, actions, varRely, events } = contentData.meta;
   
   /** 页面widget */
   /** 生成元数据 */
   const interMeta = await genInterMeta(dataSource, transfCtx);
   const { interMetas, interRefRelations } = interMeta;
-  console.log(interMeta);
+  transfromCtx.interMeta = interMeta;
+  // console.log(interMeta);
   console.log('------------------ inter metadata -----------------');
   
-  /** 额外逻辑 */
-  // genMetadataPkSchema(transfromCtx, tableMetadata);
-  // transfromCtx.tableMetadata = tableMetadata;
+  /** 额外逻辑 schema */
+  genExtralSchemaOfTablePK(transfromCtx, interMetas);
+  
   /** 转换schema */
-  const tranSchema = genSchema(schema);
+  // const tranSchema = genSchema(schema);
+  const transfSchema = varRely2Schema(varRely);
+  transfromCtx.schema = transfSchema;
 
   /** 生成widget数据 */
   const widgets = genWidgetFromPageData(transfromCtx, contentData.content);
-  console.log(widgets);
-  /**  生成动作  */
-  const actionCollection = genAction(transfromCtx, actions, { pageSchema: {
-    ...tranSchema,
-    ...transfromCtx.extralDsl.tempSchema.reduce((res, val) => ({ ...res, [val.schemaId]: val }), {}),
-  } }); // 缺少整个页面的数据模型
+  // console.log(widgets);
+
 
   /** varRely处理 */
+
+  /** event处理/action是连着处理的, 有依赖关系 */
+  /**  生成动作  */
+  const actionCollection = genAction(transfromCtx, actions); // 缺少整个页面的数据模型
+  event2Flows(transfromCtx, events);
 
   /** 合成 */
   const { 
     extralDsl: { 
-      tempWeight, tempAction, tempBusinessCode, 
-      tempFlow, tempOpenPageUrl, tempSchema, 
+      tempWeight, tempAction, tempBusinessCode, tempAPIReq,
+      tempFlow, tempOpenPageUrl, tempSchema, tempRef2Val,
       isSearch
     } 
   } = transfromCtx;
@@ -101,12 +96,14 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
   );
   const actualFlowCollection = tempFlow.reduce((res, val) => ({ ...res, [val.id]: val }), {});
   const actualSchema = Object.assign({},
-    tranSchema,
+    transfSchema,
     tempSchema.reduce((res, val) => ({ ...res, [val.schemaId]: val }), {}),
   );
-  console.log(actualActions);
-  console.log(actualWidget);
-  console.log(actualSchema);
+  const actualRef2Val = tempRef2Val.reduce((res, val) => ({ ...res, [val.ref2ValId]: val }), {});
+  // console.log(actualActions);
+  // console.log(actualWidget);
+  // console.log(actualSchema);
+  
 
   const IUBDSLData = {
     ...genIUBDSLBaseData(pageData, contentData),
@@ -123,6 +120,8 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
     actionsCollection: actualActions,
     flowCollection: actualFlowCollection,
     layoutContent: {},
+    ref2ValCollection: actualRef2Val,
+    APIReqCollection: tempAPIReq.reduce((res, val) => ({ ...res, [val.reqId]: val }), {}), 
     // extral Data 临时的
     openPageUrl: tempOpenPageUrl,
     isSearch,

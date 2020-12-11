@@ -1,11 +1,9 @@
 import { TransfromCtx } from "../../types/types";
 
-export const changeStateAction = (transfromCtx: TransfromCtx, widgetId: string, schemas) => ({
+export const changeStateAction = (transfromCtx: TransfromCtx, widgetId: string, idOfref2Val) => ({
   actionId: widgetId,
-  actionName: 'updateState',
-  actionType: 'updateState',
-  actionOptions: {
-    changeTarget: schemas
-  },
+  actionName: 'changeState',
+  actionType: 'changeState',
+  actionOptions: { changeMapping: idOfref2Val },
   actionOutput: 'undefined'
 });

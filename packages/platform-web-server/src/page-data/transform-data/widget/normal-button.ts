@@ -1,16 +1,12 @@
-import { DEFALUT_FLOW_MARK } from "../task";
 import { TransfromCtx } from "../../types/types";
+import { defaultGenEvents } from "./default-gen";
 
-export const genFormButtonDefaltAction = (widgetId: string) => ({
-  onClick: {
-    type: 'actionRef',
-    actionID: `@(flow).${DEFALUT_FLOW_MARK}${widgetId}`
-  }
-});
+
+const genFormButtonEvents = defaultGenEvents;
 
 /** 生成按钮widget */
 export const genFromButton = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
-  const { title, type, actionRef, widgetCode } = propState;
+  const { title, type, eventRef, widgetCode } = propState;
   const { 
     extralDsl: { tempAction, tempFlow, tempBusinessCode }
   } = transfromCtx;
@@ -18,7 +14,7 @@ export const genFromButton = (transfromCtx: TransfromCtx, { id, widgetRef, propS
   return {
     widgetId: id, widgetRef, propState, widgetCode,
     eventHandlers: {
-      ...genFormButtonDefaltAction(actionRef)
+      ...genFormButtonEvents(eventRef)
     },
   };
 };
