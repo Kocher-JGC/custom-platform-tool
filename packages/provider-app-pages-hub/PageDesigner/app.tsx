@@ -48,7 +48,7 @@ interface VisualEditorAppProps extends VisualEditorState {
 const debounce = new Debounce();
 
 class PageDesignerApp extends React.Component<
-VisualEditorAppProps & HY.ProviderSubAppProps
+  VisualEditorAppProps & HY.ProviderSubAppProps
 > {
   componentDidMount = async () => {
     // 在顶层尝试捕获异常
@@ -124,7 +124,7 @@ VisualEditorAppProps & HY.ProviderSubAppProps
       const dsRefID = genMetaRefID("dataSource", {
         idStrategy: dsItem.id,
       });
-      nextDSState[dsRefID] = { ...dsItem, dsType: 'pageDS' };
+      nextDSState[dsRefID] = { ...dsItem, dsType: "pageDS" };
     });
     this.changePageMetaStradegy({
       type: "replace",
@@ -320,9 +320,9 @@ VisualEditorAppProps & HY.ProviderSubAppProps
     const { entity, nestingInfo } = selectedInfo;
     UpdateEntityState({ entity, nestingInfo }, nextState);
   };
-
-  getVariableData = getVariableData
-
+  getVariableData = (filter, options) => {
+    return getVariableData(this.props, filter, options);
+  };
   /**
    * 由页面设计器提供给属性项使用的平台上下文
    */
