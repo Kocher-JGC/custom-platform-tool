@@ -28,7 +28,7 @@ export interface DatasourceItem {
   type: string
   /** columns */
   columns: ColumnItem[]
-  dsType: 'pageDS'
+  createdBy: 'page'
 }
 
 export interface PDPropItemRendererBusinessPayload {
