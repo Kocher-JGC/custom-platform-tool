@@ -103,7 +103,9 @@ class PageDesignerApp extends React.Component<
     const { pageMetadata } = this.props;
     const { metaAttr, metaRefID } = options;
     return metaRefID
-      ? pageMetadata[metaAttr]?.[metaRefID]
+      ? Array.isArray(metaRefID)
+        ? pick(pageMetadata[metaAttr], metaRefID)
+        : pageMetadata[metaAttr]?.[metaRefID]
       : pageMetadata[metaAttr];
   };
 
