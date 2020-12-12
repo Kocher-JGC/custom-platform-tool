@@ -18,7 +18,7 @@ import {
 } from "antd";
 import { EditorFromTextArea } from "codemirror";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
-import codeEngine from "@engine/low-code";
+// import codeEngine from "@engine/low-code";
 import createSandbox from "@engine/js-sandbox";
 import { PlatformCtx } from "@platform-widget-access/spec";
 import { HY_METHODS } from "@library/expression-methods";
@@ -562,7 +562,7 @@ export const Expression: React.FC<IProps> = (props) => {
                           <List.Item
                             actions={[
                               <Tag color="processing">
-                                {VAR_VALUE_TYPE[item.varType]}
+                                {VAR_VALUE_TYPE[item.varType] || "暂不支持类型"}
                               </Tag>,
                               <Popover
                                 visible={!!variableVisible[item.field]}
@@ -573,12 +573,18 @@ export const Expression: React.FC<IProps> = (props) => {
                                 trigger="click"
                               >
                                 <Tag
-                                  color="success"
+                                  color={
+                                    VAR_VALUE_TYPE[item.varType]
+                                      ? "success"
+                                      : ""
+                                  }
                                   onClick={() => {
-                                    setVariableVisible((pre) => ({
-                                      ...pre,
-                                      [item.field]: !pre[item.field],
-                                    }));
+                                    if (VAR_VALUE_TYPE[item.varType]) {
+                                      setVariableVisible((pre) => ({
+                                        ...pre,
+                                        [item.field]: !pre[item.field],
+                                      }));
+                                    }
                                   }}
                                 >
                                   {debugCodeValue[item.field] || "编辑"}
