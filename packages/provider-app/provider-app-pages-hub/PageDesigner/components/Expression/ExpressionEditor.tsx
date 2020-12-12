@@ -13,6 +13,7 @@ import {
   Input,
   InputNumber,
   Tooltip,
+  Modal,
   message
 } from "antd";
 import { EditorFromTextArea } from "codemirror";
@@ -27,6 +28,7 @@ import { IHyMethod } from "./interface";
 import "./index.less";
 
 const { Panel } = Collapse;
+const { confirm } = Modal;
 const methodsTree = HY_METHODS.reduce((a, b) => {
   if (a[b.type]) {
     a[b.type].push(b);
@@ -58,6 +60,12 @@ interface ITransformRes {
   titleMap: { [key: string]: string };
 }
 
+interface IDefaultTextMark {
+  from: { line: number; ch: number };
+  to: { line: number; ch:number };
+  item: TVariableItem;
+}
+
 type TVariableItem = VariableItem & { field: string };
 type TVariableTree<T> = { [key: string]: T[] };
 export const Expression: React.FC<IProps> = (props) => {
@@ -65,7 +73,7 @@ export const Expression: React.FC<IProps> = (props) => {
   const [editor, setEditor] = useState<EditorFromTextArea | null>(null);
   /** 编辑器是否准备就绪 */
   const [ready, setReady] = useState<boolean>(false);
-  const [defaultCode, setDefaultCode] = useState<string>(false);
+  const [defaultCode, setDefaultCode] = useState<string | null>(null);
   /** 当前正在查看简介的函数对象 */
   const [curFunction, setCurFunction] = useState<IHyMethod | null>(null);
   /** 用于调试的变量-键值对，用于沙箱的上下文 */
@@ -76,13 +84,15 @@ export const Expression: React.FC<IProps> = (props) => {
   const [variableVisible, setVariableVisible] = useState<{ [key: string]: boolean }>({});
   /** 变量树 */
   const [variableTree, setVariableTree] = useState<TVariableTree<TVariableItem>>({});
+  /** 默认值的变量文本标记 */
+  const [defaultTextMarks, setDefaultTextMarks] = useState<IDefaultTextMark[] | null>(null);
   /** 编辑器下拉提示 */
   // const [hintOptions, setHintOptions] = useState<{ completeSingle: boolean; keywords: string[] }>({
   //   completeSingle: false,
   //   keywords: []
   // });
   /** 调试结果 */
-  const [operationResult, setOperationResult] = useState("");
+  const [operationResult, setOperationResult] = useState<{message: string; success: boolean} | null>(null);
 
   /**
    * 编辑器插入值
@@ -176,7 +186,7 @@ export const Expression: React.FC<IProps> = (props) => {
    * 清除编辑器
    */
   const resetEditor = () => {
-    setOperationResult("");
+    setOperationResult(null);
     if (!editor) return;
     editor.setValue("");
   };
@@ -227,6 +237,20 @@ export const Expression: React.FC<IProps> = (props) => {
       props.onSubmit && props.onSubmit({ code: null, variable: [] });
     }
   };
+  const checkSubmit = () => {
+    if(!operationResult || !operationResult.success){
+      confirm({
+        title: '表达式调试未通过，确定提交?',
+        icon: <ExclamationCircleOutlined />,
+        okText: "确定",
+        cancelText: "取消",
+        maskClosable: true,
+        onOk: onSubmit,
+      });
+    } else {
+      checkSubmit();
+    }
+  };
   /**
    * 转换编辑器内容为低代码字符串和包含变量
    * @param str 编辑器内容
@@ -253,6 +277,7 @@ export const Expression: React.FC<IProps> = (props) => {
       tmp.forEach(({ title, field })=>{
         lineText = lineText.replace(title, field);
       });
+      // TODO: 要考虑多行的情况
       code += lineText;
     });
     return { code, fieldMap, titleMap };
@@ -294,16 +319,93 @@ export const Expression: React.FC<IProps> = (props) => {
           const res = await sandbox(transformRes.code);
           console.log("调试结果: ", res);
           message.success(`调试结果: ${res}`);
-          setOperationResult(res);
+          setOperationResult({ message: res, success: true });
         }
       } catch (error) {
         console.dir("调试失败: ", error);
-        setOperationResult(error.toString());
+        setOperationResult({ message: error.toString(), success: false });
         message.error(`调试失败，${error.message}`);
       }
     } else {
       message.warn("编辑器没有内容");
     }
+  };
+  /**
+   * 初始化时增加表达式的文本标记
+   */
+  const addDefaultTextMarks = () => {
+    if (editor && defaultTextMarks && defaultTextMarks.length > 0){
+      console.log(editor.getCursor());
+      defaultTextMarks.forEach(({ from, to, item }, i)=>{
+        console.log(i, from, to, item);
+        editor.doc.markText(from, to, { className: "cm-field cm-field-value", attributes: { "data-id": item.id, "data-field": item.field }, atomic: true });
+      });
+    }
+  };
+  /**
+   * 初始化处理表达式存在默认值的情况
+   * @param variable 所有变量集合
+   */
+  const initDefaultValue = (variable) => {
+    if (props.defaultValue && props.defaultValue.code && props.defaultValue.variable) {
+      let code = props.defaultValue.code;
+      // let isNormal = true;
+      const useVariableIds = props.defaultValue.variable.map((item) => item.value);
+      const useVariableFields = props.defaultValue.variable.map((item) => item.field);
+      const textMarks: IDefaultTextMark[] = [];
+      // 获取使用的变量数组
+      const useVariables  = Object.keys(variable).reduce((a, b) => {
+        useVariableIds.forEach((useId) => {
+          const cur = variable[b].find((item: TVariableItem) => item.id === useId);
+          if(cur){
+            a[cur.field] = cur;
+          }
+        });
+        return a;
+      }, {} as { [key: string]: TVariableItem });
+      console.log("useVariables", useVariables);
+      // 判断表达式中的变量是否存在
+      if (!useVariableFields.reduce((a, b)=> !useVariables[b] || !a ? false : true, true)) {
+        message.error("存在变量丢失，表达式失效");
+        setDefaultCode("");
+        return;
+      }
+      // 获取代码中使用的变量顺序
+      const arr = props.defaultValue.variable.reduce((a, b)=>{
+        const regexp = new RegExp(b.field.replace(/\$/g, "\\$"), "g");
+        [...code.matchAll(regexp)].forEach((item) => {
+          a.push({
+            index: item.index || 0,
+            field: item[0],
+          });
+        });
+        console.log(b.field, [...code.matchAll(regexp)]);
+        return a;
+      }, [] as {index: number, field: string}[]).sort((a, b) => a.index - b.index);
+      console.log("arr", arr);
+      // 替换
+      let cur: {index: number, field: string} | undefined;
+      while(!!(cur = arr.shift())) {
+        textMarks.push({
+          from: { line: 0, ch: code.indexOf(cur.field) },
+          to: { line: 0, ch: code.indexOf(cur.field) + useVariables[cur.field].title.length },
+          item: useVariables[cur.field]
+        });
+        code = code.replace(cur.field, useVariables[cur.field].title);
+      }
+      // 设置状态
+      console.log("初始编辑器内容", code);
+      console.log("textMarks", textMarks);
+      setDefaultCode(code);
+      setDefaultTextMarks(textMarks);
+    }
+  };
+  /**
+   * 编辑器初始化完成回调
+   */
+  const onReady = () => {
+    setReady(true);
+    addDefaultTextMarks();
   };
 
   useEffect(() => {
@@ -316,31 +418,7 @@ export const Expression: React.FC<IProps> = (props) => {
       // 生成选择变量（折叠面板）所需数据
       setVariableTree(variable);
       // 初始化默认值
-      if (props.defaultValue && props.defaultValue.code && props.defaultValue.variable) {
-        let isNormal = true;
-        let code = props.defaultValue.code;
-        const useVariable = props.defaultValue.variable;
-        for (let j = 0; j < useVariable.length; j++) {
-          const { field } = useVariable[j];
-          let has = false;
-          for (let i = 0, list = Object.keys(variable); i < list.length; i++) {
-            const item = variable[list[i]].find((item) => item.field === field);
-            if (item) {
-              has = true;
-              code = code.replace(new RegExp(item.field.replace(/\$/g, "\\$"), "g"), item.title);
-            }
-          }
-          if (!has) {
-            isNormal = false;
-            message.error(`变量已移除，表达式失效`);
-            break;
-          }
-        }
-        if (isNormal) {
-          console.log("初始编辑器内容", code);
-          setDefaultCode(code);
-        }
-      }
+      initDefaultValue(variable);
       console.log("全部变量: ", res, variable);
     });
   }, [props.defaultValue]);
@@ -348,11 +426,10 @@ export const Expression: React.FC<IProps> = (props) => {
   return (
     <Suspense fallback={<span></span>}>
       <div className="expression">
-        {/* <span>输出结果: {operationResult}</span> */}
         <Spin tip="初始化编辑器..." spinning={!ready} style={{ backgroundColor: "#fff" }}>
           <div className="expression-editor">
             <div className="expression-header">
-              <span>{`结果 = ${operationResult || ""}`}</span>
+              <span>{`结果 = ${operationResult? operationResult.message : ""}`}</span>
               <Space size="small">
                 <Button size="small" type="link" onClick={debugCode}>
                   调试
@@ -362,17 +439,15 @@ export const Expression: React.FC<IProps> = (props) => {
                 </Button>
               </Space>
             </div>
-            <ExpressionEditor
+            {!props.defaultValue || defaultCode || defaultCode === "" ? <ExpressionEditor
               theme="ttcn"
               mode="javascript"
               lint={false}
               height="200px"
               defaultValue={defaultCode || ""}
               getEditor={(editor) => setEditor(editor)}
-              ready={() => {
-                setReady(true);
-              }}
-            />
+              ready={onReady}
+            /> : ""}
             <div className="expression-footer">
               <span></span>
             </div>
@@ -479,7 +554,7 @@ export const Expression: React.FC<IProps> = (props) => {
         </Row>
         <div className="expression-handle py-4">
           <span className="expression-handle-tip">请在英文输入法模式下编辑表达式</span>
-          <Button type="primary" onClick={onSubmit}>
+          <Button type="primary" onClick={checkSubmit}>
             确定
           </Button>
         </div>
