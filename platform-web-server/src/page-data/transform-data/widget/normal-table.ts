@@ -32,7 +32,7 @@ const enum JoinsType{
   rightJoin = 'rightJoin',
   innerJoin = 'innerJoin',
   crossJoin = 'crossJoin',
-} 
+}
 
 /** 统计函数 */
 const enum CountFn {
@@ -49,7 +49,7 @@ const findRefRelation = (interRefRelations: InterRefRelation[], { tableIds, refT
   const validTable = Array.isArray(tableIds)
     ? ((interIds: string[]) => (rR: InterRefRelation) => interIds.includes(rR.interId))(tableIds)
     : () => false;
-  const validFields = Array.isArray(fields) 
+  const validFields = Array.isArray(fields)
     ? ((fieldsId: string[]) => (rR: InterRefRelation) => fieldsId.includes(rR.fieldId))(fields) /** TODO: 这里无法确保为fieldsId */
     : () => false;
   const refRelationArr = interRefRelations.filter((rR: InterRefRelation) => (validTable(rR) || validFields(rR)) && refTypeFilter(refType));
@@ -80,8 +80,8 @@ const genFoundationSchema = (colInfo, mainInterId) => {
 };
 
 const genObjSchema = (colInfo, mainInterId, refRel: InterRefRelation) => {
-  const { 
-    refFieldId, refFieldCode, refInterCode, 
+  const {
+    refFieldId, refFieldCode, refInterCode,
     refInterId, refShowFieldCode, refShowFieldId,
     fieldId, interId,
   } = refRel;
@@ -120,7 +120,7 @@ const genObjSchema = (colInfo, mainInterId, refRel: InterRefRelation) => {
       }
     };
   }
-   
+
   return {
     schemaId: fieldId,
     type: 'structObject',
@@ -137,17 +137,17 @@ const genSubReadFields = (colInfo, refRel: InterRefRelation) => {
   return {
     refFieldInfo: {
       /** 引用表id 连表, 链接的字段id */
-      table: fieldId, 
+      table: fieldId,
       /** 表字段code */
-      field: refFieldCode,                  
+      field: refFieldCode,
       /** 别名为字段id+信息 */
       alias: `${fieldId}_${refInterId}_${refFieldId}`
     },
     showFieldInfo: {
       /** 引用表id */
-      table: fieldId, 
+      table: fieldId,
       /** 表字段code */
-      field: refShowFieldCode,                  
+      field: refShowFieldCode,
       /** 别名为字段id+信息 */
       alias: `${fieldId}_${refInterId}_${refShowFieldId}`
     }
@@ -155,10 +155,10 @@ const genSubReadFields = (colInfo, refRel: InterRefRelation) => {
 };
 
 const genSubRead = (refRel: InterRefRelation) => {
-  const { 
+  const {
     interCode, interId, fieldId, fieldCode,
-    refInterCode, refInterId, 
-    refFieldId, refFieldCode 
+    refInterCode, refInterId,
+    refFieldId, refFieldCode
   } = refRel;
   // const { tableCode, tableId, joinTableId, joinCode,  } = p
   return {
@@ -195,7 +195,7 @@ const genJoinsInfo = ({ readDef }) => {
 
 /**
  * 1. 生成schema
- * 2. 生成查询/组装 
+ * 2. 生成查询/组装
  * 3. 关系连表
   "fields": [
     {
@@ -210,7 +210,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   const { id, widgetRef, propState } = widgetProps;
   const { columns } = propState;
   const tableInfo = interMetas.find(({ id: tId }) => tId === tableId);
-  
+
   if (!tableInfo) return false;
   const pkField = tableInfo.fields.find(({ fieldDataType }) => fieldDataType === FieldDataType.PK);
   if (!pkField) return false;
@@ -242,13 +242,13 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   /** 单独添加读取pk的信息 */
   readField.push({
     /** 表id */
-    table: tableId, 
+    table: tableId,
     /** 表字段code */
-    field: pkField.fieldCode,                  
+    field: pkField.fieldCode,
     /** 别名为字段id+信息 */
     alias: pkField.fieldId
   });
-  
+
   const showColumns = columns.map((col) => {
     const { dsID, fieldID } = col;
     const ds = interMetas.find(item => item.id === dsID);
@@ -256,9 +256,9 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     const fieldInfo = ds.fields.find((item) => item.fieldId === fieldID);
     if (ds && fieldInfo) {
       readField.push({
-        table: tableId, 
-        field: fieldInfo.fieldCode,                  
-        alias: fieldID  
+        table: tableId,
+        field: fieldInfo.fieldCode,
+        alias: fieldID
       });
       if (refRel) {
         schemaStruct.push(genObjSchema(col, tableId, refRel));
@@ -272,7 +272,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
         /** join信息 */
         joins.push(genJoinsInfo({ readDef: { readRef } }));
         return { ...col, dataIndex: showFieldInfo.alias, id: showFieldInfo.alias };
-      } 
+      }
       schemaStruct.push(genFoundationSchema(col, tableId));
       return { ...col, dataIndex: fieldID, id: fieldID };
     }
@@ -289,7 +289,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     struct: schemaStruct.reduce((res, v) => ({ ...res, [v.schemaId]: v }), {})
   };
   tempSchema.push(tableSchema);
-  
+
   const stepsId = id;
   /** 生成连表 */
   const apbItem = {
@@ -307,7 +307,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     },
     steps: [stepsId]
   };
-  
+
 };
 
 
@@ -315,10 +315,10 @@ export const genNormanTable = (transfromCtx: TransfromCtx, widgetProps) => {
   const { extralDsl: { tempAPIReq, tempAction, tempFlow } } = transfromCtx;
   const { id, widgetRef, propState } = widgetProps;
   const { ds, columns } = propState;
-  const tableId = ds.replace('ds.', '');
+  const tableId = ds?.replace('ds.', '');
 
   // const usedColums = genTableColumns(columns, tableId);
-  
+
   // propState.columns = usedColums;
   const eventHandlers: any = {};
   const APB = genReadTable(transfromCtx, widgetProps, tableId);
