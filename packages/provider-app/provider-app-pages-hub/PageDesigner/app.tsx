@@ -136,7 +136,7 @@ class PageDesignerApp extends React.Component<
       const dsRefID = genMetaRefID("dataSource", {
         idStrategy: dsItem.id,
       });
-      nextDSState[dsRefID] = { ...dsItem, dsType: "page" };
+      nextDSState[dsRefID] = { ...dsItem, createdBy: "page" };
     });
     const dsFromNotPage = getDsFromNotPage();
     this.changePageMetaStradegy({
