@@ -47,7 +47,7 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  generatePageDataFolder(folderName: string, releaseId: string): Promise<boolean> {
+  generatePageDataFolder = (folderName: string, releaseId: string): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (!folderName || !releaseId) reject(new Error("文件夹名称错误"));
       fs.ensureDir(
@@ -72,11 +72,11 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  generateAppConfig(
+  generateAppConfig = (
     folderName: string,
     appConfig: { lesseeCode: string; applicationCode: string },
     releaseId: string
-  ) {
+  ) => {
     return new Promise((resolve, reject) => {
       const { lesseeCode, applicationCode } = appConfig;
       if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
@@ -104,12 +104,12 @@ export class ReleaseAppService {
    * @returns {Promise<boolean>}
    * @memberof ReleaseAppService
    */
-  generatePageDataJSONFile(
+  generatePageDataJSONFile = (
     folderName: string,
     releaseId: string,
     pageId: string,
     pageContent: string
-  ): Promise<boolean> {
+  ): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       fs.writeFile(
         path.join(__dirname, pageDataStorePath, releaseId, "page", folderName, `${pageId}.json`),
@@ -157,13 +157,13 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  async getPageDataFromProvider({ lesseeCode, applicationCode }, authorization) {
+  getPageDataFromProvider = async({ lesseeCode, applicationCode }, authorization) => {
+    this.logger.info(`paasServerUrl: ${paasServerUrl}`);
     const resData = await axios.get(
       `${paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {
-      this.logger.error("object", resData);
       throw new Error("获取应用已发布页面失败");
     }
     return resData?.data?.result || [];

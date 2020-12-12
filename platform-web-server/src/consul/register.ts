@@ -28,11 +28,11 @@ export const registerConsul = async () => {
           }/node_web_server.json?t=${Date.now()}`
         )
         .then((res) => res.data);
-
       if (cfg[0] && cfg[0].Value) {
         const configStr = Buffer.from(cfg[0].Value, "base64").toString();
-        await ensureDir(path.join(__dirname));
-        await writeJSON(path.join(__dirname, "env.json"), JSON.parse(configStr));
+        // await ensureDir(path.join(__dirname));
+        console.log("更新 config", configStr);
+        await writeJSON(path.join(process.cwd(), "env.json"), JSON.parse(configStr));
         console.log("更新 config 成功");
       } else {
         console.log("consul 返回配置异常", cfg);
