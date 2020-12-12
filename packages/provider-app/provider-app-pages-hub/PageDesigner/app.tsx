@@ -77,15 +77,23 @@ class PageDesignerApp extends React.Component<
 
     const isArrayOptions = Array.isArray(options);
 
+    const returnMetaIDForEachStep: string[] | string[][] = [];
     const returnMetaIDs: string[] = [];
     const nextOptions: ChangeMetadataOptions = genMetaIDStrategy(options, {
       entityID: activeEntityID,
-      forEachCalllback: (metaID) => returnMetaIDs.push(metaID),
+      forEachCalllback: (metaID) => {
+        if (Array.isArray(metaID)) {
+          returnMetaIDs.push.apply(returnMetaIDs, metaID);
+        } else {
+          returnMetaIDs.push(metaID);
+        }
+        returnMetaIDForEachStep.push(metaID);
+      },
     });
 
     ChangePageMeta(nextOptions);
 
-    return isArrayOptions ? returnMetaIDs : returnMetaIDs[0];
+    return isArrayOptions ? returnMetaIDs : returnMetaIDForEachStep[0];
   };
 
   /**
