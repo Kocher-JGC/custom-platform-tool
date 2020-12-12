@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 import axios from "axios";
 // import { PageDataService } from "../page-data/page-data.service";
 import config from "../../config";
@@ -22,7 +24,6 @@ const runExec = (shell: string): Promise<boolean> => {
     }
     exec(shell, (error) => {
       if (error) {
-        console.log(`执行${shell}命令失败`, error);
         reject(new Error(`执行${shell}命令失败`));
       } else {
         resolve(true);
@@ -34,6 +35,10 @@ const runExec = (shell: string): Promise<boolean> => {
 @Injectable()
 export class ReleaseAppService {
   // constructor(private readonly pageDataService: PageDataService) {}
+
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
 
   /**
    *
@@ -49,7 +54,7 @@ export class ReleaseAppService {
         path.join(__dirname, pageDataStorePath, releaseId, "page", folderName),
         (err) => {
           if (err) {
-            console.log("生成页面 json 存放文件夹失败", err);
+            this.logger.error("生成页面 json 存放文件夹失败", err);
             reject(new Error("生成页面 json 存放文件夹失败"));
             return;
           }
@@ -80,7 +85,7 @@ export class ReleaseAppService {
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
-            console.log("生成应用配置信息失败", err);
+            this.logger.error("生成应用配置信息失败", err);
             reject(new Error("生成应用配置信息失败"));
             return;
           }
@@ -111,7 +116,7 @@ export class ReleaseAppService {
         pageContent,
         (err) => {
           if (err) {
-            console.log("生成页面 json 文件失败", pageId, err);
+            this.logger.error("生成页面 json 文件失败", pageId, err);
             reject(new Error(`生成页面 json 文件失败 ${pageId}`));
             return;
           }
@@ -158,7 +163,7 @@ export class ReleaseAppService {
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {
-      console.log("object", resData);
+      this.logger.error("object", resData);
       throw new Error("获取应用已发布页面失败");
     }
     return resData?.data?.result || [];

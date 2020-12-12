@@ -20,7 +20,7 @@ export class ConsulConfig {
     this.consul = new Consul({ host, port, promisify: true });
     this.consul.agent.service.register(
       {
-        name: `${p.name.toUpperCase()}-${p.version}`,
+        name: `${p.name.toUpperCase()}-${p.version}-${address}:${addressPort}`,
         address,
         port: config.post,
         check: {
