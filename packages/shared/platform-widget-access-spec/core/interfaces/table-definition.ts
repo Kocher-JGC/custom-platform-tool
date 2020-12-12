@@ -59,6 +59,12 @@ export interface PTColumn {
   fieldType: string
   /** 字段的名字 */
   fieldCode: string
+  /** 字段唯一标识 */
+  fieldID: string
+  /** 数据源唯一标识 */
+  dsID: string
+  /** 字段类型区分 */
+  type: 'dsColumn'
   /** 
    * 行数据渲染策略，方案未定
    * TODO: 确定渲染策略
