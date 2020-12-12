@@ -342,7 +342,7 @@ export class TableDSHelperComp extends React.Component<
               close();
 
               if (
-                !DSOptionsRef ||
+                !bindedDS ||
                 (DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1)
               ) {
                 return close();
