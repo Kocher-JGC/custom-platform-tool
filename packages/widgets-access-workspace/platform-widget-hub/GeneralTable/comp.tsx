@@ -83,15 +83,13 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
   /** 根据查询方式，决定标题和搜索框的位置 */
   getPropsForSearch = ({ queryType, title, columns }) => {
     const getSearch = () => {
-      const {
-        typical: { queryStyle },
-      } = queryType || { typical: {} };
+      const { typical } = queryType || {};
+      const { queryStyle } = typical || {};
       return queryStyle === "asForm" ? {} : { search: false };
     };
     const getToolbarOrTitle = () => {
-      const {
-        typical: { queryStyle, maxNum },
-      } = queryType || { typical: {} };
+      const { typical } = queryType || {};
+      const { queryStyle, maxNum } = typical || {};
       return queryStyle !== "asForm" && (columns || []).length > 0
         ? {
             toolbar: {
