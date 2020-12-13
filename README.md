@@ -10,7 +10,7 @@
 
 在线文档源码在 `./_website-doc` 目录中，文档结构：
 
-- website-doc
+- _website-doc
   - docs：存放整个工程所有的文档
     - 「xxx」目录
       - 「yyy」文档
