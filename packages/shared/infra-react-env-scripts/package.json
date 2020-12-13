@@ -48,6 +48,7 @@
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "react-redux": "^7.2.1",
+    "thread-loader": "^3.0.1",
     "resolve": "1.10.0",
     "sass-loader": "7.1.0",
     "semver": "6.0.0",
