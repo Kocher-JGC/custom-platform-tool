@@ -3,7 +3,6 @@
  */
 
 import React from "react";
-import { ComponentPanelProps } from "@engine/visual-editor/components/WidgetPanel";
 import DragItemComp from "@engine/visual-editor/spec/DragItemComp";
 import { Tab, Tabs } from "@infra/ui";
 import {
@@ -13,6 +12,7 @@ import {
 import { LoadingTip } from "@provider-ui/loading-tip";
 import { PageMetadata } from "@engine/visual-editor/data-structure";
 import { getWidgetMetadata } from "@platform-widget-access/loader";
+// import Sortable from "sortablejs";
 
 import { DataSourceDragItem } from "../PDDataSource";
 import { useWidgetMeta, useWidgetPanelData } from "../../utils";
@@ -23,17 +23,12 @@ import { PDDragableItemTypes } from "../../const";
 export interface PageDesignerComponentPanelProps {
   pageMetadata: PageMetadata;
   onUpdatedDatasource;
-  getDragItemConfig?: ComponentPanelProps["getDragItemConfig"];
 }
 
 /**
  * 左边组件面板的组件工厂函数
- * @param getDragItemConfig
  */
-const itemRendererFac = (getDragItemConfig): ItemRendererType => (
-  widgetRef,
-  groupType
-) => {
+const itemRendererFac = (): ItemRendererType => (widgetRef, groupType) => {
   const [ready, widgetMeta] = useWidgetMeta(widgetRef);
   if (!ready) return null;
   if (!widgetMeta) {
@@ -45,16 +40,27 @@ const itemRendererFac = (getDragItemConfig): ItemRendererType => (
       return (
         <DragItemComp
           id={widgetRef}
+          sortable={false}
           accept={[]}
           className="drag-comp-item"
           type={PDDragableItemTypes.staticWidget}
-          dragConfig={getDragItemConfig ? getDragItemConfig(widgetMeta) : {}}
           dragableWidgetType={{
             ...widgetMeta,
           }}
         >
           {label}
         </DragItemComp>
+        // <div
+        //   id={widgetRef}
+        //   // accept={[]}
+        //   className="drag-comp-item"
+        //   // type={PDDragableItemTypes.staticWidget}
+        //   // dragableWidgetType={{
+        //   //   ...widgetMeta,
+        //   // }}
+        // >
+        //   {label}
+        // </div>
       );
     case "dataSource":
       return <div>dataSource</div>;
@@ -67,7 +73,6 @@ const itemRendererFac = (getDragItemConfig): ItemRendererType => (
  * page designer widget panel
  */
 const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
-  getDragItemConfig,
   pageMetadata,
   onUpdatedDatasource,
   // widgetPanelData,
@@ -82,6 +87,29 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
   //   });
   // }, []);
   const [ready, widgetPanelData] = useWidgetPanelData();
+  // React.useEffect(() => {
+  //   if (!ready) return;
+  //   setTimeout(() => {
+  //     const dragCompItem = document.querySelectorAll(".items-content");
+  //     dragCompItem.forEach((item) => {
+  //       Sortable.create(item, {
+  //         group: {
+  //           name: "nested",
+  //           pull: "clone",
+  //           put: false,
+  //         },
+  //         sort: false,
+  //         // draggable: ".drag-comp-item",
+  //         animation: 150,
+  //         fallbackOnBody: true,
+  //         swapThreshold: 0.65,
+  //         setData(/** DataTransfer */ dataTransfer, /** HTMLElement */ dragEl) {
+  //           dataTransfer.setData("Text", "123"); // `dataTransfer` object of HTML5 DragEvent
+  //         },
+  //       });
+  //     });
+  //   }, 100);
+  // }, [ready]);
   if (!ready) {
     return <LoadingTip />;
   }
@@ -103,8 +131,9 @@ const PDWidgetPanel: React.FC<PageDesignerComponentPanelProps> = ({
             itemRenderer={itemRenderer}
           /> */}
           <GroupItemsRender
+            itemClasses="nestable"
             groupType={groupType}
-            itemRenderer={itemRendererFac(getDragItemConfig)}
+            itemRenderer={itemRendererFac()}
             {...otherPanelConfig}
             // itemsGroups={widgetPanelData}
           />

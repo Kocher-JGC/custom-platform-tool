@@ -1,6 +1,7 @@
 import update from 'immutability-helper';
 import produce from 'immer';
 import flattenDeep from 'lodash/flattenDeep';
+import at from 'lodash/at';
 import { mergeDeep } from '@infra/utils/tools';
 import { ElemNestingInfo } from '@engine/layout-renderer';
 import { LayoutInfoActionReducerState, FlatLayoutItems } from "../../data-structure";
@@ -16,7 +17,9 @@ import {
   INIT_APP,
   InitAppAction,
   CHANGE_ENTITY_TYPE,
-  ChangeEntityTypeAction
+  ChangeEntityTypeAction,
+  AddTempEntityAction,
+  ADD_TEMP_ENTITY
 } from '../actions';
 import { getItemFromNestingItemsByBody } from '../utils';
 import { TEMP_ENTITY_ID } from '../const';
@@ -32,6 +35,7 @@ export type LayoutInfoActionReducerAction =
   UpdateEntityStateAction |
   InitEntityStateAction |
   ChangeEntityTypeAction |
+  AddTempEntityAction |
   InitAppAction
 
 interface SetItem2NestingArrOptions {
@@ -88,6 +92,42 @@ const clearTmplWidget = (layoutInfoState: LayoutInfoActionReducerState) => {
   return layoutInfoState.filter((item) => item._state !== TEMP_ENTITY_ID);
 };
 
+const swapItemInNestArray = (nestArray, sourceIdx, targetIdx) => {
+  const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
+  const swapItemNestIdxStr = `[${targetIdx.join('][')}]`;
+  const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
+  const swapTarTempItem = at(nestArray, [swapItemNestIdxStr]);
+
+  setItem2NestingArr(nestArray, targetIdx, {
+    addItem: swapSrcTempItem[0],
+    spliceCount: 1
+  });
+
+  setItem2NestingArr(nestArray, sourceIdx, {
+    addItem: swapTarTempItem[0],
+    spliceCount: 1
+  });
+
+  return nestArray;
+};
+
+const putItemInNestArray = (nestArray, sourceIdx, targetIdx, putIdx) => {
+  const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
+  const swapItemNestIdxStr = `[${targetIdx.join('][')}]`;
+  const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
+
+  setItem2NestingArr(nestArray, sourceIdx, {
+    spliceCount: 1
+  });
+
+  setItem2NestingArr(nestArray, [...targetIdx, putIdx], {
+    addItem: swapSrcTempItem[0],
+    spliceCount: 0
+  });
+
+  return nestArray;
+};
+
 // console.log(setItem2NestingArr([[{}]], [0,0,0], { test: '123' }));
 
 /**
@@ -106,7 +146,7 @@ export const layoutInfoReducer = (
         const { entity: addEntity, nestingInfo } = action;
         const addNextState = setItem2NestingArr(draft, nestingInfo, {
           addItem: addEntity,
-          spliceCount: 0
+          spliceCount: 1
         });
         // const addNextState = update(state, {
         //   $splice: [
@@ -117,26 +157,52 @@ export const layoutInfoReducer = (
         return addNextState;
       });
       return clearTmplWidget(addNextStateRes);
-    case SORTING_ENTITY:
+    case ADD_TEMP_ENTITY:
       return produce(state, (draft) => {
-        const {
-          dragItemNestIdx, hoverItemNestIdx,
-          entity: sortEntity, replace
-        } = action;
-        const addNextState = setItem2NestingArr(draft, dragItemNestIdx, {
-          spliceCount: replace ? 0 : 1,
-        });
-        const addNextState2 = setItem2NestingArr(addNextState, hoverItemNestIdx, {
-          addItem: sortEntity,
+        const { entity: addEntity, nestingInfo } = action;
+        const addNextState = setItem2NestingArr(draft, nestingInfo, {
+          addItem: addEntity,
           spliceCount: 0
         });
+        return addNextState;
+      });
+    case SORTING_ENTITY:
+      return produce(state, (draft) => {
+        const { sortOptions } = action;
+        if(sortOptions.type === 'swap') {
+          const { sourceItemNestIdx, swapItemNestIdx } = sortOptions;
+          if(sourceItemNestIdx && swapItemNestIdx && sourceItemNestIdx.length === swapItemNestIdx.length) {
+            swapItemInNestArray(draft, sourceItemNestIdx, swapItemNestIdx);
+            return draft;
+          } 
+          console.error(`交换的 idx 的长度不一致，请检查调用`);
+          
+        } else {
+          const { sourceItemNestIdx, putIdx, putItemNestIdx } = sortOptions;
+          putItemInNestArray(draft, sourceItemNestIdx, putItemNestIdx, putIdx);
+
+        }
+        // const {
+        //   dragItemNestIdx, hoverItemNestIdx, actionType
+        //   // entity: sortEntity, replace
+        // } = action;
+        // if(actionType === 'swap') {
+          
+        // }
+        // const addNextState = setItem2NestingArr(draft, dragItemNestIdx, {
+        //   spliceCount: replace ? 0 : 1,
+        // });
+        // const addNextState2 = setItem2NestingArr(addNextState, hoverItemNestIdx, {
+        //   addItem: sortEntity,
+        //   spliceCount: 0
+        // });
         // update(draft, {
         //   $splice: [
         //     [dragIndex, replace ? 0 : 1],
         //     [hoverIndex, 0, sortEntity],
         //   ],
         // });
-        return addNextState2;
+        // return addNextState2;
       });
     case SET_LAYOUT_STATE:
       const { state: _state } = action;
@@ -157,26 +223,35 @@ export const layoutInfoReducer = (
       return nextStateOfDef;
     case INIT_ENTITY_STATE:
       const nextStateInit = produce(state, (draftState) => {
-        const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
-        const { nestingInfo: initIdx } = initSInfo;
-        const targetData = getItemFromNestingItemsByBody(draftState, initIdx);
+        const { selectedEntityInfo, defaultEntityState } = action;
+        const { nestingInfo } = selectedEntityInfo;
+        const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
+        if(!targetData) {
+          console.error(`没找到对象：`, `selectedEntityInfo:`, selectedEntityInfo, `nestingInfo:`, nestingInfo);
+          return draftState;
+        }
         targetData.propState = defaultEntityState;
         return draftState;
       });
       return nextStateInit;
     case UPDATE_ENTITY_STATE:
       return produce(state, (draftState) => {
-        const { targetEntity: updateSInfo, formState } = action;
-        const { nestingInfo: updateIdx } = updateSInfo;
-        const targetData = getItemFromNestingItemsByBody(draftState, updateIdx);
+        const { targetEntity, formState } = action;
+        const { nestingInfo } = targetEntity;
+        const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
+
+        if(!targetData) {
+          console.error(`没找到对象：`, `targetEntity:`, targetEntity, `nestingInfo:`, nestingInfo);
+          return draftState;
+        }
         targetData.propState = formState;
         return draftState;
       });
     case CHANGE_ENTITY_TYPE:
       return produce(state, (draftState) => {
         const { targetEntity: updateSInfo, widgetType } = action;
-        const { nestingInfo: updateIdx } = updateSInfo;
-        const targetData = getItemFromNestingItemsByBody(draftState, updateIdx);
+        const { nestingInfo } = updateSInfo;
+        const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
         targetData.widgetRef = widgetType;
         return draftState;
       });

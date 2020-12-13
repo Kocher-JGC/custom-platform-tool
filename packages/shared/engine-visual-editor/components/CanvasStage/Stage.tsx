@@ -23,8 +23,7 @@ import {
   VEDispatcher,
   SelectEntityState,
 } from "@engine/visual-editor/core";
-import { PDDragableItemTypes } from "@provider-app/page-designer/const";
-import DropStageContainer from "./DropStageContainer";
+import DropStageContainer, { DropStageProps } from "./DropStageContainer";
 import { DnDContext } from "../../spec";
 
 /**
@@ -43,23 +42,29 @@ export interface CanvasStageProps extends VEDispatcher {
   layoutNodeInfo: LayoutInfoActionReducerState;
   /** 选中的组件实例 */
   selectedInfo: SelectEntityState;
+  accept: string[];
   /** 点击舞台的事件回调 */
   onStageClick?: () => void;
   /** 增加 entity 的回调 */
   onAddEntity?: (entity) => void;
+  /** 判断是否可以拖入画布中 */
+  triggerCondition?: DropStageProps["triggerCondition"];
 }
 
 const debounceAddTempEntity = new Debounce();
+
+interface DragingItemCtx {
+  nestingInfo: ElemNestingInfo;
+}
 
 /**
  * 中央舞台组件
  */
 class CanvasStage extends React.Component<CanvasStageProps> {
-  /** 用于记录最后拖拽的实例的 idx */
-  lastMoveIdx!: number | undefined;
-
-  /** 用于记录被拖动的实例的原 idx */
-  dragItemOriginIdx!: number | undefined;
+  /** 被拖动的元素的上下文 */
+  dragingItemCtx: DragingItemCtx | null = {
+    nestingInfo: [],
+  };
 
   getNodeItemFromNesting = (nestingInfo: ElemNestingInfo) => {
     return getItemFromNestingItems(
@@ -100,55 +105,41 @@ class CanvasStage extends React.Component<CanvasStageProps> {
    */
   handleItemDrop = (
     dragWidgetMeta: WidgetEntity,
-    dropTargetCtx?: DnDContext
+    dropTargetCtx?: Pick<DnDContext, "nestingInfo">
   ) => {
-    const { layoutNodeInfo, AddEntity, onAddEntity } = this.props;
+    const { AddEntity, onAddEntity } = this.props;
 
     // 切断原型链
     const widgetMetaCopy = { ...dragWidgetMeta };
-    const addEntityNestingInfo: ElemNestingInfo = [];
 
-    let addEntityIdx: number;
-    // if (!dropTargetCtx) {
-    if (typeof this.lastMoveIdx === "undefined") {
-      addEntityIdx = layoutNodeInfo.length;
-    } else {
-      addEntityIdx = this.lastMoveIdx;
+    if (dropTargetCtx) {
+      const { nestingInfo } = dropTargetCtx;
+      // 如果有放的项;
+      // if (dropTargetItem) {
+      //   const { acceptChildStrategy } = dropTargetItem;
+      //   if (acceptChildStrategy) {
+      //     // TODO: 完善布局信息
+      //     addEntityNestingInfo = [...nestingInfo];
+      //     const parentID = dropTargetItem.id;
+      //     // 如果被放的项是可以被嵌套的，则将该组件放入父级组件中
+      //     if (parentID) {
+      //       widgetMetaCopy.parentID = parentID;
+      //     }
+      //   }
+      // }
+
+      /** 是否已经实例化的组件 */
+      const isMotify = widgetMetaCopy._state === "active";
+
+      if (!isMotify) {
+        /** 实例化组件类 */
+        const entity = makeWidgetEntity(widgetMetaCopy);
+        AddEntity(entity, {
+          nestingInfo,
+        });
+        onAddEntity?.(entity);
+      }
     }
-    addEntityNestingInfo[0] = addEntityIdx;
-    // } else {
-    // const { nestingInfo, dropTargetItem } = dropTargetCtx;
-    // 如果有放的项
-    // if (dropTargetItem) {
-    //   const { acceptChildStrategy } = dropTargetItem;
-    //   if (acceptChildStrategy) {
-    //     // TODO: 完善布局信息
-    //     addEntityNestingInfo = [...nestingInfo];
-    //     const parentID = dropTargetItem.id;
-    //     // 如果被放的项是可以被嵌套的，则将该组件放入父级组件中
-    //     if (parentID) {
-    //       widgetMetaCopy.parentID = parentID;
-    //     }
-    //   }
-    // }
-    // if (typeof idx !== 'undefined') {
-    //   addEntityIdx = idx;
-    // }
-    // }
-
-    /** 是否已经实例化的组件 */
-    const isMotify = widgetMetaCopy._state === "active";
-
-    if (!isMotify) {
-      /** 实例化组件类 */
-      const entity = makeWidgetEntity(widgetMetaCopy);
-      AddEntity(entity, {
-        nestingInfo: addEntityNestingInfo,
-      });
-      onAddEntity?.(entity);
-    }
-
-    this.lastMoveIdx = undefined;
   };
 
   handleDeleteElement = ({ nestingInfo, entity }) => {
@@ -166,32 +157,59 @@ class CanvasStage extends React.Component<CanvasStageProps> {
     SelectEntity(entity, nestingInfo);
   };
 
+  createTempEntity = (nestInfo) => {
+    const dragEntity = makeTempWidgetEntity();
+    this.props.AddTempEntity(dragEntity, {
+      nestingInfo: nestInfo,
+    });
+  };
+
   /**
    * 响应元素的拖事件，作用于排序
    */
   handleItemMove = (
     dragItemNestIdx: ElemNestingInfo,
     hoverItemNestIdx: ElemNestingInfo,
-    dragItem
+    options
   ) => {
+    const { isContainer, from } = options || {};
     /** 防止没有 dragItemNestIdx 而产生坏数据 */
-    if (!dragItemNestIdx || dragItemNestIdx.length === 0) return;
+    if (!dragItemNestIdx) return;
+    if (dragItemNestIdx.length === 0) {
+      dragItemNestIdx = this.dragingItemCtx?.nestingInfo;
+    }
+    this.dragingItemCtx = {
+      nestingInfo: hoverItemNestIdx,
+    };
     // this.dragItemOriginIdx = dragItemNestIdx;
     /** 取消由进入画布时触发的添加临时组件 */
     debounceAddTempEntity.cancel();
-    const { SortingEntity } = this.props;
-    let dragEntity = this.getNodeItemFromNesting(dragItemNestIdx);
-    let replaceItem = false;
-    if (!dragEntity) {
-      /** 如果没有实例，则创建临时实例 */
-      dragEntity = makeTempWidgetEntity();
-      replaceItem = true;
+    const dragEntity = this.getNodeItemFromNesting(dragItemNestIdx);
+    if (!dragEntity) return;
+
+    if (isContainer) {
+      this.props.SortingEntity({
+        type: "put",
+        sourceItemNestIdx: dragItemNestIdx,
+        putItemNestIdx: hoverItemNestIdx,
+        putIdx: from === "top" ? 0 : 0,
+      });
+    } else {
+      this.props.SortingEntity({
+        type: "swap",
+        sourceItemNestIdx: dragItemNestIdx,
+        swapItemNestIdx: hoverItemNestIdx,
+      });
     }
-    /** 将最后的实例 idx 存储下来 */
-    this.lastMoveIdx = hoverItemNestIdx;
-    SortingEntity(dragItemNestIdx, hoverItemNestIdx, dragEntity, {
-      replace: replaceItem,
-    });
+
+    // this.props.SortingEntity({
+    //   type: "swap",
+    //   sourceItemNestIdx: dragItemNestIdx,
+    //   swapItemNestIdx: hoverItemNestIdx,
+    // });
+    // this.props.SortingEntity(dragItemNestIdx, hoverItemNestIdx, dragEntity, {
+    //   replace: replaceItem,
+    // });
   };
 
   /**
@@ -212,8 +230,10 @@ class CanvasStage extends React.Component<CanvasStageProps> {
     const {
       layoutNodeInfo,
       pageEntityState,
+      accept,
       // selectedInfo,
       onStageClick,
+      triggerCondition,
       dragableItemWrapper,
     } = this.props;
     const hasNode = layoutNodeInfo.length > 0;
@@ -227,46 +247,41 @@ class CanvasStage extends React.Component<CanvasStageProps> {
           componentRenderer={dragableItemWrapper(this.wrapperContext)}
           RootRender={(child) => (
             <DropStageContainer
-              triggerCondition={(dragItem) => {
-                return (
-                  dragItem && dragItem.type === PDDragableItemTypes.staticWidget
-                );
-              }}
-              accept={[
-                PDDragableItemTypes.containerWidget,
-                PDDragableItemTypes.stageRealWidget,
-                PDDragableItemTypes.staticWidget,
-              ]}
-              onLeave={(item) => {
-                /** 移出 item */
-                if (typeof item.nestingInfo !== "undefined") {
-                  this.handleDeleteElement({
-                    nestingInfo: item.nestingInfo,
-                    entity: item,
-                  });
-                }
-              }}
+              triggerCondition={triggerCondition}
+              accept={accept}
               onEnter={(item) => {
                 const layoutNodeInfoLen = layoutNodeInfo.length;
                 /** 设置 dragClass 的 index，用于排序 */
-                item.nestingInfo = [layoutNodeInfoLen];
+                this.dragingItemCtx = {
+                  nestingInfo: [layoutNodeInfoLen],
+                };
                 /**
                  * 延后将临时组件实例添加到画布，属于交互体验优化
                  */
                 debounceAddTempEntity.exec(() => {
-                  this.handleItemMove(
-                    item.nestingInfo,
-                    layoutNodeInfoLen,
-                    item
-                  );
+                  this.createTempEntity(this.dragingItemCtx?.nestingInfo);
                 }, 50);
               }}
-              onItemDrop={(_dragableItemDef, dropOptions) => {
-                if (dropOptions.type !== PDDragableItemTypes.staticWidget) {
-                  return;
+              onLeave={(item) => {
+                /** 移出 item */
+                if (this.dragingItemCtx) {
+                  this.handleDeleteElement({
+                    nestingInfo: this.dragingItemCtx.nestingInfo,
+                    entity: item,
+                  });
                 }
-                console.log(_dragableItemDef);
-                this.handleItemDrop(_dragableItemDef);
+
+                this.dragingItemCtx = null;
+              }}
+              onItemDrop={(_dragableItemDef, dropOptions) => {
+                // if (dropOptions.type !== PDDragableItemTypes.staticWidget) {
+                //   return;
+                // }
+                if (this.dragingItemCtx) {
+                  this.handleItemDrop(_dragableItemDef, {
+                    nestingInfo: this.dragingItemCtx?.nestingInfo,
+                  });
+                }
               }}
               onStageClick={onStageClick}
               style={pageStyle}
