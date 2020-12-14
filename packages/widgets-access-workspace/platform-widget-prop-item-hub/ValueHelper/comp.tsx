@@ -64,7 +64,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
             onSubmit: (newExp) => {
               onChange([
                 {
-                  value: newExp.code && newExp.variable ? newExp : "",
+                  value: newExp.code ? newExp : "",
                   attr: "exp",
                 },
                 /** 需要将 value 清空 */
