@@ -1,11 +1,10 @@
 /* eslint-disable no-lonely-if */
 import React, { useState, useRef } from "react";
-import { useDrag, useDrop, DropTargetMonitor, XYCoord } from "react-dnd";
+import { useDrag, useDrop, XYCoord } from "react-dnd";
 import clas from "classnames";
 import { TargetType } from "dnd-core";
-import { HasValue } from "@mini-code/base-func";
 import { ElemNestingInfo, getItemParentIdx } from "@engine/layout-renderer";
-import { DragableItemTypes, DragItemActions } from ".";
+import { DnDContext, DragableItemTypes, DragItemActions } from ".";
 import {
   DragableItemType,
   DragableWidgetBaseType,
@@ -38,7 +37,7 @@ export interface DragItemCompProps<D = DefaultDragableWidgetType, C = any>
   id: string;
   /** 用于排序时判断排序位置的 pixel */
   sortAreaPixel?: number;
-  children: any;
+  children: React.ReactChild;
   accept?: TargetType;
   /** 是否为容器 */
   isContainer?: boolean;
@@ -67,6 +66,7 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
     DragableItemTypes.DragItemEntity,
     DragableItemTypes.DragableItemType,
   ],
+  onItemHover,
   onItemMove,
   onItemDrop,
   onItemDrag,
@@ -80,23 +80,24 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
     DropCollectType
   >({
     accept,
-    /**
-     * ref: https://react-dnd.github.io/react-dnd/docs/api/use-drop
-     */
     drop: (item) => {
-      const { dragableWidgetType: dragedItemType } = item;
       /**
-       * @important 重要策略
-       *
-       * 1. isOverCurrent 判断是否拖动在容器内
-       * 2. isNodeInChild 判断自身是否拖到子容器中，避免嵌套
+       * 使用文档参考: https://react-dnd.github.io/react-dnd/docs/api/use-drop
+       */
+      const {
+        dragableWidgetType: dragedItemType,
+        nestingInfo: dragItemNestInfo,
+      } = item;
+      /**
+       * isOverCurrent 判断是否拖动在容器内
        */
       if (isOverCurrent) {
         setTimeout(() => {
-          console.log(nestingInfo);
           if (onItemDrop && nestingInfo) {
-            const _nestingInfo = [...nestingInfo];
-            const dropTargetCtx = { nestingInfo: _nestingInfo };
+            const dropTargetCtx: DnDContext = {
+              dropItemNestInfo: [...nestingInfo],
+              dragItemNestInfo: [...(dragItemNestInfo || [])],
+            };
             onItemDrop({ ...dragedItemType }, dropTargetCtx);
           }
         });
@@ -114,12 +115,19 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
         canDrop: monitor.canDrop(),
       };
     },
-    hover: (item: DraggedItemInfo, monitor: DropTargetMonitor) => {
+    hover: (item, monitor) => {
       if (!ref.current || !onItemMove || !nestingInfo?.join()) {
         return;
       }
+
       const dragItemNestInfo = item.nestingInfo || [];
       const hoverIndex = [...nestingInfo];
+
+      onItemHover?.(hoverIndex, {
+        isContainer,
+      });
+
+      item.parentIdx = getItemParentIdx(dragItemNestInfo);
 
       // Don't replace items with themselves
       if (dragItemNestInfo.join() === hoverIndex.join()) {
@@ -180,9 +188,10 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
           (isDragIdxLessThenHoveringItem && fromTop) ||
           (isDragIdxGreeterThenHoveringItem && fromBottom)
         ) {
-          // 进入了不排序的位置
+          /** 进入了不排序的区域 */
+          // TODO: 移出容器的事件
           if (isContainer) {
-            // 如果父级是容器，将当前 item 的 parentIdx 指向父级的 idx
+            /** 如果父级是容器，将当前 item 的 parentIdx 指向父级的 idx */
             if (item.parentIdx?.join("") === hoverIndex.join("")) return;
             item.parentIdx = hoverIndex;
             onItemMove?.(dragIndex, hoverIndex, {
@@ -228,6 +237,15 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
+    begin: (item) => {
+      const dragCtx = {
+        dragableWidgetType,
+        type,
+        isContainer,
+        nestingInfo,
+      };
+      onItemDrag?.(dragCtx);
+    },
   });
 
   const classes = clas(className, [
@@ -235,9 +253,8 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
     isDragging && "isDragging",
   ]);
 
-  // drag(ref);
   if (sortable) {
-    // 如果需要排序功能，则需要 drop 包装
+    /** 如果需要排序功能，则需要 drop 包装 */
     drag(drop(ref));
   } else {
     drag(ref);

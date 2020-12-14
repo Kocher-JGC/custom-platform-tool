@@ -1,3 +1,5 @@
+import at from "lodash/at";
+
 /**
  * 获取嵌套数据中的某个项的方法
  * @example
@@ -16,26 +18,23 @@ export const getItemFromNestingItems = <T>(
   nestingKey: string
 ): T => {
   if (!nestingInfo) {
-    throw Error('需要传入 nestingInfo，否则不要调用此方法，请检查调用链路');
+    console.error(`需要传入 nestingInfo，否则不要调用此方法，请检查调用链路`);
   }
   const _nestingInfo = [...nestingInfo];
   const targetItemIdx = _nestingInfo.pop() as number;
-  if(_nestingInfo.length === 0) {
+
+  const containerIdx = _nestingInfo;
+
+  if(containerIdx.length === 0) {
     return nestingData[targetItemIdx];
   }
-  let resData;
-  const recusive = (d, deep: number) => {
-    const i = _nestingInfo[deep];
-    const _d = d[i];
-    const nextDeep = deep++;
-    if (_d && _d[nestingKey] && typeof _nestingInfo[nextDeep] !== 'undefined') {
-      recusive(_d[nestingKey], nextDeep);
-    } else {
-      resData = _d;
-    }
-  };
-  recusive(nestingData, 0);
-  return resData;
+  const sourceItemNestIdxStr = `[${containerIdx.join('][')}]`;
+  const targetItem = at(nestingData, [sourceItemNestIdxStr])[0];
+  if(targetItem[nestingKey]) {
+    const resData = targetItem[nestingKey][targetItemIdx];
+    return resData;
+  } 
+  console.error(`没找到嵌套的容器元素`, targetItem);
 };
 
 export const getItemFromNestingItemsByBody = <T>(

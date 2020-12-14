@@ -1,38 +1,34 @@
-import React from 'react';
-import { LayoutNodeItem, ElemNestingInfo } from '../types';
+import React from "react";
+import { LayoutNodeItem, ElemNestingInfo } from "../types";
 
 /**
  * LayoutWrapper 上下文
  */
 export interface LayoutWrapperContext {
   /** 组件 ID */
-  id: string
+  id: string;
   /** 组件 index */
-  idx: number
+  idx: number;
   /** 组件嵌套信息 */
-  nestingInfo: ElemNestingInfo
+  nestingInfo: ElemNestingInfo;
   /** 组件节点信息 */
-  layoutNodeItem: LayoutNodeItem
+  layoutNodeItem: LayoutNodeItem;
   /** 组件的 children */
-  children?: React.ElementType[]
+  children?: React.ElementType[];
 }
 
 export interface LayoutParserWrapper {
   /** 组件渲染器，由调用方实现 */
-  componentRenderer?: (ctx: LayoutWrapperContext) => JSX.Element | null
+  componentRenderer?: (ctx: LayoutWrapperContext) => JSX.Element | null;
 }
 
 export interface LayoutRendererProps extends LayoutParserWrapper {
-  layoutNode: LayoutNodeItem[]
-  RootRender?: (renderRes: React.ElementType[]) => JSX.Element
+  layoutNode: LayoutNodeItem[];
+  RootRender?: (renderRes: React.ElementType[]) => JSX.Element;
 }
 
-const Elem = ({
-  id, children
-}) => {
-  return (
-    <div id={id}>{children}</div>
-  );
+const Elem = ({ id, children }) => {
+  return <div id={id}>{children}</div>;
 };
 
 /**
@@ -46,7 +42,7 @@ const renderLayout = (
 ) => {
   const res: React.ElementType[] = [];
   if (Array.isArray(layoutNode)) {
-    /** 
+    /**
      * 1. 记录元素的嵌套层次
      * 2. 必须切断与原型的连接
      */
@@ -65,17 +61,24 @@ const renderLayout = (
       /** 必须切断与原型的连接 */
       const nextingInfoCtx = [...nestingInfo];
       const wrapperContext: LayoutWrapperContext = {
-        id, idx: i, layoutNodeItem,
-        nestingInfo: nextingInfoCtx
+        id,
+        idx: i,
+        layoutNodeItem,
+        nestingInfo: nextingInfoCtx,
       };
       // console.log(layoutNodeItem, wrapperContext);
       if (layoutNodeItem.body) {
         /**
          * 递归获取子元素，通过嵌套层次来确定元素所在位置
          */
-        const childOfContainer = renderLayout(layoutNodeItem.body, wrapper, nestingDeep + 1, nextingInfoCtx);
+        const childOfContainer = renderLayout(
+          layoutNodeItem.body,
+          wrapper,
+          nestingDeep + 1,
+          nextingInfoCtx
+        );
         let child;
-        if (typeof componentRenderer === 'function') {
+        if (typeof componentRenderer === "function") {
           wrapperContext.children = childOfContainer;
           child = componentRenderer(wrapperContext);
         } else {
@@ -98,24 +101,16 @@ const renderLayout = (
 /**
  * 布局渲染器
  */
-const LayoutRenderer: React.FC<LayoutRendererProps> = (
-  props,
-) => {
-  const {
-    layoutNode,
-    RootRender,
-    componentRenderer,
-  } = props;
+const LayoutRenderer: React.FC<LayoutRendererProps> = (props) => {
+  const { layoutNode, RootRender, componentRenderer } = props;
   // console.log(JSON.stringify(layoutNode));
   const layoutRenderRes = renderLayout(layoutNode, {
     componentRenderer,
   });
-  return typeof RootRender === 'function' ? RootRender(layoutRenderRes) : (
-    <div className="layout-parser-content">
-      {
-        layoutRenderRes
-      }
-    </div>
+  return typeof RootRender === "function" ? (
+    RootRender(layoutRenderRes)
+  ) : (
+    <div className="layout-parser-content">{layoutRenderRes}</div>
   );
 };
 

@@ -12,15 +12,21 @@ import { WidgetEntity, WidgetEntityState } from '../../data-structure';
  * DnD 的回调的 context
  */
 export interface DnDContext {
-  nestingInfo: ElemNestingInfo
-  dropTargetItem: WidgetEntity
+  dragItemNestInfo: ElemNestingInfo
+  dropItemNestInfo?: ElemNestingInfo
+  // dropTargetItem: WidgetEntity
 }
 
 export type DragItemConfig = any;
 
 export type OnItemDrop = (dragItem, dndContext: DnDContext) => void
-export type OnItemDrag = (dragItem, dndContext: DnDContext) => void
-export type DragItemMove = (dragIndex: ElemNestingInfo, hoverIndex: ElemNestingInfo, compClass: any) => void
+export type OnItemDrag = (dragItem) => void
+
+interface DragItemMoveInfo {
+  isContainer: boolean
+  from: "top" | "button" | 'left' | 'right'
+}
+export type DragItemMove = (dragIndex: ElemNestingInfo, hoverIndex: ElemNestingInfo, options?: DragItemMoveInfo) => void
 export type CancelDrag = (originalIndex: number) => void
 
 export interface GetStateContext {
@@ -52,6 +58,10 @@ export interface DragItemActions {
   onItemDrop?: OnItemDrop
   /** 响应组件的“拖”事件 */
   onItemDrag?: OnItemDrag
+  /** 响应组件的“hover”事件 */
+  onItemHover?: (hoverIdx: ElemNestingInfo, {
+    isContainer: boolean
+  }) => void
   /** 响应组件的“被拖动”的事件 */
   onItemMove?: DragItemMove
 }
