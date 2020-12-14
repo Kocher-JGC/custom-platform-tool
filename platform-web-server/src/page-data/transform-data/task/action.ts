@@ -135,8 +135,6 @@ const genReadFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   const tempInfo: any = {};
   /** 获取完值, 进行设置值的struct */
   const struct: { key: string, val: string }[] = [];
-  console.log(pageFieldsToUse);
-  
   pageFieldsToUse.forEach(({ tableId, fieldId, schemaRef }) => {
     let fieldInfo ;
     if (tempInfo[tableId]) {
@@ -214,7 +212,8 @@ const genReadFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   /** 拼接动作 */
   const reqFlow =  action.actionId;
   const setFlow =  changeStateAct.actionId;
-  const flowItem1 = genDefalutFlow(reqFlow, [ flowMark + FLOW_MARK + setFlow ]);
+  const flowItem1: any = genDefalutFlow(reqFlow, [ flowMark + FLOW_MARK + setFlow ]);
+  flowItem1.condition = 'update_get';
   const flowItem2 = genDefalutFlow(setFlow);
   tempFlow.push(flowItem1, flowItem2);
   /** 页面加载时候的生命周期 */
@@ -342,7 +341,7 @@ const genDisplayControl = (params) => {
 };
 
 const genOpenPage = (transfromCtx: TransfromCtx, actionConf, actionId) => {
-  const { extralDsl: { tempFlow, tempRef2Val } } = transfromCtx;
+  const { extralDsl: { tempFlow, tempRef2Val }, pkSchemaRef } = transfromCtx;
   const { actionType, name, openPage: { link, openType, pageArea, paramMatch } } = actionConf;
   const actionOfOpenPage = {
     actionId,
@@ -363,6 +362,7 @@ const genOpenPage = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   if (paramMatch) {
     const ref2ValId = REF2VAL_MARK + actionId;
     const paramMatchStruct: any[] = [];
+
     /** 每一项如何处理 */
     const valGen = (key, fieldVal) => {
       if (key === 'variable') {
@@ -370,7 +370,8 @@ const genOpenPage = (transfromCtx: TransfromCtx, actionConf, actionId) => {
         // variable: "LnwMMC1I.selectedRow.1337659156915695616.1337659156949250048.realVal"
         const refArr = fieldVal.split('.');
         if (refArr.length === 5) {
-          return refArr.filter((rf,i) => i !== 2 || i !== 4).join(splitMark);
+          // return refArr.filter((rf,i) => ![2, 4].includes(i)).join(splitMark);
+          return `${refArr[0]}${splitMark}${refArr[1]}[#(0|*)]${splitMark}${refArr[3]}`;
         }
         return refArr.join(splitMark);
       } 

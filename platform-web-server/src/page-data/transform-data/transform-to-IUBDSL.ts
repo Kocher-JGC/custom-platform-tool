@@ -43,6 +43,7 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
       pageLifecycle: {},
       isSearch: false
     },
+    pkSchemaRef: [],
     interMeta: {
       interMetas: [],
       interRefRelations: []
@@ -89,7 +90,8 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
       tempFlow, tempOpenPageUrl, tempSchema, tempRef2Val,
       pageLifecycle,
       isSearch
-    } 
+    },
+    pkSchemaRef
   } = transfromCtx;
   const actualActions = Object.assign({},
     tempAction.reduce((res, val) => ({ ...res, [val.actionId]: val }), {}),
@@ -130,6 +132,7 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
     // extral Data 临时的
     openPageUrl: tempOpenPageUrl,
     pageLifecycle,
+    pkSchemaRef,
     isSearch,
     businessCode: tempBusinessCode.map(v=> `__${pageData.id}${v}`)
   };

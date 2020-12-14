@@ -1,9 +1,10 @@
-import { interMetaMark, schemaMark, REQ_MARK, ACT_MARK, apiReqMark, splitMark, REF2VAL_MARK, flowMark, ref2ValMark } from '../IUBDSL-mark';
+import { interMetaMark, schemaMark, REQ_MARK, ACT_MARK, apiReqMark, splitMark, REF2VAL_MARK, flowMark, ref2ValMark, runCtxPayloadMark } from '../IUBDSL-mark';
 import { TransfromCtx, InterRefRelation, FieldDataType } from "../../types";
 import { omitObj } from "../utils";
 import { FuncCodeOfAPB } from "../task/action-types-of-IUB";
 import { genDefalutFlow, changeStateAction, payloadRef2ValTemplate } from '../task';
 import { flowEventHandlerTemplate } from './default-gen';
+import { genDefaultTableDelBtn } from './normal-button';
 
 const omitColKey = ['colDataType', 'fieldSize', 'fieldType'];
 
@@ -217,10 +218,10 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   const { id, widgetRef, propState } = widgetProps;
   const { columns } = propState;
   const tableInfo = interMetas.find(({ id: tId }) => tId === tableId);
-  
-  if (!tableInfo) return false;
+  const genResult: any = {};
+  if (!tableInfo) return genResult;
   const pkField = tableInfo.fields.find(({ fieldDataType }) => fieldDataType === FieldDataType.PK);
-  if (!pkField) return false;
+  if (!pkField) return genResult;
 
   const refRelToUse = findRefRelation(interRefRelations, { tableIds: [tableId], refType: '', fields: '' });
 
@@ -325,8 +326,28 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   tempRef2Val.push(ref2Val);
   tempAction.push(updStateAction);
   tempFlow.push(updStateFlow);
-
-
+  
+  const selDataId = `${schemaId}_selectedRow`;
+  const selectRef2Val = {
+    ref2ValId: selDataId,
+    type: 'structObject',
+    struct: [
+      {
+        val: `${runCtxPayloadMark+splitMark}selectedRows`,
+        key: schemaMark + tableSelectRowRef,
+      },
+      {
+        val: `${runCtxPayloadMark+splitMark}selectedRows[#(0|*)]${splitMark}${pkField.fieldId}`,
+        key: `${schemaMark+tableId}_${pkField.fieldId}`
+      }
+    ]
+  };
+  const selectChange = changeStateAction(selDataId, ref2ValMark + selDataId);
+  const selStateFlow = genDefalutFlow(selDataId);
+  tempRef2Val.push(selectRef2Val);
+  tempAction.push(selectChange);
+  tempFlow.push(selStateFlow);
+  genResult.onTableSelect = flowEventHandlerTemplate([selStateFlow.id]);
   /**
    * APB
    * 1. 生成连表
@@ -362,30 +383,30 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   tempAction.push(actionOfIUB);
   const flow = genDefalutFlow(ACT_MARK + id, [flowMark + updStateFlow.id]);
   tempFlow.push(flow);
-  return flow;
+  genResult.onTableRequest = flowEventHandlerTemplate([flow.id]);
+  return genResult;
 };
 
 
 export const genNormanTable = (transfromCtx: TransfromCtx, widgetProps) => {
-  const { extralDsl: { tempAPIReq, tempAction, tempFlow } } = transfromCtx;
+  const { pkSchemaRef } = transfromCtx;
   const { id, widgetRef, propState } = widgetProps;
-  const { ds, columns } = propState;
-  const tableId = ds.replace('ds.', '');
+  const { ds: tableIds, columns } = propState;
+  const delBtn = genDefaultTableDelBtn(transfromCtx, { table: interMetaMark + tableIds[0], condition: pkSchemaRef[0] });
+  // const tableIds = ds.replace('ds.', '');
 
   // const usedColums = genTableColumns(columns, tableId);
   
   // propState.columns = usedColums;
-  const eventHandlers: any = {};
-  const doFLow = genReadTable(transfromCtx, widgetProps, tableId);
-  if (doFLow) {
-    const handler = flowEventHandlerTemplate([doFLow.id]);
-    eventHandlers.onTableRequest = handler;
-  }
+  const eventHandlers = genReadTable(transfromCtx, widgetProps, tableIds[0]);
 
-  return {
-    widgetId: id, widgetRef,
-    propState,
-    eventHandlers
-    // dataSource: optDS ? `@(schema).${usedTableMetadata.id}` : '',
-  };
+  return [
+    delBtn,
+    {
+      widgetId: id, widgetRef,
+      propState,
+      eventHandlers
+      // dataSource: optDS ? `@(schema).${usedTableMetadata.id}` : '',
+    }
+  ];
 };

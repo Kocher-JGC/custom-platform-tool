@@ -20,6 +20,7 @@ export interface TransfromCtx {
     pageLifecycle: any;
     isSearch: boolean
   }
+  pkSchemaRef: string[];
   interMeta: GenInterMetaRes;
   schema: any;
   metaSchema: {

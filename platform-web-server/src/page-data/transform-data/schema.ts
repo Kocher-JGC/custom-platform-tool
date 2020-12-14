@@ -17,7 +17,7 @@ const genExtralSchemaOfField = (interId: string, field: FieldMeta) => {
 
 
 export const genExtralSchemaOfTablePK = (transfromCtx: TransfromCtx, interMetas: InterMeta[]) => {
-  const { extralDsl: { tempSchema } } = transfromCtx;
+  const { extralDsl: { tempSchema }, pkSchemaRef } = transfromCtx;
 
   interMetas.forEach(({ fields, type, code, id  }) => {
     if (type !== InterMetaType.DICT_TABLE) {
@@ -26,7 +26,9 @@ export const genExtralSchemaOfTablePK = (transfromCtx: TransfromCtx, interMetas:
         return fieldDataType === FieldDataType.PK;
       });
       if (PKField) {
-        tempSchema.push(Object.assign(genExtralSchemaOfField(id, PKField), { schemaType: 'TablePK', schemaId: `${id}_${PKField.fieldId}`, schemaRef: `${schemaMark}${id}_${PKField.fieldId}` }));
+        const schemaId = `${id}_${PKField.fieldId}`;
+        tempSchema.push(Object.assign(genExtralSchemaOfField(id, PKField), { schemaType: 'TablePK', schemaId , schemaRef: `${schemaMark + schemaId}` }));
+        pkSchemaRef.push(`${schemaMark + schemaId}`);
       }
     }
     if (type === InterMetaType.AUX_TABLE) {
@@ -35,7 +37,9 @@ export const genExtralSchemaOfTablePK = (transfromCtx: TransfromCtx, interMetas:
         return fieldDataType === FieldDataType.FK;
       });
       if (FKField) {
-        tempSchema.push(Object.assign(genExtralSchemaOfField(id, FKField), { schemaType: 'TableFK', schemaId: `${id}_${FKField.fieldId}`, schemaRef: `${schemaMark}${id}_${FKField.fieldId}` }));
+        const schemaId = `${id}_${FKField.fieldId}`;
+        tempSchema.push(Object.assign(genExtralSchemaOfField(id, FKField), { schemaType: 'TableFK', schemaId , schemaRef: `${schemaMark + schemaId}` }));
+        // pkSchemaRef.push(`${schemaMark + schemaId}`);
       }
     }
   });
