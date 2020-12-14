@@ -13,6 +13,7 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
     allFieldList, allInterList, refRelation 
   } = pRes;
   // const refRelationKeys = Object.keys(refRelation);
+  console.log(pRes);
   const refRelationValues = Object.values(refRelation);
   
   /**
@@ -39,9 +40,7 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
    */
   // const findFiledsCode = (table: string ,fieldDataType: FieldDataType) => {}
   // console.log(refRelation);
-  
-  // console.log(pRes);
-  
+    
   // const allCodeMark = Object.keys(codeMarkMapIdMark);
   // const allIdMark = Object.keys(idMarkMapCodeMark);
   /**
@@ -72,7 +71,7 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
 
     /** 获取必要数据 */
     const { inter, target, isPath } = opts;
-    const interMeta = getInterMeta(inter);
+    const interMeta = getInterMeta(IUBCtx, inter);
     if (!interMeta) return fieldsMarks;
 
     /**

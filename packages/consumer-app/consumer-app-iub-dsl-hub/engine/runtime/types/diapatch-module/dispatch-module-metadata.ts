@@ -1,3 +1,4 @@
+import { InterMetaEntity } from '@iub-dsl/engine/inter-meta-manage';
 import { DispatchModuleName } from "..";
 
 export interface DispatchModuleMetadata {
@@ -5,13 +6,18 @@ export interface DispatchModuleMetadata {
   method: DispatchMethodNameOfMetadata
 }
 
-export type TDispatchMethodNameOfDatasourceMeta = keyof typeof DispatchMethodNameOfMetadata
+export type TDispatchMethodNameOfDatasourceMeta = keyof InterMetaEntity
 
 export const enum DispatchMethodNameOfMetadata {
   getMetaKeyInfo = 'getMetaKeyInfo',
   getFieldKeyInfo = 'getFieldKeyInfo',
-  getMetaFieldKey = 'getMetaFieldKey',
   getMetaFromMark = 'getMetaFromMark',
   fieldDataMapToFieldMarkData = 'fieldDataMapToFieldMarkData',
-  findRefRelation = 'findRefRelation'
+  /** new */
+  findRefRelation = 'findRefRelation',
+  id2Code = 'id2Code',
+  code2Id = 'code2Id',
+  getInterFieldMark = 'getInterFieldMark',
+  getInterMeta = 'getInterMeta',
+  addInter = 'addInter',
 }
