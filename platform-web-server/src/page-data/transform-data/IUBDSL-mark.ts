@@ -10,6 +10,7 @@ export const splitMark = '/';
 export const ACT_MARK = 'act_';
 export const REQ_MARK = 'req_';
 export const FLOW_MARK = 'f_';
+export const REF2VAL_MARK = 'ref2_';
 
 
 /** 
@@ -26,6 +27,7 @@ export const schemaMark = '@(schema).';
  * 运行时上下文
  */
 export const runCtxMark = '@(runCtx).';
+export const runCtxPayloadMark = `${runCtxMark}payload`;
 
 /** 
  * 动作的mark

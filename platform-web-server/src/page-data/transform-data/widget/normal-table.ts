@@ -1,8 +1,8 @@
-import { interMetaMark, schemaMark, REQ_MARK, ACT_MARK, apiReqMark } from '../IUBDSL-mark';
+import { interMetaMark, schemaMark, REQ_MARK, ACT_MARK, apiReqMark, splitMark, REF2VAL_MARK, flowMark, ref2ValMark } from '../IUBDSL-mark';
 import { TransfromCtx, InterRefRelation, FieldDataType } from "../../types";
 import { omitObj } from "../utils";
 import { FuncCodeOfAPB } from "../task/action-types-of-IUB";
-import { genDefalutFlow } from '../task';
+import { genDefalutFlow, changeStateAction, payloadRef2ValTemplate } from '../task';
 import { flowEventHandlerTemplate } from './default-gen';
 
 const omitColKey = ['colDataType', 'fieldSize', 'fieldType'];
@@ -68,66 +68,70 @@ interface SchemaItemDef {
   struct: any;
 }
 
-const genFoundationSchema = (colInfo, mainInterId) => {
+const genFoundationSchemaFn = (colInfo) => {
   const { title: desc, dataIndex, fieldCode, fieldID, dsID } = colInfo;
-  return {
-    schemaId: fieldID,
-    type: 'string',
-    desc, schemaType: 'TableDataSource',
-    schemaRef: `${schemaMark + mainInterId}[#(0|*)]/${fieldID}`,
-    fieldRef: `${interMetaMark + dsID}/${fieldID}`
+  return (prevPath) => {
+    return {
+      schemaId: fieldID,
+      type: 'string',
+      desc, schemaType: 'TableDataSource',
+      schemaRef: `${schemaMark + prevPath}[#(0|*)]/${fieldID}`,
+      fieldRef: `${interMetaMark + dsID}/${fieldID}`
+    };
   };
 };
 
-const genObjSchema = (colInfo, mainInterId, refRel: InterRefRelation) => {
+const genObjSchemaFn = (colInfo, refRel: InterRefRelation) => {
   const { 
     refFieldId, refFieldCode, refInterCode, 
     refInterId, refShowFieldCode, refShowFieldId,
     fieldId, interId,
   } = refRel;
   const { id: colId, title: desc, dataIndex, fieldCode } = colInfo;
-  const baseSchemaRef = `${schemaMark + mainInterId}[#(0|*)]/${fieldId}`;
-  let struct;
-  /** TODO: 会不会重复? */
-  if (refFieldId === refShowFieldId) {
-    struct = {
-      [refFieldId]: {
-        schemaId: refFieldId,
-        type: 'string',
-        desc: '引用与实际同值', schemaType: 'TableDataSource',
-        code: `${refInterCode}/${refFieldCode}`,
-        schemaRef: `${baseSchemaRef}/${refFieldId}`,
-        fieldRef: `${interMetaMark + refInterId}/${refFieldId}`
-      },
+  return (prevPath) => {
+    const baseSchemaRef = `${schemaMark + prevPath}[#(0|*)]/${fieldId}`;
+    let struct;
+    /** TODO: 会不会重复? */
+    if (refFieldId === refShowFieldId) {
+      struct = {
+        [refFieldId]: {
+          schemaId: refFieldId,
+          type: 'string',
+          desc: '引用与实际同值', schemaType: 'TableDataSource',
+          code: `${refInterCode}/${refFieldCode}`,
+          schemaRef: `${baseSchemaRef}/${refFieldId}`,
+          fieldRef: `${interMetaMark + refInterId}/${refFieldId}`
+        },
+      };
+    } else {
+      struct = {
+        [refFieldId]: {
+          schemaId: refFieldId,
+          type: 'string',
+          desc: '引用实际值', schemaType: 'TableDataSource',
+          code: `${refInterCode}/${refFieldCode}`,
+          schemaRef: `${baseSchemaRef}/${refFieldId}`,
+          fieldRef: `${interMetaMark + refInterId}/${refFieldId}`
+        },
+        [refShowFieldId]: {
+          schemaId: refShowFieldId,
+          type: 'string',
+          desc: '引用显示值', schemaType: 'TableDataSource',
+          code: `${refInterCode}/${refShowFieldCode}`,
+          schemaRef: `${baseSchemaRef}/${refShowFieldId}`,
+          fieldRef: `${interMetaMark + refInterId}/${refShowFieldId}`
+        }
+      };
+    }
+     
+    return {
+      schemaId: fieldId,
+      type: 'structObject',
+      desc, schemaType: 'TableDataSource',
+      schemaRef: baseSchemaRef,
+      fieldRef: `${interMetaMark + interId}/${fieldId}`,
+      struct
     };
-  } else {
-    struct = {
-      [refFieldId]: {
-        schemaId: refFieldId,
-        type: 'string',
-        desc: '引用实际值', schemaType: 'TableDataSource',
-        code: `${refInterCode}/${refFieldCode}`,
-        schemaRef: `${baseSchemaRef}/${refFieldId}`,
-        fieldRef: `${interMetaMark + refInterId}/${refFieldId}`
-      },
-      [refShowFieldId]: {
-        schemaId: refShowFieldId,
-        type: 'string',
-        desc: '引用显示值', schemaType: 'TableDataSource',
-        code: `${refInterCode}/${refShowFieldCode}`,
-        schemaRef: `${baseSchemaRef}/${refShowFieldId}`,
-        fieldRef: `${interMetaMark + refInterId}/${refShowFieldId}`
-      }
-    };
-  }
-   
-  return {
-    schemaId: fieldId,
-    type: 'structObject',
-    desc, schemaType: 'TableDataSource',
-    schemaRef: baseSchemaRef,
-    fieldRef: `${interMetaMark + interId}/${fieldId}`,
-    struct
   };
 };
 
@@ -206,7 +210,10 @@ const genJoinsInfo = ({ readDef }) => {
   ]
 */
 const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
-  const { interMeta: { interRefRelations, interMetas }, extralDsl: { tempSchema } } = transfromCtx;
+  const { 
+    interMeta: { interRefRelations, interMetas }, 
+    extralDsl: { tempSchema, tempRef2Val, tempAction, tempFlow, tempAPIReq }
+  } = transfromCtx;
   const { id, widgetRef, propState } = widgetProps;
   const { columns } = propState;
   const tableInfo = interMetas.find(({ id: tId }) => tId === tableId);
@@ -215,14 +222,13 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   const pkField = tableInfo.fields.find(({ fieldDataType }) => fieldDataType === FieldDataType.PK);
   if (!pkField) return false;
 
-
   const refRelToUse = findRefRelation(interRefRelations, { tableIds: [tableId], refType: '', fields: '' });
 
   let idxx = 0;
-  const schemaId = `${id}_DataSource`;
+  const schemaId = `${id}`;
   /** 修改数据源 */
-  propState.dataSource = schemaMark + schemaId;
-  const schemaStruct: any[] = [];
+  propState.dataSource = `${schemaMark + schemaId + splitMark}dataSource`; // 默认是dataSource
+  const tableSchemaGenFn: any[] = [];
   const mainReadId = `stepId${idxx}`;
   const joins: any[] = [];
   /**
@@ -240,13 +246,9 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     }
   };
   /** 单独添加读取pk的信息 */
-  readField.push({
-    /** 表id */
-    table: tableId, 
-    /** 表字段code */
-    field: pkField.fieldCode,                  
-    /** 别名为字段id+信息 */
-    alias: pkField.fieldId
+  columns.push({
+    dsID: tableId, fieldID: pkField.fieldId, show: false,
+    field: pkField.fieldCode, id: pkField.fieldId, desc: 'PK'
   });
   
   const showColumns = columns.map((col) => {
@@ -261,7 +263,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
         alias: fieldID  
       });
       if (refRel) {
-        schemaStruct.push(genObjSchema(col, tableId, refRel));
+        tableSchemaGenFn.push(genObjSchemaFn(col, refRel));
         /** 连表的字段 */
         const { showFieldInfo, refFieldInfo } = genSubReadFields(col, refRel);
         readField.push(refFieldInfo, showFieldInfo);
@@ -273,33 +275,71 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
         joins.push(genJoinsInfo({ readDef: { readRef } }));
         return { ...col, dataIndex: showFieldInfo.alias, id: showFieldInfo.alias };
       } 
-      schemaStruct.push(genFoundationSchema(col, tableId));
+      tableSchemaGenFn.push(genFoundationSchemaFn(col));
       return { ...col, dataIndex: fieldID, id: fieldID };
     }
     return null;
-  });
+  }).filter(v => v);
   propState.columns = showColumns;
   propState.rowKey = pkField.fieldId; // 数据主键为 pkid
-  /** 生成表格schema */
+  /**
+   * 生成表格schema
+   * 1. 数据源schema
+   * 2. 选中行的schema
+   * 3. 当前操作的schema 「后续」
+   */
+  /** 数据源 */
+  const tableDataSourceRef = `${id + splitMark}dataSource`;
+  const dataSourceSchema = tableSchemaGenFn.map(genFn => genFn(tableDataSourceRef)).reduce((res, v) => ({ ...res, [v.schemaId]: v }), {});
+  const tableSelectRowRef = `${id + splitMark}selectedRow`;
+  const selectRowSchema = tableSchemaGenFn.map(genFn => genFn(tableSelectRowRef)).reduce((res, v) => ({ ...res, [v.schemaId]: v }), {});
   const tableSchema = {
     schemaId,
-    type: 'structArray',
-    desc: '表格dataSourceSchema', schemaType: 'TableDataSource',
+    type: 'structObject',
+    desc: '表格数据模型', schemaType: 'TableSchema',
     schemaRef: schemaMark + tableId,
-    struct: schemaStruct.reduce((res, v) => ({ ...res, [v.schemaId]: v }), {})
+    struct: {
+      dataSource: {
+        schemaId: `${schemaId}dataSource`,
+        type: 'structArray',
+        desc: '表格dataSource模型', schemaType: 'TableDataSourceSchema',
+        schemaRef: schemaMark + tableDataSourceRef,
+        struct: dataSourceSchema
+      },
+      selectedRow: {
+        schemaId: `${schemaId}selectedRow`,
+        type: 'structArray',
+        desc: '表格选中的模型', schemaType: 'TableSelectedRowSchema',
+        schemaRef: schemaMark + tableSelectRowRef,
+        struct: selectRowSchema
+      }
+    }
+    // struct: schemaStruct.reduce((res, v) => ({ ...res, [v.schemaId]: v }), {})
   };
   tempSchema.push(tableSchema);
-  
+  /** 数据写入schema */
+  const setDataId = `${schemaId}_setDataSource`;
+  const ref2Val = payloadRef2ValTemplate(setDataId, schemaMark + tableDataSourceRef);
+  const updStateAction = changeStateAction(setDataId, ref2ValMark + setDataId);
+  const updStateFlow = genDefalutFlow(setDataId);
+  tempRef2Val.push(ref2Val);
+  tempAction.push(updStateAction);
+  tempFlow.push(updStateFlow);
+
+
+  /**
+   * APB
+   * 1. 生成连表
+   * 2. 写入数据
+   */
   const stepsId = id;
-  /** 生成连表 */
   const apbItem = {
     funcCode: FuncCodeOfAPB.R,
     stepsId,
     readList,
     readDef
   };
-
-  return {
+  const APB = {
     reqId: REQ_MARK + id,
     reqType: 'APBDSL',
     list: {
@@ -307,7 +347,22 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     },
     steps: [stepsId]
   };
-  
+  tempAPIReq.push(APB);
+  const actionOfIUB = {
+    actionId: ACT_MARK + id,
+    /** 动作名字 */
+    actionName: '表格请求',
+    /** 动作的类型 */
+    actionType: 'APIReq',
+    /** 不同动作的配置 */
+    actionOptions: {
+      apiReqRef: apiReqMark + APB.reqId,
+    }
+  };
+  tempAction.push(actionOfIUB);
+  const flow = genDefalutFlow(ACT_MARK + id, [flowMark + updStateFlow.id]);
+  tempFlow.push(flow);
+  return flow;
 };
 
 
@@ -321,24 +376,9 @@ export const genNormanTable = (transfromCtx: TransfromCtx, widgetProps) => {
   
   // propState.columns = usedColums;
   const eventHandlers: any = {};
-  const APB = genReadTable(transfromCtx, widgetProps, tableId);
-  if (APB) {
-    tempAPIReq.push(APB);
-    const actionOfIUB = {
-      actionId: ACT_MARK + id,
-      /** 动作名字 */
-      actionName: '表格请求',
-      /** 动作的类型 */
-      actionType: 'APIReq',
-      /** 不同动作的配置 */
-      actionOptions: {
-        apiReqRef: apiReqMark + APB.reqId,
-      }
-    };
-    tempAction.push(actionOfIUB);
-    const flow = genDefalutFlow(ACT_MARK + id);
-    tempFlow.push(flow);
-    const handler = flowEventHandlerTemplate([flow.id]);
+  const doFLow = genReadTable(transfromCtx, widgetProps, tableId);
+  if (doFLow) {
+    const handler = flowEventHandlerTemplate([doFLow.id]);
     eventHandlers.onTableRequest = handler;
   }
 

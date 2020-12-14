@@ -1,23 +1,16 @@
-import { changeStateAction, genDefalutFlow } from "../task";
+import { changeStateAction, genDefalutFlow, payloadRef2ValTemplate } from "../task";
 import { TransfromCtx } from "../../types/types";
-import { splitMark, schemaMark, ref2ValMark } from "../IUBDSL-mark";
+import { splitMark, schemaMark, ref2ValMark, interMetaMark, runCtxPayloadMark } from "../IUBDSL-mark";
 import { defaultGenEvents } from "./default-gen";
 
-const template = (ref2ValId: string, key: string) => ({
-  ref2ValId,
-  type: 'structObject',
-  struct: [
-    {
-      val: '@(runCtx).payload', // 来源: 固定值, 表达式, 后端数据
-      key, // 目标: 页面变量的标示位
-    }
-  ]
-});
-
 const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
-  const { id, propState } = widgetConf;
+  const { id, propState, } = widgetConf;
   let { eventRef = {} } = propState;
-  const { schema, extralDsl: { tempAction, tempFlow, tempRef2Val } } = transfromCtx;
+  const { 
+    schema, metaSchema, extralDsl: {
+      tempAction, tempFlow, tempRef2Val, pageFieldsToUse
+    } 
+  } = transfromCtx;
 
   if (!eventRef) eventRef = {};
 
@@ -33,8 +26,6 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
       const { schemaRef } = widgetSchema;
       // 设置默认值
       widgetSchema.struct.realVal.defaultVal = propState?.realVal;
-      // console.log(widgetSchema.struct.realVal);
-      // console.log(propState?.realVal);
       
       // const changeRef = `${schemaMark + schemaRef}`;
       const changeRef = `${schemaMark + schemaRef + splitMark}realVal`;
@@ -42,10 +33,10 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
       propState.realVal = changeRef;
       /** 生成ref2Val */
       const ref2ValMarkToUse = ref2ValMark + id;
-      const ref2Val = template(id, changeRef);
+      const ref2Val = payloadRef2ValTemplate(id, changeRef);
       tempRef2Val.push(ref2Val);
       /** 更改状态的动作 */
-      tempAction.push(changeStateAction(transfromCtx, id, ref2ValMarkToUse));
+      tempAction.push(changeStateAction(id, ref2ValMarkToUse));
       /** 更改状态的流程项 */
       const defFlow = genDefalutFlow(id);
       tempFlow.push(defFlow);
@@ -56,6 +47,21 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
         }
       } else {
         eventRef.onChange = [defFlow.id];
+      }
+
+      /**
+       * 1. 记录组件实际使用的field信息
+       * 2. 组件使用了哪个元数据
+       *   作用: 整表回写/读取的依赖收集
+       */
+      if (propState.field) {
+        const metaSchemaInfo = metaSchema[propState.field];
+        if (metaSchemaInfo) {
+          const tableId = metaSchemaInfo.tableInfo.id;
+          const fieldId = metaSchemaInfo.column.id;
+          propState.field = interMetaMark + tableId + splitMark + fieldId;       
+          pageFieldsToUse.push({ tableId , fieldId, schemaRef: changeRef });
+        }
       }
     }
 
