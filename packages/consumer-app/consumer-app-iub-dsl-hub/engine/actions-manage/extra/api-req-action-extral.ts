@@ -1,7 +1,8 @@
-import { FuncCodeOfAPB, APBDefOfIUB, RefType, InterRefRelation, ResResolveOfFuncCode } from "@iub-dsl/definition";
-import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from "../../runtime/types";
+import { FuncCodeOfAPB, APBDefOfIUB, RefType, InterRefRelation, ResResolveOfFuncCode, ReadBaseInfo } from "@iub-dsl/definition";
+import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata, DispatchMethodNameOfIUBStore } from "../../runtime/types";
 import { extraHandleStrategy } from "./api-req-extra-handle-strategy";
 import { APBTransf } from "./APB-transf";
+import { arrayAsyncHandle, noopError } from "../../utils";
 interface TodoRecord {
   [str: string]: {
     onlyKey: string;
@@ -67,6 +68,10 @@ export const genApiReqPlugins = (parseRes) => {
     
     /** 挟持结果 */
     const fnWrap = (fn) => async (IUBCtx: RunTimeCtxToBusiness, ...args) => {
+      if (typeof fn !== 'function') {
+        console.error('非法传入!!!, 请传入Function!');
+        return noopError
+      }
       /**
        * 读取
        * 1. 将字段结合表名拼接
@@ -74,7 +79,6 @@ export const genApiReqPlugins = (parseRes) => {
        * 3. 表关系的处理 「1. 转换额外的连表 / 2. 返回结果转换」
        * 4. 返回结果转换
        */
-      
       const itemRunRes = await fn(IUBCtx , ...args);
       /** 分析 analysisRes, 添加有用的数据 */
       /** 关系收集暂时不处理 itemRunRes所以不返回 */
@@ -100,13 +104,20 @@ export const genApiReqPlugins = (parseRes) => {
       return APBDSL;
     };
   
-    const resTransfFn = (IUBCtx, reqRes) => {
+    const resTransfFn = (IUBCtx: RunTimeCtxToBusiness, reqRes) => {
       /** 
        * 转换
        * 1. 将重命名的字段转换「确保准确性」
        * 2. 将数据结构转换「可以加入数据更新插件」
        */
-      return Array.isArray(reqRes) ? reqRes[0] : reqRes;
+      const res = Array.isArray(reqRes) ? reqRes[0] : reqRes;
+      /** 先写死 */
+      if (res && res.data) {
+        console.log(res.data);
+        if (!IUBCtx.action) IUBCtx.action = {};
+        IUBCtx.action.payload = res.data
+      }
+      return res
     };
 
     return {
@@ -114,6 +125,27 @@ export const genApiReqPlugins = (parseRes) => {
       resTransfFn
     };
   };
+
+  const getInterMetaCode = async (IUBCtx: RunTimeCtxToBusiness, id: string) => {
+    const { asyncDispatchOfIUBEngine } = IUBCtx
+    return await asyncDispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.metadata,
+        method: DispatchMethodNameOfMetadata.id2Code,
+        params: [id]
+      }
+    })
+  }
+  const getSchemaVal = async (IUBCtx: RunTimeCtxToBusiness, mark: string) => {
+    const { asyncDispatchOfIUBEngine } = IUBCtx
+    return await asyncDispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.IUBStore,
+        method: DispatchMethodNameOfIUBStore.getPageState,
+        params: [mark]
+      }
+    })
+  }
   
   /**
    * 职责: 将描述数据/引用数据, 处理成可以使用的真实值的数据
@@ -123,7 +155,7 @@ export const genApiReqPlugins = (parseRes) => {
      * set 、table转换; condition 处理
      */
     const { funcCode } = conf;
-    let runFn: any = async (...args) => {};
+    let runFn: any = async (...args) => ({});
     let set;
     switch (conf.funcCode) {
       case FuncCodeOfAPB.C:
@@ -131,24 +163,59 @@ export const genApiReqPlugins = (parseRes) => {
         runFn = async (IUBCtx) => {
           return {
             ...conf,
-            set: await set(IUBCtx),
+            table: await getInterMetaCode(IUBCtx, conf.table),
+            set: await set(IUBCtx, {
+              itemKeyHandler: () => async (key: string) => {
+                const k = await getInterMetaCode(IUBCtx, key);
+                const keys = k.split('/')
+                if (!keys[1]) console.warn('获取code错误!'+key);
+                return keys[1] || keys[0];
+              }
+            }),
           };
         };
         break;
       case FuncCodeOfAPB.U:
-        // conf.set
-        // conf.table
-        // conf.condition
+        set = bindRef2Value(conf.set);
+        runFn = async (IUBCtx) => {
+          return {
+            ...conf,
+            table: await getInterMetaCode(IUBCtx, conf.table),
+            set: await set(IUBCtx, {
+              itemKeyHandler: () => async (key: string) => {
+                const k = await getInterMetaCode(IUBCtx, key);
+                const keys = k.split('/')
+                if (!keys[1]) console.warn('获取code错误!'+key);
+                return keys[1] || keys[0];
+              }
+            }),
+            condition: {
+              and: [{
+                equ: { id: await getSchemaVal(IUBCtx, conf.condition) }
+              }]
+            }
+          };
+        };
         break;
       case FuncCodeOfAPB.D:
         // conf.table
         // conf.condition
         break;
       case FuncCodeOfAPB.R:
-      /** 单独的read处理 */
-        console.log(conf);
-      
-        runFn = async () => conf;
+        /** 单独的read处理 */
+        runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
+          /** 临时写死逻辑 */
+          let temp: any;
+          if ((temp = conf.readList['staticId']) && temp.condition) {
+            /** 配置传入/ 或写死传入 */
+            temp['condition'] = {
+              and: [{
+                equ: { id: '1337675164749537280' }
+              }]
+            }
+          }
+          return conf
+        };
         // conf.readDef
         // conf.readList
         break;
@@ -157,6 +224,8 @@ export const genApiReqPlugins = (parseRes) => {
     }
     return async (ctx) => {
       const itemRunRes = await runFn(ctx);
+      console.log(itemRunRes);
+      
       return itemRunRes;
     };
   };
