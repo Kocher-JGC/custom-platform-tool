@@ -84,7 +84,7 @@ export class TableDSHelperComp extends React.Component<
       metaAttr: "dataSource",
       metaRefID: ds,
     });
-    return dsMeta;
+    return Object.values(dsMeta);
   };
 
   ColIndexInUsingColumns = (col) => {

@@ -30,7 +30,7 @@ const getIdStrategy = (optItem, entityID) => {
     default:
   }
   return idStrategy;
-}
+};
 
 export const genMetaIDStrategy = (
   options: ChangeMetadataOptions,
@@ -54,7 +54,7 @@ export const genMetaIDStrategy = (
 
     if(optItem.type === 'create' || optItem.type === 'create&rm') {
       /** 如果是新增 meta */
-      const { metaID} = optItem;
+      const { metaID } = optItem;
       let newMetaID = metaID;
       if(!newMetaID) {
         /** 
@@ -73,7 +73,7 @@ export const genMetaIDStrategy = (
     }
 
     if(optItem.type === 'create/batch&rm/batch' && optItem.dataList){
-      const {dataList} = optItem;
+      const { dataList } = optItem;
       const newDatas = {};
       const newMetaIDs = Array.isArray(dataList) && dataList.map((item)=>{
         /** 
@@ -81,7 +81,7 @@ export const genMetaIDStrategy = (
          */
         const metaID = getIdStrategy(Object.assign({},
           optItem,
-          {data: item}
+          { data: item }
         ), entityID);
         newDatas[metaID] = item;
         return metaID;
