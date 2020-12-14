@@ -55,11 +55,23 @@ interface ISubmitRes {
   code: string | null;
   variable: { field: string; value: string }[];
 }
+
+interface IDefaultVariableListChildren extends VariableItem {
+  value: string;
+}
+interface IDefaultVariableList {
+  title: string;
+  value: string;
+  disabled: boolean;
+
+  children: IDefaultVariableListChildren[];
+}
 interface IProps {
   metaCtx: PlatformCtx["meta"];
   /** 表达式提交回调函数 */
   onSubmit: (transformRes: ISubmitRes) => void;
   defaultValue?: ISubmitRes;
+  defaultVariableList?: IDefaultVariableList[];
 }
 
 interface ITransformRes {
@@ -284,8 +296,6 @@ export const Expression: React.FC<IProps> = (props) => {
         maskClosable: true,
         onOk: onSubmit,
       });
-    } else {
-      checkSubmit();
     }
   };
   /**
@@ -477,19 +487,34 @@ export const Expression: React.FC<IProps> = (props) => {
     addDefaultTextMarks();
   };
 
+  const initVariableList = (res) => {
+    // 替换特殊字符 . 为 _
+    const variable = formatVariable(res);
+    // 检查变量标题是否存在重复
+    checkVariableTitle(variable);
+    // 生成选择变量（折叠面板）所需数据
+    setVariableTree(variable);
+    // 初始化默认值
+    initDefaultValue(variable);
+    console.log("全部变量: ", res, variable);
+  };
+  const transformVariableTree = (tree) => {
+    return tree.reduce((a, b) => {
+      a[b.value] = b.children;
+      return a;
+    }, {} as TVariableTree<TVariableItem>);
+  };
+
   useEffect(() => {
     console.log("初始值: ", props.defaultValue);
-    props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
-      // 替换特殊字符 . 为 _
-      const variable = formatVariable(res);
-      // 检查变量标题是否存在重复
-      checkVariableTitle(variable);
-      // 生成选择变量（折叠面板）所需数据
-      setVariableTree(variable);
-      // 初始化默认值
-      initDefaultValue(variable);
-      console.log("全部变量: ", res, variable);
-    });
+    console.log("初始值 defaultVariableList: ", props.defaultVariableList);
+    if (props.defaultVariableList) {
+      initVariableList(transformVariableTree(props.defaultVariableList));
+    } else {
+      props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
+        initVariableList(res);
+      });
+    }
   }, [props.defaultValue]);
 
   return (
@@ -669,7 +694,14 @@ export const Expression: React.FC<IProps> = (props) => {
           <span className="expression-handle-tip">
             请在英文输入法模式下编辑表达式
           </span>
-          <Button type="primary" onClick={checkSubmit}>
+          <Button
+            type="primary"
+            onClick={
+              !operationResult || !operationResult.success
+                ? checkSubmit
+                : onSubmit
+            }
+          >
             确定
           </Button>
         </div>
