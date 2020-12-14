@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ensureDir, writeJSON } from "fs-extra";
+import { writeJSON } from "fs-extra";
 // import path from 'path';
 import { ConsulConfig } from "./config";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -14,11 +14,13 @@ export const registerConsul = async () => {
       "注册 consul",
       process.env.CONSUL_HOST,
       process.env.CONSUL_PORT,
-      process.env.CONSUMER_HOST
+      process.env.CONSUMER_HOST,
+      process.env.CONSUMER_PORT
     );
-    consul.register();
+
     // 从 consul 更新 config
     try {
+      await consul.register();
       const cfg = await axios
         .get(
           `http://${process.env.CONSUL_HOST}:${
@@ -30,7 +32,6 @@ export const registerConsul = async () => {
         .then((res) => res.data);
       if (cfg[0] && cfg[0].Value) {
         const configStr = Buffer.from(cfg[0].Value, "base64").toString();
-        // await ensureDir(path.join(__dirname));
         console.log("更新 config", configStr);
         await writeJSON(path.join(process.cwd(), "env.json"), JSON.parse(configStr));
         console.log("更新 config 成功");
@@ -40,5 +41,7 @@ export const registerConsul = async () => {
     } catch (error) {
       console.log("consul 更新配置失败", error);
     }
+  } else {
+    console.log("不存在 consul 相关完整参数，使用默认 env.json 配置");
   }
 };

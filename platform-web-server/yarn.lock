@@ -692,6 +692,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/consul@^0.23.34":
+  version "0.23.34"
+  resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/consul/-/consul-0.23.34.tgz#d43eb0c2486f34aa51c49472f03014ccfd10e1ce"
+  integrity sha1-1D6wwkhvNKpRxJRy8DAUzP0Q4c4=
+  dependencies:
+    "@types/node" "*"
+
 "@types/cookiejar@*":
   version "2.1.2"
   resolved "http://nexus.hydevops.com/repository/npm-hy-frontend-group/@types/cookiejar/-/cookiejar-2.1.2.tgz#66ad9331f63fe8a3d3d9d8c6e3906dd10f6446e8"
