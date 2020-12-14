@@ -1,7 +1,9 @@
-import * as config from '../../../env.json';
+import { getEnvConfig } from "../../utils";
+// import * as config from '../../../env.json';
 
-export const genUrl = (params: {lessee: string, app: string }) => {
-  return `${config.paasServerUrl}/${params.lessee}/${params.app}`;
+export const genUrl = async (params: {lessee: string, app: string }) => {
+  const envConfig = await getEnvConfig();
+  return `${envConfig.paasServerUrl}/${params.lessee}/${params.app}`;
 };
 
 export const pickObjFromKeyArr = (obj, keyArr: string[]) => {

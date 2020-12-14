@@ -37,7 +37,7 @@ export class ReleaseAppController {
     @Param() { lesseeCode, applicationCode },
     @Query() { releaseId }
   ) {
-    this.logger.info(`导出应用 lesseeCode: ${lesseeCode} applicationCode: ${applicationCode} releaseId: ${releaseId}`);
+    this.logger.info(`导出应用 lesseeCode: ${lesseeCode} applicationCode: ${applicationCode}`);
     const { headers } = req;
     const {
       getPageDataFromProvider,
@@ -45,6 +45,7 @@ export class ReleaseAppController {
       generateAppConfig,
       generatePageDataJSONZip
     } = this.releaseAppService;
+    const msgPrefix = `应用编码: ${applicationCode} releaseId: 1${releaseId}`;
     if (applicationCode) {
       let link = "";
       const folderName = "data";
@@ -54,18 +55,18 @@ export class ReleaseAppController {
           { lesseeCode, applicationCode },
           headers.authorization
         );
-        this.logger.info(`releaseId: ${releaseId} 获取发布页面数据成功`);
+        this.logger.info(`${msgPrefix} 获取发布页面数据成功`);
         if (Array.isArray(pageDataRes) && pageDataRes.length > 0) {
           await generatePageDataFolder(folderName, releaseId);
-          this.logger.info(`releaseId: ${releaseId} 生成页面 json 存放文件夹`);
+          this.logger.info(`${msgPrefix} 生成页面 json 存放文件夹`);
           await generateAppConfig(folderName, { lesseeCode, applicationCode }, releaseId);
-          this.logger.info(`releaseId: ${releaseId} 生成应用配置信息`);
+          this.logger.info(`${msgPrefix} 生成应用配置信息`);
           const processCtx = {
             token: mockToken,
             lessee: lesseeCode,
             app: applicationCode
           };
-          this.logger.info(`releaseId: ${releaseId} 开始生成页面文件`);
+          this.logger.info(`${msgPrefix} 开始生成页面文件`);
           /** 转换IUBDSL需要的上下文 */
           const transfCtx = {
             getRemoteTableMeta: async (tableIds: string[]) => {
@@ -79,28 +80,28 @@ export class ReleaseAppController {
               releaseId,
             })
           );
-          this.logger.info(`releaseId: ${releaseId} 转换页面数据完成`);
+          this.logger.info(`${msgPrefix} 转换页面数据完成`);
           const result = await Promise.all(genPageFilesPromise);
-          this.printGenFileRes(result, pageDataRes, this.logger, releaseId); // 打印结果
-          this.logger.info(`releaseId: ${releaseId} 开始生成压缩包`);
+          this.printGenFileRes(result, pageDataRes, this.logger, msgPrefix); // 打印结果
+          this.logger.info(`${msgPrefix} 开始生成压缩包`);
           link = await generatePageDataJSONZip(folderName, zipName, releaseId);
-          this.logger.info(`releaseId: ${releaseId} 完成生成压缩包`);
+          this.logger.info(`${msgPrefix} 完成生成压缩包`);
           return res.download(link);
         }
-        this.logger.error(`releaseId: ${releaseId} 导出失败，没有页面可以发布`);
-        return res.status(404).json({ msg:  `${applicationCode} 没有页面可以发布` });
+        this.logger.error(`${msgPrefix} 导出失败，没有页面可以发布`);
+        return res.status(404).json({ msg:  `${msgPrefix} 没有页面可以发布` });
       } catch (error) {
-        this.logger.error(`releaseId: ${releaseId} 导出失败`, error);
-        return res.status(500).json({ msg: `${applicationCode} ${error.message}` });
+        this.logger.error(`${msgPrefix} 导出失败`, error);
+        return res.status(500).json({ msg: `${msgPrefix} ${error.message}` });
       }
     } else {
-      return res.status(400).json({ msg: "需要参数 app" });
+      return res.status(400).json({ msg: `${msgPrefix} 需要参数 app` });
     }
   }
 
-  printGenFileRes(genResult: boolean[], pageData: any[], logger: Logger, releaseId: string) {
+  printGenFileRes(genResult: boolean[], pageData: any[], logger: Logger, msgPrefix: string) {
     const res = pageData.map(({ id }, index) => ({ [id]: genResult[index] }));
-    logger.info(`releaseId: ${releaseId} 生成页面 json 文件结果`, res);
+    logger.info(`${msgPrefix} 生成页面 json 文件结果`, res);
   }
 
   async genFileFromPageData(pageData, transfCtx , { folderName, releaseId }) {

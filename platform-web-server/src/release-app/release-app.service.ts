@@ -4,14 +4,15 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import axios from "axios";
 // import { PageDataService } from "../page-data/page-data.service";
+import { getEnvConfig } from "../utils";
 import config from "../../config";
-import * as env from "../../env.json";
+// import * as env from "../../env.json";
 
 const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
 
-const { paasServerUrl } = env;
+// const { paasServerUrl } = env;
 const { pageDataStorePath } = config;
 
 /**
@@ -158,9 +159,10 @@ export class ReleaseAppService {
    * @memberof ReleaseAppService
    */
   getPageDataFromProvider = async({ lesseeCode, applicationCode }, authorization) => {
-    this.logger.info(`paasServerUrl: ${paasServerUrl}`);
+    const envConfig = await getEnvConfig();
+    this.logger.info(`envConfig: ${envConfig}`);
     const resData = await axios.get(
-      `${paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      `${envConfig.paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {

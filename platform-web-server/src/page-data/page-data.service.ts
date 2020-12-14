@@ -27,7 +27,8 @@ export class PageDataService {
     token = mockToken,
     id
   }): Promise<any> {
-    const reqUrl = `${genUrl({ lessee, app })}/page/v1/pages/${id}`;
+    const url = await genUrl({ lessee, app });
+    const reqUrl = `${url}/page/v1/pages/${id}`;
 
     this.logger.info(`准备发起请求`);
     this.logger.info(`token: ${token}`);
@@ -48,14 +49,14 @@ export class PageDataService {
       throw Error('没有页面数据');
     }
     this.logger.info(`请求页面数据成功`);
-    
-    const transfCtx = { 
+
+    const transfCtx = {
       getRemoteTableMeta: async (tableIds: string[]) => {
         return await getRTablesMeta(tableIds, processCtx);
       },
       logger: this.logger
     };
-    
+
     return await pageData2IUBDSL(data, transfCtx);
   }
 }
