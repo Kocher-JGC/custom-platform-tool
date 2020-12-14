@@ -62,7 +62,7 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
   return (): IUBStoreEntity => {
     const [IUBPageStore, setIUBPageStore] = useCacheState(fullStruct);
 
-    console.log(IUBPageStore);
+    // console.log(IUBPageStore);
     
     /** 放到里面会锁定, 放到外面会一直被重新定义 */
     const getPageState = (ctx: RunTimeCtxToBusiness, strOrStruct: GetStruct = '') => {
@@ -100,7 +100,9 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
           if (isSchema(mark)) {
             const key = pickSchemaMark(mark).split('/');
             const val = changeMaps[mark];
-            LSet(newState, key, val);
+            if (val !== undefined) {
+              LSet(newState, key, val);
+            }
           }
         }
       }

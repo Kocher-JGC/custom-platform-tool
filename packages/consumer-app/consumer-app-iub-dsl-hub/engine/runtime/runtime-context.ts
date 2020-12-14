@@ -131,7 +131,7 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
     const { module, method, params } = dispatch;
 
     // console.log(IUBCtx);
-    console.count('-----asyncDispatchOfIUBEngine----');
+    // console.count('-----asyncDispatchOfIUBEngine----');
 
     /** 获取实际运行的函数 */
     const dispatchMethod = getDispatchMethod(dispatch, asyncRuntimeContext);

@@ -13,7 +13,6 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
     allFieldList, allInterList, refRelation 
   } = pRes;
   // const refRelationKeys = Object.keys(refRelation);
-  console.log(pRes);
   const refRelationValues = Object.values(refRelation);
   
   /**
@@ -39,7 +38,6 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
    * 查找表特定类型的字段 fieldDataType
    */
   // const findFiledsCode = (table: string ,fieldDataType: FieldDataType) => {}
-  // console.log(refRelation);
     
   // const allCodeMark = Object.keys(codeMarkMapIdMark);
   // const allIdMark = Object.keys(idMarkMapCodeMark);
@@ -100,8 +98,6 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
    **/
   const getInterMeta = (IUBCtx: RunTimeCtxToBusiness, mark: string) => {
     mark = code2Id(IUBCtx, mark);
-    console.log(mark);
-    
     return allInterList[mark];
   };
   /**
