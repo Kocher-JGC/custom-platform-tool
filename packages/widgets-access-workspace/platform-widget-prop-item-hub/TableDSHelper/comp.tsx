@@ -134,45 +134,44 @@ export class TableDSHelperComp extends React.Component<
   };
 
   renderColumnSelector = () => {
-    const { usingColumns, datasourceMeta } = this.state;
+    const { datasourceMeta } = this.state;
     if (!datasourceMeta) return null;
-    const { columns } = datasourceMeta;
     return (
       <DropdownWrapper
         outside
         overlay={(helper) => {
           return (
             <div className="column-selector-container">
-              {Array.isArray(datasourceMeta)
-                ? datasourceMeta.map((ds) => {
-                    const { columns, name: tableTitle } = ds;
-                    return (
-                      <div className="list-item">
-                        <div className="disabled">{tableTitle}</div>
-                        {Object.values(columns || []).map((col, idx) => {
-                          const { name, id } = col;
-                          const isSelected =
-                            this.ColIndexInUsingColumns(col) > -1;
-                          return (
-                            <div
-                              onClick={(e) => {
-                                if (!isSelected) {
-                                  this.setCol(col);
-                                }
-                              }}
-                              className={`pl-1 list-item ${
-                                isSelected ? "disabled" : ""
-                              }`}
-                              key={id}
-                            >
-                              {`${tableTitle}.${name}`}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })
-                : null}
+              {(Array.isArray(datasourceMeta) &&
+                datasourceMeta.map((ds) => {
+                  const { columns, name: tableTitle } = ds;
+                  return (
+                    <div className="list-item">
+                      <div className="disabled">{tableTitle}</div>
+                      {Object.values(columns || {}).map((col, idx) => {
+                        const { name, id } = col;
+                        const isSelected =
+                          this.ColIndexInUsingColumns(col) > -1;
+                        return (
+                          <div
+                            onClick={() => {
+                              if (!isSelected) {
+                                this.setCol(col);
+                              }
+                            }}
+                            className={`p1-1 list-item ${
+                              isSelected ? "disabled" : ""
+                            }`}
+                            key={id}
+                          >
+                            {`${tableTitle}.${name}`}
+                          </div>
+                        );
+                      }) || null}
+                    </div>
+                  );
+                })) ||
+                null}
             </div>
           );
         }}
