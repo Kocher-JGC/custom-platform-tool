@@ -80,7 +80,6 @@ export class TableDSHelperComp extends React.Component<
     const { ds } = editingWidgetState;
     if (!ds) return null;
     const { takeMeta } = platformCtx.meta;
-    debugger;
     const dsMeta = takeMeta({
       metaAttr: "dataSource",
       metaRefID: ds,
@@ -368,14 +367,13 @@ export class TableDSHelperComp extends React.Component<
                 !Array.isArray(interDatasources) ||
                 interDatasources.length === 0
               ) {
-                return close();
+                close();
+                return;
               }
 
               close();
-
-              if (interDatasources.length === 0) {
-                return close();
-              }
+              // TODO: 为了应付交付，表格只支持配置主表字段
+              interDatasources = [interDatasources[0]];
               const nextMetaID = changePageMeta({
                 type: "create/batch&rm/batch",
                 metaAttr: "dataSource",
