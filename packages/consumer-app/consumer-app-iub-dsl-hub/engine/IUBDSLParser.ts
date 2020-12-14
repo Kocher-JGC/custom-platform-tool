@@ -124,6 +124,7 @@ const IUBDSLParser = ({ dsl }) => {
     actionsCollection, flowCollection,
     ref2ValCollection, conditionCollection,
     widgetCollection, APIReqCollection,
+    pageLifecycle
   } = dsl as TypeOfIUBDSL;
 
 
@@ -160,7 +161,8 @@ const IUBDSLParser = ({ dsl }) => {
     /** hub */
     ref2ValueParseRes,
     condParseRes,
-    APIReqParseRes
+    APIReqParseRes,
+    pageLifecycle
   };
 
   console.log(parseRes);

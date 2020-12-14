@@ -1,24 +1,32 @@
 /* eslint-disable no-param-reassign */
-import React, {
-  Fragment, useEffect, useMemo, useRef
-} from 'react';
-import { LayoutRenderer } from '@engine/layout-renderer';
-import { pageManage } from './page-manage';
-import { createIUBStore } from './state-manage';
-import { DefaultCtx, genRuntimeCtxFn } from './runtime';
-import { effectRelationship as genEffectRelationship } from './relationship';
-import { RunTimeCtxToBusiness } from './runtime/types';
+import React, { Fragment, useEffect, useMemo, useRef } from "react";
+import { LayoutRenderer } from "@engine/layout-renderer";
+import { pageManage } from "./page-manage";
+import { createIUBStore } from "./state-manage";
+import { DefaultCtx, genRuntimeCtxFn } from "./runtime";
+import { effectRelationship as genEffectRelationship } from "./relationship";
+import { RunTimeCtxToBusiness } from "./runtime/types";
 import { widgetRenderer } from "./widget-manage";
-  
+
 /**
  * 要提供一种注册机制, 动态注册上下文内容
  */
-const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler, PageRenderer }) => {
+const IUBDSLRuntimeContainer = ({
+  dslParseRes,
+  hooks,
+  pageStatus,
+  requestHandler,
+  PageRenderer,
+}) => {
   const {
     schemaParseRes,
     getWidgetParseInfo,
     renderWidgetIds,
-    pageID: pageId, businessCode, isSearch
+    pageID: pageId,
+    businessCode,
+    isSearch,
+    flowParseRes,
+    pageLifecycle,
   } = dslParseRes;
 
   /** 获取单例的页面管理 */
@@ -27,14 +35,14 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler
   /** 页面运行时上下文 */
   const runTimeCtxToBusiness = useRef<RunTimeCtxToBusiness>({
     PageRenderer,
-    pageStatus,
+    pageStatus: "update",
     pageId,
-    pageMark: '',
-    action: {},
+    pageMark: "",
+    action: { payload: {} },
     requestHandler,
     pageManage: pageManageInstance,
     asyncDispatchOfIUBEngine: async (dispatchCtx) => false,
-    dispatchOfIUBEngine: (dispatchCtx) => false
+    dispatchOfIUBEngine: (dispatchCtx) => false,
   });
 
   const effectRelationship = useMemo(() => genEffectRelationship(), []);
@@ -44,41 +52,60 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler
     // ?? 是否初始化的是否就要添加页面上下文, 而不是页面挂载完成
     const { pageMark, removeFn } = pageManageInstance.addPageCtx({
       pageId,
-      pageType: 'IUBPage',
-      context: runTimeCtxToBusiness
+      pageType: "IUBPage",
+      context: runTimeCtxToBusiness,
     });
     runTimeCtxToBusiness.current.pageMark = pageMark;
-    /** 页面正式挂载完成 */
+    /** 页面正式挂载完成, 设置跨页面数据 */
     hooks?.mounted?.({ pageMark, pageId, runTimeCtxToBusiness });
+
+    if (Array.isArray(pageLifecycle?.mounted)) {
+      flowParseRes.runFlows(
+        runTimeCtxToBusiness.current,
+        pageLifecycle.mounted
+      );
+    }
 
     return () => {
       removeFn();
       hooks?.unmounted?.({ pageMark, pageId, runTimeCtxToBusiness });
-      effectRelationship.effectDispatch(runTimeCtxToBusiness.current, { pageIdOrMark: '' });
+      effectRelationship.effectDispatch(runTimeCtxToBusiness.current, {
+        pageIdOrMark: "",
+      });
     };
   }, []);
 
-  const useIUBStore = useMemo(() => createIUBStore(schemaParseRes), [schemaParseRes]);
+  const useIUBStore = useMemo(() => createIUBStore(schemaParseRes), [
+    schemaParseRes,
+  ]);
   const IUBStoreEntity = useIUBStore();
-  
-  // TODO: 未加入布局结构, 仅是一层使用  
-  const renderWidgetList = useMemo(() => 
-    renderWidgetIds.map((id: string) => {
-      const widgetConf = getWidgetParseInfo(id);
-      const render = widgetRenderer(widgetConf);
-      return render;
-    })
-  , []);
-  
-  const defaultCtx = useMemo(() => genRuntimeCtxFn(dslParseRes, {
-    IUBStoreEntity,
-    runTimeCtxToBusiness,
-    // effectRelationship,
-    businessCode,
-  }), [IUBStoreEntity]);
 
-  const extralProps = useMemo(() => ({ extral: '扩展props', isSearch }), []);
-  const renderList = renderWidgetList.map((Render, i) => <Render key={renderWidgetIds[i] || i} extralProps={extralProps}/>);
+  // TODO: 未加入布局结构, 仅是一层使用
+  const renderWidgetList = useMemo(
+    () =>
+      renderWidgetIds.map((id: string) => {
+        const widgetConf = getWidgetParseInfo(id);
+        const render = widgetRenderer(widgetConf);
+        return render;
+      }),
+    []
+  );
+
+  const defaultCtx = useMemo(
+    () =>
+      genRuntimeCtxFn(dslParseRes, {
+        IUBStoreEntity,
+        runTimeCtxToBusiness,
+        // effectRelationship,
+        businessCode,
+      }),
+    [IUBStoreEntity]
+  );
+
+  const extralProps = useMemo(() => ({ extral: "扩展props", isSearch }), []);
+  const renderList = renderWidgetList.map((Render, i) => (
+    <Render key={renderWidgetIds[i] || i} extralProps={extralProps} />
+  ));
 
   hooks?.beforeMount?.();
 
@@ -86,8 +113,12 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler
     <DefaultCtx.Provider value={defaultCtx}>
       <LayoutRenderer
         layoutNode={renderList}
-        componentRenderer={({ layoutNodeItem, idx, id, }) => {
-          return <Fragment key={idx}><div style={{ margin: 10 }}>{layoutNodeItem}</div></Fragment>;
+        componentRenderer={({ layoutNodeItem, idx, id }) => {
+          return (
+            <Fragment key={idx}>
+              <div style={{ margin: 10 }}>{layoutNodeItem}</div>
+            </Fragment>
+          );
         }}
         // RootRender={(child) => {
         //   return child;
@@ -97,7 +128,6 @@ const IUBDSLRuntimeContainer = ({ dslParseRes, hooks, pageStatus, requestHandler
         {JSON.stringify(getPageState(), null, 2)}
       </pre> */}
     </DefaultCtx.Provider>
-
   );
 };
 
