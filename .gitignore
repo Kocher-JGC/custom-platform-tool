@@ -44,3 +44,5 @@ dist-all
 packages/consumer-app-iub-dsl-hub/engine/.bak/*
 
 .docz
+
+temp.txt

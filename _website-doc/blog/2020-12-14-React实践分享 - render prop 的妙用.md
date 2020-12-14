@@ -23,14 +23,12 @@ class MouseTracker extends React.Component {
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.state = { x: 0, y: 0 };
   }
-
   handleMouseMove(event) {
     this.setState({
       x: event.clientX,
       y: event.clientY
     });
   }
-
   render() {
     return (
       <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
@@ -56,18 +54,15 @@ class Mouse extends React.Component {
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.state = { x: 0, y: 0 };
   }
-
   handleMouseMove(event) {
     this.setState({
       x: event.clientX,
       y: event.clientY
     });
   }
-
   render() {
     return (
       <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
-
         {/* ...但我们如何渲染 <p> 以外的东西? */}
         <p>The current mouse position is ({this.state.x}, {this.state.y})</p>
       </div>
@@ -120,12 +115,6 @@ class MouseWithCat extends React.Component {
   render() {
     return (
       <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
-
-        {/*
-          我们可以在这里换掉 <p> 的 <Cat>   ......
-          但是接着我们需要创建一个单独的 <MouseWithSomethingElse>
-          每次我们需要使用它时，<MouseWithCat> 是不是真的可以重复使用.
-        */}
         <Cat mouse={this.state} />
       </div>
     );
