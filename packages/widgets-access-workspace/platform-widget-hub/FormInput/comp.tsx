@@ -1,17 +1,17 @@
 /**
  * 在 form 表单中有标题的 Input 组件
  */
-import React, { useCallback, useState, useMemo } from 'react';
-import { Input, Form } from 'antd';
+import React, { useCallback, useEffect, useState, useMemo } from "react";
+import { Input, Form } from "antd";
 
 /**
  * FormInput 必须的 props
  */
 export interface FormInputCompProps {
-  title: string
+  title: string;
   /** 默认值 */
-  realVal: string
-  labelColor: string
+  realVal: string;
+  labelColor: string;
   onChange: any;
 }
 
@@ -22,11 +22,17 @@ export interface FormInputCompProps {
  */
 const useInputOnChange = (val, onChange) => {
   // const innerVal relValue
+  const [state, setState] = useState(val);
+  useEffect(() => {
+    setState(val);
+  }, [val]);
   const eventProps = useMemo(() => {
     let isOnComposition = false;
     if (!onChange) return {};
     const handleOnComposition = (e) => {
-      if (e.type === 'compositionend') {
+      console.log(e);
+      console.log(e.target.value);
+      if (e.type === "compositionend") {
         isOnComposition = false;
         if (!isOnComposition) {
           onChange(e);
@@ -34,6 +40,8 @@ const useInputOnChange = (val, onChange) => {
       } else {
         isOnComposition = true;
       }
+
+      setState(e.target.value);
     };
 
     return {
@@ -44,50 +52,39 @@ const useInputOnChange = (val, onChange) => {
   }, [onChange]);
 
   return {
+    // setState,
     value: state,
-    ...eventProps
+    ...eventProps,
   };
-
 };
 
 export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
-  const {
-    title,
-    labelColor,
-    realVal,
-    onChange
-  } = props;
-  
-  // const changeEventProps = useInputOnChange(realVal, onChange);
-  const actualOnChange = useCallback((e) => { 
+  const { title, labelColor, realVal, onChange } = props;
+
+  const [state, setState] = useState(realVal);
+  useEffect(() => {
+    setState(realVal);
+  }, [realVal]);
+
+  const actualOnChange = useCallback((e) => {
+    setState(e.target.value);
     onChange?.(e);
   }, []);
-  const pp = useMemo(() => {
-    if (realVal !== undefined) {
-      return {
-        defaultValue: realVal
-      };
-    }
-    return {};
-  }, [realVal]);
-  // console.log(pp);
 
   return (
     <div>
       <div
         style={{
-          color: labelColor
+          color: labelColor,
         }}
       >
         {title}
       </div>
       <Input
-        {...pp}
+        /** TODO: useInputOnChange 未完成, 临时使用d先用着 */
         style={{ width: 300 }}
         onChange={actualOnChange}
-        /** TODO: useInputOnChange 未完成, 临时使用defalutVal 先用着 */
-        // value={realVal}
-        // {...changeEventProps}
+        value={state}
       />
     </div>
   );
