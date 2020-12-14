@@ -86,7 +86,6 @@ const addSearchBuntton = (transfromCtx: TransfromCtx, extralSchema) => {
       },
       actionOutput: 'string', // TODO
     },
-    // changeStateAction(transfromCtx, updId, `@(schema).${id}`)
   );
   tempFlow.push(
     // genDefalutFlow(weightId, [FLOW_MARK+updId]),

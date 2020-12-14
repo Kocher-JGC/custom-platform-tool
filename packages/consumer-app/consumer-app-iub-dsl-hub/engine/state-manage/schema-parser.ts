@@ -15,7 +15,7 @@ export const schemaParser = (originSchemas: Schema) => {
 
   // const { levelRelation } = schemasAnalysisRes;
 
-  console.log(schemasAnalysisRes);
+  // console.log(schemasAnalysisRes);
   /** 原始逻辑必要的 */
   /** 额外逻辑, 充分的 */
 

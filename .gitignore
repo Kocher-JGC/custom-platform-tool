@@ -41,6 +41,6 @@ dist-all
 .umi
 .umi-production
 
-packages/consumer-app-iub-dsl-hub/engine/.bak/*
+packages/consumer-app/consumer-app-iub-dsl-hub/.bak/*
 
 .docz

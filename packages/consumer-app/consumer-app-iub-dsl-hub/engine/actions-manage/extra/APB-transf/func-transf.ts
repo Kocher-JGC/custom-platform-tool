@@ -1,4 +1,5 @@
 import { RefType, FuncCodeOfAPB, InterRefRelation, ReadRefObjDef } from "@iub-dsl/definition";
+import { pickObj } from "@iub-dsl/engine/utils";
 
 const funcItemWrap = <T>(p: T) => ({ function: p });
 
@@ -16,6 +17,7 @@ const genUpdateOfAPBDSL = ({
   params: { table, set, condition }
 });
 
+const pickKeys = ['condition', 'alias', 'fields', 'table']
 const deepGen = ({ readDef, readList }: ReadRefObjDef) => {
   const { readRef, joins } = readDef;
   const read: any = readList[readRef];
@@ -28,7 +30,7 @@ const deepGen = ({ readDef, readList }: ReadRefObjDef) => {
       };
     });
   }
-  return read;
+  return pickObj(read, pickKeys);
 };
 
 const genReadOfAPBDSL = ({ readDef, readList }: ReadRefObjDef) => {

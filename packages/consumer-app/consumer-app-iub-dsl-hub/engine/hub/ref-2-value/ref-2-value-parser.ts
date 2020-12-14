@@ -83,7 +83,7 @@ export const ref2ValueParser = (confCollection: Ref2ValCollection = mockRefStruc
         refPathInfoList, struct2ParseRes,
         getScope, getRootData, getScopeData,
         itemHandler, groupHandler, layerHandler, itemKeyHandler: noopRun
-      }, runPlugins, plugins.run);
+      }, plugins.run, runPlugins);
       
       return ref2ValIdRunFn(plugins.parse)(context, runCtx);
     };

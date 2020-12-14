@@ -1,5 +1,5 @@
-import React from "react";
-import { ConfigProvider } from "antd";
+import React, { useRef } from "react";
+import { ConfigProvider, Space, Button } from "antd";
 import zhCN from "antd/es/locale/zh_CN";
 import ProTable, {
   ProColumns,
@@ -29,6 +29,7 @@ export interface GeneralTableCompProps {
   checkedRowsStyle: "checkCell" | "activeRow" | "checkCellAndactiveRow";
   eventsHandler: {
     onTableRequest: any;
+    onTableSelect: any;
   };
 }
 
@@ -39,7 +40,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
   getColumns = ({ columns, wordWrap, showOrderColumn }) => {
     let result = (columns || [])
       /** 配置人员可以配置不显示字段 */
-      .filter((item) => item.show)
+      .filter((item) => item?.show)
       .map((item) => ({
         dataIndex: `${item.id}`,
         ...item,
@@ -155,6 +156,13 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
           //TODO total, onChange 等的实现
         };
   };
+
+  async componentDidMount() {
+    const { eventsHandler } = this.props;
+    const request = eventsHandler?.onTableRequest;
+    await request?.();
+  }
+
   render = (props) => {
     const {
       /** 配置的列 */
@@ -185,6 +193,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
      * 临时添加代码
      */
     const request = eventsHandler?.onTableRequest;
+    const tableSelect = eventsHandler?.onTableSelect;
 
     const rowSelection = this.getRowSelection({
       rowCheckType,
@@ -214,13 +223,44 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
           className={className}
           headerTitle={title}
           columns={columnsWithOrder || []}
-          dataSource={dataSource}
+          // defaultData={dataSource}
+          dataSource={Array.isArray(dataSource) ? dataSource : []}
           pagination={pagination}
-          options={false}
-          request={async (params, sort, filter) => {
-            const reqResData = await request?.();
-            return reqResData || { data: [] };
+          toolBarRender={() => {
+            return [
+              <Button
+                key="search"
+                onClick={async () => {
+                  await request?.();
+                }}
+                type="primary"
+              >
+                查询
+              </Button>,
+            ];
           }}
+          options={{
+            reload: () => {
+              console.log(11111);
+            },
+          }}
+          tableAlertRender={({
+            selectedRowKeys,
+            selectedRows,
+            onCleanSelected,
+          }) => {
+            tableSelect?.({ selectedRowKeys, selectedRows });
+            return (
+              <Space size={24}>
+                <span>已选 {selectedRowKeys.length} 项</span>
+              </Space>
+            );
+          }}
+          // request={async (params, sort, filter) => {
+          // const reqResData = await request?.();
+          // return reqResData || { data: [] };
+          // return { data: [] };
+          // }}
           {...rowSelection}
           {...other}
           {...decorativeProps}

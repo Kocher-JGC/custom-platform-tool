@@ -122,7 +122,10 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
               if (refPathInfo) {
                 const itemRes = await itemHandler(IUBctx, runCtx, { structItem, groupRunRes });
                 itemRes !== undefined &&  groupRunRes.push(itemRes);
-              } else { /** 未解析的重新解析, 目前暂不考虑 */ }
+              } else { 
+                /** 未解析的重新解析, 目前暂不考虑 */
+                groupRunRes.push({ [structItem.key]: structItem.val })
+              }
             }
           };
 
@@ -166,9 +169,8 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
       }
       return {};
     };
-    
     const res = await layerRunFn(originConf);
-    console.log(res);
+    // console.log(res);
     return res;
   };
 };
@@ -180,7 +182,8 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
  * @param itemInfo 每一项的引用路径信息
  */
 export const getRootData = async (IUBctx, runCtx: Ref2ValRunCtx, rootPathInfo: PathInfo) => {
-  const { action: { payload }, asyncDispatchOfIUBEngine } = IUBctx;
+  const { action, asyncDispatchOfIUBEngine } = IUBctx;
+  const { payload } = action || {}
   const { rootPath } = rootPathInfo;
   if (isSchema(rootPath)) {
     const IUBRunState = await asyncDispatchOfIUBEngine({
