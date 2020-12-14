@@ -100,7 +100,9 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
           if (isSchema(mark)) {
             const key = pickSchemaMark(mark).split('/');
             const val = changeMaps[mark];
-            LSet(newState, key, val);
+            if (val !== undefined) {
+              LSet(newState, key, val);
+            }
           }
         }
       }

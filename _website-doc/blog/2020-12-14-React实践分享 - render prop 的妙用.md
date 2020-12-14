@@ -40,7 +40,7 @@ class MouseTracker extends React.Component {
 }
 ```
 
-当光标在屏幕上移动时，组件在 <p> 中显示其（x，y）坐标。
+当光标在屏幕上移动时，组件在 `<p>` 中显示其（x，y）坐标。
 
 现在的问题是：我们如何在另一个组件中复用这个行为？换个说法，若另一个组件需要知道鼠标位置，我们能否封装这一行为，以便轻松地与其他组件共享它？？
 
@@ -60,9 +60,11 @@ class Mouse extends React.Component {
       y: event.clientY
     });
   }
+
   render() {
     return (
       <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
+
         {/* ...但我们如何渲染 <p> 以外的东西? */}
         <p>The current mouse position is ({this.state.x}, {this.state.y})</p>
       </div>
@@ -115,6 +117,12 @@ class MouseWithCat extends React.Component {
   render() {
     return (
       <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
+
+        {/*
+          我们可以在这里换掉 <p> 的 <Cat>   ......
+          但是接着我们需要创建一个单独的 <MouseWithSomethingElse>
+          每次我们需要使用它时，<MouseWithCat> 是不是真的可以重复使用.
+        */}
         <Cat mouse={this.state} />
       </div>
     );
@@ -234,7 +242,9 @@ function withMouse(Component) {
   dragableItemWrapper={({
     children
   }) => {
-    // 在这里做一个钩子，可以在让每一个平台组件在渲染前，包装一层 draggable 的属性，可以根据实际业务来使用
+    // 在这里做一个钩子
+    // 可以在让每一个平台组件在渲染前，配置端可以包装一层 draggable 的属性
+    // 应用端可以根据实际业务来使用
     return (
       <div draggable={true}>
         {children}
@@ -244,6 +254,10 @@ function withMouse(Component) {
   {...props}
 />
 ```
+
+页面设计器的舞台和应用端页面布局渲染的更底层的支持是布局渲染引擎。
+
+按照上述的的 render prop，我们可以轻松复用平台组件，只需要在调用方根据自身特性做包装器即可。配合 typescript ，我们可以轻松定义 render prop。
 
 在应用端，同样可以通过这个方式来将 id 渲染到组件节点的属性上
 

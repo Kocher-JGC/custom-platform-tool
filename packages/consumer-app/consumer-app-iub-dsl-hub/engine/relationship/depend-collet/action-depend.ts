@@ -70,8 +70,6 @@ const actionCollectScheduler = (actionType: AllActionType) => {
 export const actionsCollectConstor = () => {
   const actionDependCollection: ActionDependCollection = [];
   const actionDependId: string[] = [];
-  console.log(actionDependCollection);
-
   const actionDependCollect = (actionId: string, actionConf: ActionDef, context) => {
     const collectFn = actionCollectScheduler(actionConf.actionType);
     if (collectFn) {

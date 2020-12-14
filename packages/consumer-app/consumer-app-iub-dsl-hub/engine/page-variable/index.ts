@@ -38,8 +38,6 @@ export const genPageCommunication = ({
  */
 const handleF = ({ asyncDispatchOfIUBEngine }: RunTimeCtxToBusiness, pageVar: PageVariableOfTable, metadata) => {
   const { metaDataRef, valueInfo: { rowData } } = pageVar;
-  console.log(metadata, metaDataRef);
-
   asyncDispatchOfIUBEngine({
     dispatch: {
       module: DispatchModuleName.IUBStore,

@@ -38,10 +38,7 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
    * 查找表特定类型的字段 fieldDataType
    */
   // const findFiledsCode = (table: string ,fieldDataType: FieldDataType) => {}
-  // console.log(refRelation);
-  
-  // console.log(pRes);
-  
+    
   // const allCodeMark = Object.keys(codeMarkMapIdMark);
   // const allIdMark = Object.keys(idMarkMapCodeMark);
   /**
@@ -72,7 +69,7 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
 
     /** 获取必要数据 */
     const { inter, target, isPath } = opts;
-    const interMeta = getInterMeta(inter);
+    const interMeta = getInterMeta(IUBCtx, inter);
     if (!interMeta) return fieldsMarks;
 
     /**
@@ -101,8 +98,6 @@ const interMetaCtor = (pRes: InterMetaParseRes): InterMetaEntity => {
    **/
   const getInterMeta = (IUBCtx: RunTimeCtxToBusiness, mark: string) => {
     mark = code2Id(IUBCtx, mark);
-    console.log(mark);
-    
     return allInterList[mark];
   };
   /**

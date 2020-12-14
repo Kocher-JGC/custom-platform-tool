@@ -12,7 +12,6 @@ export const actionExtralParser = (parseRes) => {
   const apiReqPlugins = genApiReqPlugins(parseRes);
 
   const extralParser = (conf) => {
-    // console.log(conf);
     const { actionBaseConf, actionOpts } = conf;
     switch (actionBaseConf.actionType) {
       case 'changeState':
@@ -21,6 +20,8 @@ export const actionExtralParser = (parseRes) => {
       case 'APIReq':
         actionOpts.apiReqRef = bindAPIReq(actionOpts.apiReqRef, apiReqPlugins);
         break;
+      case 'openPage':
+        actionOpts.paramMatch = bindRef2Value(actionOpts.paramMatch);
       default:
         break;
     }

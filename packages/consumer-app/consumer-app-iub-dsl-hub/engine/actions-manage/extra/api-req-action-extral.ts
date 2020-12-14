@@ -1,7 +1,9 @@
-import { FuncCodeOfAPB, APBDefOfIUB, RefType, InterRefRelation, ResResolveOfFuncCode } from "@iub-dsl/definition";
-import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from "../../runtime/types";
+import { FuncCodeOfAPB, APBDefOfIUB, RefType, InterRefRelation, ResResolveOfFuncCode, ReadBaseInfo } from "@iub-dsl/definition";
+import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata, DispatchMethodNameOfIUBStore } from "../../runtime/types";
 import { extraHandleStrategy } from "./api-req-extra-handle-strategy";
 import { APBTransf } from "./APB-transf";
+import { arrayAsyncHandle, noopError } from "../../utils";
+import { cloneDeep } from 'lodash'
 interface TodoRecord {
   [str: string]: {
     onlyKey: string;
@@ -62,11 +64,14 @@ export const genApiReqPlugins = (parseRes) => {
     listPRes, listKeys,
     steps, list,
   }) => {
-    // console.log(list, steps);
     const handleStrategyEntity = extraHandleStrategy();
     
     /** 挟持结果 */
     const fnWrap = (fn) => async (IUBCtx: RunTimeCtxToBusiness, ...args) => {
+      if (typeof fn !== 'function') {
+        console.error('非法传入!!!, 请传入Function!');
+        return noopError
+      }
       /**
        * 读取
        * 1. 将字段结合表名拼接
@@ -74,7 +79,6 @@ export const genApiReqPlugins = (parseRes) => {
        * 3. 表关系的处理 「1. 转换额外的连表 / 2. 返回结果转换」
        * 4. 返回结果转换
        */
-      
       const itemRunRes = await fn(IUBCtx , ...args);
       /** 分析 analysisRes, 添加有用的数据 */
       /** 关系收集暂时不处理 itemRunRes所以不返回 */
@@ -93,20 +97,26 @@ export const genApiReqPlugins = (parseRes) => {
     const reqTransfFn = async (IUBCtx, listRunRes /** 每一项转换的结果 */) => {
       /** 根据 analysisRes 生成额外的拼接数据 「确保完整性、递归熔断」 */
       const transfRes = handleStrategyEntity.reqTransfHandle(IUBCtx, { list: listRunRes, steps: steps.slice(0) });
-
       /** steps 组装 + APBDSL转换 */
       // APBTransf(listRes, orgignConf)
       const APBDSL = APBTransf(transfRes);
       return APBDSL;
     };
   
-    const resTransfFn = (IUBCtx, reqRes) => {
+    const resTransfFn = (IUBCtx: RunTimeCtxToBusiness, reqRes) => {
       /** 
        * 转换
        * 1. 将重命名的字段转换「确保准确性」
        * 2. 将数据结构转换「可以加入数据更新插件」
        */
-      return Array.isArray(reqRes) ? reqRes[0] : reqRes;
+      const res = Array.isArray(reqRes) ? reqRes[0] : reqRes;
+      /** 先写死 */
+      // debugger
+      if (res && res.data) {
+        if (!IUBCtx.action) IUBCtx.action = {};
+        IUBCtx.action.payload = res.data
+      }
+      return res
     };
 
     return {
@@ -114,6 +124,27 @@ export const genApiReqPlugins = (parseRes) => {
       resTransfFn
     };
   };
+
+  const getInterMetaCode = async (IUBCtx: RunTimeCtxToBusiness, id: string) => {
+    const { asyncDispatchOfIUBEngine } = IUBCtx
+    return await asyncDispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.metadata,
+        method: DispatchMethodNameOfMetadata.id2Code,
+        params: [id]
+      }
+    })
+  }
+  const getSchemaVal = async (IUBCtx: RunTimeCtxToBusiness, mark: string) => {
+    const { asyncDispatchOfIUBEngine } = IUBCtx
+    return await asyncDispatchOfIUBEngine({
+      dispatch: {
+        module: DispatchModuleName.IUBStore,
+        method: DispatchMethodNameOfIUBStore.getPageState,
+        params: [mark]
+      }
+    })
+  }
   
   /**
    * 职责: 将描述数据/引用数据, 处理成可以使用的真实值的数据
@@ -123,7 +154,7 @@ export const genApiReqPlugins = (parseRes) => {
      * set 、table转换; condition 处理
      */
     const { funcCode } = conf;
-    let runFn: any = async (...args) => {};
+    let runFn: any = async (...args) => ({});
     let set;
     switch (conf.funcCode) {
       case FuncCodeOfAPB.C:
@@ -131,26 +162,71 @@ export const genApiReqPlugins = (parseRes) => {
         runFn = async (IUBCtx) => {
           return {
             ...conf,
-            set: await set(IUBCtx),
+            table: await getInterMetaCode(IUBCtx, conf.table),
+            set: await set(IUBCtx, {
+              itemKeyHandler: () => async (key: string) => {
+                const k = await getInterMetaCode(IUBCtx, key);
+                const keys = k.split('/')
+                if (!keys[1]) console.warn('获取code错误!'+key);
+                return keys[1] || keys[0];
+              }
+            }),
           };
         };
         break;
       case FuncCodeOfAPB.U:
-        // conf.set
-        // conf.table
-        // conf.condition
+        set = bindRef2Value(conf.set);
+        runFn = async (IUBCtx) => {
+          return {
+            ...conf,
+            table: await getInterMetaCode(IUBCtx, conf.table),
+            set: await set(IUBCtx, {
+              itemKeyHandler: () => async (key: string) => {
+                const k = await getInterMetaCode(IUBCtx, key);
+                const keys = k.split('/')
+                if (!keys[1]) console.warn('获取code错误!'+key);
+                return keys[1] || keys[0];
+              }
+            }),
+            condition: {
+              and: [{
+                equ: { id: await getSchemaVal(IUBCtx, conf.condition) }
+              }]
+            }
+          };
+        };
         break;
       case FuncCodeOfAPB.D:
+        runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
+          return {
+            ...conf,
+            table: await getInterMetaCode(IUBCtx, conf.table),
+            condition: {
+              and: [{
+                equ: { id: await getSchemaVal(IUBCtx, conf.condition) }
+              }]
+            }
+          }
+        }
         // conf.table
         // conf.condition
         break;
       case FuncCodeOfAPB.R:
-      /** 单独的read处理 */
-        console.log(conf);
-      
-        runFn = async () => conf;
-        // conf.readDef
-        // conf.readList
+        /** 单独的read处理 */
+        runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
+          /** 临时写死逻辑 */
+          const newConf = cloneDeep(conf)
+          let temp: any;
+          if ((temp = newConf.readList['staticId']) && temp.condition) {
+            /** 配置传入/ 或写死传入 */
+            temp['condition'] = {
+              and: [{
+                equ: { id: await getSchemaVal(IUBCtx, temp.condition) }
+              }]
+            }
+          }
+          return newConf
+        };
         break;
       default:
         break;

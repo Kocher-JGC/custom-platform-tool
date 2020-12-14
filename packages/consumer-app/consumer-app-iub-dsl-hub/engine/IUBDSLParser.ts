@@ -48,7 +48,7 @@ const demoBindFn = (mark, plugins?) => {
  */
 export const defaultExtralParser = (any) => any;
 
-const pickKeys = ['layoutContent', 'pageID', 'name', 'type', 'isSearch', 'businessCode', 'openPageUrl'];
+const pickKeys = ['layoutContent', 'pageID', 'name', 'type', 'isSearch', 'businessCode', 'openPageUrl', 'pkSchemaRef'];
 /**
  * 扩展解析
  * 1. 公共依赖 + 依赖分析
@@ -117,13 +117,13 @@ const IUBDSLExtraParser = (parseRes) => {
  * @param param0 DSL
  */
 const IUBDSLParser = ({ dsl }) => {
-  console.log(dsl);
   
   const {
     schema, interMetaCollection,
     actionsCollection, flowCollection,
     ref2ValCollection, conditionCollection,
     widgetCollection, APIReqCollection,
+    pageLifecycle
   } = dsl as TypeOfIUBDSL;
 
 
@@ -160,7 +160,8 @@ const IUBDSLParser = ({ dsl }) => {
     /** hub */
     ref2ValueParseRes,
     condParseRes,
-    APIReqParseRes
+    APIReqParseRes,
+    pageLifecycle
   };
 
   console.log(parseRes);

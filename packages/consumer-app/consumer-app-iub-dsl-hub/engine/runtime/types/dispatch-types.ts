@@ -24,10 +24,12 @@ export interface RunTimeCtxToBusiness {
   pageManage: PageManageInstance;
   requestHandler: any;
 
-  PageRenderer: React.FC<{ pageId: string }>
+  PageRenderer: React.FC<{ pageId: string, hooks: any }>
 
   asyncDispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => Promise<any>;
   dispatchOfIUBEngine: (dispatchCtx: DispatchCtxOfIUBEngine) => any
+  pkSchemaRef: string[];
+  
 }
 
 export type Dispatch =

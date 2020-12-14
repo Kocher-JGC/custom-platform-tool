@@ -21,7 +21,6 @@ export const varRely2Schema = (varRely) => {
     /** 删除var.引用 */
     const actualKey = key.replace(/^var\./, '');
     if (Array.isArray(rely?.varAttr) &&  rely.varAttr.length) {
-      
       res[actualKey] = {
         type: 'structObject',
         // type: 'string',

@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 import axios from "axios";
 // import { PageDataService } from "../page-data/page-data.service";
+import { getEnvConfig } from "../utils";
 import config from "../../config";
-import * as env from "../../env.json";
+// import * as env from "../../env.json";
 
 const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
 
-const { paasServerUrl } = env;
+// const { paasServerUrl } = env;
 const { pageDataStorePath } = config;
 
 /**
@@ -22,7 +25,6 @@ const runExec = (shell: string): Promise<boolean> => {
     }
     exec(shell, (error) => {
       if (error) {
-        console.log(`执行${shell}命令失败`, error);
         reject(new Error(`执行${shell}命令失败`));
       } else {
         resolve(true);
@@ -35,6 +37,10 @@ const runExec = (shell: string): Promise<boolean> => {
 export class ReleaseAppService {
   // constructor(private readonly pageDataService: PageDataService) {}
 
+  constructor(
+    @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
+  ) {}
+
   /**
    *
    * 生成页面 json 存放文件夹
@@ -42,14 +48,14 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  generatePageDataFolder(folderName: string, releaseId: string): Promise<boolean> {
+  generatePageDataFolder = (folderName: string, releaseId: string): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       if (!folderName || !releaseId) reject(new Error("文件夹名称错误"));
       fs.ensureDir(
         path.join(__dirname, pageDataStorePath, releaseId, "page", folderName),
         (err) => {
           if (err) {
-            console.log("生成页面 json 存放文件夹失败", err);
+            this.logger.error("生成页面 json 存放文件夹失败", err);
             reject(new Error("生成页面 json 存放文件夹失败"));
             return;
           }
@@ -67,11 +73,11 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  generateAppConfig(
+  generateAppConfig = (
     folderName: string,
     appConfig: { lesseeCode: string; applicationCode: string },
     releaseId: string
-  ) {
+  ) => {
     return new Promise((resolve, reject) => {
       const { lesseeCode, applicationCode } = appConfig;
       if (!lesseeCode || !applicationCode) reject(new Error("缺少应用信息"));
@@ -80,7 +86,7 @@ export class ReleaseAppService {
         JSON.stringify(appConfig),
         (err) => {
           if (err) {
-            console.log("生成应用配置信息失败", err);
+            this.logger.error("生成应用配置信息失败", err);
             reject(new Error("生成应用配置信息失败"));
             return;
           }
@@ -99,19 +105,19 @@ export class ReleaseAppService {
    * @returns {Promise<boolean>}
    * @memberof ReleaseAppService
    */
-  generatePageDataJSONFile(
+  generatePageDataJSONFile = (
     folderName: string,
     releaseId: string,
     pageId: string,
     pageContent: string
-  ): Promise<boolean> {
+  ): Promise<boolean> => {
     return new Promise((resolve, reject) => {
       fs.writeFile(
         path.join(__dirname, pageDataStorePath, releaseId, "page", folderName, `${pageId}.json`),
         pageContent,
         (err) => {
           if (err) {
-            console.log("生成页面 json 文件失败", pageId, err);
+            this.logger.error("生成页面 json 文件失败", pageId, err);
             reject(new Error(`生成页面 json 文件失败 ${pageId}`));
             return;
           }
@@ -152,13 +158,14 @@ export class ReleaseAppService {
    * @returns
    * @memberof ReleaseAppService
    */
-  async getPageDataFromProvider({ lesseeCode, applicationCode }, authorization) {
+  getPageDataFromProvider = async({ lesseeCode, applicationCode }, authorization) => {
+    const envConfig = await getEnvConfig();
+    this.logger.info(`envConfig: ${JSON.stringify(envConfig)}`);
     const resData = await axios.get(
-      `${paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      `${envConfig.paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {
-      console.log("object", resData);
       throw new Error("获取应用已发布页面失败");
     }
     return resData?.data?.result || [];

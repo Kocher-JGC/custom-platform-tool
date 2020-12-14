@@ -21,9 +21,12 @@ const genOnceWidgetConf = (transfromCtx: TransfromCtx, { id, widgetRef, propStat
 
 
 export const genWidgetFromPageData = (transfromCtx: TransfromCtx, sourceData: any[]) => {
-  return sourceData.map(nodeInfo => {
+  const res: any[] = [];
+  sourceData.forEach(nodeInfo => {
     const { id, widgetRef, propState, varAttr } = nodeInfo;
-    return genOnceWidgetConf(transfromCtx, { id, widgetRef, propState });
+    const conf = genOnceWidgetConf(transfromCtx, { id, widgetRef, propState });
+    // eslint-disable-next-line no-unused-expressions
+    Array.isArray(conf) ? res.push(...conf) : res.push(conf);
   });
-
+  return res;
 };

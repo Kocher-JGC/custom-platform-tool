@@ -39,16 +39,20 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
       tempOpenPageUrl: '',
       tempRef2Val: [],
       tempAPIReq: [],
+      pageFieldsToUse: [],
+      pageLifecycle: {},
       isSearch: false
     },
+    pkSchemaRef: [],
     interMeta: {
       interMetas: [],
       interRefRelations: []
     },
-    schema: {}
+    schema: {},
+    metaSchema: {},
   };
   /** dataSource目前绑定的是选项数据源 */
-  const { dataSource, pageInterface, linkpage, actions, varRely, events } = contentData.meta;
+  const { dataSource, pageInterface, linkpage, schema, actions, varRely, events } = contentData.meta;
   
   /** 页面widget */
   /** 生成元数据 */
@@ -65,6 +69,7 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
   // const tranSchema = genSchema(schema);
   const transfSchema = varRely2Schema(varRely);
   transfromCtx.schema = transfSchema;
+  transfromCtx.metaSchema = schema;
 
   /** 生成widget数据 */
   const widgets = genWidgetFromPageData(transfromCtx, contentData.content);
@@ -83,8 +88,10 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
     extralDsl: { 
       tempWeight, tempAction, tempBusinessCode, tempAPIReq,
       tempFlow, tempOpenPageUrl, tempSchema, tempRef2Val,
+      pageLifecycle,
       isSearch
-    } 
+    },
+    pkSchemaRef
   } = transfromCtx;
   const actualActions = Object.assign({},
     tempAction.reduce((res, val) => ({ ...res, [val.actionId]: val }), {}),
@@ -124,6 +131,8 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
     APIReqCollection: tempAPIReq.reduce((res, val) => ({ ...res, [val.reqId]: val }), {}), 
     // extral Data 临时的
     openPageUrl: tempOpenPageUrl,
+    pageLifecycle,
+    pkSchemaRef,
     isSearch,
     businessCode: tempBusinessCode.map(v=> `__${pageData.id}${v}`)
   };

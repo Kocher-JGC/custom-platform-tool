@@ -80,13 +80,13 @@ export class TableDSHelperComp extends React.Component<
     const { ds } = editingWidgetState;
     if (!ds) return null;
     const { takeMeta } = platformCtx.meta;
-    debugger;
     const dsMeta = takeMeta({
       metaAttr: "dataSource",
       metaRefID: ds,
     });
     return dsMeta;
   };
+
   ColIndexInUsingColumns = (col) => {
     const { id: fieldID, dsID } = col;
     const { usingColumns } = this.state;
@@ -98,6 +98,7 @@ export class TableDSHelperComp extends React.Component<
       );
     });
   };
+
   setCol = (item) => {
     const { usingColumns } = this.state;
     const myIndexInUsingColumns = this.ColIndexInUsingColumns(item);
@@ -132,45 +133,44 @@ export class TableDSHelperComp extends React.Component<
   };
 
   renderColumnSelector = () => {
-    const { usingColumns, datasourceMeta } = this.state;
+    const { datasourceMeta } = this.state;
     if (!datasourceMeta) return null;
-    const { columns } = datasourceMeta;
     return (
       <DropdownWrapper
         outside
         overlay={(helper) => {
           return (
             <div className="column-selector-container">
-              {Array.isArray(datasourceMeta)
-                ? datasourceMeta.map((ds) => {
-                    const { columns, name: tableTitle } = ds;
-                    return (
-                      <div className="list-item">
-                        <div className="disabled">{tableTitle}</div>
-                        {Object.values(columns || []).map((col, idx) => {
-                          const { name, id } = col;
-                          const isSelected =
-                            this.ColIndexInUsingColumns(col) > -1;
-                          return (
-                            <div
-                              onClick={(e) => {
-                                if (!isSelected) {
-                                  this.setCol(col);
-                                }
-                              }}
-                              className={`pl-1 list-item ${
-                                isSelected ? "disabled" : ""
-                              }`}
-                              key={id}
-                            >
-                              {tableTitle + "." + name}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })
-                : null}
+              {(Array.isArray(datasourceMeta) &&
+                datasourceMeta.map((ds) => {
+                  const { columns, name: tableTitle } = ds;
+                  return (
+                    <div className="list-item">
+                      <div className="disabled">{tableTitle}</div>
+                      {Object.values(columns || {}).map((col, idx) => {
+                        const { name, id } = col;
+                        const isSelected =
+                          this.ColIndexInUsingColumns(col) > -1;
+                        return (
+                          <div
+                            onClick={() => {
+                              if (!isSelected) {
+                                this.setCol(col);
+                              }
+                            }}
+                            className={`p1-1 list-item ${
+                              isSelected ? "disabled" : ""
+                            }`}
+                            key={id}
+                          >
+                            {`${tableTitle}.${name}`}
+                          </div>
+                        );
+                      }) || null}
+                    </div>
+                  );
+                })) ||
+                null}
             </div>
           );
         }}
@@ -367,14 +367,13 @@ export class TableDSHelperComp extends React.Component<
                 !Array.isArray(interDatasources) ||
                 interDatasources.length === 0
               ) {
-                return close();
+                close();
+                return;
               }
 
               close();
-
-              if (interDatasources.length === 0) {
-                return close();
-              }
+              // TODO: 为了应付交付，表格只支持配置主表字段
+              interDatasources = [interDatasources[0]];
               const nextMetaID = changePageMeta({
                 type: "create/batch&rm/batch",
                 metaAttr: "dataSource",
