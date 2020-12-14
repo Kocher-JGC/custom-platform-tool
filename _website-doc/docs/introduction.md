@@ -76,14 +76,10 @@ npm ls react
 - `docs/` - 文档
 - `web-server` - 配置端 web 资源服务
 - `packages/` - 工作区
-  - `engine-*` `engine-` 开头的都是引擎相关的
-  - `provider-app-*` - `provider-app-` 前缀的都是配置端相关的
-  - `consumer-app-*` - `consumer-app-` 前缀的都是应用端相关的
-  - `infra-*` - 基础设施支持
-  - `ui-*` - 通用 UI 组件
-  - `platform-access-*` - 平台接入
-  - `*-hub` - 以 `hub` 结尾的都是嵌套工作区
-  - `_*` - 以下划线`_`开头的是与工程没有直接关系的周边内容
+  - `provider-app/` 配置端
+  - `consumer-app/` 应用端
+  - `shared/` 配置端和应用端共享的内容
+  - `widgets-access-workspace/` 平台组件接入
 - `.eslintignore` - eslint 中`需忽略的项`配置
 - `.eslintrc` - eslint 配置
 - `.gitignore` - git 中`需忽略的项`配置

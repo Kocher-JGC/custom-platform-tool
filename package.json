@@ -18,8 +18,8 @@
   "scripts": {
     "lerna:bootstrap": "lerna bootstrap",
     "start:all": "lerna run --parallel --stream start",
-    "start:consumer-app": "yarn && cd ./packages/consumer-app/web-client && yarn start",
-    "start:provider-app": "yarn && cd ./packages/provider-app/provider-app-entry && yarn start",
+    "start:consumer-app": "yarn && cd ./packages/consumer-app/web-client && npm start",
+    "start:provider-app": "yarn && cd ./packages/provider-app/provider-app-entry && npm start",
     "start:platform-web-server": "sh ./scripts/start-platform-web-server.sh",
     "start:debug:platform-web-server": "sh ./scripts/debug-platform-web-server.sh",
     "start:website-doc": "cd ./_website-doc && npm run start",
@@ -38,13 +38,15 @@
     "commit": "git-cz"
   },
   "dependencies": {
+    "core-js": "3.8.0",
     "dayjs": "^1.9.6",
-    "core-js": "3.8.0"
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "@types/jest": "^26.0.15",
+    "@types/lodash": "^4.14.165",
     "@types/node": "^14.14.10",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
@@ -55,8 +57,8 @@
     "cz-customizable": "^6.3.0",
     "eslint": "^7.14.0",
     "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-prettier": "^6.15.0",
     "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.15.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-loader": "4.0.2",
     "eslint-plugin-flowtype": "5.2.0",

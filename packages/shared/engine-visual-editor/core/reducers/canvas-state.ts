@@ -2,7 +2,7 @@ import {
   SELECT_ENTITY, INIT_ENTITY_STATE,
   SelectEntityAction, INIT_APP, UNSELECT_ENTITY,
   UnselectEntityAction, InitAppAction, ADD_ENTITY, AddEntityAction,
-  SORTING_ENTITY, SortingEntityAction, DelEntityAction, DEL_ENTITY
+  SortingEntityAction, DelEntityAction, DEL_ENTITY
 } from "../actions";
 import { SelectEntityState } from "../types";
 
@@ -30,11 +30,7 @@ export function selectedInfoReducer(
 ): SelectEntityState {
   switch (action.type) {
     case INIT_APP:
-      return defaultSelectedEntities;
     case UNSELECT_ENTITY:
-      return defaultSelectedEntities;
-    case SORTING_ENTITY:
-      return state;
     case DEL_ENTITY:
       return defaultSelectedEntities;
     case ADD_ENTITY:

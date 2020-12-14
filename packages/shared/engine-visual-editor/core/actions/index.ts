@@ -49,6 +49,7 @@ export interface VECanvasDispatcher {
   SortingEntity: typeof CanvasActions['SortingEntity']
   DelEntity: typeof CanvasActions['DelEntity']
   AddEntity: typeof CanvasActions['AddEntity']
+  AddTempEntity: typeof CanvasActions['AddTempEntity']
   SelectEntity: typeof CanvasActions['SelectEntity']
   ChangeEntity: typeof CanvasActions['SelectEntity']
 }

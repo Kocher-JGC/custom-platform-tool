@@ -46,11 +46,11 @@ const DropStageContainer: React.FC<DropStageProps> = ({
   onLeave,
   onEnter,
   triggerCondition,
+  onStageClick,
   onItemDrop,
   style,
   className,
   accept,
-  onStageClick,
   children,
 }) => {
   /** 元素进出画布区域触发器 */
