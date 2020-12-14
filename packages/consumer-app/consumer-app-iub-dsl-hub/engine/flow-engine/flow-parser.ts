@@ -34,7 +34,7 @@ export const flowParser = (flows: FlowCollection) => {
      * 1. 若绑定时候解析, 则调用的是未解析完整的「需要支持, 运行:解析并运行」
      * 2. 目前: 在一个地方, 统一额外解析
      */
-    const flowFn = (context: RunTimeCtxToBusiness) => {
+    const flowFn = (IUBCtx: RunTimeCtxToBusiness) => {
       /** 外部会对运行函数进行修改, 惰性赋值 */
       let flowItemRunFn = flowItemList[flowId];
 
@@ -43,7 +43,7 @@ export const flowParser = (flows: FlowCollection) => {
         flowItemRunFn = noopError;
       }
 
-      return flowItemRunFn(context);
+      return flowItemRunFn(IUBCtx);
     };
     return flowFn;
   };
@@ -55,14 +55,18 @@ export const flowParser = (flows: FlowCollection) => {
    * @param flowIds 流程项ids
    */
   const bindFlows = (flowIds: string[]) => {
-    const flowFn = (context: RunTimeCtxToBusiness) => {
+    const flowFn = (IUBCtx: RunTimeCtxToBusiness) => {
       const flowRunFns = flowIds.map(bindFlow);
 
       /** 等价于一个出口所有线的运行 Promise.all */
-      return onceFlowOutRunWrap(flowRunFns)(context); /** 惰性储存 */
+      return onceFlowOutRunWrap(flowRunFns)(IUBCtx); /** 惰性储存 */
     };
     return flowFn;
   };
+
+  const runFlows = async (IUBCtx: RunTimeCtxToBusiness, flowIds: string[]) => {
+    return  await bindFlows(flowIds)(IUBCtx)
+  }
 
   const reSetFlow = reSetFuncWrap(flowIds, flowItemList);
   
@@ -72,7 +76,8 @@ export const flowParser = (flows: FlowCollection) => {
     flowItemList,
     reSetFlow,
     bindFlows,
-    bindFlow
+    bindFlow,
+    runFlows
   };
 };
 
