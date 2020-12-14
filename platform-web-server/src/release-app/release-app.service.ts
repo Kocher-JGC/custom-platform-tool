@@ -160,7 +160,7 @@ export class ReleaseAppService {
    */
   getPageDataFromProvider = async({ lesseeCode, applicationCode }, authorization) => {
     const envConfig = await getEnvConfig();
-    this.logger.info(`envConfig: ${envConfig}`);
+    this.logger.info(`envConfig: ${JSON.stringify(envConfig)}`);
     const resData = await axios.get(
       `${envConfig.paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
       { headers: { Authorization: authorization } }

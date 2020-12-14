@@ -3,6 +3,7 @@ import { getEnvConfig } from "../../utils";
 
 export const genUrl = async (params: {lessee: string, app: string }) => {
   const envConfig = await getEnvConfig();
+  console.log(`genUrl envConfig: ${JSON.stringify(envConfig)}`);
   return `${envConfig.paasServerUrl}/${params.lessee}/${params.app}`;
 };
 
