@@ -34,6 +34,8 @@ const DevEnvInfo = ({ id, nestingInfo }) => {
  * 可拖动的组件实例的包装器
  */
 export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
+  onItemHover,
+  onItemDrag,
   onItemDrop,
   onItemMove,
   onItemClick,
@@ -86,6 +88,8 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
           <DragItemComp
             nestingInfo={nestingInfo}
             sortable={true}
+            onItemDrag={onItemDrag}
+            onItemHover={onItemHover}
             onItemDrop={onItemDrop}
             onItemMove={onItemMove}
             dragableWidgetType={currEntity}
@@ -99,7 +103,9 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
             ]}
           >
             <WidgetRenderer
-              {...propsForChild}
+              // {...propsForChild}
+              id={id}
+              nestingInfo={nestingInfo}
               onClick={(e) => {
                 e.stopPropagation();
                 onItemClick(actionCtx);

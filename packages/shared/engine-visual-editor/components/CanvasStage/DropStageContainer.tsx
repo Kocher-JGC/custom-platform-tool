@@ -1,7 +1,7 @@
 /**
  * DropStageContainer
  */
-import React from "react";
+import React, { useRef } from "react";
 import { useDrop } from "react-dnd";
 import classnames from "classnames";
 import {
@@ -53,6 +53,7 @@ const DropStageContainer: React.FC<DropStageProps> = ({
   accept,
   children,
 }) => {
+  const ref = useRef<HTMLDivElement>(null);
   /** 元素进出画布区域触发器 */
   const stageAreaEnterLeaveTrigger = (isOver, canDrop, dragItem) => {
     const _isOver = isOver;
@@ -115,9 +116,11 @@ const DropStageContainer: React.FC<DropStageProps> = ({
     isOver && "overing",
   ]);
 
+  drop(ref);
+
   return (
     <div
-      ref={drop}
+      ref={ref}
       onClick={(e) => {
         onStageClick?.();
       }}

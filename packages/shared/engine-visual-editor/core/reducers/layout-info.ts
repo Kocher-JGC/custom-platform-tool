@@ -1,6 +1,5 @@
 import update from 'immutability-helper';
 import produce from 'immer';
-import flattenDeep from 'lodash/flattenDeep';
 import at from 'lodash/at';
 import { mergeDeep } from '@infra/utils/tools';
 import { ElemNestingInfo } from '@engine/layout-renderer';
@@ -92,6 +91,9 @@ const clearTmplWidget = (layoutInfoState: LayoutInfoActionReducerState) => {
   return layoutInfoState.filter((item) => item._state !== TEMP_ENTITY_ID);
 };
 
+/**
+ * 嵌套数组中的元素交换
+ */
 const swapItemInNestArray = (nestArray, sourceIdx, targetIdx) => {
   const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
   const swapItemNestIdxStr = `[${targetIdx.join('][')}]`;
@@ -111,9 +113,11 @@ const swapItemInNestArray = (nestArray, sourceIdx, targetIdx) => {
   return nestArray;
 };
 
+/**
+ * 将元素推入嵌套数组中
+ */
 const putItemInNestArray = (nestArray, sourceIdx, targetIdx, putIdx) => {
   const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
-  const swapItemNestIdxStr = `[${targetIdx.join('][')}]`;
   const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
 
   setItem2NestingArr(nestArray, sourceIdx, {
@@ -127,8 +131,6 @@ const putItemInNestArray = (nestArray, sourceIdx, targetIdx, putIdx) => {
 
   return nestArray;
 };
-
-// console.log(setItem2NestingArr([[{}]], [0,0,0], { test: '123' }));
 
 /**
  * 用于处理布局信息的 reducer
@@ -148,11 +150,6 @@ export const layoutInfoReducer = (
           addItem: addEntity,
           spliceCount: 1
         });
-        // const addNextState = update(state, {
-        //   $splice: [
-        //     [idx, 1, addEntity],
-        //   ],
-        // });
 
         return addNextState;
       });
@@ -182,27 +179,6 @@ export const layoutInfoReducer = (
           putItemInNestArray(draft, sourceItemNestIdx, putItemNestIdx, putIdx);
 
         }
-        // const {
-        //   dragItemNestIdx, hoverItemNestIdx, actionType
-        //   // entity: sortEntity, replace
-        // } = action;
-        // if(actionType === 'swap') {
-          
-        // }
-        // const addNextState = setItem2NestingArr(draft, dragItemNestIdx, {
-        //   spliceCount: replace ? 0 : 1,
-        // });
-        // const addNextState2 = setItem2NestingArr(addNextState, hoverItemNestIdx, {
-        //   addItem: sortEntity,
-        //   spliceCount: 0
-        // });
-        // update(draft, {
-        //   $splice: [
-        //     [dragIndex, replace ? 0 : 1],
-        //     [hoverIndex, 0, sortEntity],
-        //   ],
-        // });
-        // return addNextState2;
       });
     case SET_LAYOUT_STATE:
       const { state: _state } = action;
@@ -260,15 +236,29 @@ export const layoutInfoReducer = (
   }
 };
 
+const flattenDeep = (targetArr: any[], nestIndex: string) => {
+  const res = [];
+  const r = (_a) => {
+    _a.forEach((item) => {
+      if(item[nestIndex]) {
+        r(item[nestIndex]);
+      }
+      res.push(item);
+    });
+  };
+  r(targetArr);
+  return res;
+};
+
 /**
  * 将嵌套的数组转为 nodeTree 结构
  */
 const flatArrayToNode = (items: any[], idKey = 'id') => {
-  const array = flattenDeep(items);
+  const array = flattenDeep(items, 'body');
   const resTree = {};
-  for (const item of array) {
+  array.forEach((item) => {
     resTree[item[idKey]] = item;
-  }
+  });
   return resTree;
 };
 

@@ -1,12 +1,12 @@
-import React from 'react';
-import classnames from 'classnames';
-import { WidgetRendererProps } from '@engine/visual-editor/spec';
-import { getWidget } from '@platform-widget-access/loader';
-import { Unexpect } from './Unexpect';
+import React from "react";
+import classnames from "classnames";
+import { WidgetRendererProps } from "@engine/visual-editor/spec";
+import { getWidget } from "@platform-widget-access/loader";
+import { Unexpect } from "./Unexpect";
 // import ContainerWrapperCom from './ContainerWrapperCom';
 
 export interface PDWidgetRendererProps extends WidgetRendererProps {
-  className?
+  className?;
 }
 
 /**
@@ -38,16 +38,9 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
   } else {
     Com = WidgetFormRemote.render(Object.assign({}, entityState, { children }));
   }
-  const classes = classnames(
-    "comp-renderer",
-    className
-  );
+  const classes = classnames("comp-renderer", className);
   return (
-    <div
-      {...otherProps}
-      onClick={onClick}
-      className={classes}
-    >
+    <div {...otherProps} onClick={onClick} className={classes}>
       {Com}
       {/* <div className="__mark"></div> */}
     </div>

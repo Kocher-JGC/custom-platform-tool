@@ -14,6 +14,7 @@ import {
   DragableItemWrapperFac,
   GetStateContext,
   WrapperItemClickEvent,
+  DragItemMove,
 } from "@engine/visual-editor/spec";
 import { Debounce } from "@mini-code/base-func";
 import {
@@ -54,16 +55,26 @@ export interface CanvasStageProps extends VEDispatcher {
 const debounceAddTempEntity = new Debounce();
 
 interface DragingItemCtx {
+  /** 实时记录拖动元素在画布中的嵌套信息 */
   nestingInfo: ElemNestingInfo;
+  /**
+   * 拖动元素的类型
+   * 1. temp：刚拖入到画布中的临时元素，此时还未赋值，被赋值后成为 entity
+   * 2. entity：被赋值 nestingInfo 后的元素
+   */
+  type?: "temp" | "entity";
 }
 
 /**
  * 中央舞台组件
  */
 class CanvasStage extends React.Component<CanvasStageProps> {
-  /** 被拖动的元素的上下文 */
-  dragingItemCtx: DragingItemCtx | null = {
+  /**
+   * 重要策略，用于管理被拖动的元素的上下文状态
+   */
+  draggingItemCtx: DragingItemCtx | null = {
     nestingInfo: [],
+    type: "temp",
   };
 
   getNodeItemFromNesting = (nestingInfo: ElemNestingInfo) => {
@@ -95,51 +106,28 @@ class CanvasStage extends React.Component<CanvasStageProps> {
    * @description
    * 1. 响应拖放的放的动作的调度器
    * 2. 用于实例化 widgetType
-   *
-   * @description
-   * 重要策略，用于向舞台实例化组件
-   * 1. 如果没有 dropTargetCtx，则认为直接拖入到舞台
-   * 2. 如果有 dropTargetCtx，则认为组件被拖动到某个组件之上，又分两种情况：
-   *    a. 组件是排序的，并不会产生上下级关系
-   *    b. 组件被放入某个布局容器职中，将产生上下级关系，这里是布局的关键策略点
    */
-  handleItemDrop = (
-    dragWidgetMeta: WidgetEntity,
-    dropTargetCtx?: Pick<DnDContext, "nestingInfo">
-  ) => {
+  handleItemDrop = (dragWidgetMeta: WidgetEntity) => {
     const { AddEntity, onAddEntity } = this.props;
 
     // 切断原型链
     const widgetMetaCopy = { ...dragWidgetMeta };
 
-    if (dropTargetCtx) {
-      const { nestingInfo } = dropTargetCtx;
-      // 如果有放的项;
-      // if (dropTargetItem) {
-      //   const { acceptChildStrategy } = dropTargetItem;
-      //   if (acceptChildStrategy) {
-      //     // TODO: 完善布局信息
-      //     addEntityNestingInfo = [...nestingInfo];
-      //     const parentID = dropTargetItem.id;
-      //     // 如果被放的项是可以被嵌套的，则将该组件放入父级组件中
-      //     if (parentID) {
-      //       widgetMetaCopy.parentID = parentID;
-      //     }
-      //   }
-      // }
+    const nestingInfo = this.draggingItemCtx?.nestingInfo;
 
-      /** 是否已经实例化的组件 */
-      const isMotify = widgetMetaCopy._state === "active";
+    /** 是否已经实例化的组件 */
+    const isMotify = widgetMetaCopy._state === "active";
 
-      if (!isMotify) {
-        /** 实例化组件类 */
-        const entity = makeWidgetEntity(widgetMetaCopy);
-        AddEntity(entity, {
-          nestingInfo,
-        });
-        onAddEntity?.(entity);
-      }
+    if (!isMotify && nestingInfo) {
+      /** 实例化组件类 */
+      const entity = makeWidgetEntity(widgetMetaCopy);
+      AddEntity(entity, {
+        nestingInfo,
+      });
+      onAddEntity?.(entity);
     }
+
+    this.dropEnd();
   };
 
   handleDeleteElement = ({ nestingInfo, entity }) => {
@@ -167,49 +155,91 @@ class CanvasStage extends React.Component<CanvasStageProps> {
   /**
    * 响应元素的拖事件，作用于排序
    */
-  handleItemMove = (
-    dragItemNestIdx: ElemNestingInfo,
-    hoverItemNestIdx: ElemNestingInfo,
+  handleItemMove: DragItemMove = (
+    dragItemNestIdx,
+    hoverItemNestIdx,
     options
   ) => {
     const { isContainer, from } = options || {};
-    /** 防止没有 dragItemNestIdx 而产生坏数据 */
-    if (!dragItemNestIdx) return;
-    if (dragItemNestIdx.length === 0) {
-      dragItemNestIdx = this.dragingItemCtx?.nestingInfo;
+    if (!dragItemNestIdx) {
+      /** 防止没有 dragItemNestIdx 而产生坏数据 */
+      return;
     }
-    this.dragingItemCtx = {
-      nestingInfo: hoverItemNestIdx,
-    };
-    // this.dragItemOriginIdx = dragItemNestIdx;
+    let _dragItemNestIdx = dragItemNestIdx;
+    if (_dragItemNestIdx.length === 0 && this.draggingItemCtx?.nestingInfo) {
+      /** 如果是 temp entity，则将 draggingItemCtx nestingInfo 赋值给 _dragItemNestIdx */
+      _dragItemNestIdx = this.draggingItemCtx?.nestingInfo;
+    }
     /** 取消由进入画布时触发的添加临时组件 */
     debounceAddTempEntity.cancel();
-    const dragEntity = this.getNodeItemFromNesting(dragItemNestIdx);
+    const dragEntity = this.getNodeItemFromNesting(_dragItemNestIdx);
     if (!dragEntity) return;
 
     if (isContainer) {
+      const dragContainerEntity = this.getNodeItemFromNesting(hoverItemNestIdx);
+      // console.log(dragContainerEntity);
+      const containerChildLen = dragContainerEntity.body?.length || 0;
       this.props.SortingEntity({
         type: "put",
-        sourceItemNestIdx: dragItemNestIdx,
+        sourceItemNestIdx: _dragItemNestIdx,
         putItemNestIdx: hoverItemNestIdx,
-        putIdx: from === "top" ? 0 : 0,
+        /**
+         * 1. 如果是从上方或者左边进入容器，则将元素插入到容器的第 0 位
+         * 2. 如果从下方或者右边进入容器，则将元素插入到容器的末尾
+         */
+        putIdx: /top|left/.test(from) ? 0 : containerChildLen,
+      });
+
+      this.setDragCtx({
+        nestingInfo: [...hoverItemNestIdx, 0],
       });
     } else {
       this.props.SortingEntity({
         type: "swap",
-        sourceItemNestIdx: dragItemNestIdx,
+        sourceItemNestIdx: _dragItemNestIdx,
         swapItemNestIdx: hoverItemNestIdx,
       });
-    }
 
-    // this.props.SortingEntity({
-    //   type: "swap",
-    //   sourceItemNestIdx: dragItemNestIdx,
-    //   swapItemNestIdx: hoverItemNestIdx,
-    // });
-    // this.props.SortingEntity(dragItemNestIdx, hoverItemNestIdx, dragEntity, {
-    //   replace: replaceItem,
-    // });
+      this.setDragCtx({
+        nestingInfo: hoverItemNestIdx,
+      });
+    }
+  };
+
+  /**
+   * 维护 dragging item 上下文
+   * @param dragCtx
+   */
+  handleItemDrag = (dragCtx) => {
+    this.setDragCtx({ nestingInfo: dragCtx.nestingInfo });
+  };
+
+  handleItemHover = (hoverItemIdx, { isContainer }) => {
+    /** 维护 temp 元素的拖拽上下文 */
+    if (this.draggingItemCtx?.type === "temp" && !isContainer) {
+      this.props.SortingEntity({
+        type: "swap",
+        sourceItemNestIdx: this.draggingItemCtx?.nestingInfo,
+        swapItemNestIdx: hoverItemIdx,
+      });
+
+      /** 设置 draggingItemCtx 的类型为 entity */
+      this.setDragCtx({
+        nestingInfo: hoverItemIdx,
+        type: "entity",
+      });
+    }
+  };
+
+  setDragCtx = (ctx: DragingItemCtx) => {
+    if (!this.draggingItemCtx) {
+      console.error(`this.draggingItemCtx 为空，请检查调用链路`);
+    }
+    this.draggingItemCtx = Object.assign({}, this.draggingItemCtx, ctx);
+  };
+
+  dropEnd = () => {
+    this.draggingItemCtx = null;
   };
 
   /**
@@ -219,6 +249,8 @@ class CanvasStage extends React.Component<CanvasStageProps> {
     getLayoutNode: this.getLayoutNode,
     getSelectedState: this.getSelectedState,
     getEntityProps: this.getEntityProps,
+    onItemHover: this.handleItemHover,
+    onItemDrag: this.handleItemDrag,
     onItemDrop: this.handleItemDrop,
     onItemMove: this.handleItemMove,
     onDelete: this.handleDeleteElement,
@@ -231,7 +263,6 @@ class CanvasStage extends React.Component<CanvasStageProps> {
       layoutNodeInfo,
       pageEntityState,
       accept,
-      // selectedInfo,
       onStageClick,
       triggerCondition,
       dragableItemWrapper,
@@ -251,37 +282,30 @@ class CanvasStage extends React.Component<CanvasStageProps> {
               accept={accept}
               onEnter={(item) => {
                 const layoutNodeInfoLen = layoutNodeInfo.length;
-                /** 设置 dragClass 的 index，用于排序 */
-                this.dragingItemCtx = {
+                /** 设置 dragClass 的 index，用于排序，维护 temp 元素的拖拽生命周期 */
+                this.setDragCtx({
                   nestingInfo: [layoutNodeInfoLen],
-                };
-                /**
-                 * 延后将临时组件实例添加到画布，属于交互体验优化
-                 */
-                debounceAddTempEntity.exec(() => {
-                  this.createTempEntity(this.dragingItemCtx?.nestingInfo);
-                }, 50);
+                  type: "temp",
+                });
+                this.createTempEntity(this.draggingItemCtx?.nestingInfo);
               }}
               onLeave={(item) => {
                 /** 移出 item */
-                if (this.dragingItemCtx) {
+                if (this.draggingItemCtx) {
                   this.handleDeleteElement({
-                    nestingInfo: this.dragingItemCtx.nestingInfo,
+                    nestingInfo: this.draggingItemCtx.nestingInfo,
                     entity: item,
                   });
                 }
 
-                this.dragingItemCtx = null;
+                this.dropEnd();
               }}
               onItemDrop={(_dragableItemDef, dropOptions) => {
-                // if (dropOptions.type !== PDDragableItemTypes.staticWidget) {
-                //   return;
-                // }
-                if (this.dragingItemCtx) {
-                  this.handleItemDrop(_dragableItemDef, {
-                    nestingInfo: this.dragingItemCtx?.nestingInfo,
-                  });
+                if (this.draggingItemCtx) {
+                  this.handleItemDrop(_dragableItemDef);
                 }
+
+                this.dropEnd();
               }}
               onStageClick={onStageClick}
               style={pageStyle}
