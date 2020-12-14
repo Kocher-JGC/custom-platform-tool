@@ -1,6 +1,7 @@
 module.exports = {
   docs: [
     'introduction',
+    '必备知识',
   ],
   'api': [
     {
