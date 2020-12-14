@@ -27,6 +27,7 @@ const IUBDSLRuntimeContainer = ({
     isSearch,
     flowParseRes,
     pageLifecycle,
+    pkSchemaRef,
   } = dslParseRes;
 
   /** 获取单例的页面管理 */
@@ -35,7 +36,9 @@ const IUBDSLRuntimeContainer = ({
   /** 页面运行时上下文 */
   const runTimeCtxToBusiness = useRef<RunTimeCtxToBusiness>({
     PageRenderer,
-    pageStatus: "update",
+    pkSchemaRef,
+    // pageStatus: "update",
+    pageStatus,
     pageId,
     pageMark: "",
     action: { payload: {} },
@@ -56,22 +59,32 @@ const IUBDSLRuntimeContainer = ({
       context: runTimeCtxToBusiness,
     });
     runTimeCtxToBusiness.current.pageMark = pageMark;
+    const runMoutedEvent = () => {
+      if (Array.isArray(pageLifecycle?.mounted)) {
+        flowParseRes.runFlows(
+          runTimeCtxToBusiness.current,
+          pageLifecycle.mounted
+        );
+      }
+    };
     /** 页面正式挂载完成, 设置跨页面数据 */
-    hooks?.mounted?.({ pageMark, pageId, runTimeCtxToBusiness });
-
-    if (Array.isArray(pageLifecycle?.mounted)) {
-      flowParseRes.runFlows(
-        runTimeCtxToBusiness.current,
-        pageLifecycle.mounted
-      );
+    const doMount = hooks?.mounted?.({
+      pageMark,
+      pageId,
+      runTimeCtxToBusiness,
+    });
+    if (typeof doMount?.then === "function") {
+      doMount.then(() => runMoutedEvent());
+    } else {
+      runMoutedEvent();
     }
 
     return () => {
       removeFn();
       hooks?.unmounted?.({ pageMark, pageId, runTimeCtxToBusiness });
-      effectRelationship.effectDispatch(runTimeCtxToBusiness.current, {
-        pageIdOrMark: "",
-      });
+      // effectRelationship.effectDispatch(runTimeCtxToBusiness.current, {
+      //   pageIdOrMark: "",
+      // });
     };
   }, []);
 

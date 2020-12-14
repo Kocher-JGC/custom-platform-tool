@@ -1,4 +1,5 @@
 import React from "react";
+import { notification } from "antd";
 import { IUBDSLRenderer } from "@iub-dsl/platform/react";
 import { PageRenderCtx } from "@engine/ui-admin-template";
 
@@ -19,11 +20,12 @@ export interface PageContainerProps extends PageRenderCtx {
   t: string;
   /** 页面的模式 */
   mode?: string;
+  hooks?: any;
 }
 
 const genPageRenderer = (props, Renderer) => {
-  return ({ pageId }) => {
-    return <Renderer {...props} pageID={pageId} />;
+  return ({ pageId, hooks = {} }) => {
+    return <Renderer {...props} hooks={hooks} pageID={pageId} />;
   };
 };
 
@@ -48,10 +50,16 @@ export class PageContainer extends React.PureComponent<PageContainerProps> {
       reqParam,
       bizCode = SYS_MENU_BUSINESSCODE
     ) => {
-      return await APBDSLrequest(
+      const res = await APBDSLrequest(
         originGenUrl({ lesseeCode: lessee, bizCode, appCode: app }),
         reqParam
       );
+      if ((Array.isArray(res) && !res[0]?.data) || typeof res === "string") {
+        notification.success({
+          message: "请求处理成功!",
+        });
+      }
+      return res;
     };
     PageContainer.PageRenderer = genPageRenderer(this.props, PageContainer);
     queryPageData({
@@ -69,7 +77,7 @@ export class PageContainer extends React.PureComponent<PageContainerProps> {
   }
 
   render() {
-    const { children, pageID } = this.props;
+    const { children, pageID, hooks = {} } = this.props;
     const { ready, pageData } = this.state;
     // console.log('-------------PageContainer Render--------------');
     return (
@@ -82,6 +90,7 @@ export class PageContainer extends React.PureComponent<PageContainerProps> {
         {/* <IUBDSLRenderer dsl={locationForm} key={pageID} /> */}
         {ready ? (
           <IUBDSLRenderer
+            hooks={hooks}
             PageRenderer={PageContainer.PageRenderer}
             requestHandler={PageContainer.requestHandler}
             dsl={pageData}
