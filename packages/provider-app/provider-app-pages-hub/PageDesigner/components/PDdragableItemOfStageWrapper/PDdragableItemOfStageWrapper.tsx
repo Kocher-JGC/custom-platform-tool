@@ -85,6 +85,7 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
           <DevEnvInfo id={id} nestingInfo={nestingInfo} />
           <DragItemComp
             nestingInfo={nestingInfo}
+            sortable={true}
             onItemDrop={onItemDrop}
             onItemMove={onItemMove}
             dragableWidgetType={currEntity}

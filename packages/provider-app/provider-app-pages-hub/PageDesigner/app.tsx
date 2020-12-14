@@ -77,15 +77,23 @@ class PageDesignerApp extends React.Component<
 
     const isArrayOptions = Array.isArray(options);
 
+    const returnMetaIDForEachStep: string[] | string[][] = [];
     const returnMetaIDs: string[] = [];
     const nextOptions: ChangeMetadataOptions = genMetaIDStrategy(options, {
       entityID: activeEntityID,
-      forEachCalllback: (metaID) => returnMetaIDs.push(metaID),
+      forEachCalllback: (metaID) => {
+        if (Array.isArray(metaID)) {
+          returnMetaIDs.push.apply(returnMetaIDs, metaID);
+        } else {
+          returnMetaIDs.push(metaID);
+        }
+        returnMetaIDForEachStep.push(metaID);
+      },
     });
 
     ChangePageMeta(nextOptions);
 
-    return isArrayOptions ? returnMetaIDs : returnMetaIDs[0];
+    return isArrayOptions ? returnMetaIDs : returnMetaIDForEachStep[0];
   };
 
   /**
@@ -95,7 +103,9 @@ class PageDesignerApp extends React.Component<
     const { pageMetadata } = this.props;
     const { metaAttr, metaRefID } = options;
     return metaRefID
-      ? pageMetadata[metaAttr]?.[metaRefID]
+      ? Array.isArray(metaRefID)
+        ? pick(pageMetadata[metaAttr], metaRefID)
+        : pageMetadata[metaAttr]?.[metaRefID]
       : pageMetadata[metaAttr];
   };
 
@@ -136,7 +146,7 @@ class PageDesignerApp extends React.Component<
       const dsRefID = genMetaRefID("dataSource", {
         idStrategy: dsItem.id,
       });
-      nextDSState[dsRefID] = { ...dsItem, dsType: "page" };
+      nextDSState[dsRefID] = { ...dsItem, createdBy: "page" };
     });
     const dsFromNotPage = getDsFromNotPage();
     this.changePageMetaStradegy({

@@ -21,12 +21,12 @@ interface TableDSHelperCompProps extends PropItemRenderContext {
 }
 
 interface TableEditorState {
-  datasourceMeta: PD.Datasource;
+  datasourceMeta: PD.Datasource[];
   usingColumns: PTColumn[];
 }
 
 const takeTableInfo = (_tableInfo) => {
-  return _tableInfo.name;
+  return _tableInfo.map((item) => item.name).join("，");
 };
 
 export class TableDSHelperComp extends React.Component<
@@ -80,21 +80,32 @@ export class TableDSHelperComp extends React.Component<
     const { ds } = editingWidgetState;
     if (!ds) return null;
     const { takeMeta } = platformCtx.meta;
+    debugger;
     const dsMeta = takeMeta({
       metaAttr: "dataSource",
       metaRefID: ds,
     });
     return dsMeta;
   };
-
-  setCol = (item, id) => {
+  ColIndexInUsingColumns = (col) => {
+    const { id: fieldID, dsID } = col;
     const { usingColumns } = this.state;
-    const itemIdx = usingColumns.findIndex((col) => col.id === id);
+    return usingColumns.findIndex((item) => {
+      return (
+        item.type === "dsColumn" &&
+        item.fieldID === fieldID &&
+        item.dsID === dsID
+      );
+    });
+  };
+  setCol = (item) => {
+    const { usingColumns } = this.state;
+    const myIndexInUsingColumns = this.ColIndexInUsingColumns(item);
     const nextState = [...usingColumns];
-    if (itemIdx === -1) {
+    if (myIndexInUsingColumns === -1) {
       nextState.push(genRenderColumn(item));
     } else {
-      nextState.splice(itemIdx, 1);
+      nextState.splice(myIndexInUsingColumns, 1);
     }
     this.setState(
       {
@@ -130,23 +141,36 @@ export class TableDSHelperComp extends React.Component<
         overlay={(helper) => {
           return (
             <div className="column-selector-container">
-              {Object.values(columns || []).map((col, idx) => {
-                const { name, id } = col;
-                const isSelected = usingColumns.find((uCol) => uCol.id === id);
-                return (
-                  <div
-                    onClick={(e) => {
-                      if (!isSelected) {
-                        this.setCol(col, id);
-                      }
-                    }}
-                    className={`list-item ${isSelected ? "disabled" : ""}`}
-                    key={id}
-                  >
-                    {name}
-                  </div>
-                );
-              })}
+              {Array.isArray(datasourceMeta)
+                ? datasourceMeta.map((ds) => {
+                    const { columns, name: tableTitle } = ds;
+                    return (
+                      <div className="list-item">
+                        <div className="disabled">{tableTitle}</div>
+                        {Object.values(columns || []).map((col, idx) => {
+                          const { name, id } = col;
+                          const isSelected =
+                            this.ColIndexInUsingColumns(col) > -1;
+                          return (
+                            <div
+                              onClick={(e) => {
+                                if (!isSelected) {
+                                  this.setCol(col);
+                                }
+                              }}
+                              className={`pl-1 list-item ${
+                                isSelected ? "disabled" : ""
+                              }`}
+                              key={id}
+                            >
+                              {tableTitle + "." + name}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })
+                : null}
             </div>
           );
         }}
@@ -177,18 +201,25 @@ export class TableDSHelperComp extends React.Component<
     return amIReferenceField ? fieldShowType : "realVal";
   };
 
+  getTargetDs = (dsID) => {
+    const { datasourceMeta } = this.state;
+    return datasourceMeta.find((item) => {
+      return item.id === dsID;
+    });
+  };
+
   constructDsColumnAttr = (column) => {
     // TODO 数据源会支持带入附属表，需要改动
-    const { datasourceMeta } = this.state;
-    const { fieldCode, colDataType } =
-      datasourceMeta.columns[column.fieldID] || {};
+    const { dsID, fieldID } = column;
+    const datasourceMeta = this.getTargetDs(dsID);
+    const { fieldCode, colDataType } = datasourceMeta?.columns[fieldID] || {};
     const { fieldShowType } = column;
     const newDataShowType = this.getDataShowType({
       colDataType,
       fieldShowType,
     });
     return Object.assign({}, column, {
-      tableTitle: datasourceMeta.name,
+      tableTitle: datasourceMeta?.name,
       fieldCode,
       fieldShowType: newDataShowType,
       colDataType,
@@ -273,7 +304,7 @@ export class TableDSHelperComp extends React.Component<
               <CloseOutlined
                 className="close __action"
                 onClick={(e) => {
-                  this.setCol(col, id);
+                  this.setCol({ id: col.fieldID, dsID: col.dsID });
                 }}
               />
             </div>
@@ -324,7 +355,9 @@ export class TableDSHelperComp extends React.Component<
         className="px-4 py-2 border cursor-pointer"
         onClick={() => {
           platformCtx.selector.openDatasourceSelector({
-            defaultSelected: datasourceMeta ? [datasourceMeta] : [],
+            defaultSelected: Array.isArray(datasourceMeta)
+              ? datasourceMeta
+              : [],
             modalType: "normal",
             position: "top",
             single: true,
@@ -336,30 +369,25 @@ export class TableDSHelperComp extends React.Component<
               ) {
                 return close();
               }
-              // 由于是单选的，所以只需要取 0
-              const bindedDS = interDatasources[0];
 
               close();
 
-              if (
-                !DSOptionsRef ||
-                (DSOptionsRef && DSOptionsRef.indexOf(bindedDS.id) !== -1)
-              ) {
+              if (interDatasources.length === 0) {
                 return close();
               }
               const nextMetaID = changePageMeta({
-                type: "create/rm",
+                type: "create/batch&rm/batch",
                 metaAttr: "dataSource",
                 // metaID: DSOptionsRef,
-                rmMetaID: DSOptionsRef,
-                data: bindedDS,
+                rmMetaIDList: DSOptionsRef,
+                dataList: interDatasources,
                 // metaID:
               });
               changeEntityState({
                 attr: whichAttr,
                 value: nextMetaID,
               });
-              this.setDatasourceMetaForSelf(bindedDS);
+              this.setDatasourceMetaForSelf(interDatasources);
             },
           });
         }}

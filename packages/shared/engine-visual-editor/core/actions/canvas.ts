@@ -5,8 +5,30 @@
 
 import { ElemNestingInfo } from "@engine/layout-renderer";
 import {
+  TempWidgetEntityType,
   WidgetEntity,
 } from "../../data-structure";
+
+/**
+ * 添加组件实例
+ */
+export const ADD_TEMP_ENTITY = 'entity/temp/add';
+export interface AddTempEntityAction {
+  type: typeof ADD_TEMP_ENTITY
+  entity: TempWidgetEntityType
+  nestingInfo: ElemNestingInfo
+}
+
+export const AddTempEntity = (
+  entity: TempWidgetEntityType,
+  options: AddEntityOptions
+): AddTempEntityAction => {
+  return {
+    type: ADD_TEMP_ENTITY,
+    entity,
+    ...options
+  };
+};
 
 /**
  * 添加组件实例
@@ -62,39 +84,65 @@ export const DelEntity = (
  * 例如 [0, 1, 2] 代表最外层第 0 个元素中的第 1 个元素中的第 2 个元素
  */
 
+type SortingActionType = 'swap' | 'put'
+
+interface SortingActionSwap {
+  type: 'swap'
+  sourceItemNestIdx: ElemNestingInfo
+  swapItemNestIdx: ElemNestingInfo
+}
+
+interface SortingActionPut {
+  /** 将元素推入到 */
+  type: 'put'
+  /** 推入的 item 的 idx */
+  putItemNestIdx: ElemNestingInfo
+  /** 将要推入的 */
+  sourceItemNestIdx: ElemNestingInfo
+  /** 将要推入到 putItemNestIdx 的第几个 */
+  putIdx: number
+}
 /**
  * 设置 layout info 的值
  */
 export const SORTING_ENTITY = 'entity/sorting';
 export interface SortingEntityAction {
   type: typeof SORTING_ENTITY
-  /** 拖动的元素的 index */
-  dragItemNestIdx: ElemNestingInfo
-  /** 拖动的元素移动到了的 index */
-  hoverItemNestIdx: ElemNestingInfo
-  entity
-  replace?: boolean
+  sortOptions: SortingActionSwap | SortingActionPut
 }
+// export interface SortingEntityAction {
+//   type: typeof SORTING_ENTITY
+//   /** 拖动的元素的 index */
+//   dragItemNestIdx: ElemNestingInfo
+//   /** 拖动的元素移动到了的 index */
+//   hoverItemNestIdx: ElemNestingInfo
+//   entity?
+//   /** 是否交换 */
+//   actionType: SortingActionType
+// }
 
 export const SortingEntity = (
-  /** 拖起的项的 index */
-  dragItemNestIdx: SortingEntityAction['dragItemNestIdx'],
-  /** 拖起的项移动到的 index */
-  hoverItemNestIdx: SortingEntityAction['hoverItemNestIdx'],
-  /** 拖起的 entity */
-  entity,
-  /** 选项 */
-  options?: {
-    /** 是否替换在 hoverItemNestIdx 的 entity */
-    replace?: boolean
-  },
+  sortOptions: SortingActionSwap | SortingActionPut
+  // /** 拖起的项的 index */
+  // dragItemNestIdx: ElemNestingInfo,
+  // /** 拖起的项移动到的 index */
+  // hoverItemNestIdx: ElemNestingInfo,
+  // /** 选项 */
+  // options: {
+  //   /** 拖起的 entity */
+  //   entity?
+  //   /** 
+  //    * 排序的元素和另一个元素的交互类型
+  //    * 1. swap 交换两个元素的位置
+  //    * 2. put 将 dragItemNestIdx 嵌入到 hoverItemNestIdx 中
+  //    */
+  //   actionType: SortingActionType
+  // },
 ): SortingEntityAction => {
+  // const { actionType } = options;
   return {
     type: SORTING_ENTITY,
-    dragItemNestIdx,
-    hoverItemNestIdx,
-    entity,
-    ...options,
+    sortOptions
   };
 };
 

@@ -21,7 +21,7 @@ const metaAttr = "schema";
   name: "PropField",
   label: "列",
   whichAttr: "field",
-  useMeta: metaAttr
+  useMeta: metaAttr,
 })
 export class FieldHelperSpec {
   /**
@@ -41,22 +41,26 @@ export class FieldHelperSpec {
     });
   };
 
-  render({ editingWidgetState, changeEntityState, platformCtx }: PropItemRenderContext) {
+  render({
+    editingWidgetState,
+    changeEntityState,
+    platformCtx,
+  }: PropItemRenderContext) {
     const { changePageMeta, takeMeta, genMetaRefID } = platformCtx.meta;
     const currMetaRefID = editingWidgetState.field;
     const selectedField = takeMeta({
       metaAttr: "schema",
-      metaRefID: currMetaRefID
+      metaRefID: currMetaRefID,
     }) as SelectedField;
 
     const schema = takeMeta({
-      metaAttr: "schema"
+      metaAttr: "schema",
     }) as {
       [sID: string]: SelectedField;
     };
 
     const datasource = takeMeta({
-      metaAttr: "dataSource"
+      metaAttr: "dataSource",
     });
 
     const interDatasources = Object.values(datasource);
@@ -77,17 +81,17 @@ export class FieldHelperSpec {
                     this.checkColumnIsBeUsed(_selectedField, schema)
                       .then(() => {
                         const nextMetaRefID = changePageMeta({
-                          type: "create/rm",
+                          type: "create&rm",
                           data: _selectedField,
-                          metaAttr: 'schema',
+                          metaAttr: "schema",
                           // metaID: currMetaRefID,
                           // 将上一个 meta 删除
-                          rmMetaID: prevMetaRefID
+                          rmMetaID: prevMetaRefID,
                         });
 
                         changeEntityState({
                           attr: "field",
-                          value: nextMetaRefID
+                          value: nextMetaRefID,
                         });
 
                         close();
@@ -95,17 +99,19 @@ export class FieldHelperSpec {
                       .catch(() => {
                         platformCtx.ui.showMsg({
                           msg: "已被其他控件绑定",
-                          type: "error"
+                          type: "error",
                         });
                       });
                   }}
                 />
               </div>
             );
-          }
+          },
         }}
       >
-        {currMetaRefID && selectedField ? takeBindColumnInfo(selectedField) : "点击绑定字段"}
+        {currMetaRefID && selectedField
+          ? takeBindColumnInfo(selectedField)
+          : "点击绑定字段"}
       </PopModelSelector>
     );
   }

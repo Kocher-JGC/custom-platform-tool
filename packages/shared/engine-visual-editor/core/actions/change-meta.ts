@@ -6,7 +6,8 @@ export const TypeofMetaChangerReplace = 'replace';
 export const TypeofMetaChangerUpdate = 'update';
 export const TypeofMetaChangerUpdateBatch = 'update/batch';
 export const TypeofMetaChangerRM = 'rm';
-export const TypeofMetaChangerRMAdd = 'create/rm';
+export const TypeofMetaChangerRMAdd = 'create&rm';
+export const TypeofMetaChangerRMBatchAddBatch = 'create/batch&rm/batch';
 // }
 
 export interface CreateMeta<D> {
@@ -47,8 +48,16 @@ export interface RmAndAddMeta<D> extends Omit<CreateMeta<D>, 'type'> {
   type: typeof TypeofMetaChangerRMAdd
   rmMetaID: string
 }
+export interface RmAndAddMetaBatch<D> extends Omit<CreateMeta<D>, 'type'> {
+  type: typeof TypeofMetaChangerRMBatchAddBatch
+  datas?: {
+    [metaID: string]: D
+  }
+  rmMetaIDList: string[]
+  dataList?: D[]
+}
 
-export type ModifyMetaTypes<D> = RmMeta | CreateMeta<D> | UpdateMeta<D> | UpdateMetaBatch<D> | ReplaceMeta<D>  | RmAndAddMeta<D>
+export type ModifyMetaTypes<D> = RmMeta | CreateMeta<D> | UpdateMeta<D> | UpdateMetaBatch<D> | ReplaceMeta<D>  | RmAndAddMeta<D> | RmAndAddMetaBatch<D>
 
 export type ChangeMetadataOptionBasic<D, M> = {
   metaAttr: M
