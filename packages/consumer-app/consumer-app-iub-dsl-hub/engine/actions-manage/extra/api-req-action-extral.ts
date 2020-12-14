@@ -3,6 +3,7 @@ import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata,
 import { extraHandleStrategy } from "./api-req-extra-handle-strategy";
 import { APBTransf } from "./APB-transf";
 import { arrayAsyncHandle, noopError } from "../../utils";
+import { cloneDeep } from 'lodash'
 interface TodoRecord {
   [str: string]: {
     onlyKey: string;
@@ -63,7 +64,6 @@ export const genApiReqPlugins = (parseRes) => {
     listPRes, listKeys,
     steps, list,
   }) => {
-    // console.log(list, steps);
     const handleStrategyEntity = extraHandleStrategy();
     
     /** 挟持结果 */
@@ -97,7 +97,6 @@ export const genApiReqPlugins = (parseRes) => {
     const reqTransfFn = async (IUBCtx, listRunRes /** 每一项转换的结果 */) => {
       /** 根据 analysisRes 生成额外的拼接数据 「确保完整性、递归熔断」 */
       const transfRes = handleStrategyEntity.reqTransfHandle(IUBCtx, { list: listRunRes, steps: steps.slice(0) });
-
       /** steps 组装 + APBDSL转换 */
       // APBTransf(listRes, orgignConf)
       const APBDSL = APBTransf(transfRes);
@@ -112,8 +111,8 @@ export const genApiReqPlugins = (parseRes) => {
        */
       const res = Array.isArray(reqRes) ? reqRes[0] : reqRes;
       /** 先写死 */
+      // debugger
       if (res && res.data) {
-        console.log(res.data);
         if (!IUBCtx.action) IUBCtx.action = {};
         IUBCtx.action.payload = res.data
       }
@@ -198,6 +197,17 @@ export const genApiReqPlugins = (parseRes) => {
         };
         break;
       case FuncCodeOfAPB.D:
+        runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
+          return {
+            ...conf,
+            table: await getInterMetaCode(IUBCtx, conf.table),
+            condition: {
+              and: [{
+                equ: { id: await getSchemaVal(IUBCtx, conf.condition) }
+              }]
+            }
+          }
+        }
         // conf.table
         // conf.condition
         break;
@@ -205,27 +215,24 @@ export const genApiReqPlugins = (parseRes) => {
         /** 单独的read处理 */
         runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
           /** 临时写死逻辑 */
+          const newConf = cloneDeep(conf)
           let temp: any;
-          if ((temp = conf.readList['staticId']) && temp.condition) {
+          if ((temp = newConf.readList['staticId']) && temp.condition) {
             /** 配置传入/ 或写死传入 */
             temp['condition'] = {
               and: [{
-                equ: { id: '1337675164749537280' }
+                equ: { id: await getSchemaVal(IUBCtx, temp.condition) }
               }]
             }
           }
-          return conf
+          return newConf
         };
-        // conf.readDef
-        // conf.readList
         break;
       default:
         break;
     }
     return async (ctx) => {
       const itemRunRes = await runFn(ctx);
-      console.log(itemRunRes);
-      
       return itemRunRes;
     };
   };
