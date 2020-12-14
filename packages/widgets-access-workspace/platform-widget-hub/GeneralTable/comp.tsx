@@ -1,5 +1,5 @@
 import React from "react";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, Space } from "antd";
 import zhCN from "antd/es/locale/zh_CN";
 import ProTable, {
   ProColumns,
@@ -39,7 +39,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
   getColumns = ({ columns, wordWrap, showOrderColumn }) => {
     let result = (columns || [])
       /** 配置人员可以配置不显示字段 */
-      .filter((item) => item.show)
+      .filter((item) => item?.show)
       .map((item) => ({
         dataIndex: `${item.id}`,
         ...item,
@@ -219,6 +219,18 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
           dataSource={dataSource}
           pagination={pagination}
           options={false}
+          tableAlertRender={({
+            selectedRowKeys,
+            selectedRows,
+            onCleanSelected,
+          }) => {
+            console.log(selectedRows);
+            return (
+              <Space size={24}>
+                <span>已选 {selectedRowKeys.length} 项</span>
+              </Space>
+            );
+          }}
           request={async (params, sort, filter) => {
             const reqResData = await request?.();
             return reqResData || { data: [] };
