@@ -8,6 +8,7 @@ import ProTable, {
 } from "@ant-design/pro-table";
 import { LightFilter, ProFormDatePicker } from "@ant-design/pro-form";
 import "./style.scss";
+
 export type QueryStyleAsForm = { queryStyle: "asForm" };
 export type QueryStyleInToolbar = { queryStyle: "inToolbar" };
 export type QueryTypeTypical = {
@@ -80,6 +81,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
     }
     return result;
   };
+
   /** 根据查询方式，决定标题和搜索框的位置 */
   getPropsForSearch = ({ queryType, title, columns }) => {
     const getSearch = () => {
@@ -90,24 +92,26 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
     const getToolbarOrTitle = () => {
       const { typical } = queryType || {};
       const { queryStyle, maxNum } = typical || {};
-      return queryStyle !== "asForm" && (columns || []).length > 0
-        ? {
-            toolbar: {
-              title,
-              filter: (
-                <LightFilter>
-                  {(columns || []).slice(0, maxNum).map((item) => (
-                    <ProFormDatePicker label={item.name} key={item.id} />
-                  ))}
-                </LightFilter>
-              ),
-            },
-          }
-        : { headerTitle: title };
+      if (queryStyle !== "asForm" && (columns || []).length > 0) {
+        return {
+          toolbar: {
+            title,
+            filter: (
+              <LightFilter>
+                {(columns || []).slice(0, maxNum).map((item) => (
+                  <ProFormDatePicker label={item.name} key={item.id} />
+                ))}
+              </LightFilter>
+            ),
+          },
+        };
+      }
+      return { headerTitle: title };
     };
     // TODO 由于应用端暂不支持搜索，所以先不放开搜索框
     return { ...getToolbarOrTitle(), ...getSearch(), search: false };
   };
+
   /** 获取表格选中方式 */
   getRowSelection = ({ rowCheckType, checkedRowsStyle }) => {
     const result = { columnWidth: 20 };
@@ -121,8 +125,9 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
       result.columnWidth = 0;
     }
     return rowCheckType === "no" ? {} : { rowSelection: result };
-    //TODO 应用端的交互效果
+    // TODO 应用端的交互效果
   };
+
   getClassName = ({
     titleAlign,
     queryType,
@@ -144,17 +149,20 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
     };
     return [getCNForTitleAlign(), getCNForRowSelection()].join(" ");
   };
+
   /** 分页 */
   getPagination = ({ defaultPageSize, pageSize = defaultPageSize }) => {
-    return !defaultPageSize
-      ? false
-      : {
-          defaultPageSize,
-          pageSize,
-          pageSizeOptions: ["10", "20", "30", "40", "50", "100"],
-          //TODO total, onChange 等的实现
-        };
+    return (
+      (defaultPageSize && {
+        defaultPageSize,
+        pageSize,
+        pageSizeOptions: ["10", "20", "30", "40", "50", "100"],
+        // TODO total, onChange 等的实现
+      }) ||
+      false
+    );
   };
+
   render = (props) => {
     const {
       /** 配置的列 */

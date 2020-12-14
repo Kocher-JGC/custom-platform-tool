@@ -102,11 +102,13 @@ class PageDesignerApp extends React.Component<
   takeMeta = (options) => {
     const { pageMetadata } = this.props;
     const { metaAttr, metaRefID } = options;
-    return metaRefID
-      ? Array.isArray(metaRefID)
-        ? pick(pageMetadata[metaAttr], metaRefID)
-        : pageMetadata[metaAttr]?.[metaRefID]
-      : pageMetadata[metaAttr];
+    if (metaRefID) {
+      if (Array.isArray(metaRefID)) {
+        return pick(pageMetadata[metaAttr], metaRefID);
+      }
+      return pageMetadata[metaAttr]?.[metaRefID];
+    }
+    return pageMetadata[metaAttr];
   };
 
   changeWidgetType = (widgetType: string) => {
