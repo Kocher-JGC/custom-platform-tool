@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { Request, Response } from "express";
-import { Controller, Get, Param, Query, Req, Res, Inject, Logger } from "@nestjs/common";
+import { Controller, Get, Param, Query, Req, Res, Inject } from "@nestjs/common";
 import { pageData2IUBDSL } from "src/page-data/transform-data";
 import { getRTablesMeta } from "@src/page-data/remote";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
-import { PageDataService } from "../page-data/page-data.service";
+import { Logger } from 'winston';
+// import { PageDataService } from "../page-data/page-data.service";
 import { ReleaseAppService } from "./release-app.service";
 import config from "../../config";
 
@@ -12,7 +12,7 @@ const { mockToken } = config;
 @Controller("release-app")
 export class ReleaseAppController {
   constructor(
-    private readonly pageDataService: PageDataService,
+    // private readonly pageDataService: PageDataService,
     private readonly releaseAppService: ReleaseAppService,
     @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger
   ) {}
@@ -37,6 +37,7 @@ export class ReleaseAppController {
     @Param() { lesseeCode, applicationCode },
     @Query() { releaseId }
   ) {
+    this.logger.info(`导出应用 lesseeCode: ${lesseeCode} applicationCode: ${applicationCode}`);
     const { headers } = req;
     const {
       getPageDataFromProvider,
@@ -44,6 +45,7 @@ export class ReleaseAppController {
       generateAppConfig,
       generatePageDataJSONZip
     } = this.releaseAppService;
+    const msgPrefix = `应用编码: ${applicationCode} releaseId: 1${releaseId}`;
     if (applicationCode) {
       let link = "";
       const folderName = "data";
@@ -53,16 +55,20 @@ export class ReleaseAppController {
           { lesseeCode, applicationCode },
           headers.authorization
         );
+        this.logger.info(`${msgPrefix} 获取发布页面数据成功`);
         if (Array.isArray(pageDataRes) && pageDataRes.length > 0) {
           await generatePageDataFolder(folderName, releaseId);
+          this.logger.info(`${msgPrefix} 生成页面 json 存放文件夹`);
           await generateAppConfig(folderName, { lesseeCode, applicationCode }, releaseId);
+          this.logger.info(`${msgPrefix} 生成应用配置信息`);
           const processCtx = {
             token: mockToken,
             lessee: lesseeCode,
             app: applicationCode
           };
+          this.logger.info(`${msgPrefix} 开始生成页面文件`);
           /** 转换IUBDSL需要的上下文 */
-          const transfCtx = { 
+          const transfCtx = {
             getRemoteTableMeta: async (tableIds: string[]) => {
               return await getRTablesMeta(tableIds as any, processCtx);
             },
@@ -74,24 +80,28 @@ export class ReleaseAppController {
               releaseId,
             })
           );
+          this.logger.info(`${msgPrefix} 转换页面数据完成`);
           const result = await Promise.all(genPageFilesPromise);
-          this.printGenFileRes(result, pageDataRes); // 打印结果
+          this.printGenFileRes(result, pageDataRes, this.logger, msgPrefix); // 打印结果
+          this.logger.info(`${msgPrefix} 开始生成压缩包`);
           link = await generatePageDataJSONZip(folderName, zipName, releaseId);
+          this.logger.info(`${msgPrefix} 完成生成压缩包`);
           return res.download(link);
         }
-        // throw new Error(pageDataRes.msg || "没有页面可以发布");
-        return res.status(404).json({ msg:  `${applicationCode} 没有页面可以发布` });
+        this.logger.error(`${msgPrefix} 导出失败，没有页面可以发布`);
+        return res.status(404).json({ msg:  `${msgPrefix} 没有页面可以发布` });
       } catch (error) {
-        return res.status(500).json({ msg: `${applicationCode} ${error.message}` });
+        this.logger.error(`${msgPrefix} 导出失败`, error);
+        return res.status(500).json({ msg: `${msgPrefix} ${error.message}` });
       }
     } else {
-      return res.status(400).json({ msg: "需要参数 app" });
+      return res.status(400).json({ msg: `${msgPrefix} 需要参数 app` });
     }
   }
 
-  printGenFileRes(genResult: boolean[], pageData: any[]) {
+  printGenFileRes(genResult: boolean[], pageData: any[], logger: Logger, msgPrefix: string) {
     const res = pageData.map(({ id }, index) => ({ [id]: genResult[index] }));
-    console.log(res);
+    logger.info(`${msgPrefix} 生成页面 json 文件结果`, res);
   }
 
   async genFileFromPageData(pageData, transfCtx , { folderName, releaseId }) {

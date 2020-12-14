@@ -8,7 +8,6 @@ export default function codeEngine(code: string, options: IOptions) {
   compiler.setCode(runCode);
   if (options.identifierMapping) {
     return compiler.getCompileCode();
-  }else{
-    return runCode;
   }
+  return runCode;
 }

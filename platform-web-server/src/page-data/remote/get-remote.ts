@@ -12,7 +12,7 @@ import { genUrl } from '../utils';
      },{
         "tableId":"1330688706906038272",
         "addWithAuxTable":false
-     }  
+     }
     ]
   }
  * list获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/list
@@ -20,7 +20,8 @@ import { genUrl } from '../utils';
  * get获取 http://192.168.14.181:6090/paas/hy/7899/data/v1/tables/${tableId}
  */
 export const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promise<RemoteTable | false> => {
-  const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/${tableId}`;
+  const url = await genUrl({ lessee, app });
+  const reqUrl = `${url}/data/v1/tables/${tableId}`;
   const resData = await axios
     .get(reqUrl, {
       headers: {
@@ -32,7 +33,7 @@ export const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promi
   // console.log(data);
   if (data) {
     return data;
-  } 
+  }
   // return {
   //   err: JSON.stringify(resData.data)
   // };
@@ -40,9 +41,10 @@ export const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promi
 };
 
 export const getRTablesMeta = async (tableIds: string[], { token, lessee, app }) => {
-  const reqUrl = `${genUrl({ lessee, app })}/data/v1/tables/tableWithAux`;
+  const url = await genUrl({ lessee, app });
+  const reqUrl = `${url}/data/v1/tables/tableWithAux`;
   console.log(tableIds);
-  
+
   const resData = await axios
     .post(reqUrl, {
       tables: tableIds.map(id => ({ tableId: id, addWithAuxTable: false }))
@@ -56,6 +58,6 @@ export const getRTablesMeta = async (tableIds: string[], { token, lessee, app })
   // console.log(data);
   if (data) {
     return data;
-  } 
+  }
   return [];
 };

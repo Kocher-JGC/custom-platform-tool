@@ -16,8 +16,6 @@ import { VisualEditorState } from "./reducers/reducer";
  * TODO: 完善 state
  */
 export const mapVisualStateToProps = (state: VisualEditorState) => {
-  // return state;
-  // TODO: 未知修改
   return produce(state, (draft) => {
     /** 设置 activeEntity */
     const { selectedInfo, flatLayoutItems } = draft;
@@ -37,14 +35,14 @@ export const mapVisualDispatchToProps = (appKey) => (dispatch) => {
   if (!dispatcherCache[appKey]) {
     const tempActions = (function () {
       const obj = {};
-      for (const item in AllDispatcherActionsCopy) {
+      Object.keys(AllDispatcherActionsCopy).forEach((item) => {
         const _dispatch = AllDispatcherActionsCopy[item];
         if (typeof _dispatch === "function") {
           obj[item] = (...args) => {
             dispatch(_dispatch(...args));
           };
         }
-      }
+      });
       return obj;
     })();
 

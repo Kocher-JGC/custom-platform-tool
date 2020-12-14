@@ -6,7 +6,7 @@ export default function createSandbox(context: any, options: IOptions) {
   const sandbox = (script: string) => {
     try {
       // eslint-disable-next-line no-new-func
-      return new Function('context', `with (context) { return (function(){ return ${script}})()}`)(context);
+      return new Function('context', `with (context) { return (async function(){ return ${script}})()}`)(context);
     } catch (error) {
       return error;
     }

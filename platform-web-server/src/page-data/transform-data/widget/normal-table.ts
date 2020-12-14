@@ -33,7 +33,7 @@ const enum JoinsType{
   rightJoin = 'rightJoin',
   innerJoin = 'innerJoin',
   crossJoin = 'crossJoin',
-} 
+}
 
 /** 统计函数 */
 const enum CountFn {
@@ -50,7 +50,7 @@ const findRefRelation = (interRefRelations: InterRefRelation[], { tableIds, refT
   const validTable = Array.isArray(tableIds)
     ? ((interIds: string[]) => (rR: InterRefRelation) => interIds.includes(rR.interId))(tableIds)
     : () => false;
-  const validFields = Array.isArray(fields) 
+  const validFields = Array.isArray(fields)
     ? ((fieldsId: string[]) => (rR: InterRefRelation) => fieldsId.includes(rR.fieldId))(fields) /** TODO: 这里无法确保为fieldsId */
     : () => false;
   const refRelationArr = interRefRelations.filter((rR: InterRefRelation) => (validTable(rR) || validFields(rR)) && refTypeFilter(refType));
@@ -142,17 +142,17 @@ const genSubReadFields = (colInfo, refRel: InterRefRelation) => {
   return {
     refFieldInfo: {
       /** 引用表id 连表, 链接的字段id */
-      table: fieldId, 
+      table: fieldId,
       /** 表字段code */
-      field: refFieldCode,                  
+      field: refFieldCode,
       /** 别名为字段id+信息 */
       alias: `${fieldId}_${refInterId}_${refFieldId}`
     },
     showFieldInfo: {
       /** 引用表id */
-      table: fieldId, 
+      table: fieldId,
       /** 表字段code */
-      field: refShowFieldCode,                  
+      field: refShowFieldCode,
       /** 别名为字段id+信息 */
       alias: `${fieldId}_${refInterId}_${refShowFieldId}`
     }
@@ -160,10 +160,10 @@ const genSubReadFields = (colInfo, refRel: InterRefRelation) => {
 };
 
 const genSubRead = (refRel: InterRefRelation) => {
-  const { 
+  const {
     interCode, interId, fieldId, fieldCode,
-    refInterCode, refInterId, 
-    refFieldId, refFieldCode 
+    refInterCode, refInterId,
+    refFieldId, refFieldCode
   } = refRel;
   // const { tableCode, tableId, joinTableId, joinCode,  } = p
   return {
@@ -200,7 +200,7 @@ const genJoinsInfo = ({ readDef }) => {
 
 /**
  * 1. 生成schema
- * 2. 生成查询/组装 
+ * 2. 生成查询/组装
  * 3. 关系连表
   "fields": [
     {
@@ -251,7 +251,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     dsID: tableId, fieldID: pkField.fieldId, show: false,
     field: pkField.fieldCode, id: pkField.fieldId, desc: 'PK'
   });
-  
+
   const showColumns = columns.map((col) => {
     const { dsID, fieldID } = col;
     const ds = interMetas.find(item => item.id === dsID);
@@ -259,9 +259,9 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     const fieldInfo = ds.fields.find((item) => item.fieldId === fieldID);
     if (ds && fieldInfo) {
       readField.push({
-        table: tableId, 
-        field: fieldInfo.fieldCode,                  
-        alias: fieldID  
+        table: tableId,
+        field: fieldInfo.fieldCode,
+        alias: fieldID
       });
       if (refRel) {
         tableSchemaGenFn.push(genObjSchemaFn(col, refRel));
@@ -396,7 +396,7 @@ export const genNormanTable = (transfromCtx: TransfromCtx, widgetProps) => {
   // const tableIds = ds.replace('ds.', '');
 
   // const usedColums = genTableColumns(columns, tableId);
-  
+
   // propState.columns = usedColums;
   const eventHandlers = genReadTable(transfromCtx, widgetProps, tableIds[0]);
 

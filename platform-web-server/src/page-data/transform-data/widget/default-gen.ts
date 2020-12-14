@@ -2,8 +2,8 @@ import { TransfromCtx } from "../../types/types";
 import { flowMark } from "../IUBDSL-mark";
 
 export const defaultGen = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
-  const { widgetCode } = propState;
-  const { 
+  const { widgetCode } = propState || {};
+  const {
     extralDsl: { tempAction, tempFlow, tempSchema }
   } = transfromCtx;
 
