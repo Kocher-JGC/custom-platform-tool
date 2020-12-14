@@ -1,11 +1,11 @@
-import pick from "lodash/pick";
 import { message as AntdMessage } from 'antd';
+import pick from 'lodash/pick';
 
 type RemoteDSData = {id: string, name: string, type: string, auxTable: {containAuxTable?:boolean}}
 /**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeColumnsData = (columns: any[], tableID: string): {[key:string]: PD.Column} => {
+export const takeColumnsData = (columns: any[], dsID: string): {[key:string]: PD.Column} => {
   const result = {};
   columns.forEach((column) => {
     // console.log('column', column);
@@ -17,7 +17,7 @@ export const takeColumnsData = (columns: any[], tableID: string): {[key:string]:
       fieldType: column.fieldType,
       dataType: column.dataType,
       fieldCode: column.code,
-      tableID
+      dsID
     };
   });
   return result;
@@ -31,11 +31,11 @@ export const takeTableField = (datasourceData): PD.Datasource => {
     datasourceData, [
       'name',
       'id',
-      'type',
       'moduleId',
       'code',
     ]
   ), {
+    tableType: datasourceData.type,
     columns: takeColumnsData(datasourceData.columns, datasourceData.id)
   });
   return resData;
@@ -105,11 +105,11 @@ export const takeTable = async (tableList: RemoteDSData[]) => {
 /**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeDictItems = (dictID) => {
+export const takeDictItems = (dsID) => {
   return {
-    code: { name: '编码', code: 'code', id: 'code', dictID },
-    name: { name: '名称', code: 'name', id: 'name', dictID },
-    pid: { name: '父编码', code: 'pid', id: 'pid', dictID }
+    code: { name: '编码', code: 'code', id: 'code', dsID },
+    name: { name: '名称', code: 'name', id: 'name', dsID },
+    pid: { name: '父编码', code: 'pid', id: 'pid', dsID }
   };
 };
 /**
@@ -120,13 +120,19 @@ export const takeDictField = (datasourceData:RemoteDSData) => {
     datasourceData, [
       'name',
       'id',
-      'type',
       'code',
     ]
   ), {
+    dictType: datasourceData.type, 
     columns: takeDictItems(datasourceData.id)
   });
 };
+const makeTypeForList = (list, type) => {
+  return Array.isArray(list) ? list.map(item=>({
+    ...item,
+    type
+  })) : []
+}
 export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
   // const nextState: PD.Datasources = [];
   const tableList: RemoteDSData[] = []; const nextDictList = []; const remoteDictList: RemoteDSData[] = [];
@@ -147,7 +153,9 @@ export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
     remoteData: remoteTableList
   } = await takeTable(tableList);
   return {
-    decorativeData: [...nextTableList, ...nextDictList],
+    decorativeData: [
+      ...makeTypeForList(nextTableList, 'TABLE'), 
+      ...makeTypeForList(nextDictList, 'DICT')],
     remoteData: [...remoteTableList, ...remoteDictList]
   };
 };

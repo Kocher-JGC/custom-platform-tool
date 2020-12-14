@@ -116,14 +116,14 @@ export function pageMetadataReducer(
             draft[metaAttr] = {};
           }
 
-          if(changeData.type === 'create' || changeData.type === 'create/rm') {
+          if(changeData.type === 'create' || changeData.type === 'create&rm') {
             /** 创建新 meta 或删除旧 meta */
             const {
               data, metaID, relyID
               // data, datas, metaAttr, metaID, rmMetaID, replace, relyID
             } = changeData;
 
-            if(changeData.type === 'create/rm') {
+            if(changeData.type === 'create&rm') {
               /** 创建新 meta 并删除旧 meta */
               const { rmMetaID } = changeData;
               Reflect.deleteProperty(draft[metaAttr], rmMetaID);
@@ -174,6 +174,14 @@ export function pageMetadataReducer(
             Reflect.deleteProperty(draft[metaAttr], rmMetaID);
           }
 
+          if(changeData.type === 'create/batch&rm/batch') {
+            const {rmMetaIDList, datas} = changeData;
+            draft[metaAttr] = datas;
+            Array.isArray(rmMetaIDList) && rmMetaIDList.forEach(rmMetaID => {
+              Reflect.deleteProperty(draft[metaAttr], rmMetaID);
+            })
+          }
+
           // switch (type) {
           //   case 'create':
           //     const {
@@ -198,7 +206,7 @@ export function pageMetadataReducer(
           //   case 'rm':
           //     Reflect.deleteProperty(draft[metaAttr], rmMetaID);
           //     break;
-          //   case 'create/rm':
+          //   case 'create&rm':
               
           //     break;
           //   case 'update':
