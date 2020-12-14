@@ -42,7 +42,7 @@ class MouseTracker extends React.Component {
 }
 ```
 
-当光标在屏幕上移动时，组件在 <p> 中显示其（x，y）坐标。
+当光标在屏幕上移动时，组件在 `<p>` 中显示其（x，y）坐标。
 
 现在的问题是：我们如何在另一个组件中复用这个行为？换个说法，若另一个组件需要知道鼠标位置，我们能否封装这一行为，以便轻松地与其他组件共享它？？
 
@@ -245,7 +245,9 @@ function withMouse(Component) {
   dragableItemWrapper={({
     children
   }) => {
-    // 在这里做一个钩子，可以在让每一个平台组件在渲染前，包装一层 draggable 的属性，可以根据实际业务来使用
+    // 在这里做一个钩子
+    // 可以在让每一个平台组件在渲染前，配置端可以包装一层 draggable 的属性
+    // 应用端可以根据实际业务来使用
     return (
       <div draggable={true}>
         {children}
