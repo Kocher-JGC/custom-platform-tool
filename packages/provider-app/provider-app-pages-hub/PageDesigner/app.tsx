@@ -83,7 +83,8 @@ class PageDesignerApp extends React.Component<
       entityID: activeEntityID,
       forEachCalllback: (metaID) => {
         if (Array.isArray(metaID)) {
-          returnMetaIDs.push.apply(returnMetaIDs, metaID);
+          const newArray: string[] = [];
+          newArray.push.apply(returnMetaIDs, metaID);
         } else {
           returnMetaIDs.push(metaID);
         }
