@@ -348,7 +348,7 @@ export class TableDSHelperComp extends React.Component<
     const { datasourceMeta } = this.state;
     // console.log(datasourceMeta);
     // 选项数据源的引用
-    const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
+    const DSOptionsRef = editingWidgetState[whichAttr] as string[] | undefined;
 
     const dsBinder = (
       <div
@@ -370,7 +370,19 @@ export class TableDSHelperComp extends React.Component<
                 close();
                 return;
               }
-
+              if (DSOptionsRef && DSOptionsRef[0] !== interDatasources[0].id) {
+                this.setState(
+                  {
+                    usingColumns: [],
+                  },
+                  () => {
+                    changeEntityState({
+                      attr: "columns",
+                      value: [],
+                    });
+                  }
+                );
+              }
               close();
               const nextMetaID = changePageMeta({
                 type: "create/batch&rm/batch",
