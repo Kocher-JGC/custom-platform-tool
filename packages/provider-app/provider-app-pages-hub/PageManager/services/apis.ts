@@ -44,7 +44,7 @@ export async function queryMenusListService(params) {
  */
 export async function releasePageService(menuIds?: string[], pageInfoIds?: string[]) {
   return await $R_P.post({
-    url: `/page/v1/pages/publishing`,
+    url: `/page/v1/publishing/pages`,
     data: { menuIds, pageInfoIds }
   });
 }
