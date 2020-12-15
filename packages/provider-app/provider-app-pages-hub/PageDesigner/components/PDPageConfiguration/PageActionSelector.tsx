@@ -1,50 +1,59 @@
-import React from 'react';
-import { Table, Select, Input, Form, Button, message as AntMessage } from 'antd';
+import React from "react";
+import {
+  Table,
+  Select,
+  Input,
+  Form,
+  Button,
+  message as AntMessage,
+} from "antd";
 import { CloseModal, ShowModal } from "@infra/ui";
-import { nanoid } from 'nanoid';
-import { OpenLink } from './OpenLink';
-import { DisplayControl } from './DisplayControl';
-import { SubmitData } from './SubmitData';
-import { FormInstance } from 'antd/lib/form';
-import { ChangeVariables } from './ChangeVariables';
-import { CheckCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { ActionsMeta as BasicActionsMeta } from '@engine/visual-editor/data-structure';
-import { ReadTableWidget } from './ReadTableWidget';
-import { WriteTableWidget } from './WriteTableWidget';
-
+import { nanoid } from "nanoid";
+import { FormInstance } from "antd/lib/form";
+import { CheckCircleOutlined, DeleteOutlined } from "@ant-design/icons";
+import { ActionsMeta as BasicActionsMeta } from "@engine/visual-editor/data-structure";
+import { OpenLink } from "./OpenLink";
+import { DisplayControl } from "./DisplayControl";
+import { SubmitData } from "./SubmitData";
+import { ChangeVariables } from "./ChangeVariables";
+import { ReadTableWidget } from "./ReadTableWidget";
+import { WriteTableWidget } from "./WriteTableWidget";
+import { ChooseData } from "./ChooseData";
 
 export interface IProps {
-  flatLayoutItems
-  pageMetadata
-  platformCtx
+  flatLayoutItems;
+  pageMetadata;
+  platformCtx;
 }
 
-type IdActionsMeta = { id: string }
-type ActionsMeta = IdActionsMeta & BasicActionsMeta
+type IdActionsMeta = { id: string };
+type ActionsMeta = IdActionsMeta & BasicActionsMeta;
 export interface IState {
-  list: ActionsMeta[]
-  listForShow: ActionsMeta[]
-  maxIndex: number
+  list: ActionsMeta[];
+  listForShow: ActionsMeta[];
+  maxIndex: number;
 }
-type InitActions = () => {[key: string]: ActionsMeta}
+type InitActions = () => { [key: string]: ActionsMeta };
 export class PageActionSelector extends React.Component<IProps, IState> {
   state: IState = {
     list: [],
     listForShow: [],
-    maxIndex: -1
-  }
+    maxIndex: -1,
+  };
+
   listFormRef = React.createRef<FormInstance>();
+
   searchFormRef = React.createRef<FormInstance>();
 
-
-  componentDidMount(){
+  componentDidMount() {
     /** 初始化动作列表 */
     const list = this.initList();
-    const maxIndex = list.length > 0 ? this.getOrderById(list[0]?.id) : this.state.maxIndex;
+    const maxIndex =
+      list.length > 0 ? this.getOrderById(list[0]?.id) : this.state.maxIndex;
     this.setState({
       list,
       listForShow: list,
-      maxIndex
+      maxIndex,
     });
     this.listFormRef.current?.setFieldsValue({ list });
   }
@@ -55,183 +64,200 @@ export class PageActionSelector extends React.Component<IProps, IState> {
   initActions: InitActions = () => {
     const { actions } = this.props.pageMetadata;
     return actions;
-  }
+  };
 
   /**
    * 初始化动作列表
    */
-  initList = ():ActionsMeta[] => {
-    const actions  = this.initActions();
-    
+  initList = (): ActionsMeta[] => {
+    const actions = this.initActions();
+
     const list: {
-      order: number,
-      data: ActionsMeta
+      order: number;
+      data: ActionsMeta;
     }[] = [];
 
-    for(const id in actions){
+    for (const id in actions) {
       const data = actions[id];
       const order = this.getOrderById(id);
       list.push({ order, data: { ...data, id } });
     }
-    return list.sort((a,b)=>b.order-a.order).map(item=>item.data);
-  }
+    return list.sort((a, b) => b.order - a.order).map((item) => item.data);
+  };
 
   /**
    * 获取 唯一标识 中隐藏的索引值
-   * @param id 
+   * @param id
    */
   getOrderById = (id: string): number => {
-    if(!id) return -1;
-    return Number(id.split('.')[1])-0;
-  }
+    if (!id) return -1;
+    return Number(id.split(".")[1]) - 0;
+  };
 
   /**
    * 生成动作唯一标识
-   * @param index 
+   * @param index
    */
   newActionId = (index: number): string => {
     return `act.${index}.${nanoid(8)}`;
-  }
+  };
 
   /**
    * 现有支持的动作类型列表
    */
   getTypeList = () => {
     return [
-      { label: '打开链接', value: 'openPage', key: 'openPage' },
-      { label: '刷新控件（未实现）', value: 'refreshControl', key: 'refreshControl' },
-      { label: '赋值给变量', value: 'changeVariables', key: 'changeVariables' },
-      { label: '数据提交', value: 'submitData', key: 'submitData' },
-      { label: '显示隐藏', value: 'displayControl', key: 'displayControl' },
-      { label: '刷新页面', value: 'refreshPage', key: 'refreshPage' },
-      { label: '关闭页面', value: 'closePage', key: 'closePage' },
-      { label: '整表读取', value: 'readFormData', key: 'readFormData' },
-      { label: '整表回写', value: 'writeFormData', key: 'writeFormData' },
-      { label: '表格查询', value: 'readTableData', key: 'readTableData' },
-      { label: '表格回写', value: 'writeTableData', key: 'writeTableData' },
+      { label: "打开链接", value: "openPage", key: "openPage" },
+      {
+        label: "刷新控件（未实现）",
+        value: "refreshControl",
+        key: "refreshControl",
+      },
+      { label: "赋值给变量", value: "changeVariables", key: "changeVariables" },
+      { label: "数据提交", value: "submitData", key: "submitData" },
+      { label: "数据选择", value: "chooseData", key: "chooseData" },
+      { label: "显示隐藏", value: "displayControl", key: "displayControl" },
+      { label: "刷新页面", value: "refreshPage", key: "refreshPage" },
+      { label: "关闭页面", value: "closePage", key: "closePage" },
+      { label: "整表读取", value: "readFormData", key: "readFormData" },
+      { label: "整表回写", value: "writeFormData", key: "writeFormData" },
+      { label: "表格查询", value: "readTableData", key: "readTableData" },
+      { label: "表格回写", value: "writeTableData", key: "writeTableData" },
     ];
   };
 
   /**
    * 各动作类型的动作配置
-   * @param action 
+   * @param action
    */
   getActionConfig = (action: string) => {
     const config = {
       changeVariables: {
-        ModalContent: ChangeVariables
+        ModalContent: ChangeVariables,
       },
       openPage: {
-        ModalContent: OpenLink
+        ModalContent: OpenLink,
       },
       refreshPage: {
-        readOnly: true
+        readOnly: true,
       },
       closePage: {
-        readOnly: true
-      }, 
+        readOnly: true,
+      },
       displayControl: {
-        ModalContent: DisplayControl
+        ModalContent: DisplayControl,
       },
       submitData: {
-        ModalContent: SubmitData
+        ModalContent: SubmitData,
       },
       readFormData: {
-        readOnly: true
+        readOnly: true,
       },
       writeFormData: {
-        readOnly: true
+        readOnly: true,
       },
       writeTableData: {
-        ModalContent: WriteTableWidget
+        ModalContent: WriteTableWidget,
       },
       readTableData: {
-        ModalContent: ReadTableWidget
-      }
+        ModalContent: ReadTableWidget,
+      },
+      chooseData: {
+        ModalContent: ChooseData,
+      },
     };
     return (action && config[action]) || {};
-  }
+  };
 
   /**
    * 根据 唯一标识 获取数据位于列表中的索引
-   * @param list 
-   * @param id 
+   * @param list
+   * @param id
    */
   getIndexById = (list: ActionsMeta[], id: string): number => {
     let index = -1;
-    list.forEach((item, loopIndex)=>{
-      if(item.id === id){
+    list.forEach((item, loopIndex) => {
+      if (item.id === id) {
         index = loopIndex;
       }
     });
     return index;
-  }
+  };
 
   /**
    * 弹出弹窗提供动作配置补充
-   * @param param0 
-   * @param actionConfig 
+   * @param param0
+   * @param actionConfig
    */
-  perfectConfigInModal = ({ width, ModalContent }, actionConfig): Promise<{config, configCn}> => {
-    return new Promise((resolve, reject) => { 
+  perfectConfigInModal = (
+    { width, ModalContent },
+    actionConfig,
+    actionConfigCn
+  ): Promise<{ config; configCn }> => {
+    return new Promise((resolve, reject) => {
       const modalID = ShowModal({
-        title: '配置动作',
+        title: "配置动作",
         width: width || 900,
         children: () => {
           return (
             <div className="p-5">
               <ModalContent
                 {...this.props}
-                config = {actionConfig}
+                configCn={actionConfigCn}
+                config={actionConfig}
                 onSuccess={(config, configCn) => {
                   resolve({ config, configCn });
                   CloseModal(modalID);
                 }}
-                onCancel={()=>{
+                onCancel={() => {
                   CloseModal(modalID);
                 }}
               />
             </div>
           );
-        }
+        },
       });
     });
-  }
+  };
 
   /**
    * 根据搜索过滤展示数据
-   * @param param0 
+   * @param param0
    */
   filterListAfterSearch = ({ type, name }) => {
     const { list } = this.state;
-    return list.filter(item=>{
-      return (!name || (item.name || '').includes(name)) && (!type || item.actionType === type);
+    return list.filter((item) => {
+      return (
+        (!name || (item.name || "").includes(name)) &&
+        (!type || item.actionType === type)
+      );
     });
-  }
+  };
 
   /**
    * 根据用户输入过滤搜索框的下拉项展示
-   * @param value 
-   * @param option 
+   * @param value
+   * @param option
    */
   filterOption = (value: string, option) => {
     return option.label.toLowerCase().includes(value.toLowerCase());
-  }
+  };
+
   /**
    * 新增动作
-   * @param index 
+   * @param index
    */
   handlePlus = () => {
     const { listForShow, list, maxIndex } = this.state;
-    const newItem = { id: this.newActionId(maxIndex+1) };
+    const newItem = { id: this.newActionId(maxIndex + 1) };
     const newListForShow = [newItem, ...listForShow];
     this.setState({
       listForShow: newListForShow,
       list: [newItem, ...list],
-      maxIndex: maxIndex+1
+      maxIndex: maxIndex + 1,
     });
     this.listFormRef.current?.setFieldsValue({ list: newListForShow });
-  }
+  };
 
   handleMinus = (id) => {
     const list = this.state.list.slice();
@@ -242,15 +268,16 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     listForShow.splice(indexInListForShow, 1);
     this.setState({
       list,
-      listForShow
+      listForShow,
     });
-    this.listFormRef.current?.setFieldsValue({list: listForShow});
+    this.listFormRef.current?.setFieldsValue({ list: listForShow });
     this.props.platformCtx.meta.changePageMeta({
-      type: 'rm',
-      metaAttr: 'actions',
+      type: "rm",
+      metaAttr: "actions",
       rmMetaID: id,
     });
-  }
+  };
+
   handleSetValue = (id, data) => {
     const list = this.state.list.slice();
     const listForShow = this.state.listForShow.slice();
@@ -261,54 +288,63 @@ export class PageActionSelector extends React.Component<IProps, IState> {
       listForShow,
     });
     this.listFormRef.current?.setFieldsValue({ list: listForShow });
-  }
+  };
+
   handlePerfectActionConfig = (index, record, modalProps) => {
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
       const {
         actionType,
-        [actionType]: actionConfig
+        [actionType]: actionConfig,
+        configCn: configCnTitle,
       } = record;
-      this.perfectConfigInModal(modalProps, actionConfig ).then(({ config, configCn })=>{
-        this.handleSetValue(record.id, {
-          [actionType]: config,
-          configCn
-        });
-        resolve();
-      });
-    });    
-  }
+      this.perfectConfigInModal(modalProps, actionConfig, configCnTitle).then(
+        ({ config, configCn }) => {
+          this.handleSetValue(record.id, {
+            [actionType]: config,
+            configCn,
+          });
+          resolve();
+        }
+      );
+    });
+  };
 
   handleSearch = () => {
     const searchArea = this.searchFormRef.current?.getFieldsValue();
     const listForShow = this.filterListAfterSearch(searchArea);
-    this.setState({ 
+    this.setState({
       listForShow,
     });
     this.listFormRef.current?.setFieldsValue({ list: listForShow });
-  }
+  };
 
   handleClear = () => {
     this.searchFormRef.current?.resetFields();
     this.handleSearch();
-  }
+  };
+
   handleFinish = (order, record) => {
-    const getValidateKeys = ()=>{
-      return ['name', 'actionType', 'configCn'].map(item=>['list', order, item]);
+    const getValidateKeys = () => {
+      return ["name", "actionType", "configCn"].map((item) => [
+        "list",
+        order,
+        item,
+      ]);
     };
     const validateKeys = getValidateKeys();
     const { id, ...data } = record;
-    this.listFormRef.current?.validateFields(validateKeys).then(()=>{
+    this.listFormRef.current?.validateFields(validateKeys).then(() => {
       this.props.platformCtx.meta.changePageMeta({
-        type: 'update',
-        metaAttr: 'actions',
+        type: "update",
+        metaAttr: "actions",
         metaID: id,
         data,
-        });
-      AntMessage.success('动作配置成功');
-    });    
+      });
+      AntMessage.success("动作配置成功");
+    });
   };
 
-  render () {
+  render() {
     const { listForShow } = this.state;
     return (
       <div className="page-action-selector">
@@ -317,11 +353,8 @@ export class PageActionSelector extends React.Component<IProps, IState> {
           layout="inline"
           ref={this.searchFormRef}
         >
-          <Form.Item
-            className="w-1/4"
-            name="type"
-          >
-            <Select 
+          <Form.Item className="w-1/4" name="type">
+            <Select
               placeholder="请选择动作类型"
               className="w-full"
               allowClear
@@ -330,85 +363,71 @@ export class PageActionSelector extends React.Component<IProps, IState> {
               options={this.getTypeList()}
             />
           </Form.Item>
-          
-          <Form.Item
-            className="w-1/4"
-            name="name"
-          >
-            <Input
-              placeholder="请输入动作名称"
-            />
+
+          <Form.Item className="w-1/4" name="name">
+            <Input placeholder="请输入动作名称" />
           </Form.Item>
-          <Button
-            type="primary"
-            onClick={this.handleSearch}
-          >
+          <Button type="primary" onClick={this.handleSearch}>
             搜索
           </Button>
-          <Button
-            className="ml-2"
-            onClick={this.handleClear}
-          >
+          <Button className="ml-2" onClick={this.handleClear}>
             清空
           </Button>
           <div className="flex"></div>
-          <Button
-            type="primary"
-            className="mr-2"
-            onClick={this.handlePlus}
-          >
+          <Button type="primary" className="mr-2" onClick={this.handlePlus}>
             新增
           </Button>
           {/* <Button type="primary" onClick={this.handleFinish}>
             保存
           </Button> */}
         </Form>
-        <Form 
-          ref={this.listFormRef}
-        >
+        <Form ref={this.listFormRef}>
           <Table
             size="small"
             rowKey="id"
-            dataSource = {listForShow}
+            dataSource={listForShow}
             pagination={false}
             scroll={{ y: 440 }}
             columns={[
               {
-                dataIndex: 'index',
-                title: '序号',
-                width:70,
-                align: 'center',
-                render: (_t, _r, index) => index+1
+                dataIndex: "index",
+                title: "序号",
+                width: 70,
+                align: "center",
+                render: (_t, _r, index) => index + 1,
               },
               {
-                dataIndex: 'name',
+                dataIndex: "name",
                 width: 139,
-                title: '动作名称',
-                align: 'center',
-                render: (_t, _r, _i)=>{
+                title: "动作名称",
+                align: "center",
+                render: (_t, _r, _i) => {
                   return (
                     <Form.Item
-                      name={['list', _i, 'name']}
+                      name={["list", _i, "name"]}
                       rules={[
-                        { required: true, message: '动作名称必填' },
-                        { 
+                        { required: true, message: "动作名称必填" },
+                        {
                           validator: (_, value) => {
-                            if(!value) {
+                            if (!value) {
                               return Promise.resolve();
                             }
                             const listTmpl = this.state.list;
-                            const duplicate = listTmpl.some((item,index)=>item.name===value&&item.id!==_r.id);
-                            if(duplicate){
-                              return Promise.reject('动作名称重复');
+                            const duplicate = listTmpl.some(
+                              (item, index) =>
+                                item.name === value && item.id !== _r.id
+                            );
+                            if (duplicate) {
+                              return Promise.reject(new Error("动作名称重复"));
                             }
                             return Promise.resolve();
-                          } 
-                        }
+                          },
+                        },
                       ]}
                     >
-                      <Input 
+                      <Input
                         className="w-full"
-                        onChange = {(e)=>{
+                        onChange={(e) => {
                           this.handleSetValue(_r.id, {
                             name: e.target.value,
                           });
@@ -417,128 +436,139 @@ export class PageActionSelector extends React.Component<IProps, IState> {
                       />
                     </Form.Item>
                   );
-                }
+                },
               },
               {
-                dataIndex: 'premise',
+                dataIndex: "premise",
                 width: 139,
-                title: '动作前校验',
-                align: 'center',
-                render: (_t, _r)=>{
-                  return (
-                    <Input 
-                      className="w-full cursor-pointer"
-                    />
-                  );
-                }
+                title: "动作前校验",
+                align: "center",
+                render: (_t, _r) => {
+                  return <Input className="w-full cursor-pointer" />;
+                },
               },
               {
-                dataIndex: 'actionType',
+                dataIndex: "actionType",
                 width: 136,
-                title: '动作',
-                align: 'center',
-                render: (_t, _r, _i)=>{
+                title: "动作",
+                align: "center",
+                render: (_t, _r, _i) => {
                   return (
                     <Form.Item
-                      name={['list', _i, 'actionType']}
-                      rules={[{
-                        required: true, message: '动作必填'
-                      }]}
+                      name={["list", _i, "actionType"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "动作必填",
+                        },
+                      ]}
                     >
-                      <Select 
+                      <Select
                         className="w-full"
-                        onChange={(value)=>{
+                        onChange={(value) => {
                           const recordNeedReset = {
                             actionType: value,
-                            configCn: ''
+                            configCn: "",
                           };
-                          _r.actionType && Object.assign(recordNeedReset, { [_r.actionType]: '' });
+                          _r.actionType &&
+                            Object.assign(recordNeedReset, {
+                              [_r.actionType]: "",
+                            });
                           this.handleSetValue(_r.id, recordNeedReset);
-                        }}  
+                        }}
                         allowClear
-                        showSearch                        
+                        showSearch
                         filterOption={this.filterOption}
                         value={_r.actionType}
                         options={this.getTypeList()}
                       />
                     </Form.Item>
                   );
-                }
+                },
               },
               {
-                dataIndex: 'configCn',
+                dataIndex: "configCn",
                 width: 140,
-                title: '动作配置',
-                align: 'center',
-                render: (_t, _r, _i)=>{
-                  const { ModalContent, readOnly, width } = this.getActionConfig(_r.actionType);
+                title: "动作配置",
+                align: "center",
+                render: (_t, _r, _i) => {
+                  const {
+                    ModalContent,
+                    readOnly,
+                    width,
+                  } = this.getActionConfig(_r.actionType);
                   return ModalContent ? (
                     <Form.Item
-                      name={['list', _i, 'configCn']}
+                      name={["list", _i, "configCn"]}
                       rules={[
-                        { 
+                        {
                           validator: (_, value) => {
-                            if(!ModalContent) {
+                            if (!ModalContent) {
                               return Promise.resolve();
                             }
                             const { actionType } = _r;
-                            if(actionType && !_r[actionType]) {
-                              return Promise.reject('需补充动作配置');
+                            if (actionType && !_r[actionType]) {
+                              return Promise.reject("需补充动作配置");
                             }
                             return Promise.resolve();
-                          } 
-                        }
+                          },
+                        },
                       ]}
                     >
-                      <Input 
-                        value={_r.configCn || ''}
-                        onClick={e=>{
-                          this.handlePerfectActionConfig(_i, _r, { ModalContent,width }).then(()=>{
-                            this.listFormRef.current?.validateFields([['list', _i, 'configCn']]);
+                      <Input
+                        value={_r.configCn || ""}
+                        onClick={(e) => {
+                          this.handlePerfectActionConfig(_i, _r, {
+                            ModalContent,
+                            width,
+                          }).then(() => {
+                            this.listFormRef.current?.validateFields([
+                              ["list", _i, "configCn"],
+                            ]);
                           });
                         }}
-                        title = {_r.configCn || ''}
-                        readOnly = {readOnly}
-                        className = "w-full cursor-pointer"
+                        title={_r.configCn || ""}
+                        readOnly={readOnly}
+                        className="w-full cursor-pointer"
                       />
                     </Form.Item>
                   ) : (
-                    <Input 
-                      value={_r.configCn || ''}
-                      title={_r.configCn || ''}
-                      readOnly = {readOnly}
+                    <Input
+                      value={_r.configCn || ""}
+                      title={_r.configCn || ""}
+                      readOnly={readOnly}
                       className="w-full"
                     />
                   );
-                }
+                },
               },
               {
-                dataIndex: 'condition',
+                dataIndex: "condition",
                 width: 140,
-                title: '条件',
-                align: 'center',
-                render: (_t, _r)=>{
-                  return (
-                    <Input 
-                      className="w-full cursor-pointer"
-                    />
-                  );
-                }
+                title: "条件",
+                align: "center",
+                render: (_t, _r) => {
+                  return <Input className="w-full cursor-pointer" />;
+                },
               },
               {
-                dataIndex: 'actionArea',
+                dataIndex: "actionArea",
                 width: 73,
-                title: '操作',
-                align: 'center',
-                render: (_t, _r, _i)=>{
+                title: "操作",
+                align: "center",
+                render: (_t, _r, _i) => {
                   return (
                     <>
-                      <CheckCircleOutlined 
-                        onClick = {() => {this.handleFinish(_i, _r);}}
+                      <CheckCircleOutlined
+                        onClick={() => {
+                          this.handleFinish(_i, _r);
+                        }}
                         className="mr-2 cursor-pointer ant-btn-link"
                       />
-                      <DeleteOutlined 
-                        onClick = {()=>{this.handleMinus(_r.id);}}
+                      <DeleteOutlined
+                        onClick={() => {
+                          this.handleMinus(_r.id);
+                        }}
                         className="mr-2 cursor-pointer ant-btn-link"
                       />
                       {/* 
@@ -556,13 +586,12 @@ export class PageActionSelector extends React.Component<IProps, IState> {
                     />) : null } */}
                     </>
                   );
-                }
-              }
+                },
+              },
             ]}
           />
-        </Form>            
-        
-      </div>      
+        </Form>
+      </div>
     );
   }
 }
