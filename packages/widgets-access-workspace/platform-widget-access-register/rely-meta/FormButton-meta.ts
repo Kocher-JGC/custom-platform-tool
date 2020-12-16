@@ -12,6 +12,7 @@ export const FormButtonMeta = CreateWidgetPropItemRely({
   ],
   propItemsRely: {
     propItemRefs: [
+      { propID: 'prop_widget_coding', editAttr: ['widgetCode'] },
       { propID: 'prop_title_value', editAttr: 'title', defaultValues: { title: '提交' } },
       { propID: 'prop_action_config', editAttr: ['eventRef'] },
     ]
