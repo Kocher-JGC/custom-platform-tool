@@ -197,9 +197,9 @@ const authActions = (store) => ({
     /** 判断是否登录成功的逻辑 */
     const isLogin = handleLoginSuccess(loginRes);
     if (isLogin) {
-      Call(onSuccess, form);
       const nextStore = onLoginSuccess(store, { resData: loginRes.data, originForm: form });
       store.setState(nextStore);
+      Call(onSuccess, form);
     } else {
       store.setState({
         logging: false,
