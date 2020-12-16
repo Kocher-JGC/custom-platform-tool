@@ -1,17 +1,24 @@
 .ant-pro-table {
-  &.title-align-center .ant-pro-table-list-toolbar-container .ant-pro-table-list-toolbar-left {
+  &.title-align-center
+    .ant-pro-table-list-toolbar-container
+    .ant-pro-table-list-toolbar-left {
     flex: 1 1;
     justify-content: center;
   }
-  &.title-align-right .ant-pro-table-list-toolbar-container .ant-pro-table-list-toolbar-left {
+  &.title-align-right
+    .ant-pro-table-list-toolbar-container
+    .ant-pro-table-list-toolbar-left {
     flex: 1 1;
     justify-content: flex-end;
-    padding-right: 1rem
+    padding-right: 1rem;
   }
   &.no-row-select-cell {
     .ant-table-cell.ant-table-selection-column {
-      .ant-checkbox-wrapper,.ant-radio-wrapper{
-        display:none;
+      display: none;
+      width: 0;
+      .ant-checkbox-wrapper,
+      .ant-radio-wrapper {
+        display: none;
         width: 0;
       }
     }

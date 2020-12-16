@@ -123,7 +123,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
       result.type = "checkbox";
     }
     if (checkedRowsStyle === "activeRow") {
-      result.columnWidth = 0;
+      return {};
     }
     return rowCheckType === "no" ? {} : { rowSelection: result };
     // TODO 应用端的交互效果
