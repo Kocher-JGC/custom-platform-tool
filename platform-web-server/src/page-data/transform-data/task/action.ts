@@ -1,4 +1,4 @@
-import { FieldDataType } from "@src/page-data/types";
+import { FieldDataType, SchemaType } from "@src/page-data/types";
 import { 
   interMetaMark, splitMark , schemaMark, ref2ValMark,
   apiReqMark, runCtxPayloadMark, FLOW_MARK, flowMark,
@@ -90,9 +90,11 @@ const genSubmitData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
         steps.push(stepsId);
         /** 添加ID TODO: 现在默认添加 */
         tempSchema.forEach((schema) => {
-          const { schemaId, schemaType, code } = schema;
-          if ((schemaId as string).indexOf(id) === 0 || schemaType === 'TablePK') {
-            temp[id].push({ key: code, val: schemaMark + schemaId });
+          console.log(schema);
+          
+          const { schemaId, schemaType, interId, fieldId } = schema;
+          if ((schemaId as string).indexOf(id) === 0 || schemaType === SchemaType.interPK) {
+            temp[id].push({ key: interMetaMark + interId + splitMark + fieldId, val: schemaMark + schemaId });
           }
         });
         /** 生成ref2Val */
@@ -228,14 +230,12 @@ const genWriteFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
    * 读取 schema / set/upd apb
    */
   /** 获取完值, 进行设置值的struct */
-  console.log(tempSchema);
   const tempStruct: { [str: string]: { key: string, val: string }[] } = {};
   const pkStruct: any[] = [];
-  console.log(pageFieldsToUse);
   
   pageFieldsToUse.forEach(({ tableId, fieldId, schemaRef }) => {
     if (!tempStruct[tableId]) {
-      const pkSchema = tempSchema.find((item) => item?.interId === tableId && item?.schemaType === 'TablePK');
+      const pkSchema = tempSchema.find((item) => item?.interId === tableId && item?.schemaType === SchemaType.interPK);
       if (pkSchema) {
         const struct = { key: pkSchema.code || 'id', val: pkSchema.schemaRef  };
         tempStruct[tableId] = [struct];
@@ -250,12 +250,15 @@ const genWriteFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   const ref2ValId = `ref2_${actionId}`;
   const tableIds = Object.keys(tempStruct);
   const structArr = Object.values(tempStruct);
+  
   /** 生成set获取的结构 */
   const ref2ValIds = structArr.map((struct, idx) => {
     const ref2ValTemp = ref2ValArr(`${ref2ValId}_${tableIds[idx]}`, struct);
     tempRef2Val.push(ref2ValTemp);
+    console.log(ref2ValTemp);
     return ref2ValTemp.ref2ValId;
   });
+  
   const steps: string[] = []; 
   const createList = {};
   const updList = {};
