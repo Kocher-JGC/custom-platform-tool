@@ -1,11 +1,9 @@
-import { isSchema } from './../IUBDSL-mark';
 /* eslint-disable no-shadow */
 import { notification } from 'antd';
 import React, { useEffect, useMemo } from 'react';
-// import { getAPBDSLtestUrl, SYS_MENU_BUSINESSCODE } from '@consumer-app/web-platform/src/utils/gen-url';
+import { isSchema } from "../IUBDSL-mark";
 import { DispatchMethodNameOfCondition } from './types/diapatch-module/dispatch-module-condition';
 import { useCacheState } from '../utils';
-import { APBDSLrequest as originReq } from '../utils/apb-dsl';
 import { conditionEngine } from '../condition-engine/condition-engine';
 import { transMarkValFromArr, validTransMarkValFromArr } from './utils/transform-mark-value';
 import {
@@ -50,7 +48,7 @@ const getDispatchMethod = (
 export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
   const {
     interMetaEntity,
-    /************* */
+    /** *********** */
     findEquMetadata,
     getFlowItemInfo,
     flowsRun,
@@ -221,13 +219,13 @@ export const genRuntimeCtxFn = (dslParseRes, runtimeCtx: GRCtx) => {
           deps: [actualPropValue],
           handle: () => ({ [key]: actualPropValue })
         };
-      } else {
-        console.error('错误prop绑定!');
-        return {
-          deps: [],
-          handle: () => ({ [key]: propValue })
-        };
-      }
+      } 
+      console.error('错误prop绑定!');
+      return {
+        deps: [],
+        handle: () => ({ [key]: propValue })
+      };
+      
     });
     const propp = useUU(list);
 

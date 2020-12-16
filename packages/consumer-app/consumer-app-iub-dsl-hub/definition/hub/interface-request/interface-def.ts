@@ -1,4 +1,4 @@
-import { refIdOfCondition, Ref2ValueOfArr } from "../../hub";
+import { refIdOfCondition } from "..";
 
 export const enum InterType {
   C = 'C',
@@ -15,7 +15,6 @@ export const enum InterType {
 /**
  * 接口请求的set描述, 因为struct使用的是ref, 所以未使用
  */
-type SetStruct = Ref2ValueOfArr;
 
 interface BaseInterDef {
   interType: InterType;
