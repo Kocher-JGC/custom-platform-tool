@@ -84,7 +84,7 @@ export class TableDSHelperComp extends React.Component<
       metaAttr: "dataSource",
       metaRefID: ds,
     });
-    return dsMeta;
+    return Object.values(dsMeta);
   };
 
   ColIndexInUsingColumns = (col) => {
@@ -348,7 +348,7 @@ export class TableDSHelperComp extends React.Component<
     const { datasourceMeta } = this.state;
     // console.log(datasourceMeta);
     // 选项数据源的引用
-    const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
+    const DSOptionsRef = editingWidgetState[whichAttr] as string[] | undefined;
 
     const dsBinder = (
       <div
@@ -370,10 +370,20 @@ export class TableDSHelperComp extends React.Component<
                 close();
                 return;
               }
-
+              if (DSOptionsRef && DSOptionsRef[0] !== interDatasources[0].id) {
+                this.setState(
+                  {
+                    usingColumns: [],
+                  },
+                  () => {
+                    changeEntityState({
+                      attr: "columns",
+                      value: [],
+                    });
+                  }
+                );
+              }
               close();
-              // TODO: 为了应付交付，表格只支持配置主表字段
-              interDatasources = [interDatasources[0]];
               const nextMetaID = changePageMeta({
                 type: "create/batch&rm/batch",
                 metaAttr: "dataSource",

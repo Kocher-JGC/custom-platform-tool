@@ -1,271 +1,451 @@
-import React, { useEffect } from "react";
-import { Form, Input, Select, InputNumber, Divider } from "antd";
+import React, { useEffect, useState } from "react";
+import { Radio, Button, Input, Table, message as AntMessage } from "antd";
+import { CloseModal, ShowModal, TreeSelector } from "@infra/ui";
+import { VariableItem } from "@provider-app/page-designer/platform-access";
+import pick from "lodash/pick";
+import { ModalConfigSelector } from "./ModalConfigSelector";
+import { ModalConfigEditor } from "./ModalConfigEditor";
 
-export const SHOW_TYPE_OPTIONS = [
-  {
-    key: 1,
-    value: 1,
-    label: "表格",
-  },
-  {
-    key: 2,
-    value: 2,
-    label: "树形",
-  },
-  {
-    key: 3,
-    value: 3,
-    label: "左树右表",
-  },
-  {
-    key: 4,
-    value: 4,
-    label: "自定义",
-  },
-];
-export const SELECT_TYPE_OPTIONS = [
-  {
-    key: 1,
-    value: 1,
-    label: "单选",
-  },
-  {
-    key: 2,
-    value: 2,
-    label: "多选",
-  },
-];
-/**
- * 基础弹窗配置
- */
-export const BasicForm = () => {
-  return (
-    <>
-      <Form.Item
-        className="w-1/2 float-left px-6"
-        name="title"
-        label="弹窗标题"
-        rules={[
-          { required: true, message: "弹窗标题必填" },
-          {
-            pattern: /^[\u4e00-\u9fa5a-zA-Z]{1,32}$/,
-            message: "支持32字符内的中英文",
-          },
-        ]}
-      >
-        <Input placeholder="请输入弹窗标题" />
-      </Form.Item>
-      <Form.Item
-        className="w-1/2 float-left px-6"
-        name="showType"
-        label="展示类型"
-        rules={[{ required: true, message: "展示类型必填" }]}
-      >
-        <Select placeholder="请输入展示类型" options={SHOW_TYPE_OPTIONS} />
-      </Form.Item>
-      <Form.Item
-        className="w-1/2 float-left px-6"
-        name="selectType"
-        label="选择方式"
-        rules={[{ required: true, message: "选择方式必填" }]}
-      >
-        <Select placeholder="请输入选择方式" options={SELECT_TYPE_OPTIONS} />
-      </Form.Item>
-      <Form.Item
-        noStyle
-        shouldUpdate={(prevValues, currentValues) =>
-          prevValues.selectType !== currentValues.selectType
-        }
-      >
-        {({ getFieldValue }) => {
-          return getFieldValue("selectType") === 2 ? (
-            <Form.Item
-              className="w-1/2 float-left px-6"
-              name="selectCount"
-              label="最多选择个数"
-              rules={[
-                { required: true, message: "最多选择个数必填" },
-                {
-                  pattern: /^[1-9]\d*$/,
-                  message: "支持数字",
-                },
-              ]}
-            >
-              <InputNumber placeholder="请输入最多选择个数" />
-            </Form.Item>
-          ) : null;
-        }}
-      </Form.Item>
-    </>
-  );
-};
-export const DsHelper = ({ platformCtx }) => {
-  const getInterDatasources = () => {
-    return [];
-  };
-  const getFieldOptions = (interDatasource) => {
-    const result = interDatasource.map((ds) => ({
-      title: ds.name,
-      value: ds.id,
-      children: ds.columns.map((column) => ({
-        title: column.name,
-        value: column.id,
-      })),
-    }));
-    return result;
-  };
-  return (
-    <Form.Item noStyle shouldUpdate>
-      {({ getFieldValue, setFieldsValue }) => {
-        return (
-          <Form.Item
-            className="w-1/2 float-left px-6"
-            name="dsTitle"
-            label="数据源"
-            rules={[{ required: true, message: "数据源必填" }]}
-          >
-            <Input
-              placeholder="请选择数据源"
-              readOnly
-              onClick={() => {
-                const closeModal = platformCtx.selector.openDatasourceSelector({
-                  defaultSelected: getInterDatasources(),
-                  modalType: "normal",
-                  typeArea: ["TABLE"],
-                  position: "top",
-                  single: true,
-                  onSubmit: ({ interDatasources }) => {
-                    const oldDs = getFieldValue("ds");
-                    const { id: ds, columns, name: dsTitle } =
-                      interDatasources[0] || {};
-                    setFieldsValue({
-                      dsInfo: interDatasources,
-                      dsTitle,
-                      ds,
-                      fieldOptions: getFieldOptions(interDatasources),
-                    });
-                    if (oldDs !== ds) {
-                      setFieldsValue({
-                        returnValue: [],
-                        returnText: [],
-                        showColumn: [],
-                        sortColumnInfo: null,
-                      });
-                    }
-                    // onAddDataSource(interDatasources);
-                    closeModal();
-                  },
-                });
-              }}
-            />
-          </Form.Item>
-        );
-      }}
-    </Form.Item>
-  );
-};
-export const FieldHelper = ({ name, label, mode }) => {
-  return (
-    <Form.Item
-      noStyle
-      shouldUpdate={(prevValues, currentValues) =>
-        prevValues.ds !== currentValues.ds
-      }
-    >
-      {({ getFieldValue }) => {
-        return (
-          <Form.Item
-            className="w-1/2 float-left px-6"
-            name={name}
-            label={label}
-            rules={[{ required: true, message: `${label}必填` }]}
-          >
-            <Select
-              mode={mode || undefined}
-              options={getFieldValue("fieldOptions")}
-            />
-          </Form.Item>
-        );
-      }}
-    </Form.Item>
-  );
-};
-export const SortField = (props) => {
-  return (
-    <Form.Item className="w-1/2 float-left px-6" name="title" label="排序字段">
-      <Input placeholder="暂不支持" />
-    </Form.Item>
-  );
-};
-export const ReturnText = (props) => {
-  return (
-    <Form.Item
-      noStyle
-      shouldUpdate={(prevValues, currentValues) =>
-        prevValues.ds !== currentValues.ds
-      }
-    >
-      {({ getFieldValue, setFieldsValue }) => {
-        return (
-          <Form.Item
-            className="w-1/2 float-left px-6"
-            name="returnText"
-            label="返回文本"
-            rules={[{ required: true, message: `返回文本必填` }]}
-          >
-            <Select
-              mode="multiple"
-              options={getFieldValue("fieldOptions")}
-              onChange={(valueList) => {
-                // 标记字段默认是返回文本的第一个元素
-                if (
-                  !getFieldValue("tagField") &&
-                  Array.isArray(valueList) &&
-                  valueList[0]
-                ) {
-                  setFieldsValue({ tagField: valueList[0] });
-                }
-              }}
-            />
-          </Form.Item>
-        );
-      }}
-    </Form.Item>
-  );
-};
-export const TableForm = (props) => {
-  return (
-    <>
-      <DsHelper {...props} />
-      <SortField />
-      <FieldHelper name="returnValue" label="返回值" mode="multiple" />
-      <ReturnText />
-      <FieldHelper name="tagField" label="标记字段" mode="" />
-    </>
-  );
-};
-export const ChooseData = ({
-  platformCtx,
-  config: data,
-  onSuccess,
-  onCancel,
+const VariableRenderer = ({
+  field,
+  value,
+  matchPair,
+  onChange,
+  variableList: variableListProp,
 }) => {
-  const [form] = Form.useForm();
-  useEffect(() => {
-    form.setFieldsValue(
-      data || {
-        showType: 1,
-        selectType: 1,
-        selectCount: 10,
-        fieldOptions: [],
-      }
+  // const [variableList, setVariableList] = useState(variableListProp);
+  // useEffect(() => {
+  //   if (!matchPair || Object.keys(matchPair).length === 0) {
+  //     setVariableList(variableListProp);
+  //     return;
+  //   }
+  //   setVariableList(
+  //     variableList
+  //       .slice()
+  //       .map((item) => {
+  //         const { children, ...rest } = item;
+  //         return {
+  //           ...rest,
+  //           children:
+  //             (Array.isArray(children) &&
+  //               children
+  //                 .slice()
+  //                 .filter(
+  //                   ({ value: valueLoop }) =>
+  //                     value === valueLoop ||
+  //                     !Object.values(matchPair || {}).includes(valueLoop)
+  //                 )) ||
+  //             [],
+  //         };
+  //       })
+  //       .filter((item) => item.children?.length > 0)
+  //   );
+  // }, [matchPair]);
+  const getVariableList = () => {
+    if (!matchPair || Object.keys(matchPair).length === 0) {
+      return variableListProp;
+    }
+    return variableListProp
+      .slice()
+      .map((item) => {
+        const { children, ...rest } = item;
+        return {
+          ...rest,
+          children:
+            (Array.isArray(children) &&
+              children
+                .slice()
+                .filter(
+                  ({ value: valueLoop }) =>
+                    value === valueLoop ||
+                    !Object.values(matchPair || {}).includes(valueLoop)
+                )) ||
+            [],
+        };
+      })
+      .filter((item) => item.children?.length > 0);
+  };
+  return React.useMemo(() => {
+    return (
+      <TreeSelector
+        value={value}
+        className="w-full variable-selector py-1 cursor-pointer"
+        showSearch
+        filterTreeNode={(valueFilter, treeNode) => {
+          return (
+            (treeNode?.title || "").toString().includes(valueFilter) || false
+          );
+        }}
+        onChange={(valueChanged) => {
+          if (typeof onChange === "function") {
+            onChange({ [field]: valueChanged });
+          }
+        }}
+        treeDefaultExpandAll
+        treeData={getVariableList()}
+      />
     );
+  }, [matchPair]);
+};
+type PropsVariableMatch = {
+  ds?: string;
+  fieldList?: string[];
+  matchPair?: { [key: string]: string };
+  onChange;
+  platformCtx;
+};
+type Datasource = { columnID: string; columnTitle: string }[];
+const VariableMatch = ({
+  ds,
+  fieldList,
+  matchPair,
+  onChange,
+  platformCtx,
+}: PropsVariableMatch) => {
+  const [variableList, setVariableList] = useState({});
+  const [dataSource, setDataSource] = useState<Datasource>([]);
+  useEffect(() => {
+    platformCtx.meta
+      .getVariableData(["pageInput", "system", "page"])
+      .then((res) => {
+        setVariableList(initVariableList(res));
+      });
   }, []);
+  useEffect(() => {
+    getFieldTitle(ds).then((fields) => {
+      setDataSource(
+        fieldList?.map((columnID) => ({
+          columnID,
+          columnTitle: fields[columnID],
+        })) || []
+      );
+    });
+  }, [ds]);
+  const initVariableList = (variableData) => {
+    if (!variableData) {
+      return [];
+    }
+    const constructVarList = (list: VariableItem[]) => {
+      return Array.isArray(list)
+        ? list.map((item) => constructVarItem(item))
+        : [];
+    };
+    const constructVarItem = (item: VariableItem) => {
+      const { id, title } = item;
+      return { value: id, title };
+    };
+    return [
+      {
+        title: "自定义变量",
+        value: "customed",
+        variableList: variableData.customed,
+        disabled: true,
+      },
+      {
+        title: "页面变量",
+        value: "page",
+        variableList: variableData.page,
+        disabled: true,
+      },
+      {
+        title: "系统变量",
+        value: "system",
+        variableList: variableData.system,
+        disabled: true,
+      },
+      {
+        title: "控件变量",
+        value: "widget",
+        variableList: variableData.widget,
+        disabled: true,
+      },
+      {
+        title: "输入参数变量",
+        value: "pageInput",
+        variableList: variableData.pageInput,
+        disabled: true,
+      },
+    ]
+      .filter((item) => item.variableList?.length > 0)
+      .map((item) => {
+        const { variableList: variableListChild, ...rest } = item;
+        return { ...rest, children: constructVarList(variableListChild) };
+      });
+  };
+  const getFieldTitle = (tableId): Promise<{ [key: string]: string }> => {
+    return new Promise((resolve, reject) => {
+      if (!tableId) {
+        resolve({});
+        return;
+      }
+      $R_P
+        .post({
+          url: "/data/v1/tables/tableWithAux",
+          data: {
+            tables: [
+              {
+                tableId,
+                addWithAuxTable: true,
+              },
+            ],
+          },
+        })
+        .then((res) => {
+          if (res?.code !== "00000") {
+            AntMessage.error("获取表详情数据失败，请联系技术人员");
+            return;
+          }
+          const result = {};
+          res.result.forEach((table) => {
+            table.columns.forEach((item) => {
+              result[`${table.id}.${item.id}`] = item.name;
+            });
+          });
+          resolve(result);
+        });
+    });
+  };
   return (
-    <Form form={form} id="chooseData">
-      <BasicForm />
-      <Divider />
-      <TableForm platformCtx={platformCtx} />
-    </Form>
+    <Table
+      dataSource={dataSource}
+      rowKey="columnID"
+      size="small"
+      pagination={false}
+      columns={[
+        {
+          dataIndex: "columnTitle",
+          title: "字段名称",
+          width: 400,
+          key: "columnTitle",
+        },
+        {
+          dataIndex: "columnID",
+          title: "变量",
+          width: 400,
+          key: "columnID",
+          render: (_t) => {
+            return (
+              <VariableRenderer
+                matchPair={matchPair}
+                variableList={variableList}
+                value={matchPair?.[_t] || ""}
+                field={_t}
+                onChange={onChange}
+              />
+            );
+          },
+        },
+      ]}
+    />
   );
 };
+interface Props {
+  platformCtx;
+  config;
+  onSuccess;
+  onCancel;
+}
+
+type BasicModal = {
+  title: string;
+  showType: 1 | 2 | 3 | 4;
+  selectType: 1 | 2;
+  id?: string;
+};
+type TableModal = BasicModal & {
+  ds: string;
+  sortColumnInfo: undefined;
+  returnValue: string[];
+  tagField: string;
+  showColumn: string[];
+};
+type TreeModal = BasicModal & {
+  ds: string;
+  sortColumnInfo: undefined;
+  returnValue: string[];
+  tagField: string;
+  showColumn: string;
+  showSearch: 1 | 2;
+};
+type TreeTableModal = BasicModal & {
+  treeDs: string;
+  treeSortColumnInfo: undefined;
+  treeShowColumn: string;
+  superiorColumn: string;
+  relatedSuperiorColumn: string;
+  showSearch: 1 | 2;
+  tableDs: string;
+  tableSortColumnInfo: undefined;
+  tableReturnValue: [];
+  tableShowColumn: string[];
+};
+interface State {
+  createdBy: "modalList" | "config";
+  dataChooseRange: undefined;
+  matchReturnValue: { [key: string]: string };
+  modalConfig?: TableModal | TreeModal | TreeTableModal;
+}
+export class ChooseData extends React.Component<Props> {
+  state: State = {
+    createdBy: "modalList",
+    dataChooseRange: undefined,
+    matchReturnValue: {},
+    modalConfig: undefined,
+  };
+
+  componentDidMount() {
+    this.setState(
+      pick(this.props.config, [
+        "createdBy",
+        "dataChooseRange",
+        "matchReturnValue",
+        "modalConfig",
+      ])
+    );
+  }
+
+  /** 从弹窗配置上获取对应的 ds，returnValue */
+  getReturn = (modalConfig) => {
+    const { showType, returnValue, tableReturnValue, ds, tableDs } =
+      modalConfig || {};
+    if ([1, 2].includes(showType)) {
+      return { ds, fieldList: returnValue };
+    }
+    if (showType === 3) {
+      return {
+        ds: tableDs,
+        fieldList: tableReturnValue,
+      };
+    }
+    return {};
+  };
+
+  handleClick = () => {
+    const { createdBy, modalConfig } = this.state;
+
+    const handleSuccess = (modal) => {
+      this.setState({
+        modalConfig: modal,
+        matchReturnValue: {},
+      });
+      CloseModal(modalID);
+    };
+    const modalID = ShowModal({
+      title: "配置弹窗",
+      width: 900,
+      children: () => {
+        return (
+          <div className="p-5">
+            {createdBy === "modalList" ? (
+              <ModalConfigSelector
+                selectedModal={modalConfig?.id}
+                onSuccess={handleSuccess}
+                onCancel={() => {
+                  CloseModal(modalID);
+                }}
+              />
+            ) : (
+              <ModalConfigEditor
+                platformCtx={this.props.platformCtx}
+                config={modalConfig}
+                onSuccess={handleSuccess}
+                onCancel={() => {
+                  CloseModal(modalID);
+                }}
+              />
+            )}
+          </div>
+        );
+      },
+    });
+  };
+
+  handleReset = () => {
+    this.setState({
+      createdBy: "modalList",
+      matchReturnValue: {},
+      modalConfig: undefined,
+      dataChooseRange: undefined,
+    });
+  };
+
+  handleCancel = () => {
+    this.props.onCancel();
+  };
+
+  handleSubmit = () => {
+    const { modalConfig, matchReturnValue } = this.state;
+    if (!modalConfig) {
+      AntMessage.error("请配置弹窗");
+      return;
+    }
+    const isNotEmpty = () => {
+      const arr = Object.values(matchReturnValue);
+      return arr.length > 0 && arr.some((item) => !!item);
+    };
+    const amINotEmpty = isNotEmpty();
+    if (!amINotEmpty) {
+      AntMessage.error("请配置返回值");
+      return;
+    }
+    this.props.onSuccess(this.state, modalConfig.title);
+  };
+
+  render() {
+    const { modalConfig, matchReturnValue, createdBy } = this.state;
+    return (
+      <>
+        <div className="row mb-2">
+          <span>弹窗来源：</span>
+          <Radio.Group
+            value={createdBy}
+            onChange={(e) => {
+              this.setState({
+                modalConfig: undefined,
+                matchReturnValue: {},
+                createdBy: e.target.value,
+              });
+            }}
+          >
+            <Radio value="modalList">选择模板</Radio>
+            <Radio value="config">自定义弹窗</Radio>
+          </Radio.Group>
+          <Button onClick={this.handleClick} className="ml-3">
+            {modalConfig?.title || "配置弹窗"}
+          </Button>
+        </div>
+        <div className="row flex">
+          <span>数据检索范围：</span>
+          <div className="flex">
+            <Input placeholder="暂不支持" />
+          </div>
+        </div>
+        <div>返回值匹配：</div>
+        <VariableMatch
+          {...this.getReturn(modalConfig)}
+          platformCtx={this.props.platformCtx}
+          matchPair={matchReturnValue || {}}
+          onChange={(changeArea) => {
+            this.setState({
+              matchReturnValue: {
+                ...(matchReturnValue || {}),
+                ...changeArea,
+              },
+            });
+          }}
+        />
+        <div className="float-right p-3">
+          <Button htmlType="button" onClick={this.handleReset} className="mr-2">
+            清空
+          </Button>
+          <Button type="primary" onClick={this.handleSubmit} className="mr-2">
+            确定
+          </Button>
+          <Button htmlType="button" onClick={this.handleCancel}>
+            取消
+          </Button>
+        </div>
+      </>
+    );
+  }
+}
