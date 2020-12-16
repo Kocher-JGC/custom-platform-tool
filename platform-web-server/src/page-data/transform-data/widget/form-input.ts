@@ -1,52 +1,46 @@
-import { changeStateAction, genDefalutFlow, payloadRef2ValTemplate } from "../task";
-import { TransfromCtx } from "../../types/types";
-import { splitMark, schemaMark, ref2ValMark, interMetaMark, runCtxPayloadMark } from "../IUBDSL-mark";
-import { defaultGenEvents } from "./default-gen";
+import { TransfromCtx } from "../../types";
+import { splitMark, interMetaMark } from "../IUBDSL-mark";
+import { defaultGenEvents, genWidgetErrLogFn } from "./default-gen";
+import { genChangePropsAndSetCtx } from "../tools";
 
+/**
+ * 1. 将widget的默认值给到schema, 并绑定schema
+ * 2. 生成onChange事件/动作
+ * 3. 绑定和记录field
+ */
 const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
   const { id, propState, } = widgetConf;
   let { eventRef = {} } = propState;
-  const { 
-    schema, metaSchema, extralDsl: {
-      tempAction, tempFlow, tempRef2Val, pageFieldsToUse
-    } 
+  const {
+    logger ,schema, metaSchema, extralDsl: {  pageFieldsToUse } 
   } = transfromCtx;
+  const printErrLog = genWidgetErrLogFn(logger, id);
 
   if (!eventRef) eventRef = {};
 
   /** 找到当前widget的schema描述 */
   const widgetSchema: any = Object.values(schema).find((val: any) => val?.widgetRef ===  id);
   if (widgetSchema) {
-    /**
-     * 1. 设置默认值
-     * 2. 添加 @(schema). 引用
-     * 3. 生成onChange动作 {ref2Val\action\flow}
-     */
+    /** 目前写死真实值 */
     if (widgetSchema?.struct?.realVal) {
-      const { schemaRef } = widgetSchema;
       // 设置默认值
       widgetSchema.struct.realVal.defaultVal = propState?.realVal;
-      
-      // const changeRef = `${schemaMark + schemaRef}`;
-      const changeRef = `${schemaMark + schemaRef + splitMark}realVal`;
+      widgetSchema.struct.showVal.defaultVal = propState?.realVal;
       /** 添加 @(schema). 引用 */
-      propState.realVal = changeRef;
-      /** 生成ref2Val */
-      const ref2ValMarkToUse = ref2ValMark + id;
-      const ref2Val = payloadRef2ValTemplate(id, changeRef);
-      tempRef2Val.push(ref2Val);
-      /** 更改状态的动作 */
-      tempAction.push(changeStateAction(id, ref2ValMarkToUse));
-      /** 更改状态的流程项 */
-      const defFlow = genDefalutFlow(id);
-      tempFlow.push(defFlow);
-      /** 生成onChange动作 */
+      const setTarget = widgetSchema.struct.realVal.schemaRef;
+      propState.realVal = setTarget;
+      
+      /** 生成改变props的相关内容 */
+      const { flow } = genChangePropsAndSetCtx(transfromCtx, id, setTarget);
+      /** 添加onChange事件 */
       if (eventRef?.onChange) {
         if (Array.isArray(eventRef.onChange)) {
-          eventRef.onChange.unshift(defFlow.id);
+          eventRef.onChange.unshift(flow.id);
+        } else {
+          printErrLog(JSON.stringify(eventRef.onChange));
         }
       } else {
-        eventRef.onChange = [defFlow.id];
+        eventRef.onChange = [flow.id];
       }
 
       /**
@@ -60,7 +54,7 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
           const tableId = metaSchemaInfo.tableInfo.id;
           const fieldId = metaSchemaInfo.column.id;
           propState.field = interMetaMark + tableId + splitMark + fieldId;       
-          pageFieldsToUse.push({ tableId , fieldId, schemaRef: changeRef });
+          pageFieldsToUse.push({ tableId , fieldId, schemaRef: setTarget });
         }
       }
     }

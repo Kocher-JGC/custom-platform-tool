@@ -1,35 +1,37 @@
-import { InterMeta, TransfromCtx, FieldDataType, InterMetaType, FieldMeta } from "../types";
+import { 
+  InterMeta, TransfromCtx, FieldDataType,
+  InterMetaType, FieldMeta, SchemaItemDef,
+  FoundationType, SchemaType
+} from "../types";
 import { schemaMark } from "./IUBDSL-mark";
 
-const genExtralSchemaOfField = (interId: string, field: FieldMeta) => {
+const genExtralSchemaOfField = (interId: string, field: FieldMeta): SchemaItemDef => {
   return {
     schemaId: '',
-    fieldId: field.fieldId,
     interId,
-    type: 'string',
+    fieldId: field.fieldId,
+    type: FoundationType.string,
     desc: field.name,
     schemaRef: '',
-    schemaType: '',
+    schemaType: SchemaType.interPK,
     defaultVal: '$ID()',
-    code: field.fieldCode,
   };
 };
 
-
-export const genExtralSchemaOfTablePK = (transfromCtx: TransfromCtx, interMetas: InterMeta[]) => {
+/**
+ * 生成额外的接口元数据的schema
+ * @param transfromCtx 转换上下文
+ * @param interMetas 所有接口元数据
+ */
+export const genExtralSchemaOfInterPK = (transfromCtx: TransfromCtx, interMetas: InterMeta[]) => {
   const { extralDsl: { tempSchema }, pkSchemaRef } = transfromCtx;
 
-  interMetas.forEach(({ fields, type, code, id  }) => {
+  interMetas.forEach(({ fields, type, code, id, PKField  }) => {
+    /** 非字典表生成额外的IDschema */
     if (type !== InterMetaType.DICT_TABLE) {
-      const PKField = fields.find(field => {
-        const { fieldDataType, } = field;
-        return fieldDataType === FieldDataType.PK;
-      });
-      if (PKField) {
-        const schemaId = `${id}_${PKField.fieldId}`;
-        tempSchema.push(Object.assign(genExtralSchemaOfField(id, PKField), { schemaType: 'TablePK', schemaId , schemaRef: `${schemaMark + schemaId}` }));
-        pkSchemaRef.push(`${schemaMark + schemaId}`);
-      }
+      const schemaId = `${id}_${PKField.fieldId}`;
+      tempSchema.push(Object.assign(genExtralSchemaOfField(id, PKField), { schemaId , schemaRef: `${schemaMark + schemaId}` }));
+      pkSchemaRef.push(`${schemaMark + schemaId}`);
     }
     if (type === InterMetaType.AUX_TABLE) {
       const FKField = fields.find(field => {
@@ -38,7 +40,7 @@ export const genExtralSchemaOfTablePK = (transfromCtx: TransfromCtx, interMetas:
       });
       if (FKField) {
         const schemaId = `${id}_${FKField.fieldId}`;
-        tempSchema.push(Object.assign(genExtralSchemaOfField(id, FKField), { schemaType: 'TableFK', schemaId , schemaRef: `${schemaMark + schemaId}` }));
+        tempSchema.push(Object.assign(genExtralSchemaOfField(id, FKField), { schemaType: SchemaType.interFK, schemaId , schemaRef: `${schemaMark + schemaId}` }));
         // pkSchemaRef.push(`${schemaMark + schemaId}`);
       }
     }

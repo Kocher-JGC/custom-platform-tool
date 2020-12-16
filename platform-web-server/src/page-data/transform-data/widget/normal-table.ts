@@ -1,10 +1,13 @@
+import { groupBy, cloneDeep } from 'lodash';
+// import { gen } from "../tools/APBDef-of-IUB/read";
 import { interMetaMark, schemaMark, REQ_MARK, ACT_MARK, apiReqMark, splitMark, REF2VAL_MARK, flowMark, ref2ValMark, runCtxPayloadMark } from '../IUBDSL-mark';
 import { TransfromCtx, InterRefRelation, FieldDataType } from "../../types";
 import { omitObj } from "../utils";
 import { FuncCodeOfAPB } from "../task/action-types-of-IUB";
-import { genDefalutFlow, changeStateAction, payloadRef2ValTemplate } from '../task';
+import { genDefalutFlow, changeStateAction } from '../task';
 import { flowEventHandlerTemplate } from './default-gen';
 import { genDefaultTableDelBtn } from './normal-button';
+import { ref2ValTemplateOfChangeObj } from '../tools';
 
 const omitColKey = ['colDataType', 'fieldSize', 'fieldType'];
 
@@ -57,17 +60,6 @@ const findRefRelation = (interRefRelations: InterRefRelation[], { tableIds, refT
 
   return refRelationArr;
 };
-
-interface SchemaItemDef {
-  type: string; // schemaType
-  desc: string; // rely.title  obj.alias
-  schemaRef: string; // actualKey, rely.varAttr[0].attr
-  schemaType: string; // rely.type[pageInput]
-  defaultVal?: string;
-  code: string; // rely.code obj.attr // 页面设计器的code「预留」
-  fieldRef: string; // @(interMeta).fieldId
-  struct: any;
-}
 
 const genFoundationSchemaFn = (colInfo) => {
   const { title: desc, dataIndex, fieldCode, fieldID, dsID } = colInfo;
@@ -210,7 +202,20 @@ const genJoinsInfo = ({ readDef }) => {
     },
   ]
 */
+/**
+ * 请求:
+ * 1. C、U: set、target、condition
+ * 2. R: target、queryParam
+ */
+/**
+ * 1. 确保wideget的数据模型 「值、数据源、分页、选择、等属性」(schema)
+ * 2. 确保与接口元数据的引用关系
+ * 3. 确保默认事件/动作的正确
+ */
 const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
+
+  // gen(transfromCtx, cloneDeep(widgetProps));
+
   const { 
     interMeta: { interRefRelations, interMetas }, 
     extralDsl: { tempSchema, tempRef2Val, tempAction, tempFlow, tempAPIReq }
@@ -251,7 +256,6 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
     dsID: tableId, fieldID: pkField.fieldId, show: false,
     field: pkField.fieldCode, id: pkField.fieldId, desc: 'PK'
   });
-
   const showColumns = columns.map((col) => {
     const { dsID, fieldID } = col;
     const ds = interMetas.find(item => item.id === dsID);
@@ -320,7 +324,7 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
   tempSchema.push(tableSchema);
   /** 数据写入schema */
   const setDataId = `${schemaId}_setDataSource`;
-  const ref2Val = payloadRef2ValTemplate(setDataId, schemaMark + tableDataSourceRef);
+  const ref2Val = ref2ValTemplateOfChangeObj(setDataId, schemaMark + tableDataSourceRef);
   const updStateAction = changeStateAction(setDataId, ref2ValMark + setDataId);
   const updStateFlow = genDefalutFlow(setDataId);
   tempRef2Val.push(ref2Val);
@@ -391,14 +395,16 @@ const genReadTable = (transfromCtx: TransfromCtx, widgetProps, tableId) => {
 export const genNormanTable = (transfromCtx: TransfromCtx, widgetProps) => {
   const { pkSchemaRef } = transfromCtx;
   const { id, widgetRef, propState } = widgetProps;
-  const { ds: tableIds, columns } = propState;
-  const delBtn = genDefaultTableDelBtn(transfromCtx, { table: interMetaMark + tableIds[0], condition: pkSchemaRef[0] });
+  let { ds } = propState;
+  ds = Array.isArray(ds) ? ds : [ds.replace('ds.', '')];
+  propState.ds = ds;
+  const delBtn = genDefaultTableDelBtn(transfromCtx, { table: interMetaMark + ds[0], condition: pkSchemaRef[0] });
   // const tableIds = ds.replace('ds.', '');
 
   // const usedColums = genTableColumns(columns, tableId);
 
   // propState.columns = usedColums;
-  const eventHandlers = genReadTable(transfromCtx, widgetProps, tableIds[0]);
+  const eventHandlers = genReadTable(transfromCtx, widgetProps, ds[0]);
 
   return [
     delBtn,
