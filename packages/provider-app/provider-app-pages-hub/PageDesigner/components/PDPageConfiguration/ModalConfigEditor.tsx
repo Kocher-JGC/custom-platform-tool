@@ -123,7 +123,7 @@ export const BasicDsHelper = ({ platformCtx, code, label, onChange }) => {
   };
   return (
     <Form.Item noStyle shouldUpdate>
-      {({ getFieldValue, setFieldsValue }) => {
+      {({ getFieldValue, getFieldsValue, setFieldsValue }) => {
         return (
           <Form.Item
             className="w-1/2 float-left px-6"
@@ -143,8 +143,8 @@ export const BasicDsHelper = ({ platformCtx, code, label, onChange }) => {
                   single: true,
                   onSubmit: ({ interDatasources }) => {
                     onChange(interDatasources, {
-                      getFieldValue,
                       setFieldsValue,
+                      getFieldsValue,
                     });
                     closeModal();
                   },
@@ -176,7 +176,7 @@ const getFieldOptions = (interDatasource) => {
       }))) ||
     [];
   /** 如果只有一个表，就不用专门分两层数据展示了 */
-  if (interDatasource.length === 1) {
+  if (interDatasource?.length === 1) {
     result = result[0].children;
   }
   return result;
@@ -187,8 +187,8 @@ export const TableOrTreeDsHelper = ({ platformCtx }) => {
       platformCtx={platformCtx}
       code="ds"
       label="数据源"
-      onChange={(interDataSource, { setFieldsValue, getFieldValue }) => {
-        const oldDs = getFieldValue("ds");
+      onChange={(interDataSource, { setFieldsValue, getFieldsValue }) => {
+        const { ds: oldDs } = getFieldsValue(["ds"]);
         const { id: ds, name: dsTitle } = interDataSource[0] || {};
         setFieldsValue({
           dsInfo: interDataSource,
@@ -198,13 +198,13 @@ export const TableOrTreeDsHelper = ({ platformCtx }) => {
         });
         if (oldDs !== ds) {
           setFieldsValue({
-            returnValue: [],
-            returnText: [],
-            showColumn: [],
-            tagField: "",
-            sortColumnInfo: null,
-            superiorColumn: "",
-            relatedSuperiorColumn: "",
+            returnValue: undefined,
+            // returnText: [],
+            showColumn: undefined,
+            tagField: undefined,
+            sortColumnInfo: undefined,
+            superiorColumn: undefined,
+            relatedSuperiorColumn: undefined,
           });
         }
       }}
@@ -260,7 +260,7 @@ export const TableDsHelper = ({ platformCtx }) => {
           setFieldsValue({
             tableShowColumn: undefined,
             treeSortColumnInfo: undefined,
-            tableReturnText: undefined,
+            // tableReturnText: undefined,
             tableReturnValue: undefined,
             tableTreeRelatedColumn: undefined,
           });
@@ -280,51 +280,59 @@ type PropsFieldHelper = {
     param1: { value; label },
     param2: { getFieldValue; setFieldsValue }
   ) => void;
-  fieldOptionsCode: string;
+  fieldOptions;
 };
+export class BasicFieldHelper extends React.Component {
+  render() {
+    const { name, label, multiple, fieldOptions, onChange } = this.props;
+    return (
+      <Form.Item
+        className="w-1/2 float-left px-6"
+        name={name}
+        label={label}
+        rules={[{ required: true, message: `${label}必填` }]}
+      >
+        <TreeSelect
+          allowClear
+          maxLength={1}
+          filterTreeNode={(value, treeNode) => {
+            return (treeNode?.title || "").toString().includes(value) || false;
+          }}
+          multiple={multiple || false}
+          treeData={fieldOptions || []}
+          onChange={(value, labelChange) => {
+            if (typeof onChange === "function") {
+              onChange({ value, label: labelChange });
+            }
+          }}
+        />
+      </Form.Item>
+    );
+  }
+}
 export const FieldHelper = ({
   name,
   label,
   multiple,
   onChange,
-  fieldOptionsCode,
+  fieldOptions,
 }: PropsFieldHelper) => {
   return (
     <Form.Item
-      noStyle
-      shouldUpdate={(prevValues, currentValues) =>
-        prevValues[fieldOptionsCode] !== currentValues[fieldOptionsCode]
-      }
+      className="w-1/2 float-left px-6"
+      name={name}
+      label={label}
+      rules={[{ required: true, message: `${label}必填` }]}
     >
-      {({ getFieldValue, setFieldsValue }) => {
-        return (
-          <Form.Item
-            className="w-1/2 float-left px-6"
-            name={name}
-            label={label}
-            rules={[{ required: true, message: `${label}必填` }]}
-          >
-            <TreeSelect
-              allowClear
-              filterTreeNode={(value, treeNode) => {
-                return (
-                  (treeNode?.title || "").toString().includes(value) || false
-                );
-              }}
-              multiple={multiple || false}
-              treeData={getFieldValue(fieldOptionsCode)}
-              onChange={(value, labelChange) => {
-                if (typeof onChange === "function") {
-                  onChange(
-                    { value, label: labelChange },
-                    { getFieldValue, setFieldsValue }
-                  );
-                }
-              }}
-            />
-          </Form.Item>
-        );
-      }}
+      <TreeSelect
+        allowClear
+        maxLength={1}
+        filterTreeNode={(value, treeNode) => {
+          return (treeNode?.title || "").toString().includes(value) || false;
+        }}
+        multiple={multiple || false}
+        treeData={fieldOptions || []}
+      />
     </Form.Item>
   );
 };
@@ -367,26 +375,44 @@ export const TableForm = (props) => {
   return (
     <>
       <TableOrTreeDsHelper {...props} />
-      <Form.Item name="ds" className="display-none"></Form.Item>
+      <Form.Item name="ds" className="hidden">
+        <Input />
+      </Form.Item>
+      <Form.Item name="dsInfo" className="hidden">
+        <Input />
+      </Form.Item>
       <SortField />
-      <FieldHelper
-        name="returnValue"
-        label="返回值"
-        multiple
-        fieldOptionsCode="fieldOptions"
-      />
-      <ReturnText />
-      <FieldHelper
-        name="tagField"
-        label="底部栏标记字段"
-        fieldOptionsCode="fieldOptions"
-      />
-      <FieldHelper
-        name="showColumn"
-        label="显示字段"
-        multiple
-        fieldOptionsCode="fieldOptions"
-      />
+      <Form.Item
+        noStyle
+        shouldUpdate={(prev, next) => {
+          return prev.fieldOptions !== next.fieldOptions;
+        }}
+      >
+        {({ getFieldValue }) => {
+          const fieldOptions = getFieldValue("fieldOptions");
+          return (
+            <>
+              <FieldHelper
+                name="returnValue"
+                label="返回值"
+                multiple
+                fieldOptions={fieldOptions || []}
+              />
+              <FieldHelper
+                name="tagField"
+                label="底部栏标记字段"
+                fieldOptions={fieldOptions || []}
+              />
+              <FieldHelper
+                name="showColumn"
+                label="显示字段"
+                multiple
+                fieldOptions={fieldOptions || []}
+              />
+            </>
+          );
+        }}
+      </Form.Item>
     </>
   );
 };
@@ -411,35 +437,54 @@ export const TreeForm = (props) => {
   return (
     <>
       <TableOrTreeDsHelper {...props} />
-      <Form.Item name="ds" className="display-none"></Form.Item>
+      <Form.Item name="ds" className="hidden">
+        <Input />
+      </Form.Item>
+      <Form.Item name="dsInfo" className="hidden">
+        <Input />
+      </Form.Item>
       <SortField />
-      <FieldHelper
-        name="returnValue"
-        label="返回值"
-        multiple
-        fieldOptionsCode="fieldOptions"
-      />
-      <ReturnText />
-      <FieldHelper
-        name="tagField"
-        label="底部栏标记字段"
-        fieldOptionsCode="fieldOptions"
-      />
-      <FieldHelper
-        name="showColumn"
-        label="显示字段"
-        fieldOptionsCode="fieldOptions"
-      />
-      <FieldHelper
-        name="superiorColumn"
-        label="上级字段"
-        fieldOptionsCode="fieldOptions"
-      />
-      <FieldHelper
-        name="relatedSuperiorColumn"
-        label="关联上级字段"
-        fieldOptionsCode="fieldOptions"
-      />
+      <Form.Item
+        noStyle
+        shouldUpdate={(prev, next) => {
+          return prev.fieldOptions !== next.fieldOptions;
+        }}
+      >
+        {({ getFieldValue }) => {
+          const fieldOptions = getFieldValue("fieldOptions");
+          return (
+            <>
+              <FieldHelper
+                name="returnValue"
+                label="返回值"
+                multiple
+                fieldOptions={fieldOptions || []}
+              />
+              <FieldHelper
+                name="tagField"
+                label="底部栏标记字段"
+                fieldOptions={fieldOptions || []}
+              />
+              <FieldHelper
+                name="showColumn"
+                label="显示字段"
+                fieldOptions={fieldOptions || []}
+              />
+              <FieldHelper
+                name="superiorColumn"
+                label="上级字段"
+                fieldOptions={fieldOptions || []}
+              />
+              <FieldHelper
+                name="relatedSuperiorColumn"
+                label="关联上级字段"
+                fieldOptions={fieldOptions || []}
+              />
+            </>
+          );
+        }}
+      </Form.Item>
+
       <ShowSearch />
     </>
   );
@@ -448,54 +493,93 @@ export const TreeTableForm = (props) => {
   return (
     <>
       <TreeDsHelper {...props} />
-      <Form.Item name="tableDs" className="display-none"></Form.Item>
+      <Form.Item name="treeDs" className="hidden">
+        <Input />
+      </Form.Item>
+      <Form.Item name="treeDsInfo" className="hidden">
+        <Input />
+      </Form.Item>
       <SortField />
-      <FieldHelper
-        name="treeSuperiorColumn"
-        label="上级字段"
-        fieldOptionsCode="treeFieldOptions"
-      />
-      <FieldHelper
-        name="treeRelatedSuperiorColumn"
-        label="关联上级字段"
-        fieldOptionsCode="treeFieldOptions"
-      />
-      <FieldHelper
-        name="treeReturnValue"
-        label="标识字段"
-        fieldOptionsCode="treeFieldOptions"
-      />
-      <FieldHelper
-        name="treeShowColumn"
-        label="显示字段"
-        fieldOptionsCode="treeFieldOptions"
-      />
+      <Form.Item
+        noStyle
+        shouldUpdate={(prev, next) => {
+          return prev.treeFieldOptions !== next.treeFieldOptions;
+        }}
+      >
+        {({ getFieldValue }) => {
+          const fieldOptions = getFieldValue("treeFieldOptions");
+          return (
+            <>
+              <FieldHelper
+                name="treeSuperiorColumn"
+                label="上级字段"
+                fieldOptions={fieldOptions}
+              />
+              <FieldHelper
+                name="treeRelatedSuperiorColumn"
+                label="关联上级字段"
+                fieldOptions={fieldOptions}
+              />
+              {/* <FieldHelper
+                    name="treeReturnValue"
+                    label="标识字段"
+                    fieldOptions={fieldOptions}
+                  /> */}
+              <FieldHelper
+                name="treeShowColumn"
+                label="显示字段"
+                fieldOptions={fieldOptions}
+              />
+            </>
+          );
+        }}
+      </Form.Item>
+
       <ShowSearch />
       <Divider />
       <TableDsHelper {...props} />
+      <Form.Item name="tableDs" className="hidden">
+        <Input />
+      </Form.Item>
+      <Form.Item name="tableDsInfo" className="hidden">
+        <Input />
+      </Form.Item>
       <SortField />
-      <FieldHelper
-        name="tableReturnValue"
-        label="返回值"
-        multiple
-        fieldOptionsCode="tableFieldOptions"
-      />
-      <FieldHelper
-        name="tableReturnText"
-        label="返回文本"
-        multiple
-        fieldOptionsCode="tableFieldOptions"
-      />
-      <FieldHelper
-        name="tableTreeRelatedColumn"
-        label="与树形关联的字段"
-        fieldOptionsCode="tableFieldOptions"
-      />
-      <FieldHelper
-        name="tableShowColumn"
-        label="显示字段"
-        fieldOptionsCode="tableFieldOptions"
-      />
+      <Form.Item
+        noStyle
+        shouldUpdate={(prev, next) => {
+          return prev.treeFieldOptions !== next.treeFieldOptions;
+        }}
+      >
+        {({ getFieldValue }) => {
+          const fieldOptions = getFieldValue("tableFieldOptions");
+          return (
+            <>
+              <FieldHelper
+                name="tableReturnValue"
+                label="返回值"
+                multiple
+                fieldOptions={fieldOptions}
+              />
+              {/* <FieldHelper
+                    name="tableReturnText"
+                    label="返回文本"
+                    multiple
+                fieldOptions={fieldOptions}
+                  /> */}
+              <FieldHelper
+                name="tableShowColumn"
+                label="显示字段"
+                fieldOptions={fieldOptions}
+              />
+            </>
+          );
+        }}
+      </Form.Item>
+
+      <Form.Item name="tableTreeRelatedColumn" label="与树形关联的字段">
+        <Input />
+      </Form.Item>
     </>
   );
 };
@@ -507,6 +591,7 @@ export const ModalConfigEditor = ({
 }) => {
   const [form] = Form.useForm();
   useEffect(() => {
+    console.log(data);
     form.setFieldsValue(
       data || {
         showType: 1,
@@ -515,6 +600,11 @@ export const ModalConfigEditor = ({
         fieldOptions: [],
       }
     );
+    form.setFieldsValue({
+      fieldOptions: getFieldOptions(data?.dsInfo),
+      treeFieldOptions: getFieldOptions(data?.treeDsInfo),
+      tableFieldOptions: getFieldOptions(data?.tableDsInfo),
+    });
   }, []);
   const getConfigArea = (showType) => {
     return (
@@ -547,17 +637,18 @@ export const ModalConfigEditor = ({
     const {
       ds,
       dsTitle,
+      dsInfo,
       returnValue,
-      returnText,
+      // returnText,
       tagField,
       showColumn,
     } = submitData;
-    debugger;
     return {
       ds,
       dsTitle,
+      dsInfo,
       returnValue: getArray(returnValue),
-      returnText: getArray(returnText),
+      // returnText: getArray(returnText),
       showColumn: getArray(showColumn),
       tagField: getSingleValue(tagField),
     };
@@ -567,27 +658,32 @@ export const ModalConfigEditor = ({
    */
   const getTreeSubmitData = (submitData) => {
     const commonTableData = getTableSubmitData(submitData);
-    const { superiorColumn, relatedSuperiorColumn, showSearch } = submitData;
-    return Object.assign(
-      {
-        superiorColumn: getSingleValue(superiorColumn),
-        relatedSuperiorColumn: getSingleValue(relatedSuperiorColumn),
-        showSearch: showSearch - 0,
-      },
-      commonTableData
-    );
+    const {
+      superiorColumn,
+      relatedSuperiorColumn,
+      showSearch,
+      showColumn,
+    } = submitData;
+    return Object.assign(commonTableData, {
+      showColumn: getSingleValue(showColumn),
+      superiorColumn: getSingleValue(superiorColumn),
+      relatedSuperiorColumn: getSingleValue(relatedSuperiorColumn),
+      showSearch: showSearch - 0,
+    });
   };
   const getTreeTableData = (submitData) => {
     // TODO 排序字段
     const {
       treeDs,
       treeDsTitle,
+      treeDsInfo,
       treeSuperiorColumn,
       treeRelatedSuperiorColumn,
       treeReturnValue,
       treeShowColumn,
       showSearch,
       tableDs,
+      tableDsInfo,
       tableDsTitle,
       tableReturnValue,
       tableReturnText,
@@ -597,15 +693,18 @@ export const ModalConfigEditor = ({
     return {
       treeDs,
       treeDsTitle,
+      treeDsInfo,
       tableDs,
       tableDsTitle,
+      tableDsInfo,
       treeSuperiorColumn: getSingleValue(treeSuperiorColumn),
       treeRelatedSuperiorColumn: getSingleValue(treeRelatedSuperiorColumn),
       treeReturnValue: getSingleValue(treeReturnValue),
       treeShowColumn: getSingleValue(treeShowColumn),
       showSearch: showSearch - 0,
       tableReturnValue: getArray(tableReturnValue),
-      tableReturnText: getArray(tableReturnText),
+      // tableReturnText: getArray(tableReturnText),
+      tableTreeRelatedColumn,
       tableShowColumn: getArray(tableShowColumn),
     };
   };

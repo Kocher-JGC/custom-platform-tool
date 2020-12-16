@@ -259,6 +259,13 @@ export const ModalConfigSelector = ({ selectedModal, onSuccess, onCancel }) => {
       );
     });
   };
+  /** 为弹窗的数据进行 表唯一标识 装饰 */
+  const decorateColumnWithDs = (column, ds) => {
+    if (Array.isArray(column)) {
+      return column.map((item) => `${ds}.${item}`);
+    }
+    return `${ds}.${column}`;
+  };
   const getTablePopDetail = (data) => {
     const {
       datasource,
@@ -271,10 +278,10 @@ export const ModalConfigSelector = ({ selectedModal, onSuccess, onCancel }) => {
     return {
       ds: datasource,
       dsType: datasourceType,
-      returnValue: returnValue.split(","),
-      returnText: returnText.split(","),
+      returnValue: decorateColumnWithDs(returnValue.split(","), datasource),
+      returnText: decorateColumnWithDs(returnText.split(","), datasource),
       sortColumnInfo,
-      showColumn: showColumn.split(","),
+      showColumn: decorateColumnWithDs(showColumn.split(","), datasource),
     };
   };
   const getTreePopDetail = (data) => {
@@ -292,12 +299,18 @@ export const ModalConfigSelector = ({ selectedModal, onSuccess, onCancel }) => {
     return {
       ds: datasource,
       dsType: datasourceType,
-      returnValue: returnValue.split(","),
-      returnText: returnText.split(","),
+      returnValue: decorateColumnWithDs(returnValue.split(","), datasource),
+      returnText: decorateColumnWithDs(returnText.split(","), datasource),
       sortColumnInfo,
-      showColumn: showColumn.split(",")[0],
-      superiorColumn: superiorColumn.split(",")[0],
-      relatedSuperiorColumn: relatedSuperiorColumn.split(",")[0],
+      showColumn: decorateColumnWithDs(showColumn.split(",")[0], datasource),
+      superiorColumn: decorateColumnWithDs(
+        superiorColumn.split(",")[0],
+        datasource
+      ),
+      relatedSuperiorColumn: decorateColumnWithDs(
+        relatedSuperiorColumn.split(",")[0],
+        datasource
+      ),
       showSearch: showSearch - 0,
     };
   };
@@ -322,16 +335,34 @@ export const ModalConfigSelector = ({ selectedModal, onSuccess, onCancel }) => {
       treeDs: treeDatasource,
       treeDsType: treeDatasourceType,
       treeSortColumnInfo,
-      treeShowColumn: treeShowColumn.split(",")[0],
-      treeSuperiorColumn: treeSuperiorColumn.split(",")[0],
-      treeRelatedSuperiorColumn: treeRelatedSuperiorColumn.split(",")[0],
+      treeShowColumn: decorateColumnWithDs(
+        treeShowColumn.split(",")[0],
+        treeDatasource
+      ),
+      treeSuperiorColumn: decorateColumnWithDs(
+        treeSuperiorColumn.split(",")[0],
+        treeDatasource
+      ),
+      treeRelatedSuperiorColumn: decorateColumnWithDs(
+        treeRelatedSuperiorColumn.split(",")[0],
+        treeDatasource
+      ),
       showSearch: showSearch - 0,
       tableDs: tableDatasource,
       tableDsType: tableDatasourceType,
-      tableReturnValue: tableReturnValue.split(","),
-      tableReturnText: tableReturnText.split(","),
+      tableReturnValue: decorateColumnWithDs(
+        tableReturnValue.split(","),
+        tableDatasource
+      ),
+      tableReturnText: decorateColumnWithDs(
+        tableReturnText.split(","),
+        tableDatasource
+      ),
       tableSortColumnInfo,
-      tableShowColumn: tableShowColumn.split(","),
+      tableShowColumn: decorateColumnWithDs(
+        tableShowColumn.split(","),
+        tableDatasource
+      ),
       tableTreeRelatedColumn,
     };
   };
