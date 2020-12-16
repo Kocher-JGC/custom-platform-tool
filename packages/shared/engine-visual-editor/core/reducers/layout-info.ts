@@ -1,8 +1,6 @@
 import update from 'immutability-helper';
 import produce from 'immer';
-import at from 'lodash/at';
 import { mergeDeep } from '@infra/utils/tools';
-import { ElemNestingInfo } from '@engine/layout-renderer';
 import { LayoutInfoActionReducerState, FlatLayoutItems } from "../../data-structure";
 import {
   ADD_ENTITY, SET_LAYOUT_STATE, DEL_ENTITY,
@@ -20,8 +18,7 @@ import {
   AddTempEntityAction,
   ADD_TEMP_ENTITY
 } from '../actions';
-import { getItemFromNestingItemsByBody } from '../utils';
-import { TEMP_ENTITY_ID } from '../const';
+import { getItemFromNestingItemsByBody, setItem2NestingArr, TEMP_ENTITY_ID } from '../../utils';
 
 /**
  * action types
@@ -37,99 +34,102 @@ export type LayoutInfoActionReducerAction =
   AddTempEntityAction |
   InitAppAction
 
-interface SetItem2NestingArrOptions {
-  addItem?
-  spliceCount: number
-}
+// interface SetItem2NestingArrOptions {
+//   addItem?
+//   spliceCount: number
+// }
+
+// /**
+//  * 设置嵌套数组
+//  * @param array
+//  * @param nestingInfo
+//  * @param param2
+//  */
+// function setItem2NestingArr(array: any[], nestingInfo: ElemNestingInfo, {
+//   addItem,
+//   spliceCount = 0
+// }: SetItem2NestingArrOptions) {
+//   const _nestingInfo = [...nestingInfo];
+//   const targetAddPosition = _nestingInfo.pop() as number;
+//   if (_nestingInfo.length === 0) {
+//     const spliceParams = [targetAddPosition, spliceCount];
+//     if (addItem) {
+//       spliceParams.push(addItem);
+//     }
+//     Array.prototype.splice.apply(array, spliceParams);
+//   } else {
+//     const recursive = (currDiveIdx) => {
+//       const currNestIdx = _nestingInfo[currDiveIdx];
+//       const nextNestIdx = _nestingInfo[currDiveIdx + 1];
+//       if (typeof nextNestIdx === 'undefined') {
+//         // 取最后一个嵌套位置
+//         if (!array[currNestIdx]) {
+//           return console.log(`没有节点 ${_nestingInfo}`);
+//         }
+//         if (!array[currNestIdx]?.body) {
+//           array[currNestIdx].body = [];
+//         }
+//         const _spliceParams = [targetAddPosition, spliceCount];
+//         if (addItem) {
+//           _spliceParams.push(addItem);
+//         }
+//         Array.prototype.splice.apply(array[currNestIdx].body, _spliceParams);
+//       } else {
+//         recursive(currDiveIdx + 1);
+//       }
+//     };
+//     recursive(0);
+//   }
+
+//   return array;
+// }
+
+// /**
+//  * 嵌套数组中的元素交换
+//  */
+// const swapItemInNestArray = (nestArray, sourceIdx, targetIdx) => {
+//   const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
+//   const swapItemNestIdxStr = `[${targetIdx.join('][')}]`;
+//   const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
+//   const swapTarTempItem = at(nestArray, [swapItemNestIdxStr]);
+
+//   setItem2NestingArr(nestArray, targetIdx, {
+//     addItem: swapSrcTempItem[0],
+//     spliceCount: 1
+//   });
+
+//   setItem2NestingArr(nestArray, sourceIdx, {
+//     addItem: swapTarTempItem[0],
+//     spliceCount: 1
+//   });
+
+//   return nestArray;
+// };
+
+// /**
+//  * 将元素推入嵌套数组中
+//  */
+// const putItemInNestArray = (nestArray, sourceIdx, targetIdx, putIdx) => {
+//   const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
+//   const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
+
+//   setItem2NestingArr(nestArray, sourceIdx, {
+//     spliceCount: 1
+//   });
+
+//   setItem2NestingArr(nestArray, [...targetIdx, putIdx], {
+//     addItem: swapSrcTempItem[0],
+//     spliceCount: 0
+//   });
+
+//   return nestArray;
+// };
 
 /**
- * 设置嵌套数组
- * @param array
- * @param nestingInfo
- * @param param2
+ * 清楚临时的 entity
  */
-function setItem2NestingArr(array: any[], nestingInfo: ElemNestingInfo, {
-  addItem,
-  spliceCount = 0
-}: SetItem2NestingArrOptions) {
-  const _nestingInfo = [...nestingInfo];
-  const targetAddPosition = _nestingInfo.pop() as number;
-  if (_nestingInfo.length === 0) {
-    const spliceParams = [targetAddPosition, spliceCount];
-    if (addItem) {
-      spliceParams.push(addItem);
-    }
-    Array.prototype.splice.apply(array, spliceParams);
-  } else {
-    const recursive = (currDiveIdx) => {
-      const currNestIdx = _nestingInfo[currDiveIdx];
-      const nextNestIdx = _nestingInfo[currDiveIdx + 1];
-      if (typeof nextNestIdx === 'undefined') {
-        // 取最后一个嵌套位置
-        if (!array[currNestIdx]) {
-          return console.log(`没有节点 ${_nestingInfo}`);
-        }
-        if (!array[currNestIdx]?.body) {
-          array[currNestIdx].body = [];
-        }
-        const _spliceParams = [targetAddPosition, spliceCount];
-        if (addItem) {
-          _spliceParams.push(addItem);
-        }
-        Array.prototype.splice.apply(array[currNestIdx].body, _spliceParams);
-      } else {
-        recursive(currDiveIdx + 1);
-      }
-    };
-    recursive(0);
-  }
-
-  return array;
-}
-
 const clearTmplWidget = (layoutInfoState: LayoutInfoActionReducerState) => {
   return layoutInfoState.filter((item) => item._state !== TEMP_ENTITY_ID);
-};
-
-/**
- * 嵌套数组中的元素交换
- */
-const swapItemInNestArray = (nestArray, sourceIdx, targetIdx) => {
-  const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
-  const swapItemNestIdxStr = `[${targetIdx.join('][')}]`;
-  const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
-  const swapTarTempItem = at(nestArray, [swapItemNestIdxStr]);
-
-  setItem2NestingArr(nestArray, targetIdx, {
-    addItem: swapSrcTempItem[0],
-    spliceCount: 1
-  });
-
-  setItem2NestingArr(nestArray, sourceIdx, {
-    addItem: swapTarTempItem[0],
-    spliceCount: 1
-  });
-
-  return nestArray;
-};
-
-/**
- * 将元素推入嵌套数组中
- */
-const putItemInNestArray = (nestArray, sourceIdx, targetIdx, putIdx) => {
-  const sourceItemNestIdxStr = `[${sourceIdx.join('][')}]`;
-  const swapSrcTempItem = at(nestArray, [sourceItemNestIdxStr]);
-
-  setItem2NestingArr(nestArray, sourceIdx, {
-    spliceCount: 1
-  });
-
-  setItem2NestingArr(nestArray, [...targetIdx, putIdx], {
-    addItem: swapSrcTempItem[0],
-    spliceCount: 0
-  });
-
-  return nestArray;
 };
 
 /**
@@ -163,23 +163,21 @@ export const layoutInfoReducer = (
         });
         return addNextState;
       });
-    case SORTING_ENTITY:
-      return produce(state, (draft) => {
-        const { sortOptions } = action;
-        if(sortOptions.type === 'swap') {
-          const { sourceItemNestIdx, swapItemNestIdx } = sortOptions;
-          if(sourceItemNestIdx && swapItemNestIdx && sourceItemNestIdx.length === swapItemNestIdx.length) {
-            swapItemInNestArray(draft, sourceItemNestIdx, swapItemNestIdx);
-            return draft;
-          } 
-          console.error(`交换的 idx 的长度不一致，请检查调用`);
-          
-        } else {
-          const { sourceItemNestIdx, putIdx, putItemNestIdx } = sortOptions;
-          putItemInNestArray(draft, sourceItemNestIdx, putItemNestIdx, putIdx);
-
-        }
-      });
+    // case SORTING_ENTITY:
+    //   return produce(state, (draft) => {
+    //     const { sortOptions } = action;
+    //     if(sortOptions.type === 'swap') {
+    //       const { sourceItemNestIdx, swapItemNestIdx } = sortOptions;
+    //       if(sourceItemNestIdx && swapItemNestIdx && sourceItemNestIdx.length === swapItemNestIdx.length) {
+    //         swapItemInNestArray(draft, sourceItemNestIdx, swapItemNestIdx);
+    //         return draft;
+    //       }
+    //       console.error(`交换的 idx 的长度不一致，请检查调用`);
+    //     } else {
+    //       const { sourceItemNestIdx, putIdx, putItemNestIdx } = sortOptions;
+    //       putItemInNestArray(draft, sourceItemNestIdx, putItemNestIdx, putIdx);
+    //     }
+    //   });
     case SET_LAYOUT_STATE:
       const { state: _state } = action;
       return _state;
@@ -203,26 +201,26 @@ export const layoutInfoReducer = (
         const { nestingInfo } = selectedEntityInfo;
         const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
         if(!targetData) {
-          console.error(`没找到对象：`, `selectedEntityInfo:`, selectedEntityInfo, `nestingInfo:`, nestingInfo);
+          console.log(`没找到对象：`, `selectedEntityInfo:`, selectedEntityInfo, `nestingInfo:`, nestingInfo);
           return draftState;
         }
         targetData.propState = defaultEntityState;
         return draftState;
       });
       return nextStateInit;
-    case UPDATE_ENTITY_STATE:
-      return produce(state, (draftState) => {
-        const { targetEntity, formState } = action;
-        const { nestingInfo } = targetEntity;
-        const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
+      // case UPDATE_ENTITY_STATE:
+      //   return produce(state, (draftState) => {
+      //     const { targetEntity, formState } = action;
+      //     const { nestingInfo } = targetEntity;
+      //     const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
 
-        if(!targetData) {
-          console.error(`没找到对象：`, `targetEntity:`, targetEntity, `nestingInfo:`, nestingInfo);
-          return draftState;
-        }
-        targetData.propState = formState;
-        return draftState;
-      });
+    //     if(!targetData) {
+    //       console.log(`没找到对象：`, `targetEntity:`, targetEntity, `nestingInfo:`, nestingInfo);
+    //       return draftState;
+    //     }
+    //     targetData.propState = formState;
+    //     return draftState;
+    //   });
     case CHANGE_ENTITY_TYPE:
       return produce(state, (draftState) => {
         const { targetEntity: updateSInfo, widgetType } = action;
