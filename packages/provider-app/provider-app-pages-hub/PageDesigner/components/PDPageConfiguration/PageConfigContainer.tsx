@@ -13,6 +13,8 @@ export interface PageConfigContainerProps {
   platformCtx;
   pageState;
   changePageState;
+  updateEntityState;
+  delEntity;
 }
 
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (

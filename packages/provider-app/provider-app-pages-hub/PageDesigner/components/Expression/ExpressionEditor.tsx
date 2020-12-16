@@ -508,7 +508,7 @@ export const Expression: React.FC<IProps> = (props) => {
   };
 
   useEffect(() => {
-    console.log("初始值: ", props.defaultValue);
+    console.log("初始值 code: ", props.defaultValue);
     console.log("初始值 defaultVariableList: ", props.defaultVariableList);
     if (props.defaultVariableList) {
       initVariableList(transformVariableTree(props.defaultVariableList));

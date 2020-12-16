@@ -13,6 +13,7 @@ interface IFlatLayoutItem {
   };
 }
 interface IProps {
+  updateEntityState;
   flatLayoutItems: {
     [key: string]: IFlatLayoutItem;
   };
@@ -29,7 +30,7 @@ interface EditableCellProps {
   children: React.ReactNode;
   dataIndex: string;
   record: Item;
-  handleSave: (record: Item) => void;
+  handleSave: (record: Item, dataIndex: string) => void;
 }
 interface ITableItem {
   key: string;
@@ -74,7 +75,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
   useEffect(() => {
     if (editing) {
-      // inputRef.current?.focus();
+      inputRef.current?.focus();
     }
   }, [editing]);
 
@@ -87,7 +88,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
     try {
       const values = await form.validateFields();
       toggleEdit();
-      handleSave({ ...record, ...values });
+      handleSave({ ...record, ...values }, dataIndex);
     } catch (errInfo) {
       console.log("Save failed:", errInfo);
     }
@@ -148,6 +149,7 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
       align: "center",
       render: (text) => <Checkbox checked={!!text} disabled />,
     },
+    // TODO: 类型需要从标识转为中文
     {
       title: "类型",
       dataIndex: "widgetRef",
@@ -173,13 +175,13 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
       title: "事件",
       align: "center",
       render: (text, record) => (
-        <span>
+        <div style={{ lineHeight: "32px", height: 32 }}>
           <ThunderboltOutlined />
-        </span>
+        </div>
       ),
     },
   ];
-  const handleSave = (row) => {
+  const handleSave = (row, dataIndex) => {
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
@@ -188,6 +190,21 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
       ...row,
     });
     setDataSource(newData);
+    // TODO: 编辑控件属性方法需要 nestingInfo
+    const curItem = Object.values(props.flatLayoutItems).find(
+      (flatLayoutItem) => flatLayoutItem.id === row.id
+    );
+    if (props.updateEntityState && curItem) {
+      props.updateEntityState(
+        {
+          entity: curItem,
+        },
+        {
+          ...curItem?.propState,
+          [dataIndex]: row[dataIndex],
+        }
+      );
+    }
   };
 
   const initWidget = () => {
@@ -224,9 +241,10 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
     <>
       <Alert
         style={{ margin: "5px 0" }}
-        message="注意：显示，必填，只读（属性）属于 3.2"
+        message="注：显示，必填，只读，所属分组（属性）属于 3.2"
         type="info"
         showIcon
+        closable
       />
       <Table<ITableItem>
         components={{ body: { row: EditableRow, cell: EditableCell } }}

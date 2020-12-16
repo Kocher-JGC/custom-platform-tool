@@ -1,5 +1,5 @@
 import React, { useRef, useContext, useEffect, useState } from "react";
-import { Checkbox, Form, Input, Table, Alert, Select } from "antd";
+import { Checkbox, Form, Input, Table, Alert, Select, Button } from "antd";
 import { ColumnType } from "antd/lib/table";
 import { ThunderboltOutlined } from "@ant-design/icons";
 // import { PageConfigContainerProps } from "./PageConfigContainer";
@@ -13,6 +13,8 @@ interface IFlatLayoutItem {
   };
 }
 interface IProps {
+  delEntity;
+  updateEntityState;
   flatLayoutItems: {
     [key: string]: IFlatLayoutItem;
   };
@@ -29,7 +31,7 @@ interface EditableCellProps {
   children: React.ReactNode;
   dataIndex: string;
   record: Item;
-  handleSave: (record: Item) => void;
+  handleSave: (record: Item, dataIndex: string) => void;
 }
 interface ITableItem {
   key: string;
@@ -43,7 +45,6 @@ interface ITableItem {
   _show: boolean;
   _showType: string;
   _disabled: boolean;
-  _accessCode: string;
 }
 interface EditableRowProps {
   index: number;
@@ -79,7 +80,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
 
   useEffect(() => {
     if (editing) {
-      // inputRef.current?.focus();
+      inputRef.current?.focus();
     }
   }, [editing]);
 
@@ -92,7 +93,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
     try {
       const values = await form.validateFields();
       toggleEdit();
-      handleSave({ ...record, ...values });
+      handleSave({ ...record, ...values }, dataIndex);
     } catch (errInfo) {
       console.log("Save failed:", errInfo);
     }
@@ -153,7 +154,8 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
     },
     {
       title: "按钮类型",
-      dataIndex: "_type",
+      dataIndex: "widgetRef",
+      render: (text) => (text === "FormButton" ? "自定义按钮" : ""),
     },
     {
       title: "显示",
@@ -166,7 +168,7 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
       dataIndex: "_showType",
       width: 120,
       render: () => (
-        <Select style={{ width: "100%" }}>
+        <Select style={{ width: "100%" }} disabled>
           <Option value={1}>图标</Option>
           <Option value={2}>标题</Option>
           <Option value={3}>图标 + 标题</Option>
@@ -180,12 +182,14 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
       render: (text) => <Checkbox checked={!!text} disabled />,
     },
     {
-      title: "权限编码",
-      dataIndex: "_accessCode",
-    },
-    {
       title: "操作",
       align: "center",
+      render: (text) => (
+        // TODO: 删除自定义按钮
+        <Button type="link" size="small">
+          删除
+        </Button>
+      ),
     },
     {
       title: "事件",
@@ -197,7 +201,7 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
       ),
     },
   ];
-  const handleSave = (row) => {
+  const handleSave = (row, dataIndex) => {
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
@@ -206,6 +210,21 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
       ...row,
     });
     setDataSource(newData);
+    // TODO: 编辑按钮属性方法需要 nestingInfo
+    const curItem = Object.values(props.flatLayoutItems).find(
+      (flatLayoutItem) => flatLayoutItem.id === row.id
+    );
+    if (props.updateEntityState && curItem) {
+      props.updateEntityState(
+        {
+          entity: curItem,
+        },
+        {
+          ...curItem?.propState,
+          [dataIndex]: row[dataIndex],
+        }
+      );
+    }
   };
 
   const initWidget = () => {
@@ -224,11 +243,10 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
             widgetCode,
             widgetRef,
             key: id,
-
+            // TODO: 以下参数属于 3.2
             _icon: "",
             _type: "",
             _showType: "",
-            _accessCode: "",
             _show: false,
             _disabled: false,
           };
@@ -242,12 +260,13 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
 
   return (
     <>
-      {/* <Alert
+      <Alert
         style={{ margin: "5px 0" }}
-        message="注意：显示，必填，只读（属性）属于 3.2"
+        message="注：图标，显示，显示情况，禁用（属性）属于 3.2"
         type="info"
         showIcon
-      /> */}
+        closable
+      />
       <Table<ITableItem>
         components={{ body: { row: EditableRow, cell: EditableCell } }}
         bordered
