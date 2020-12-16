@@ -18,7 +18,7 @@ import {
 } from "antd";
 import { EditorFromTextArea } from "codemirror";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
-// import codeEngine from "@engine/low-code";
+import codeEngine from "@engine/low-code";
 import createSandbox from "@engine/js-sandbox";
 import { PlatformCtx } from "@platform-widget-access/spec";
 import { HY_METHODS } from "@library/expression-methods";
@@ -116,6 +116,8 @@ export const Expression: React.FC<IProps> = (props) => {
   const [defaultTextMarks, setDefaultTextMarks] = useState<
     IDefaultTextMark[] | null
   >(null);
+  /** 编辑器是否编辑过 */
+  const [edited, setEditing] = useState<boolean>(false);
   /** 编辑器下拉提示 */
   // const [hintOptions, setHintOptions] = useState<{ completeSingle: boolean; keywords: string[] }>({
   //   completeSingle: false,
@@ -368,10 +370,10 @@ export const Expression: React.FC<IProps> = (props) => {
         console.log("变量上下文: ", debugCodeValue);
         // 检查所需参数/变量是否存在
         if (checkDebugCodeContext(transformRes, debugCodeValue)) {
-          // const str = codeEngine(code, {});
-          // console.log("低代码引擎处理结果: ", str);
+          const str = codeEngine(transformRes.code, {});
+          console.log("低代码引擎处理结果: ", str);
           const sandbox = createSandbox({ ...debugCodeValue, HY }, {});
-          const res = await sandbox(transformRes.code);
+          const res = await sandbox(str);
           console.log("调试结果: ", res);
           message.success(
             `调试结果: ${typeof res === "object" ? JSON.stringify(res) : res}`
@@ -548,6 +550,9 @@ export const Expression: React.FC<IProps> = (props) => {
                 defaultValue={defaultCode || ""}
                 getEditor={(curEditor) => setEditor(curEditor)}
                 ready={onReady}
+                onChange={() => {
+                  setEditing(true);
+                }}
               />
             ) : (
               ""
@@ -697,7 +702,7 @@ export const Expression: React.FC<IProps> = (props) => {
           <Button
             type="primary"
             onClick={
-              !operationResult || !operationResult.success
+              edited && (!operationResult || !operationResult.success)
                 ? checkSubmit
                 : onSubmit
             }
