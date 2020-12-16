@@ -1,3 +1,5 @@
+import { RelationType } from "./interface";
+
 export const enum TableType {
   TABLE = 'TABLE', // (普通表) 
   TREE = 'TREE', // (树形表) 
@@ -11,11 +13,6 @@ export const enum Species {
   BIS = 'BIS', // (业务元数据) 
   SYS_TMPL = 'SYS_TMPL', // (系统元数据,允许修改) 
   BIS_TMPL = 'BIS_TMPL', // (业务元数据,禁止删除)， 
-}
-
-const enum RelationType {
-  ONE_TO_ONE = 'ONE_TO_ONE', // (一对一) 
-  MANY_TO_ONE = 'MANY_TO_ONE', // (一对多)
 }
 
 /** 字典 */
