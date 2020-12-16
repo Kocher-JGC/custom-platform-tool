@@ -1,59 +1,50 @@
-const demo = {
-  wnlmddk6: {
-    type: 'structObject', // structArray
-    interRef: "@(interMeta).1330690108524994560",
-    desc: '上级信息',
-    struct: {
-      wnlmddk6_id1: {
-        type: 'string',
-        fieldRef: "@(interMeta).1330690108524994560/1330690108566937616",
-        desc: '主键',
-      },
-    }
-  },
-};
+import { Schema, ComplexType, FoundationType, SchemaItemDef } from "../types";
+import { schemaMark, splitMark } from "./IUBDSL-mark";
 
+/**
+ * 将页面varRely数据转换成schema
+ * @param varRely 页面varRely数据
+ */
 export const varRely2Schema = (varRely) => {
-  // const keys = Object.keys(varRely);
-  const res = {};
+  const res: Schema= {};
   for (const key in varRely) {
     const rely = varRely[key];
     /** 删除var.引用 */
     const actualKey = key.replace(/^var\./, '');
     if (Array.isArray(rely?.varAttr) &&  rely.varAttr.length) {
+      /**
+       * 将varAttr生成 structObject
+       */
       res[actualKey] = {
-        type: 'structObject',
-        // type: 'string',
+        type: ComplexType.structObject,
+        schemaId: actualKey,
         desc: rely.title,
         schemaType: rely.type,
-        schemaRef: actualKey,
+        schemaRef: schemaMark + actualKey,
         widgetRef: rely.widgetRef,
-        // defaultVal: rely.realVal,
-        code: rely.code,
-        struct: rely.varAttr.reduce((res, obj) => {
-          return {
-            ...res,
-            [obj?.attr]: {
-              schemaRef: obj.attr,
+        struct: rely.varAttr?.reduce((r, obj, idx: number) => {
+          if (obj) {
+            const schemaId = obj.attr || idx;
+            r[schemaId] = {
+              schemaId,
               type: obj.type,
               desc: obj.alias,
-              code: obj.attr,
+              schemaRef: schemaMark + actualKey + splitMark + schemaId,
               defaultVal: rely.realVal,
-              fieldRef: '',
-            }
-          };
+            };
+          }
+          return r;
         }, {})
       };
     } else {
       res[actualKey] = {
-        type: 'string',
+        schemaId: actualKey,
+        type: FoundationType.string,
         desc: rely.title,
-        schemaRef: actualKey,
+        schemaRef: schemaMark + actualKey,
         schemaType: rely.type,
         widgetRef: rely.widgetRef,
         defaultVal: rely.realVal,
-        code: rely.code,
-        fieldRef: '',
       };
     }
   }

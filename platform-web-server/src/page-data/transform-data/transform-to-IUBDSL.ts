@@ -1,10 +1,11 @@
-import { TransfromCtx } from "../types";
+import { TransfromCtx, TransfCtx } from "../types";
 import { genWidgetFromPageData } from "./widget-fn";
 import { genAction } from './task';
-import { genInterMeta } from "./gen-inter-meta";
 import { varRely2Schema } from "./varRely-2-schema";
 import { event2Flows } from "./events-2-flows";
-import { genExtralSchemaOfTablePK } from "./schema";
+import { genExtralSchemaOfInterPK } from "./schema";
+import { genInterMeta } from "./interface-meta";
+import { interMetaToolInit } from "./tools";
 
 /**
  * -. 基础数据
@@ -25,11 +26,14 @@ const genIUBDSLBaseData = (pageData, contentData) => {
   };
 };
 
-export const pageData2IUBDSL = async (pageData, transfCtx) => {
+export const pageData2IUBDSL = async (pageData, transfCtx: TransfCtx) => {
+  const { logger, getRemoteTableMeta } = transfCtx;
 
   const { pageContent, dataSources, businessCodes } = pageData;
   const contentData = JSON.parse(pageContent);
   const transfromCtx: TransfromCtx = {
+    logger,
+    interMetaT!: null,
     extralDsl: { 
       tempAction: [], 
       tempFlow: [], 
@@ -56,17 +60,18 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
   
   /** 页面widget */
   /** 生成元数据 */
-  const interMeta = await genInterMeta(dataSource, transfCtx);
+  const interMeta = await genInterMeta(dataSource, getRemoteTableMeta);
+  /** 添加元数据处理工具 */
+  transfromCtx.interMetaT =  interMetaToolInit(interMeta);
   const { interMetas, interRefRelations } = interMeta;
   transfromCtx.interMeta = interMeta;
-  // console.log(interMeta);
+  /** 额外逻辑 schema */
+  genExtralSchemaOfInterPK(transfromCtx, interMetas);
+  
+  // console.log( interMeta);
   console.log('------------------ inter metadata -----------------');
   
-  /** 额外逻辑 schema */
-  genExtralSchemaOfTablePK(transfromCtx, interMetas);
-  
-  /** 转换schema */
-  // const tranSchema = genSchema(schema);
+  /** varRely转换schema */
   const transfSchema = varRely2Schema(varRely);
   transfromCtx.schema = transfSchema;
   transfromCtx.metaSchema = schema;
@@ -74,9 +79,6 @@ export const pageData2IUBDSL = async (pageData, transfCtx) => {
   /** 生成widget数据 */
   const widgets = genWidgetFromPageData(transfromCtx, contentData.content);
   // console.log(widgets);
-
-
-  /** varRely处理 */
 
   /** event处理/action是连着处理的, 有依赖关系 */
   /**  生成动作  */

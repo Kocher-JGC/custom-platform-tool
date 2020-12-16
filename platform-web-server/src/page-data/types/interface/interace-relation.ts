@@ -29,6 +29,8 @@ export const enum RelationType {
  */
 export interface InterRefRelation {
   refType: RefType;
+  /** 正向引用仅有一对一, 反向有一对多 */
+  relationType: RelationType;
   /** 接口引用关系的id「默认等于interId/fieldId」 */
   refId: string; // 1330690108524994560/1330692953483649025
   /** ---------------------------------- */

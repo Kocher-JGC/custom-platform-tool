@@ -1,5 +1,6 @@
 import React from "react";
 import { ShowModal } from "@deer-ui/core/modal";
+import { OpenType, PageType } from "@iub-dsl/definition";
 import { ActionDoFn } from "../types";
 import {
   DispatchModuleName,
@@ -7,7 +8,6 @@ import {
   RunTimeCtxToBusiness,
 } from "../../runtime/types";
 import { isRunCtx, pickSchemaMark, isSchema } from "../../IUBDSL-mark";
-import { OpenType, PageType } from "@iub-dsl/definition";
 
 /**
  * OpenType 如何打开这个页面
@@ -26,7 +26,12 @@ export const openPageAction = (conf, baseActionInfo): ActionDoFn => {
   return async (IUBCtx: RunTimeCtxToBusiness) => {
     const { PageRenderer, pkSchemaRef, asyncDispatchOfIUBEngine } = IUBCtx;
     const data = (await paramMatch(IUBCtx)) || {};
-    if (Array.isArray(pkSchemaRef)) {
+    /** 额外添加的数据, 仅有修改时候才添加 */
+    const pageStatus = data["@(schema).pageInput.0.mode"];
+    if (
+      Array.isArray(pkSchemaRef) &&
+      pageStatus === "update" /** 临时的额外逻辑 */
+    ) {
       const extraData = await asyncDispatchOfIUBEngine({
         dispatch: {
           module: DispatchModuleName.IUBStore,
@@ -42,7 +47,7 @@ export const openPageAction = (conf, baseActionInfo): ActionDoFn => {
     const hooks = {
       mounted: async ({ runTimeCtxToBusiness: subIUBCtx }) => {
         const { asyncDispatchOfIUBEngine: dispath } = subIUBCtx.current;
-        subIUBCtx.current.pageStatus = data["@(schema).pageInput.0.mode"];
+        subIUBCtx.current.pageStatus = pageStatus;
         await dispath({
           dispatch: {
             module: DispatchModuleName.IUBStore,

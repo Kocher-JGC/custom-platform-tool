@@ -3,7 +3,8 @@ import {
   TreeInterfaceMeta, RemoteTableColumn, FieldDataType,
   Species, FieldMeta, FieldType, InterRefRelation,
   RefType,
-  GenInterMetaRes
+  GenInterMetaRes,
+  RelationType
 } from "../types";
 
 /** tool */
@@ -69,7 +70,8 @@ const rMeta2InterMeta = (dsRefId: string, meta: RemoteTable): InterMeta => {
     type: getTableType(meta.type),
     id: meta.id, code: meta.code,
     name: meta.name, refId: dsRefId,
-    fields: rMetaCols2FieldsMeta(meta.columns)
+    fields: rMetaCols2FieldsMeta(meta.columns),
+    PKField: rMetaCols2FieldsMeta(meta.columns)[0]
   };
   if (transfRes.type === InterMetaType.TREE_TABLE) {
     (transfRes as TreeInterfaceMeta).maxLevel = meta.treeTable?.maxLevel || 15;
@@ -99,7 +101,7 @@ const genOnceInterRefRelation = (meta: RemoteTable) => {
     } = refInfo;
     
     return {
-      refType, refId: id,
+      refType, refId: id, relationType: RelationType.ONE_TO_ONE,
       interId, interCode, fieldId, fieldCode,
       refInterId: refTableId, refInterCode: refTableCode,
       refFieldCode, refFieldId,

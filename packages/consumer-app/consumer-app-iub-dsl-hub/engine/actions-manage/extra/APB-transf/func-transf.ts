@@ -17,7 +17,6 @@ const genUpdateOfAPBDSL = ({
   params: { table, set, condition }
 });
 
-const pickKeys = ['condition', 'alias', 'fields', 'table']
 const deepGen = ({ readDef, readList }: ReadRefObjDef) => {
   const { readRef, joins } = readDef;
   const read: any = readList[readRef];
@@ -30,7 +29,7 @@ const deepGen = ({ readDef, readList }: ReadRefObjDef) => {
       };
     });
   }
-  return pickObj(read, pickKeys);
+  return read;
 };
 
 const genReadOfAPBDSL = ({ readDef, readList }: ReadRefObjDef) => {

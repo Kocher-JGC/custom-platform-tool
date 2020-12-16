@@ -1,9 +1,10 @@
 import { FuncCodeOfAPB, APBDefOfIUB, RefType, InterRefRelation, ResResolveOfFuncCode, ReadBaseInfo } from "@iub-dsl/definition";
+import { cloneDeep } from 'lodash';
 import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata, DispatchMethodNameOfIUBStore } from "../../runtime/types";
 import { extraHandleStrategy } from "./api-req-extra-handle-strategy";
 import { APBTransf } from "./APB-transf";
 import { arrayAsyncHandle, noopError } from "../../utils";
-import { cloneDeep } from 'lodash'
+
 interface TodoRecord {
   [str: string]: {
     onlyKey: string;
@@ -70,7 +71,7 @@ export const genApiReqPlugins = (parseRes) => {
     const fnWrap = (fn) => async (IUBCtx: RunTimeCtxToBusiness, ...args) => {
       if (typeof fn !== 'function') {
         console.error('非法传入!!!, 请传入Function!');
-        return noopError
+        return noopError;
       }
       /**
        * 读取
@@ -98,7 +99,6 @@ export const genApiReqPlugins = (parseRes) => {
       /** 根据 analysisRes 生成额外的拼接数据 「确保完整性、递归熔断」 */
       const transfRes = handleStrategyEntity.reqTransfHandle(IUBCtx, { list: listRunRes, steps: steps.slice(0) });
       /** steps 组装 + APBDSL转换 */
-      // APBTransf(listRes, orgignConf)
       const APBDSL = APBTransf(transfRes);
       return APBDSL;
     };
@@ -114,9 +114,9 @@ export const genApiReqPlugins = (parseRes) => {
       // debugger
       if (res && res.data) {
         if (!IUBCtx.action) IUBCtx.action = {};
-        IUBCtx.action.payload = res.data
+        IUBCtx.action.payload = res.data;
       }
-      return res
+      return res;
     };
 
     return {
@@ -126,25 +126,25 @@ export const genApiReqPlugins = (parseRes) => {
   };
 
   const getInterMetaCode = async (IUBCtx: RunTimeCtxToBusiness, id: string) => {
-    const { asyncDispatchOfIUBEngine } = IUBCtx
+    const { asyncDispatchOfIUBEngine } = IUBCtx;
     return await asyncDispatchOfIUBEngine({
       dispatch: {
         module: DispatchModuleName.metadata,
         method: DispatchMethodNameOfMetadata.id2Code,
         params: [id]
       }
-    })
-  }
+    });
+  };
   const getSchemaVal = async (IUBCtx: RunTimeCtxToBusiness, mark: string) => {
-    const { asyncDispatchOfIUBEngine } = IUBCtx
+    const { asyncDispatchOfIUBEngine } = IUBCtx;
     return await asyncDispatchOfIUBEngine({
       dispatch: {
         module: DispatchModuleName.IUBStore,
         method: DispatchMethodNameOfIUBStore.getPageState,
         params: [mark]
       }
-    })
-  }
+    });
+  };
   
   /**
    * 职责: 将描述数据/引用数据, 处理成可以使用的真实值的数据
@@ -166,8 +166,8 @@ export const genApiReqPlugins = (parseRes) => {
             set: await set(IUBCtx, {
               itemKeyHandler: () => async (key: string) => {
                 const k = await getInterMetaCode(IUBCtx, key);
-                const keys = k.split('/')
-                if (!keys[1]) console.warn('获取code错误!'+key);
+                const keys = k.split('/');
+                if (!keys[1]) console.warn(`获取code错误!${key}`);
                 return keys[1] || keys[0];
               }
             }),
@@ -183,8 +183,8 @@ export const genApiReqPlugins = (parseRes) => {
             set: await set(IUBCtx, {
               itemKeyHandler: () => async (key: string) => {
                 const k = await getInterMetaCode(IUBCtx, key);
-                const keys = k.split('/')
-                if (!keys[1]) console.warn('获取code错误!'+key);
+                const keys = k.split('/');
+                if (!keys[1]) console.warn(`获取code错误!${key}`);
                 return keys[1] || keys[0];
               }
             }),
@@ -206,8 +206,8 @@ export const genApiReqPlugins = (parseRes) => {
                 equ: { id: await getSchemaVal(IUBCtx, conf.condition) }
               }]
             }
-          }
-        }
+          };
+        };
         // conf.table
         // conf.condition
         break;
@@ -215,17 +215,18 @@ export const genApiReqPlugins = (parseRes) => {
         /** 单独的read处理 */
         runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
           /** 临时写死逻辑 */
-          const newConf = cloneDeep(conf)
+          const newConf = cloneDeep(conf);
           let temp: any;
-          if ((temp = newConf.readList['staticId']) && temp.condition) {
+          // eslint-disable-next-line no-cond-assign
+          if ((temp = newConf.readList.staticId) && temp.condition) {
             /** 配置传入/ 或写死传入 */
-            temp['condition'] = {
+            temp.condition = {
               and: [{
                 equ: { id: await getSchemaVal(IUBCtx, temp.condition) }
               }]
-            }
+            };
           }
-          return newConf
+          return newConf;
         };
         break;
       default:
@@ -239,7 +240,7 @@ export const genApiReqPlugins = (parseRes) => {
 
   const apiReqExtraParser = {
     extraReqParser: APIReqExtraParser,
-    extraAPBItemParser: extraAPBItemParser
+    extraAPBItemParser
   };
 
   return apiReqExtraParser;

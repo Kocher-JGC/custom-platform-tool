@@ -261,7 +261,7 @@ module.exports = (webpackEnv) => {
                 cacheDirectory: true,
                 cacheCompression: isEnvProduction,
 
-                sourceMaps: false,
+                sourceMaps: true,
               },
             },
             {

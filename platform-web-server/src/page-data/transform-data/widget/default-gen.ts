@@ -1,5 +1,13 @@
+import { Logger } from "winston";
 import { TransfromCtx } from "../../types/types";
 import { flowMark } from "../IUBDSL-mark";
+
+/**
+ * widget错误日志打印
+ */
+export const genWidgetErrLogFn = (logger: Logger, id: string) => (info: string) => {
+  return logger.error(`组件数据非法! 请联系技术人员! WidgetId: ${id}、info: ${info}`);
+};
 
 export const defaultGen = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
   const { widgetCode } = propState || {};

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     // "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "./dist",
     "downlevelIteration": true,
     "skipLibCheck": true,
@@ -15,18 +11,13 @@
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
     "strict": true,
+    "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": true,
     "module": "ESNext",
     "moduleResolution": "node",
     "jsx": "react"
   },
-  "include": [
-    "./packages"
-  ],
-  "exclude": [
-    "**/test/*",
-    "**/demo/*",
-    "packages/platform-web-server"
-  ]
+  "include": ["./packages"],
+  "exclude": ["**/test/*", "**/demo/*", "packages/platform-web-server"]
 }

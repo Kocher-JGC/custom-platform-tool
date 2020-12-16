@@ -28,6 +28,7 @@ export interface ReadBaseInfo extends ReadPageInfo {
   },
 }
 
+
 /**
  * 读取功能的定义
  */
@@ -63,7 +64,6 @@ export interface ReadOnceRefObjDef {
  * 参照物读取连接的定义
  */
 export interface JoinsDef {
-  /**  */
   /**
    * 读取的定义「引用/读取一个对象的定义」
    * string: 仅有 readRef // 但结构具有唯一性更好维护

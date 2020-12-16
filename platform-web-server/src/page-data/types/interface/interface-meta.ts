@@ -62,6 +62,10 @@ export interface BaseInterfaceMeta {
   id: string;
   code: string;
   name: string;
+  /** 表格唯一物理主键 */
+  PKField: FieldMeta;
+  /** 表格业务复合主键, 暂未使用 */
+  // withPK: FieldMeta[]
   fields: FieldMeta[];
 }
 
