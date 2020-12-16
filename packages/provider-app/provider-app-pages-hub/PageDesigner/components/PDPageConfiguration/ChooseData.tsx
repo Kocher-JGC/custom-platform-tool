@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Radio,
-  Button,
-  Input,
-  Table,
-  message as AntMessage,
-  Space,
-} from "antd";
+import { Radio, Button, Input, Table, message as AntMessage } from "antd";
 import { CloseModal, ShowModal, TreeSelector } from "@infra/ui";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
 import pick from "lodash/pick";
@@ -95,9 +87,23 @@ const VariableRenderer = ({
     );
   }, [matchPair]);
 };
-const VariableMatch = ({ ds, fieldList, matchPair, onChange, platformCtx }) => {
+type PropsVariableMatch = {
+  ds?: string;
+  fieldList?: string[];
+  matchPair?: { [key: string]: string };
+  onChange;
+  platformCtx;
+};
+type Datasource = { columnID: string; columnTitle: string }[];
+const VariableMatch = ({
+  ds,
+  fieldList,
+  matchPair,
+  onChange,
+  platformCtx,
+}: PropsVariableMatch) => {
   const [variableList, setVariableList] = useState({});
-  const [dataSource, setDataSource] = useState([]);
+  const [dataSource, setDataSource] = useState<Datasource>([]);
   useEffect(() => {
     platformCtx.meta
       .getVariableData(["pageInput", "system", "page"])
@@ -162,8 +168,8 @@ const VariableMatch = ({ ds, fieldList, matchPair, onChange, platformCtx }) => {
     ]
       .filter((item) => item.variableList?.length > 0)
       .map((item) => {
-        const { variableList, ...rest } = item;
-        return { ...rest, children: constructVarList(variableList) };
+        const { variableList: variableListChild, ...rest } = item;
+        return { ...rest, children: constructVarList(variableListChild) };
       });
   };
   const getFieldTitle = (tableId): Promise<{ [key: string]: string }> => {
@@ -222,7 +228,7 @@ const VariableMatch = ({ ds, fieldList, matchPair, onChange, platformCtx }) => {
               <VariableRenderer
                 matchPair={matchPair}
                 variableList={variableList}
-                value={matchPair[_t] || ""}
+                value={matchPair?.[_t] || ""}
                 field={_t}
                 onChange={onChange}
               />
@@ -233,8 +239,54 @@ const VariableMatch = ({ ds, fieldList, matchPair, onChange, platformCtx }) => {
     />
   );
 };
-export class ChooseData extends React.Component {
-  state = {
+interface Props {
+  platformCtx;
+  config;
+  onSuccess;
+  onCancel;
+}
+
+type BasicModal = {
+  title: string;
+  showType: 1 | 2 | 3 | 4;
+  selectType: 1 | 2;
+  id?: string;
+};
+type TableModal = BasicModal & {
+  ds: string;
+  sortColumnInfo: undefined;
+  returnValue: string[];
+  tagField: string;
+  showColumn: string[];
+};
+type TreeModal = BasicModal & {
+  ds: string;
+  sortColumnInfo: undefined;
+  returnValue: string[];
+  tagField: string;
+  showColumn: string;
+  showSearch: 1 | 2;
+};
+type TreeTableModal = BasicModal & {
+  treeDs: string;
+  treeSortColumnInfo: undefined;
+  treeShowColumn: string;
+  superiorColumn: string;
+  relatedSuperiorColumn: string;
+  showSearch: 1 | 2;
+  tableDs: string;
+  tableSortColumnInfo: undefined;
+  tableReturnValue: [];
+  tableShowColumn: string[];
+};
+interface State {
+  createdBy: "modalList" | "config";
+  dataChooseRange: undefined;
+  matchReturnValue: { [key: string]: string };
+  modalConfig?: TableModal | TreeModal | TreeTableModal;
+}
+export class ChooseData extends React.Component<Props> {
+  state: State = {
     createdBy: "modalList",
     dataChooseRange: undefined,
     matchReturnValue: {},
@@ -286,9 +338,7 @@ export class ChooseData extends React.Component {
           <div className="p-5">
             {createdBy === "modalList" ? (
               <ModalConfigSelector
-                platformCtx={this.props.platformCtx}
                 selectedModal={modalConfig?.id}
-                selectType="radio"
                 onSuccess={handleSuccess}
                 onCancel={() => {
                   CloseModal(modalID);
@@ -399,215 +449,3 @@ export class ChooseData extends React.Component {
     );
   }
 }
-export const xx = ({
-  onSuccess,
-  onCancel,
-  config,
-  platformCtx,
-  configCn: configCnProp,
-}) => {
-  const [form] = Form.useForm();
-  const [extraConfig, setExtraConfig] = useState({
-    returnValueList: [],
-    configCn: configCnProp || "配置弹窗",
-  });
-  useEffect(() => {
-    const {
-      createdBy = "modalList",
-      dataChooseRange,
-      matchReturnValue = [],
-      ...modalConfig
-    } = config || {};
-    form.setFieldsValue({
-      createdBy,
-      dataChooseRange,
-      matchReturnValue,
-      modalConfig,
-    });
-    getModalExtraConfig(modalConfig);
-  }, []);
-  const getReturn = (modalConfig) => {
-    const { showType, returnValue, tableReturnValue, ds, tableDs } =
-      modalConfig || {};
-    if ([1, 2].includes(showType)) {
-      return { ds, returnValue };
-    }
-    if (showType === 3) {
-      return {
-        ds: tableDs,
-        returnValue: tableReturnValue,
-      };
-    }
-    return {};
-  };
-  const getFieldTitle = (tableId): Promise<{ [key: string]: string }> => {
-    return new Promise((resolve, reject) => {
-      $R_P
-        .post({
-          url: "/data/v1/tables/tableWithAux",
-          data: {
-            tables: [
-              {
-                tableId,
-                addWithAuxTable: true,
-              },
-            ],
-          },
-        })
-        .then((res) => {
-          if (res?.code !== "00000") {
-            AntMessage.error("获取表详情数据失败，请联系技术人员");
-            return;
-          }
-          const result = {};
-          res.result.forEach((ds) => {
-            ds.columns.forEach((item) => {
-              result[`${ds.id}.${item.id}`] = item.name;
-            });
-          });
-          resolve(result);
-        });
-    });
-  };
-  const getModalExtraConfig = (modalConfig) => {
-    const { ds, returnValue } = getReturn(modalConfig);
-    if (!ds) return;
-    getFieldTitle(ds).then((fields) => {
-      console.log(fields);
-      console.log(returnValue);
-      const { title: configCn } = modalConfig || {};
-      setExtraConfig({
-        configCn,
-        returnValueList: returnValue.map((columnID) => ({
-          columnID,
-          columnTitle: fields[columnID],
-        })),
-      });
-    });
-  };
-  const handleModalConfig = () => {
-    const createdBy = form.getFieldValue("createdBy");
-    const handleSuccess = (modalConfig) => {
-      form.setFieldsValue({
-        modalConfig,
-        matchReturnValue: {},
-      });
-      getModalExtraConfig(modalConfig);
-      CloseModal(modalID);
-    };
-    const modalID = ShowModal({
-      title: "配置弹窗",
-      width: 900,
-      children: () => {
-        return (
-          <div className="p-5">
-            {createdBy === "modalList" ? (
-              <ModalConfigSelector
-                platformCtx={platformCtx}
-                selectedModal={form.getFieldValue("modalConfig")?.id}
-                selectType="radio"
-                onSuccess={handleSuccess}
-                onCancel={() => {
-                  CloseModal(modalID);
-                }}
-              />
-            ) : (
-              <ModalConfigEditor
-                platformCtx={platformCtx}
-                config={form.getFieldValue("modalConfig")}
-                onSuccess={handleSuccess}
-                onCancel={() => {
-                  CloseModal(modalID);
-                }}
-              />
-            )}
-          </div>
-        );
-      },
-    });
-  };
-  const handleReset = () => {
-    form.setFieldsValue({
-      createdBy: "modalList",
-      matchReturnValue: {},
-      modalConfig: undefined,
-      dataChooseRange: undefined,
-    });
-    setExtraConfig({
-      configCn: "配置弹窗",
-      returnValueList: [],
-    });
-  };
-  const handleFinish = (data) => {
-    const { configCn } = extraConfig;
-    console.log(data);
-    onSuccess(data, configCn);
-  };
-  return (
-    <Form form={form} onFinish={handleFinish}>
-      <Form.Item name="createdBy" label="弹窗来源">
-        <Radio.Group
-          onChange={(e) => {
-            form.setFieldsValue({
-              modalConfig: undefined,
-              matchReturnValue: {},
-            });
-            setExtraConfig({
-              returnValueList: [],
-              configCn: "配置弹窗",
-            });
-          }}
-        >
-          <Radio value="modalList">选择模板</Radio>
-          <Radio value="config">自定义弹窗</Radio>
-        </Radio.Group>
-      </Form.Item>
-      <Form.Item label="配置弹窗">
-        <Button
-          onClick={() => {
-            handleModalConfig();
-          }}
-        >
-          {extraConfig.configCn}
-        </Button>
-      </Form.Item>
-
-      <Form.Item label="数据检索范围" name="dataChooseRange">
-        <Input placeholder="暂不支持" />
-      </Form.Item>
-      <div>返回值匹配：</div>
-      <Form.Item noStyle shouldUpdate>
-        {({ getFieldValue, setFieldsValue }) => {
-          return (
-            <VariableMatch
-              dataSource={extraConfig.returnValueList}
-              platformCtx={platformCtx}
-              matchPair={getFieldValue("matchReturnValue") || {}}
-              onChange={(changeArea) => {
-                setFieldsValue({
-                  matchReturnValue: {
-                    ...(getFieldValue("matchReturnValue") || {}),
-                    ...changeArea,
-                  },
-                });
-              }}
-            />
-          );
-        }}
-      </Form.Item>
-      <Form.Item className="float-right w-full">
-        <Space className="float-right">
-          <Button htmlType="button" onClick={handleReset}>
-            清空
-          </Button>
-          <Button type="primary" htmlType="submit">
-            确定
-          </Button>
-          <Button htmlType="button" onClick={onCancel}>
-            取消
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
-  );
-};
