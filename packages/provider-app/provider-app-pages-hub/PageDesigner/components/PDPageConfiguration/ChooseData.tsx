@@ -45,22 +45,26 @@ const VariableRenderer = ({
     if (!matchPair || Object.keys(matchPair).length === 0) {
       return variableListProp;
     }
+    const filterChildren = (children) => {
+      return (
+        (Array.isArray(children) &&
+          children
+            .slice()
+            .filter(
+              ({ value: valueLoop }) =>
+                value === valueLoop ||
+                !Object.values(matchPair || {}).includes(valueLoop)
+            )) ||
+        []
+      );
+    };
     return variableListProp
       .slice()
       .map((item) => {
         const { children, ...rest } = item;
         return {
           ...rest,
-          children:
-            (Array.isArray(children) &&
-              children
-                .slice()
-                .filter(
-                  ({ value: valueLoop }) =>
-                    value === valueLoop ||
-                    !Object.values(matchPair || {}).includes(valueLoop)
-                )) ||
-            [],
+          children: filterChildren(children),
         };
       })
       .filter((item) => item.children?.length > 0);
@@ -245,11 +249,25 @@ interface Props {
   onSuccess;
   onCancel;
 }
+export const enum EShowType {
+  "TABLE" = 1,
+  "TREE" = 2,
+  "TREETABLE" = 3,
+  "CUSTOMED" = 4,
+}
+export const enum ESelectType {
+  "RADIO" = 1,
+  "CHECKBOX" = 2,
+}
 
 type BasicModal = {
   title: string;
-  showType: 1 | 2 | 3 | 4;
-  selectType: 1 | 2;
+  showType:
+    | EShowType.TABLE
+    | EShowType.TREE
+    | EShowType.TREETABLE
+    | EShowType.CUSTOMED;
+  selectType: ESelectType.RADIO | ESelectType.CHECKBOX;
   id?: string;
 };
 type TableModal = BasicModal & {
@@ -259,13 +277,17 @@ type TableModal = BasicModal & {
   tagField: string;
   showColumn: string[];
 };
+export const enum EShowSearch {
+  "YES" = 1,
+  "NO" = 0,
+}
 type TreeModal = BasicModal & {
   ds: string;
   sortColumnInfo: undefined;
   returnValue: string[];
   tagField: string;
   showColumn: string;
-  showSearch: 1 | 2;
+  showSearch: EShowSearch.YES | EShowSearch.NO;
 };
 type TreeTableModal = BasicModal & {
   treeDs: string;
@@ -273,7 +295,7 @@ type TreeTableModal = BasicModal & {
   treeShowColumn: string;
   superiorColumn: string;
   relatedSuperiorColumn: string;
-  showSearch: 1 | 2;
+  showSearch: EShowSearch.YES | EShowSearch.NO;
   tableDs: string;
   tableSortColumnInfo: undefined;
   tableReturnValue: [];
@@ -308,10 +330,10 @@ export class ChooseData extends React.Component<Props> {
   getReturn = (modalConfig) => {
     const { showType, returnValue, tableReturnValue, ds, tableDs } =
       modalConfig || {};
-    if ([1, 2].includes(showType)) {
+    if ([EShowType.TABLE | EShowType.TREE].includes(showType)) {
       return { ds, fieldList: returnValue };
     }
-    if (showType === 3) {
+    if (showType === EShowType.TREETABLE) {
       return {
         ds: tableDs,
         fieldList: tableReturnValue,
