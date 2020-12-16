@@ -75,13 +75,11 @@ export class PageActionSelector extends React.Component<IProps, IState> {
     const list: {
       order: number;
       data: ActionsMeta;
-    }[] = [];
-
-    for (const id in actions) {
+    }[] = Object.keys(actions).map((id) => {
       const data = actions[id];
       const order = this.getOrderById(id);
-      list.push({ order, data: { ...data, id } });
-    }
+      return { order, data: { ...data, id } };
+    });
     return list.sort((a, b) => b.order - a.order).map((item) => item.data);
   };
 
@@ -470,10 +468,11 @@ export class PageActionSelector extends React.Component<IProps, IState> {
                             actionType: value,
                             configCn: "",
                           };
-                          _r.actionType &&
+                          if (_r.actionType) {
                             Object.assign(recordNeedReset, {
                               [_r.actionType]: "",
                             });
+                          }
                           this.handleSetValue(_r.id, recordNeedReset);
                         }}
                         allowClear
