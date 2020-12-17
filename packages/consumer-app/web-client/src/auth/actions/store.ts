@@ -49,14 +49,14 @@ export interface IApp {
   lessee: string
   token: string
 }
-interface refreshTokenInfo {
+interface RefreshTokenInfo {
   refresh_token:string,
   access_token:string, 
   expires_in:string,
   refreshTime:number,
 }
 // 数据管理
-const storageState = {
+const storageStateManager = {
   getCode:()=>{
     return storage.get("app/code")
   },
@@ -78,7 +78,7 @@ const storageState = {
   setToken:function(token:string){
     return storage.set(`app/${this.getCode()}/token`, token)
   },
-  setRefreshTokenInfo:function(refreshTokenInfo:refreshTokenInfo){
+  setRefreshTokenInfo:function(refreshTokenInfo:RefreshTokenInfo){
     return storage.set(`app/${this.getCode()}/refreshTokenInfo`,refreshTokenInfo)
   },
   setIsRefresh:function(isRefreshing:boolean){
@@ -115,20 +115,20 @@ export function getPrevLoginToken() {
 }
 
 export function checkAppInfo() {
-  return storageState.getCode() && storageState.getToken();
+  return storageStateManager.getCode() && storageStateManager.getToken();
 }
 
 export function getAppInfo() {
-  if(storageState.getCode()){
+  if(storageStateManager.getCode()){
     return Object.assign(
       {},
       {
-        name: storageState.getName(),
-        code: storageState.getCode(),
-        lessee: storageState.getLessee(),
+        name: storageStateManager.getName(),
+        code: storageStateManager.getCode(),
+        lessee: storageStateManager.getLessee(),
       },
-      storageState.getToken() && {
-        token: storageState.getToken(),
+      storageStateManager.getToken() && {
+        token: storageStateManager.getToken(),
       });
   }
   // 本地存储数据缺失，清除数据重新登录
@@ -169,9 +169,9 @@ function onLoginSuccess(store, { resData, originForm = {} }) {
   let { refresh_token, access_token, expires_in, user_info } = resData || {};
 
   // storage.set(`app/${storage.get("app/code")}/token`, access_token);
-  storageState.setToken(access_token);
-  storageState.setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
-  storageState.setIsRefresh(false);
+  storageStateManager.setToken(access_token);
+  storageStateManager.setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
+  storageStateManager.setIsRefresh(false);
 
   const resultStore = {
     logging: false,
@@ -194,11 +194,11 @@ function onLoginSuccess(store, { resData, originForm = {} }) {
 
 function clearPrevLoginData() {
   // storage.clearAll();
-  storageState.removeToken();
-  storageState.removeCode();
-  storageState.removeLessee();
-  storageState.removeName();
-  storageState.removePaasToken();
+  storageStateManager.removeToken();
+  storageStateManager.removeCode();
+  storageStateManager.removeLessee();
+  storageStateManager.removeName();
+  storageStateManager.removePaasToken();
 }
 
 function getPrevLoginData(): AuthStore | undefined {
@@ -228,7 +228,7 @@ const authActions = (store) => ({
         lessee: app.lessee
       }
     });
-    storageState.removeToken();
+    storageStateManager.removeToken();
   },
   switchApp(){
     store.setState({
@@ -250,12 +250,12 @@ const authActions = (store) => ({
           lessee
         }
       });
-      storageState.setCode(code);
-      storageState.setLessee(lessee);
+      storageStateManager.setCode(code);
+      storageStateManager.setLessee(lessee);
     }
   },
   async getUserLastLoginInfo(state){
-    const lastLoginInfo = await AUTH_APIS.getUserLastLogin({lessee_code: storageState.getLessee(),app_code: storageState.getCode()});
+    const lastLoginInfo = await AUTH_APIS.getUserLastLoginInfo({lessee_code: storageStateManager.getLessee(),app_code: storageStateManager.getCode()});
     const {
       ip,
       createTime,
@@ -290,13 +290,13 @@ const authActions = (store) => ({
       password: encrypt(form.AdminName + form.Password, "hy_auth_business"),
       pwd_encryption_type: 2,
       client_type: 4,//终端类型：1为WPF客户端，2为安卓手机客户端，3为苹果手机客户端，4为web浏览器，5其他终端
-      lessee_code: storageState.getLessee(),
-      app_code: storageState.getCode(),
-      client_id: storageState.getClientid(),
-      client_secret: storageState.getClientSecret()
+      lessee_code: storageStateManager.getLessee(),
+      app_code: storageStateManager.getCode(),
+      client_id: storageStateManager.getClientid(),
+      client_secret: storageStateManager.getClientSecret()
     }
     try{
-      storageState.removeToken();
+      storageStateManager.removeToken();
       const loginRes = await AUTH_APIS.login(loginParams);
       /** 判断是否登录成功的逻辑 */
       const isLogin = handleLoginSuccess(loginRes);
@@ -331,8 +331,8 @@ const authActions = (store) => ({
       logging: false,
       logouting: false,
     });
-    storageState.removeToken();
-    storageState.removeData();
+    storageStateManager.removeToken();
+    storageStateManager.removeData();
   }
 });
 

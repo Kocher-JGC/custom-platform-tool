@@ -3,7 +3,7 @@ import _ from "lodash";
 import storage from 'store';
 
 
-interface refreshTokenInfo {
+interface RefreshTokenInfo {
   refresh_token:string,
   access_token:string, 
   expires_in:string,
@@ -52,7 +52,7 @@ class RefreshToken {
     setToken:function(token:string){
       return storage.set(`app/${this.getCode()}/token`, token);
     },
-    setRefreshTokenInfo:function(refreshTokenInfo:refreshTokenInfo){
+    setRefreshTokenInfo:function(refreshTokenInfo:RefreshTokenInfo){
       return storage.set(`app/${this.getCode()}/refreshTokenInfo`,refreshTokenInfo)
     },
     setIsRefresh:function(isRefreshing:boolean){

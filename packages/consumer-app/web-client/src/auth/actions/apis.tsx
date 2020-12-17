@@ -6,7 +6,7 @@ export interface LoginRes {
   expires_in: number;
   scope: string;
 }
-export interface loginParams {
+export interface LoginParams {
   username: string;
   password: string;
   pwd_encryption_type: number;
@@ -16,7 +16,7 @@ export interface loginParams {
   client_id:string;
   client_secret:string;
 }
-export function login(data:loginParams): Promise<LoginRes> {
+export function login(data:LoginParams): Promise<LoginRes> {
   return new Promise((resolve, reject) => {
     console.log(data)
     let param = new URLSearchParams();
@@ -46,7 +46,7 @@ export function logout(): Promise<any> {
 }
 
 
-export function getUsers(): Promise<any> {
+export function getUsersInfo(): Promise<any> {
   return new Promise((resolve, reject) => {
     $A_R.get("/auth/user/association/current").then((res)=>{
       resolve(res);
@@ -55,11 +55,11 @@ export function getUsers(): Promise<any> {
     })
   })
 }
-export interface ILastLoginReq {
+export interface LastLoginReq {
   lessee_code: string;
   app_code: string;
 }
-export function getUserLastLogin(params:ILastLoginReq): Promise<any> {
+export function getUserLastLoginInfo(params:LastLoginReq): Promise<any> {
   return new Promise((resolve, reject) => {
     $A_R.get("/auth/history/login/last?lessee_code="+params.lessee_code+"&app_code="+params.app_code).then((res)=>{
       resolve(res);
@@ -69,13 +69,13 @@ export function getUserLastLogin(params:ILastLoginReq): Promise<any> {
   })
 }
 
-export interface modifyPwdData {
+export interface ModifyPwdData {
   userName: string;
   oldPwd: string;
   newPwd: string;
   pwdEncryptionType: string;
 }
-export function modiflyPwd(pwdData:modifyPwdData): Promise<any>{
+export function modiflyPwd(pwdData:ModifyPwdData): Promise<any>{
   return new Promise((resolve, reject) => {
     $A_R.put("/auth/user/pwd", pwdData).then((res)=>{
       resolve(res);

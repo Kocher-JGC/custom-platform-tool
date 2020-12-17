@@ -2,7 +2,6 @@ import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
 import { LoginPanel } from "@engine/ui-admin-template/plugins/default-renderer/login-panel";
 import { Button } from "antd";
-import "antd/dist/antd.css";
 import React from "react";
 import store from "store";
 import { connect, Provider } from "unistore/react";
