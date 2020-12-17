@@ -5,9 +5,23 @@ import { $T } from "@deer-ui/core/utils";
 import store from "store";
 
 import { Link, LinkProps } from "multiple-page-routing";
-import { ToolTip, Icon, PureIcon } from "../../ui-refs";
+import { Icon, PureIcon } from "@deer-ui/core/icon";
 
-import { AdminTmplMenus, AdminTmplMenuItem } from "../../types";
+export interface AdminTmplMenuItem {
+  /** 菜单编码 */
+  path?: string;
+  /** 菜单显示的名称 */
+  title?: string;
+  /** 菜单的 icon */
+  icon?: string;
+  params?: {
+    [key: string]: any;
+  };
+  /** 菜单下的子菜单 */
+  child?: AdminTmplMenuItem[];
+}
+
+export type AdminTmplMenus = AdminTmplMenuItem[];
 
 const delayExec = new DebounceClass();
 
@@ -421,7 +435,9 @@ export class NavMenu extends Component<NavMenuProps, NavMenuState> {
 
     const renderRes = (
       <div
-        className={`__admin_nav_menu_container ${show ? "show" : "collapse"}`}
+        className={`__provider_nav_menu_container ${
+          show ? "show" : "collapse"
+        }`}
       >
         <div
           ref={(navMenuDOM) => {
