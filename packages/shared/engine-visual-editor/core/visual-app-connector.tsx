@@ -11,6 +11,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import createStore from "./store";
 import { AllDispatcherActions } from "./actions";
 import { VisualEditorState } from "./reducers/reducer";
+import { flatArrayToNode } from "../utils";
 
 /**
  * TODO: 完善 state
@@ -18,10 +19,17 @@ import { VisualEditorState } from "./reducers/reducer";
 export const mapVisualStateToProps = (state: VisualEditorState) => {
   return produce(state, (draft) => {
     /** 设置 activeEntity */
-    const { selectedInfo, flatLayoutItems } = draft;
+    const { selectedInfo, layoutInfo } = draft;
+    const flatLayoutItems = flatArrayToNode(layoutInfo);
+    // console.log(flatLayoutItems);
     const { id } = selectedInfo;
     // eslint-disable-next-line no-param-reassign
     draft.selectedInfo.entity = flatLayoutItems[id];
+
+    /**
+     * 重要，需要在此将有嵌套结构的 layoutInfo 转换为扁平的 flatLayoutItems，并且其中需要保留嵌套的信息
+     */
+    draft.flatLayoutItems = flatLayoutItems;
     return draft;
   });
 };
