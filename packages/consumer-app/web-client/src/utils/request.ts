@@ -5,8 +5,8 @@
 // import { extend } from 'umi-request';
 import { notification } from 'antd';
 import axios, { AxiosInstance } from 'axios';
-import storage from 'store';
 import refreshToken from './refreshToken';
+import { getToken } from './store-state-manager';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -46,21 +46,12 @@ const errorHandler = (error: { response: Response }): Response => {
   }
   return response;
 };
-// 数据管理
-const requestState = {
-  getCode:()=>{
-    return storage.get("app/code")
-  },
-  getToken:function(){
-    return storage.get(`app/${this.getCode()}/token`)
-  }
-}
 
 // 请求前设置请求头
 const beforeRequest = (request:AxiosInstance)=>{
   request.interceptors.request.use(
     config => {
-      const tokenId = requestState.getToken();
+      const tokenId = getToken();
       if (tokenId) {
         config.headers.common["Authorization"] = "Bearer " + tokenId;
       }

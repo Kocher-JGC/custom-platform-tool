@@ -6,6 +6,7 @@ import CryptoJS from "crypto-js";
 import dayjs from 'dayjs';
 import storage from "store";
 import createStore from "unistore";
+import { getAppName, getClientId, getClientSecret, getCode, getLessee, getToken, removeAppName, removeCode, removeLessee, removeLoginData, removePaasToken, removeToken, setCode, setIsRefresh, setLessee, setRefreshTokenInfo, setToken } from "./../../utils/store-state-manager";
 import * as AUTH_APIS from "./apis";
 
 
@@ -49,86 +50,26 @@ export interface IApp {
   lessee: string
   token: string
 }
-interface RefreshTokenInfo {
-  refresh_token:string,
-  access_token:string, 
-  expires_in:string,
-  refreshTime:number,
-}
-// 数据管理
-const storageStateManager = {
-  getCode:()=>{
-    return storage.get("app/code")
-  },
-  getToken:function(){
-    return storage.get(`app/${this.getCode()}/token`)
-  },
-  getName:()=>{
-    return storage.get("app/name")
-  },
-  getLessee:()=>{
-    return storage.get("app/lessee")
-  },
-  getClientid:()=>{
-    return storage.get("client_id")
-  },
-  getClientSecret:()=>{
-    return storage.get("client_secret")
-  },
-  setToken:function(token:string){
-    return storage.set(`app/${this.getCode()}/token`, token)
-  },
-  setRefreshTokenInfo:function(refreshTokenInfo:RefreshTokenInfo){
-    return storage.set(`app/${this.getCode()}/refreshTokenInfo`,refreshTokenInfo)
-  },
-  setIsRefresh:function(isRefreshing:boolean){
-    return storage.set(`app/${this.getCode()}/isRefreshing`, isRefreshing);
-  },
-  setCode:(code:string)=>{
-    return storage.set("app/code",code)
-  },
-  setLessee:(lessee:string)=>{
-    return storage.set("app/lessee",lessee)
-  },
-  removeToken:function(){
-    return storage.remove(`app/${this.getCode()}/token`)
-  },
-  removeCode:()=>{
-    return storage.remove("app/code")
-  },
-  removeLessee:()=>{
-    return storage.remove("app/lessee")
-  },
-  removeName:()=>{
-    return storage.remove("app/name")
-  },
-  removeData:()=>{
-    return storage.remove("prev/login/data")
-  },
-  removePaasToken:()=>{
-    return storage.remove("paas/token")
-  }
-}
 export function getPrevLoginToken() {
   const res = getPrevLoginData();
   return res ? res.token : null;
 }
 
 export function checkAppInfo() {
-  return storageStateManager.getCode() && storageStateManager.getToken();
+  return getCode() && getToken();
 }
 
 export function getAppInfo() {
-  if(storageStateManager.getCode()){
+  if(getCode()){
     return Object.assign(
       {},
       {
-        name: storageStateManager.getName(),
-        code: storageStateManager.getCode(),
-        lessee: storageStateManager.getLessee(),
+        name: getAppName(),
+        code: getCode(),
+        lessee: getLessee(),
       },
-      storageStateManager.getToken() && {
-        token: storageStateManager.getToken(),
+      getToken() && {
+        token: getToken(),
       });
   }
   // 本地存储数据缺失，清除数据重新登录
@@ -169,9 +110,9 @@ function onLoginSuccess(store, { resData, originForm = {} }) {
   let { refresh_token, access_token, expires_in, user_info } = resData || {};
 
   // storage.set(`app/${storage.get("app/code")}/token`, access_token);
-  storageStateManager.setToken(access_token);
-  storageStateManager.setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
-  storageStateManager.setIsRefresh(false);
+  setToken(access_token);
+  setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
+  setIsRefresh(false);
 
   const resultStore = {
     logging: false,
@@ -194,11 +135,11 @@ function onLoginSuccess(store, { resData, originForm = {} }) {
 
 function clearPrevLoginData() {
   // storage.clearAll();
-  storageStateManager.removeToken();
-  storageStateManager.removeCode();
-  storageStateManager.removeLessee();
-  storageStateManager.removeName();
-  storageStateManager.removePaasToken();
+  removeToken();
+  removeCode();
+  removeLessee();
+  removeAppName();
+  removePaasToken();
 }
 
 function getPrevLoginData(): AuthStore | undefined {
@@ -228,7 +169,7 @@ const authActions = (store) => ({
         lessee: app.lessee
       }
     });
-    storageStateManager.removeToken();
+    removeToken();
   },
   switchApp(){
     store.setState({
@@ -250,12 +191,12 @@ const authActions = (store) => ({
           lessee
         }
       });
-      storageStateManager.setCode(code);
-      storageStateManager.setLessee(lessee);
+      setCode(code);
+      setLessee(lessee);
     }
   },
   async getUserLastLoginInfo(state){
-    const lastLoginInfo = await AUTH_APIS.getUserLastLoginInfo({lessee_code: storageStateManager.getLessee(),app_code: storageStateManager.getCode()});
+    const lastLoginInfo = await AUTH_APIS.getUserLastLoginInfo({lessee_code: getLessee(),app_code: getCode()});
     const {
       ip,
       createTime,
@@ -290,13 +231,13 @@ const authActions = (store) => ({
       password: encrypt(form.AdminName + form.Password, "hy_auth_business"),
       pwd_encryption_type: 2,
       client_type: 4,//终端类型：1为WPF客户端，2为安卓手机客户端，3为苹果手机客户端，4为web浏览器，5其他终端
-      lessee_code: storageStateManager.getLessee(),
-      app_code: storageStateManager.getCode(),
-      client_id: storageStateManager.getClientid(),
-      client_secret: storageStateManager.getClientSecret()
+      lessee_code: getLessee(),
+      app_code: getCode(),
+      client_id: getClientId(),
+      client_secret: getClientSecret()
     }
     try{
-      storageStateManager.removeToken();
+      removeToken();
       const loginRes = await AUTH_APIS.login(loginParams);
       /** 判断是否登录成功的逻辑 */
       const isLogin = handleLoginSuccess(loginRes);
@@ -331,8 +272,8 @@ const authActions = (store) => ({
       logging: false,
       logouting: false,
     });
-    storageStateManager.removeToken();
-    storageStateManager.removeData();
+    removeToken();
+    removeLoginData();
   }
 });
 

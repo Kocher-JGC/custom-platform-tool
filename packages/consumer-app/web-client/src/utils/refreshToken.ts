@@ -1,14 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import _ from "lodash";
-import storage from 'store';
+import { getClientId, getClientSecret, getIsRefresh, getRefreshTokenInfo, setIsRefresh, setRefreshTokenInfo, setToken } from './store-state-manager';
 
-
-interface RefreshTokenInfo {
-  refresh_token:string,
-  access_token:string, 
-  expires_in:string,
-  refreshTime:number,
-}
 class RefreshToken {
   baseURL: string = '';
   subscribers: Array<any> = [];
@@ -22,12 +15,12 @@ class RefreshToken {
 
   checkStatus(response: AxiosResponse, baseURL:string): Promise<any> {
       this.baseURL = baseURL;
-      console.log(this.requestState.getIsRefresh());
-      if (!this.requestState.getIsRefresh()) {
-        this.requestState.setIsRefresh(true);
+      console.log(getIsRefresh());
+      if (!getIsRefresh()) {
+        setIsRefresh(true);
         this.refreshTokenRequst();
       }
-      console.log(this.requestState.getIsRefresh());
+      console.log(getIsRefresh());
       let config = _.cloneDeep(response.config);
       return new Promise(resolve => {
         this.addSubscriber((token: string) => {
@@ -38,56 +31,32 @@ class RefreshToken {
         });
       });
   }
-  // 数据管理
-  requestState = {
-    getCode:()=>{
-      return storage.get("app/code")
-    },
-    getToken:function(){
-      return storage.get(`app/${this.getCode()}/token`)
-    },
-    getRefreshTokenInfo: function(){
-      return storage.get(`app/${this.getCode()}/refreshTokenInfo`)
-    },
-    setToken:function(token:string){
-      return storage.set(`app/${this.getCode()}/token`, token);
-    },
-    setRefreshTokenInfo:function(refreshTokenInfo:RefreshTokenInfo){
-      return storage.set(`app/${this.getCode()}/refreshTokenInfo`,refreshTokenInfo)
-    },
-    setIsRefresh:function(isRefreshing:boolean){
-      return storage.set(`app/${this.getCode()}/isRefreshing`, isRefreshing);
-    },
-    getIsRefresh:function(){
-      return storage.get(`app/${this.getCode()}/isRefreshing`)
-    }
-  }
   refreshTokenRequst() {
     try {
-      const refreshTokenInfo = this.requestState.getRefreshTokenInfo();
+      const refreshTokenInfo = getRefreshTokenInfo();
       if(new Date().getTime() - refreshTokenInfo.refreshTime < 10000){
         this.onAccessTokenFetched(refreshTokenInfo.access_token);
-        this.requestState.setIsRefresh(false);
+        setIsRefresh(false);
       } else {
         const refreshTokenParams = {
           grant_type: 'refresh_token',
           refreshToken: refreshTokenInfo.refresh_token,
-          client_id: storage.get("client_id"),
-          client_secret: storage.get("client_secret")
+          client_id: getClientId(),
+          client_secret: getClientSecret()
         }
         axios.post(this.baseURL + '/auth/oauth/token', refreshTokenParams).then((tokenInfo: any) => {
           let { refresh_token, access_token, expires_in } = tokenInfo.result;
-          this.requestState.setToken(access_token);
-          this.requestState.setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
+          setToken(access_token);
+          setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
           this.onAccessTokenFetched(access_token);
-          this.requestState.setIsRefresh(false);
+          setIsRefresh(false);
         },()=>{
-          this.requestState.setIsRefresh(false);
+          setIsRefresh(false);
         });
       }
       
     } catch (e) {
-      this.requestState.setIsRefresh(false);
+      setIsRefresh(false);
       // todo 跳到登录页
     }
   }
