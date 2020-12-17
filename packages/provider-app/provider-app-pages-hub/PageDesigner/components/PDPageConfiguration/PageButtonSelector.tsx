@@ -4,15 +4,6 @@ import { ColumnType } from "antd/lib/table";
 import { ThunderboltOutlined } from "@ant-design/icons";
 import { FlatLayoutItems } from "@platform-widget-access/spec";
 // import { PageConfigContainerProps } from "./PageConfigContainer";
-interface IFlatLayoutItem {
-  id: string;
-  widgetRef: string;
-  wGroupType: string;
-  propState: {
-    title: string;
-    widgetCode: string;
-  };
-}
 interface IProps {
   delEntity;
   updateEntityState;
@@ -224,7 +215,6 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
     });
     setDataSource(newData);
     // TODO: 编辑按钮属性方法需要 nestingInfo
-    const curItem = props.flatLayoutItems[id];
     props.updateEntityState?.(id, {
       [dataIndex]: row[dataIndex],
     });
