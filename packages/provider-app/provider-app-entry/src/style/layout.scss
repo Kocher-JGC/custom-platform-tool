@@ -1,5 +1,6 @@
 $provider-header-height: 60px;
 $provider-nav-tabbar-height: 38px;
+$side-nav-width: 240px;
 
 #__provider_app_container {
   position: absolute;
@@ -7,6 +8,14 @@ $provider-nav-tabbar-height: 38px;
   right: 0;
   left: 0;
   bottom: 0;
+  &.hide-side-menu {
+    #__provider_pages_container {
+      left: 0;
+    }
+    #__provider_side_nav {
+      display: none;
+    }
+  }
   .provider-app-header {
     position: absolute;
     top: 0;
@@ -23,12 +32,11 @@ $provider-nav-tabbar-height: 38px;
     }
   }
   .pages-container {
-    position: absolute;
-    top: $provider-nav-tabbar-height;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    overflow-y: auto;
+    // position: absolute;
+    // top: $provider-nav-tabbar-height;
+    // right: 0;
+    // left: 0;
+    // bottom: 0;
   }
 }
 
@@ -39,4 +47,24 @@ $provider-nav-tabbar-height: 38px;
   left: 0;
   bottom: 0;
   overflow: auto;
+}
+
+#__provider_side_nav {
+  position: absolute;
+  width: $side-nav-width;
+  left: 0;
+  bottom: 0;
+  top: 0;
+}
+
+#__provider_pages_container {
+  position: absolute;
+  right: 0;
+  left: $side-nav-width;
+  bottom: 0;
+  top: 0;
+  padding: 0 20px 20px;
+  overflow-y: auto;
+
+  transition: left ease 0.2s;
 }

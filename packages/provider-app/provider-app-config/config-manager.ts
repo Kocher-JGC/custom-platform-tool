@@ -7,8 +7,6 @@ const AppConfig = {
   previewAppEntryUrl: ''
 };
 
-type ConfigKey = keyof typeof AppConfig
-
 /**
  * 获取 app 配置
  * @param configKey

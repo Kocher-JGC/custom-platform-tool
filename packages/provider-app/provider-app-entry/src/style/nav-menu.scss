@@ -1,5 +1,5 @@
 /** 设置颜色 */
-.__admin_nav_menu_container {
+.__provider_nav_menu_container {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
   background-color: rgba(#fff, 0.9);
   height: 100%;
@@ -83,7 +83,7 @@
   }
 }
 
-.__admin_nav_menu_container {
+.__provider_nav_menu_container {
   // @include fill();
   z-index: 101;
   transition: width ease 0.2s;
