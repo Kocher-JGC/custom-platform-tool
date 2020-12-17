@@ -38,7 +38,7 @@ export interface DragItemCompProps<D = DefaultDragableWidgetType, C = any>
   /** 用于排序时判断排序位置的 pixel */
   sortAreaPixel?: number;
   children: React.ReactChild;
-  accept?: TargetType;
+  accept: TargetType;
   /** 是否为容器 */
   isContainer?: boolean;
   /** 拖动排序的方向，x 轴 ｜ y 轴 */
@@ -62,10 +62,7 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
   nestingInfo,
   isContainer,
   sortAreaPixel = 20,
-  accept = [
-    DragableItemTypes.DragItemEntity,
-    DragableItemTypes.DragableItemType,
-  ],
+  accept,
   onItemHover,
   onItemMove,
   onItemDrop,
@@ -115,24 +112,23 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
         canDrop: monitor.canDrop(),
       };
     },
-    hover: (item, monitor) => {
+    hover: (dragItem, monitor) => {
       if (!ref.current || !onItemMove || !nestingInfo?.join()) {
         return;
       }
 
-      const dragItemNestInfo = item.nestingInfo || [];
+      const dragItemNestInfo = dragItem.nestingInfo || [];
       const hoverIndex = [...nestingInfo];
-
-      onItemHover?.(hoverIndex, {
-        isContainer,
-      });
-
-      item.parentIdx = getItemParentIdx(dragItemNestInfo);
 
       // Don't replace items with themselves
       if (dragItemNestInfo.join() === hoverIndex.join()) {
         return;
       }
+      onItemHover?.(hoverIndex, {
+        isContainer,
+      });
+      dragItem.parentIdx =
+        dragItem.parentIdx || getItemParentIdx(dragItemNestInfo);
 
       const dragIndex = [...dragItemNestInfo];
 
@@ -173,57 +169,69 @@ export const DragItemComp: React.FC<DragItemCompProps> = ({
         ) {
           return;
         }
-
-        // if (
-        //   isDragIdxGreeterThenHoveringItem &&
-        //   hoverClientX > hoverMiddleX - sortAreaPixel
-        // ) {
-        //   return;
-        // }
       } else {
         // Dragging downwards
         const fromTop = hoverClientY < hoverMiddleY + sortAreaPixel;
         const fromBottom = hoverClientY > hoverMiddleY - sortAreaPixel;
-        if (
-          (isDragIdxLessThenHoveringItem && fromTop) ||
-          (isDragIdxGreeterThenHoveringItem && fromBottom)
-        ) {
-          /** 进入了不排序的区域 */
-          // TODO: 移出容器的事件
-          if (isContainer) {
-            /** 如果父级是容器，将当前 item 的 parentIdx 指向父级的 idx */
-            if (item.parentIdx?.join("") === hoverIndex.join("")) return;
-            item.parentIdx = hoverIndex;
-            onItemMove?.(dragIndex, hoverIndex, {
-              isContainer,
-              from: fromTop ? "top" : "button",
-            });
+        const clientY = (clientOffset as XYCoord).y;
+        // 如果拖到了容器内
+        if (isContainer) {
+          const toTop = clientY <= hoverBoundingRect.top - 30;
+          const toBottom = clientY >= hoverBoundingRect.bottom - 30;
+          if (dragItem.parentIdx?.join("") === hoverIndex.join("")) {
+            // 移出容器
+            if (toTop || toBottom) {
+              /** 进入了不排序的区域 */
+              /** 如果父级是容器，将当前 dragItem 的 parentIdx 指向父级的 idx */
+              // if (dragItem.parentIdx?.join("") !== hoverIndex.join("")) {
+              // dragItem.parentIdx = hoverIndex;
+              onItemMove?.(dragIndex, hoverIndex, {
+                type: "exit",
+                direction: toTop ? "top" : "button",
+              });
+              // }
+            }
+          } else {
+            // 移入容器
+            if (
+              (isDragIdxLessThenHoveringItem && fromTop) ||
+              (isDragIdxGreeterThenHoveringItem && fromBottom)
+            ) {
+              /** 进入了不排序的区域 */
+              /** 如果父级是容器，将当前 dragItem 的 parentIdx 指向父级的 idx */
+              if (dragItem.parentIdx?.join("") !== hoverIndex.join("")) {
+                dragItem.parentIdx = hoverIndex;
+                onItemMove?.(dragIndex, hoverIndex, {
+                  type: "enter",
+                  direction: fromTop ? "top" : "button",
+                });
+              }
+            }
           }
           return;
         }
 
-        // Dragging upwards
-        // if (
-        //   isDragIdxGreeterThenHoveringItem &&
-        //   hoverClientY > hoverMiddleY - sortAreaPixel
-        // ) {
-        //   return;
-        // }
+        // 如果不是容器，只是纯粹做swap
+        if (
+          (isDragIdxLessThenHoveringItem && fromTop) ||
+          (isDragIdxGreeterThenHoveringItem && fromBottom)
+        ) {
+          return;
+        }
 
+        dragItem.parentIdx = null;
         // Time to actually perform the action
-        // onItemMove?.(dragIndex, hoverIndex, item);
+        onItemMove?.(dragIndex, hoverIndex, {
+          type: "sort",
+        });
       }
 
-      item.parentIdx = null;
-      // Time to actually perform the action
-      onItemMove?.(dragIndex, hoverIndex);
-
-      // Note: we're mutating the monitor item here!
+      // Note: we're mutating the monitor dragItem here!
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
       // eslint-disable-next-line no-param-reassign
-      item.nestingInfo = hoverIndex;
+      dragItem.nestingInfo = hoverIndex;
     },
   });
 

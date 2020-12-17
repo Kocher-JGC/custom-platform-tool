@@ -46,3 +46,5 @@ packages/consumer-app/consumer-app-iub-dsl-hub/.bak/*
 .docz
 
 temp.txt
+
+*.log

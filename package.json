@@ -19,6 +19,7 @@
     "lerna:bootstrap": "lerna bootstrap",
     "start:all": "lerna run --parallel --stream start",
     "start:consumer-app": "yarn && cd ./packages/consumer-app/web-client && npm start",
+    "start:consumer-app-server": "yarn && cd ./packages/consumer-app/web-server && npm start",
     "start:provider-app": "yarn && cd ./packages/provider-app/provider-app-entry && npm start",
     "start:platform-web-server": "sh ./scripts/start-platform-web-server.sh",
     "start:debug:platform-web-server": "sh ./scripts/debug-platform-web-server.sh",

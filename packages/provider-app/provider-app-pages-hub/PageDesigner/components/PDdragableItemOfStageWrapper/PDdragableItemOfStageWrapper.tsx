@@ -7,7 +7,7 @@
 import React from "react";
 import classnames from "classnames";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { TEMP_ENTITY_ID } from "@engine/visual-editor/core";
+import { TEMP_ENTITY_ID } from "@engine/visual-editor/utils";
 import {
   DragItemComp,
   DragableItemWrapperFac,
@@ -67,41 +67,47 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
   };
 
   const isTempEntity = currEntity._state === TEMP_ENTITY_ID;
+  if (isTempEntity) {
+    return <TempEntityTip key={id} />;
+  }
 
-  return isTempEntity ? (
-    <TempEntityTip key={id} />
-  ) : (
-    (() => {
-      if (!widgetMeta) return null;
-      const { propEditor } = widgetMeta;
-
-      // 通过远端获取组件
-      const actionCtx = { entity: currEntity, idx, nestingInfo };
-      const { acceptChildStrategy } = currEntity;
-      const isContainer = !!acceptChildStrategy;
-      const dragItemType = acceptChildStrategy
-        ? PDDragableItemTypes.containerWidget
-        : PDDragableItemTypes.stageRealWidget;
-      return (
-        <div className={classes} key={id}>
-          <DevEnvInfo id={id} nestingInfo={nestingInfo} />
-          <DragItemComp
-            nestingInfo={nestingInfo}
-            sortable={true}
-            onItemDrag={onItemDrag}
-            onItemHover={onItemHover}
-            onItemDrop={onItemDrop}
-            onItemMove={onItemMove}
-            dragableWidgetType={currEntity}
-            type={dragItemType}
-            isContainer={isContainer}
-            className="relative drag-item"
-            accept={[
-              PDDragableItemTypes.containerWidget,
-              PDDragableItemTypes.stageRealWidget,
-              PDDragableItemTypes.staticWidget,
-            ]}
-          >
+  // 通过远端获取组件
+  const actionCtx = { entity: currEntity, idx, nestingInfo };
+  const { acceptChildStrategy } = currEntity;
+  const isContainer = !!acceptChildStrategy;
+  const dragItemType = acceptChildStrategy
+    ? PDDragableItemTypes.containerWidget
+    : PDDragableItemTypes.stageRealWidget;
+  return (
+    <div className={classes} key={id}>
+      <DevEnvInfo id={id} nestingInfo={nestingInfo} />
+      <DragItemComp
+        nestingInfo={nestingInfo}
+        sortable={true}
+        onItemDrag={onItemDrag}
+        onItemHover={onItemHover}
+        onItemDrop={onItemDrop}
+        onItemMove={onItemMove}
+        dragableWidgetType={currEntity}
+        type={dragItemType}
+        isContainer={isContainer}
+        className="relative drag-item"
+        // canItemDrop={(dropType) => {
+        //   return (
+        //     dragItemType === PDDragableItemTypes.staticWidget &&
+        //     dropType !== PDDragableItemTypes.staticWidget
+        //   );
+        // }}
+        accept={[
+          PDDragableItemTypes.containerWidget,
+          PDDragableItemTypes.stageRealWidget,
+          PDDragableItemTypes.staticWidget,
+        ]}
+      >
+        {isTempEntity ? (
+          <TempEntityTip key={id} />
+        ) : (
+          <>
             <WidgetRenderer
               // {...propsForChild}
               id={id}
@@ -120,7 +126,7 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
                 // onClick={(e) => {
                 //   onItemClick(e, actionCtx);
                 // }}
-                propEditor={propEditor}
+                propEditor={widgetMeta?.propEditor}
                 entityState={entityState}
                 changeEntityState={(changeVal) => {
                   updateEntityState(updateCtx, changeVal);
@@ -140,25 +146,10 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
                   }}
                 />
               </span>
-              {/* <Button 
-              
-              type="primary" 
-              shape="circle" icon={}
-            /> */}
-
-              {/* <span
-              className="default btn red"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(e, actionCtx);
-              }}
-            >
-              删除
-            </span> */}
             </div>
-          </DragItemComp>
-        </div>
-      );
-    })()
+          </>
+        )}
+      </DragItemComp>
+    </div>
   );
 };

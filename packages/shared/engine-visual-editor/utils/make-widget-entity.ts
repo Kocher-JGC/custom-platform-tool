@@ -7,8 +7,8 @@ import {
 } from '@engine/visual-editor/utils';
 import {
   EditableWidgetMeta, WidgetEntity, TempWidgetEntityType
-} from '../../data-structure';
-import { TEMP_ENTITY_ID } from '../const';
+} from '../data-structure';
+import { TEMP_ENTITY_ID } from './const';
 
 export type MakeWidgetEntity = (
   widgetType: EditableWidgetMeta,
@@ -23,12 +23,12 @@ export type MakeWidgetEntity = (
  */
 export const makeWidgetEntity: MakeWidgetEntity = (
   widgetType: EditableWidgetMeta,
-  options = {}
+  options
 ) => {
   const {
     genIDLen = 8,
     state = 'active'
-  } = options;
+  } = options || {};
   const entityID = nanoid(genIDLen);
 
   /**

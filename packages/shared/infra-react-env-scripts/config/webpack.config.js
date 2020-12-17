@@ -58,6 +58,7 @@ module.exports = (webpackEnv) => {
 
   const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions = {}) => {
     const loaders = [
+      // 'thread-loader',
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
         loader: MiniCssExtractPlugin.loader,
@@ -70,19 +71,21 @@ module.exports = (webpackEnv) => {
       {
         loader: require.resolve('postcss-loader'),
         options: {
-          ident: 'postcss',
-          plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('tailwindcss'),
-            require('postcss-preset-env')({
-              autoprefixer: {
-                flexbox: 'no-2009',
-              },
-              stage: 3,
-            }),
-            postcssNormalize(),
-          ],
-          sourceMap: isEnvProduction && shouldUseSourceMap,
+          postcssOptions: {
+            ident: 'postcss',
+            plugins: (loader) => [
+              require('postcss-flexbugs-fixes'),
+              require('tailwindcss'),
+              require('postcss-preset-env')({
+                autoprefixer: {
+                  flexbox: 'no-2009',
+                },
+                stage: 3,
+              }),
+              postcssNormalize(),
+            ],
+            sourceMap: isEnvProduction && shouldUseSourceMap,
+          }
         },
       },
     ].filter(Boolean);
@@ -103,7 +106,7 @@ module.exports = (webpackEnv) => {
     bail: isEnvProduction,
     devtool: isEnvProduction
       ? shouldUseSourceMap
-        ? 'source-map'
+        ? 'inline-source-map'
         : false
       : isEnvDevelopment && 'cheap-module-source-map',
     entry: [
@@ -135,25 +138,41 @@ module.exports = (webpackEnv) => {
         new TerserPlugin({
           terserOptions: {
             parse: {
+              // We want terser to parse ecma 8 code. However, we don't want it
+              // to apply any minification steps that turns valid ecma 5 code
+              // into invalid ecma 5 code. This is why the 'compress' and 'output'
+              // sections only apply transformations that are ecma 5 safe
+              // https://github.com/facebook/create-react-app/pull/4234
               ecma: 8,
             },
             compress: {
               ecma: 5,
               warnings: false,
+              // Disabled because of an issue with Uglify breaking seemingly valid code:
+              // https://github.com/facebook/create-react-app/issues/2376
+              // Pending further investigation:
+              // https://github.com/mishoo/UglifyJS2/issues/2011
               comparisons: false,
+              // Disabled because of an issue with Terser breaking valid code:
+              // https://github.com/facebook/create-react-app/issues/5250
+              // Pending further investigation:
+              // https://github.com/terser-js/terser/issues/120
               inline: 2,
             },
             mangle: {
               safari10: true,
             },
+            // Added for profiling in devtools
+            keep_classnames: false,
+            keep_fnames: false,
             output: {
               ecma: 5,
               comments: false,
+              // Turned on because emoji and regex is not minified properly using default
+              // https://github.com/facebook/create-react-app/issues/2488
               ascii_only: true,
             },
           },
-          parallel: !isWsl,
-          cache: true,
           sourceMap: shouldUseSourceMap,
         }),
         new OptimizeCSSAssetsPlugin({
@@ -210,12 +229,24 @@ module.exports = (webpackEnv) => {
             },
             {
               test: [/\.tsx?$/],
-              use: {
-                loader: 'ts-loader',
-                options: {
-                  transpileOnly: true,
-                }
-              },
+              use: [
+                {
+                  loader: 'thread-loader',
+                  options: {
+                    // there should be 1 cpu for the fork-ts-checker-webpack-plugin
+                    workers: require('os').cpus().length - 1,
+                    poolTimeout: Infinity // set this to Infinity in watch mode - see https://github.com/webpack-contrib/thread-loader
+                  },
+                },
+                {
+                  loader: require.resolve('ts-loader'),
+                  options: {
+                    transpileOnly: true,
+                    happyPackMode: true,
+                    silent: false,
+                  }
+                },
+              ],
               exclude: [/\.scss.ts$/, /\.test.tsx?$/, /node_modules/]
             },
             {
@@ -328,30 +359,40 @@ module.exports = (webpackEnv) => {
               exclude: sassModuleRegex,
               use: getStyleLoaders(
                 {
-                  importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  importLoaders: 3,
+                  sourceMap: isEnvProduction ?
+                    shouldUseSourceMap :
+                    isEnvDevelopment,
                 },
                 'sass-loader',
                 {
-                  implementation: require('sass'),
+                  sassOptions: {
+                    implementation: require('sass'),
+                    includePaths: ["node_modules"],
+                  },
                 }
+                // {
+                //   implementation: require('sass'),
+                // }
               ),
-              sideEffects: true,
             },
             {
               test: sassModuleRegex,
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  sourceMap: isEnvProduction ?
+                    shouldUseSourceMap :
+                    isEnvDevelopment,
                   modules: true,
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
                 'sass-loader',
-                {
-                  implementation: require('sass'),
-                }
+                // {
+                //   implementation: require('sass'),
+                // }
               ),
+              sideEffects: true,
             },
             {
               loader: require.resolve('file-loader'),

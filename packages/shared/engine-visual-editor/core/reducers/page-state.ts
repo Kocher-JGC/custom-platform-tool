@@ -175,11 +175,11 @@ export function pageMetadataReducer(
           }
 
           if(changeData.type === 'create/batch&rm/batch') {
-            const {rmMetaIDList, datas} = changeData;
+            const { rmMetaIDList, datas } = changeData;
             draft[metaAttr] = datas;
             Array.isArray(rmMetaIDList) && rmMetaIDList.forEach(rmMetaID => {
               Reflect.deleteProperty(draft[metaAttr], rmMetaID);
-            })
+            });
           }
 
           // switch (type) {
