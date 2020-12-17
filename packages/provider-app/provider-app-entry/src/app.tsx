@@ -13,11 +13,13 @@ import {
   DefaultLocationState,
 } from "multiple-page-routing";
 import { Location } from "history";
+import { Icon } from "@deer-ui/core/icon";
 
 /** 获取路由配置 */
 import { Dashboard } from "@provider-app/dashboard/main";
 import Router, { getRouteName } from "@provider-app/config/router";
 import { LoadingTip } from "@provider-ui/loading-tip";
+import classnames from "classnames";
 import { Version } from "./components/Version";
 
 import {
@@ -27,6 +29,7 @@ import {
   TabNav,
   Logo,
   UserStatusbar,
+  NavMenu,
 } from "./components";
 
 import { AuthStoreState } from "./auth/actions";
@@ -86,6 +89,7 @@ export default class App extends MultipleRouterManager<
     this.state = {
       ...this.state,
       ready: false,
+      showSideMenu: true,
       navMenu: [],
     };
   }
@@ -110,7 +114,7 @@ export default class App extends MultipleRouterManager<
       this.initRoute();
     }
 
-    nextState && this.setState(nextState);
+    if (nextState) this.setState(nextState);
   };
 
   componentDidMount() {
@@ -187,18 +191,69 @@ export default class App extends MultipleRouterManager<
     );
   };
 
+  isShowSideMenu = () => {
+    // 如果在页面设计器，则不显示左菜单
+    const { activeRoute } = this.state;
+    const isPageDesigner = activeRoute.indexOf("page-designer") > -1;
+    return !isPageDesigner;
+  };
+
   /**
    * 渲染导航栏
    * 策略：
    * 1. 需要进入了应用才显示导航栏
    */
   renderNav = () => {
-    const { navMenu, ready } = this.state;
+    const { navMenu, activeRoute } = this.state;
     /**
      * 是否选择了应用，必须选择应用后才现实菜单
      */
     const isShowMainNav = this.isEntryApp();
-    return isShowMainNav ? <Nav navConfig={navMenu} /> : null;
+    return isShowMainNav ? (
+      <NavMenu show menuData={navMenu} activeRoute={activeRoute} />
+    ) : null;
+    // return isShowMainNav ? <Nav navConfig={navMenu} /> : null;
+  };
+
+  /**
+   * 渲染导航栏
+   * 策略：
+   * 1. 需要进入了应用才显示导航栏
+   */
+  renderTopNav = () => {
+    const { navMenu, activeRoute } = this.state;
+    /**
+     * 是否选择了应用，必须选择应用后才现实菜单
+     */
+    const isShowMainNav = this.isEntryApp();
+    return isShowMainNav ? (
+      <div className="__top-nav-container">
+        {navMenu?.map((item) => {
+          const { id, title, path, child, icon } = item;
+          // console.log(item);
+          let _path = path;
+          if (child) _path = child[0].path;
+          return (
+            <div
+              className="top-nav-item"
+              key={id}
+              onClick={(e) => {
+                onNavigate({
+                  type: "PUSH",
+                  path: _path,
+                });
+              }}
+            >
+              <Icon n={icon} className="px-2 text-xl" />
+              <span>{title}</span>
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <span className="flex"></span>
+    );
+    // return isShowMainNav ? <Nav navConfig={navMenu} /> : null;
   };
 
   render() {
@@ -206,10 +261,17 @@ export default class App extends MultipleRouterManager<
     const { routers, routerSnapshot, activeRoute, navMenu, ready } = this.state;
     const { appName: currAppName } = this.appLocation;
 
+    const showSideMenu = this.isShowSideMenu();
+
     const isEntryApp = this.isEntryApp();
 
+    const appContainerClasses = classnames([
+      "bg-gray-100",
+      // !showSideMenu && "hide-side-menu",
+    ]);
+
     return (
-      <div id="__provider_app_container" className="bg-gray-100">
+      <div id="__provider_app_container" className={appContainerClasses}>
         {ready ? (
           <>
             <header
@@ -225,8 +287,7 @@ export default class App extends MultipleRouterManager<
                   this.closeAll();
                 }}
               />
-              {this.renderNav()}
-              <span className="flex"></span>
+              {this.renderTopNav()}
               {
                 // 需要选择应用后才进入应用
                 isEntryApp && <ToApp appLocation={this.appLocation} />
@@ -254,16 +315,19 @@ export default class App extends MultipleRouterManager<
                 />
               ) : (
                 <>
-                  <TabNav
-                    onClose={(idx) => {
-                      this.closeTab(idx);
-                    }}
-                    routers={routers}
-                    routerSnapshot={routerSnapshot}
-                    activeRoute={activeRoute}
-                    getRouteName={getRouteName}
-                  />
-                  {this.renderPages()}
+                  <div id="__provider_side_nav">{this.renderNav()}</div>
+                  <div id="__provider_pages_container">
+                    <TabNav
+                      onClose={(idx) => {
+                        this.closeTab(idx);
+                      }}
+                      routers={routers}
+                      routerSnapshot={routerSnapshot}
+                      activeRoute={activeRoute}
+                      getRouteName={getRouteName}
+                    />
+                    {this.renderPages()}
+                  </div>
                 </>
               )}
             </div>

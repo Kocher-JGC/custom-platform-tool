@@ -1,14 +1,13 @@
-import { LogoutOutlined } from '@ant-design/icons';
-import React from 'react';
+// import { LogoutOutlined } from "@ant-design/icons";
+import React from "react";
+import { Icon } from "@deer-ui/core/icon";
 
-export const UserStatusbar = ({
-  logout
-}) => {
+export const UserStatusbar = ({ logout }) => {
   return (
-    <LogoutOutlined
+    <Icon
+      n="circle-notch"
       onClick={logout}
-      title="退出登录"
-      className="user-statusbar ps20"
+      className="user-statusbar ps20 text-gray-100"
     />
   );
 };
