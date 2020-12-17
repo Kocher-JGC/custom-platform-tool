@@ -75,7 +75,7 @@ const initReq = (token?: string) => {
  */
 export async function render() {
   // 合并环境配置
-  const envConfig = Object.assign(await getAppEnvConfig(), getEnvConfigFromLocation());
+  const envConfig = Object.assign(await getAppEnvConfig(), getEnvConfigFromLocation(), {"client_secret": "hy123456","client_id": "client_hy_web"});
 
   // 判断环境配置的合法性
   const isPass = checkEnvConfig(envConfig);
