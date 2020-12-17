@@ -1,7 +1,7 @@
 import store from "store";
-
 import { originGenUrl, SYS_MENU_BUSINESSCODE } from "../utils/gen-url";
 import { getPageQuery } from "../utils/utils";
+
 // import { menuMockData } from './menu.mock';
 
 /**
@@ -31,6 +31,7 @@ export async function queryMenuList() {
       },
     }
   );
-
+  
   return res.data;
+  
 }

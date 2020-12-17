@@ -1,13 +1,14 @@
+import { history } from 'multiple-page-routing';
 import React from "react";
 import ReactDOM from "react-dom";
-
 import store from "store";
-import { history } from 'multiple-page-routing';
-
-import { initRequest } from "./utils/request";
-import { getAppEnvConfig, UrlConfKey } from "./utils/env";
-import { checkEnvConfig } from "./utils/check-env-config";
 import App from './main';
+import { checkEnvConfig } from "./utils/check-env-config";
+import { getAppEnvConfig, UrlConfKey } from "./utils/env";
+import { initRequest } from "./utils/request";
+
+
+
 
 /**
  * 从 config 获取环境配置
@@ -83,6 +84,7 @@ export async function render() {
     Object.keys(envConfig).forEach((field) => {
       store.set(field, envConfig[field]);
     });
+
   }
 
   // if(envConfig["app/code"] && envConfig[`app/${envConfig["app/code"]}/token`]){

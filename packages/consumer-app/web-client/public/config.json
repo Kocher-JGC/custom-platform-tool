@@ -1,4 +1,6 @@
 {
-  "saasServerUrl": "http://192.168.14.181:7090",
-  "pageServerUrlForApp": "http://localhost:3000"
+  "saasServerUrl": "http://192.168.14.140:6060",
+  "pageServerUrlForApp": "http://localhost:3000",
+  "client_secret": "hy123456",
+  "client_id": "client_hy_web"
 }

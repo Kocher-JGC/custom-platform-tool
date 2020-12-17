@@ -1,27 +1,29 @@
-import React from "react";
-
-import { Provider, connect } from "unistore/react";
-
 import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
 import { LoginPanel } from "@engine/ui-admin-template/plugins/default-renderer/login-panel";
-import store from "store";
-import SelectApp from "./components/SelectApp";
-
-import {
-  authStore,
-  authActions,
-  AuthStore,
-  SaaSAuthActionsTypes,
-  AuthStoreState,
-} from "./auth/actions";
-import { queryMenuList } from "./services";
-import { PageContainer, Version, DashboardRender } from "./components";
-
+import { Button } from "antd";
 import "antd/dist/antd.css";
-import "./style";
+import React from "react";
+import store from "store";
+import { connect, Provider } from "unistore/react";
+import {
+  authActions, authStore,
 
+  AuthStore,
+
+  AuthStoreState, SaaSAuthActionsTypes
+} from "./auth/actions";
+import { DashboardRender, PageContainer, Version } from "./components";
+import SelectApp from "./components/SelectApp";
+import { queryMenuList } from "./services";
+import "./style";
 import { remoteMenu2AppMenu } from "./utils";
+
+
+
+
+
+
 
 function selector(state) {
   return state;
@@ -118,6 +120,8 @@ class LoginFilter extends React.Component<LoginFilterProps> {
   };
 
   onLoginSuccess = () => {
+    const {getUserLastLoginInfo} = this.props;
+    getUserLastLoginInfo();
     queryMenuList().then((menuDataRes) => {
       // TODO: 过滤成内部菜单数据
       const menuData = remoteMenu2AppMenu(menuDataRes.result);
@@ -170,6 +174,8 @@ class LoginFilter extends React.Component<LoginFilterProps> {
       switchUser,
       switchApp,
       autoLogin,
+      lastLoginInfo,
+      logout
     } = this.props;
     const { menuData } = this.state;
 
@@ -200,13 +206,19 @@ class LoginFilter extends React.Component<LoginFilterProps> {
                 overlay: () => {
                   if (store.get("app/mode") !== "preview") {
                     return (
-                      <div style={{ width: 120 }}>
-                        <div className="p10" onClick={switchUser}>
-                          切换账号
+                      <div style={{ width: 300 }}>
+                        <div className="p10" style={{color: '#1890ff'}}>
+                          账户信息
                         </div>
                         <hr style={{ margin: 0 }} />
-                        <div className="p10" onClick={switchApp}>
-                          切换应用
+                        <div className="p10">本次登录：{lastLoginInfo.lastLoginTime}</div>
+                        <div className="p10">上次登录：{lastLoginInfo.createTime}</div>
+                        <div className="p10">登录ip：{lastLoginInfo.ip}</div>
+                        <hr style={{ margin: 0 }} />
+                        <div className="p10">
+                          <Button type="link" onClick={logout}>退出登录</Button>
+                          <Button type="link" onClick={switchUser}>切换账号</Button>
+                          <Button type="link" onClick={switchApp}>切换应用</Button>
                         </div>
                         {/* <div className="p20">修改密码</div> */}
                       </div>

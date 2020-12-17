@@ -2,10 +2,11 @@
  * request 网络请求工具
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
-import axios, { AxiosInstance } from 'axios';
 // import { extend } from 'umi-request';
 import { notification } from 'antd';
-import store from 'store';
+import axios, { AxiosInstance } from 'axios';
+import storage from 'store';
+import refreshToken from './refreshToken';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -45,9 +46,64 @@ const errorHandler = (error: { response: Response }): Response => {
   }
   return response;
 };
+// 数据管理
+const requestState = {
+  getCode:()=>{
+    return storage.get("app/code")
+  },
+  getToken:function(){
+    return storage.get(`app/${this.getCode()}/token`)
+  }
+}
 
-export const initRequest = (baseURL, token) => {
+// 请求前设置请求头
+const beforeRequest = (request:AxiosInstance)=>{
+  request.interceptors.request.use(
+    config => {
+      const tokenId = requestState.getToken();
+      if (tokenId) {
+        config.headers.common["Authorization"] = "Bearer " + tokenId;
+      }
+  
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    }
+  );
+}
+
+// 响应头拦截处理
+const beforeResponse = (request:AxiosInstance, baseURL:string)=>{
+  request.interceptors.response.use(
+    response => {
+      return Promise.resolve(response.data);
+    },
+    error => {
+      try{
+        let errCode = -1;
+        console.log(error,error.response)
+        if(error.response){
+          errCode = error.response.status;
+        }
+        if(errCode == 401 && error.response.config.url != '/auth/login'){
+          return refreshToken.checkStatus(error.response, baseURL);
+        } else {
+          return Promise.reject('');
+        }
+      }catch(e){
+        return Promise.reject('');
+      }
+      
+      
+    }
+  );
+}
+
+
+export const initRequest = (baseURL:string, token:string) => {
   if (window.$A_R) return;
+
   /**
    * 配置request请求时的默认参数
    */
@@ -60,16 +116,11 @@ export const initRequest = (baseURL, token) => {
       Authorization: token.indexOf("Bearer") !== -1 ? token: `Bearer ${token}`
     }),
   });
-
-  // TODO: 临时解决发布应用请求头没有 token
-  // request.interceptors.request.use(function (config) {
-  //   const code = store.get(`app/code`);
-  //   if(code) {
-  //     const token = store.get(`app/${code}/token`);
-  //     config.headers.Authorization= token.indexOf("Bearer") !== -1 ? token: `Bearer ${token}`;
-  //   }
-  //   return config;
-  // });
+  
+  beforeRequest(request);
+  
+  beforeResponse(request, baseURL);
+  
 
   /**
    * 定义不可被更改的 $R_P 属性
