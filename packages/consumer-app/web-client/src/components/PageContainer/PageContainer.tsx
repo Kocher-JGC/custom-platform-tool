@@ -2,7 +2,7 @@ import React from "react";
 import { notification } from "antd";
 import { IUBDSLRenderer } from "@iub-dsl/platform/react";
 import { PageRenderCtx } from "@engine/ui-admin-template";
-
+import store from "store";
 import { queryPageData } from "../../services/page";
 import "./index.less";
 
@@ -37,7 +37,9 @@ const genPageRenderer = (props, Renderer) => {
  */
 export class PageContainer extends React.PureComponent<PageContainerProps> {
   static PageRenderer: any = () => "错误的PageRenderer渲染";
+
   static requestHandler: any = (...args) => false;
+
   state = {
     pageData: {},
     ready: false,
@@ -45,7 +47,12 @@ export class PageContainer extends React.PureComponent<PageContainerProps> {
   };
 
   componentDidMount() {
-    const { pageID, app, lessee, mode, t } = this.props;
+    const { pageID, mode, t } = this.props;
+    let { app, lessee } = this.props;
+
+    lessee = lessee || store.get("app/lessee");
+    app = app || store.get("app/code");
+
     PageContainer.requestHandler = async (
       reqParam,
       bizCode = SYS_MENU_BUSINESSCODE

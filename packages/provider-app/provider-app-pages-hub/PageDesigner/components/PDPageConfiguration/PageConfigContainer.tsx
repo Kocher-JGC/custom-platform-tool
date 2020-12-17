@@ -3,13 +3,18 @@ import { Tabs, Tab } from "@infra/ui";
 import { PageVariableSelector } from "./PageVariableSelector";
 import { PageActionSelector } from "./PageActionSelector";
 import { PageEventSelector } from "./PageEventSelector";
+import { PageButtonSelector } from "./PageButtonSelector";
+import { PageWidgetSelector } from "./PageWidgetSelector";
 import "./style.scss";
+
 export interface PageConfigContainerProps {
   flatLayoutItems;
   pageMetadata;
   platformCtx;
   pageState;
   changePageState;
+  updateEntityState;
+  delEntity;
 }
 
 export const PageConfigContainer: React.FC<PageConfigContainerProps> = (
@@ -26,6 +31,12 @@ export const PageConfigContainer: React.FC<PageConfigContainerProps> = (
         </Tab>
         <Tab label="页面事件">
           <PageEventSelector {...props} />
+        </Tab>
+        <Tab label="页面按钮">
+          <PageButtonSelector {...props} />
+        </Tab>
+        <Tab label="页面控件">
+          <PageWidgetSelector {...props} />
         </Tab>
       </Tabs>
     </div>

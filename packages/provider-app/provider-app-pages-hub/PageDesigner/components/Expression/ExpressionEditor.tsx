@@ -18,7 +18,7 @@ import {
 } from "antd";
 import { EditorFromTextArea } from "codemirror";
 import { VariableItem } from "@provider-app/page-designer/platform-access";
-// import codeEngine from "@engine/low-code";
+import codeEngine from "@engine/low-code";
 import createSandbox from "@engine/js-sandbox";
 import { PlatformCtx } from "@platform-widget-access/spec";
 import { HY_METHODS } from "@library/expression-methods";
@@ -55,11 +55,23 @@ interface ISubmitRes {
   code: string | null;
   variable: { field: string; value: string }[];
 }
+
+interface IDefaultVariableListChildren extends VariableItem {
+  value: string;
+}
+interface IDefaultVariableList {
+  title: string;
+  value: string;
+  disabled: boolean;
+
+  children: IDefaultVariableListChildren[];
+}
 interface IProps {
   metaCtx: PlatformCtx["meta"];
   /** 表达式提交回调函数 */
   onSubmit: (transformRes: ISubmitRes) => void;
   defaultValue?: ISubmitRes;
+  defaultVariableList?: IDefaultVariableList[];
 }
 
 interface ITransformRes {
@@ -104,6 +116,8 @@ export const Expression: React.FC<IProps> = (props) => {
   const [defaultTextMarks, setDefaultTextMarks] = useState<
     IDefaultTextMark[] | null
   >(null);
+  /** 编辑器是否编辑过 */
+  const [edited, setEditing] = useState<boolean>(false);
   /** 编辑器下拉提示 */
   // const [hintOptions, setHintOptions] = useState<{ completeSingle: boolean; keywords: string[] }>({
   //   completeSingle: false,
@@ -284,8 +298,6 @@ export const Expression: React.FC<IProps> = (props) => {
         maskClosable: true,
         onOk: onSubmit,
       });
-    } else {
-      checkSubmit();
     }
   };
   /**
@@ -358,10 +370,10 @@ export const Expression: React.FC<IProps> = (props) => {
         console.log("变量上下文: ", debugCodeValue);
         // 检查所需参数/变量是否存在
         if (checkDebugCodeContext(transformRes, debugCodeValue)) {
-          // const str = codeEngine(code, {});
-          // console.log("低代码引擎处理结果: ", str);
+          const str = codeEngine(transformRes.code, {});
+          console.log("低代码引擎处理结果: ", str);
           const sandbox = createSandbox({ ...debugCodeValue, HY }, {});
-          const res = await sandbox(transformRes.code);
+          const res = await sandbox(str);
           console.log("调试结果: ", res);
           message.success(
             `调试结果: ${typeof res === "object" ? JSON.stringify(res) : res}`
@@ -477,19 +489,34 @@ export const Expression: React.FC<IProps> = (props) => {
     addDefaultTextMarks();
   };
 
+  const initVariableList = (res) => {
+    // 替换特殊字符 . 为 _
+    const variable = formatVariable(res);
+    // 检查变量标题是否存在重复
+    checkVariableTitle(variable);
+    // 生成选择变量（折叠面板）所需数据
+    setVariableTree(variable);
+    // 初始化默认值
+    initDefaultValue(variable);
+    console.log("全部变量: ", res, variable);
+  };
+  const transformVariableTree = (tree) => {
+    return tree.reduce((a, b) => {
+      a[b.value] = b.children;
+      return a;
+    }, {} as TVariableTree<TVariableItem>);
+  };
+
   useEffect(() => {
-    console.log("初始值: ", props.defaultValue);
-    props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
-      // 替换特殊字符 . 为 _
-      const variable = formatVariable(res);
-      // 检查变量标题是否存在重复
-      checkVariableTitle(variable);
-      // 生成选择变量（折叠面板）所需数据
-      setVariableTree(variable);
-      // 初始化默认值
-      initDefaultValue(variable);
-      console.log("全部变量: ", res, variable);
-    });
+    console.log("初始值 code: ", props.defaultValue);
+    console.log("初始值 defaultVariableList: ", props.defaultVariableList);
+    if (props.defaultVariableList) {
+      initVariableList(transformVariableTree(props.defaultVariableList));
+    } else {
+      props.metaCtx.getVariableData(["page", "pageInput"]).then((res) => {
+        initVariableList(res);
+      });
+    }
   }, [props.defaultValue]);
 
   return (
@@ -523,6 +550,9 @@ export const Expression: React.FC<IProps> = (props) => {
                 defaultValue={defaultCode || ""}
                 getEditor={(curEditor) => setEditor(curEditor)}
                 ready={onReady}
+                onChange={() => {
+                  setEditing(true);
+                }}
               />
             ) : (
               ""
@@ -669,7 +699,14 @@ export const Expression: React.FC<IProps> = (props) => {
           <span className="expression-handle-tip">
             请在英文输入法模式下编辑表达式
           </span>
-          <Button type="primary" onClick={checkSubmit}>
+          <Button
+            type="primary"
+            onClick={
+              edited && (!operationResult || !operationResult.success)
+                ? checkSubmit
+                : onSubmit
+            }
+          >
             确定
           </Button>
         </div>

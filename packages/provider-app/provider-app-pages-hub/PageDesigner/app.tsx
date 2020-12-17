@@ -384,7 +384,7 @@ class PageDesignerApp extends React.Component<
     } = this.props;
 
     // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
-    const { InitEntityState } = dispatcher;
+    const { InitEntityState, UpdateEntityState, DelEntity } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
     if (!appContext.ready) {
@@ -401,6 +401,8 @@ class PageDesignerApp extends React.Component<
               changePageState={this.changePageState}
               appLocation={appLocation}
               pageState={appContext.pageState}
+              updateEntityState={UpdateEntityState}
+              delEntity={DelEntity}
             />
           </header>
           <div

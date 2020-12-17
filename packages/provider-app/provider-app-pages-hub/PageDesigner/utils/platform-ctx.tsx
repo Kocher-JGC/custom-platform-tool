@@ -54,7 +54,7 @@ export const createPlatformCtx = (
         };
       },
       openExpressionImporter: (options) => {
-        const { defaultValue, onSubmit } = options;
+        const { defaultValue, defaultVariableList, onSubmit } = options;
         const modalID = ShowModal({
           title: "表达式编辑",
           width: "85%",
@@ -62,6 +62,7 @@ export const createPlatformCtx = (
             return (
               <Expression
                 defaultValue={defaultValue}
+                defaultVariableList={defaultVariableList}
                 metaCtx={metaCtx}
                 onSubmit={onSubmit}
               />

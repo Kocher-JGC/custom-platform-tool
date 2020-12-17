@@ -34,9 +34,21 @@ export interface OnExpressionImporterSubmitOptions {
   variable: { field: string, value: string }[];
 }
 
+interface IDefaultVariableListChildren extends VariableItem {
+  value: string;
+}
+export interface IDefaultVariableList {
+  title: string;
+  value: string;
+  disabled: boolean;
+
+  children: IDefaultVariableListChildren[];
+}
+
 export interface OpenExpressionImporterOptions {
   defaultValue: OnExpressionImporterSubmitOptions;
   onSubmit: (submitOptions: OnExpressionImporterSubmitOptions) => void;
+  defaultVariableList?: IDefaultVariableList[];
 }
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) => () => void
