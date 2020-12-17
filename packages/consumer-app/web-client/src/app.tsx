@@ -2,12 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import store from "store";
-import { history } from 'multiple-page-routing';
+import { history } from "multiple-page-routing";
 
 import { initRequest } from "./utils/request";
 import { getAppEnvConfig, UrlConfKey } from "./utils/env";
 import { checkEnvConfig } from "./utils/check-env-config";
-import App from './main';
+import App from "./main";
 
 /**
  * 从 config 获取环境配置
@@ -39,8 +39,8 @@ const queryKeyMapStoreKey = {
  */
 const getEnvConfigFromLocation = () => {
   const { query } = history.location;
-  if(!query) return {};
-  if(!query.mode && store.get("app/mode") === "preview"){
+  if (!query) return {};
+  if (!query.mode && store.get("app/mode") === "preview") {
     store.remove("app/mode");
   }
   const queryKeys = Object.keys(query);
@@ -50,7 +50,7 @@ const getEnvConfigFromLocation = () => {
     queryKeys.forEach((q) => {
       if (q !== "redirect") {
         const matchStoreKey = queryKeyMapStoreKey[q];
-        if(matchStoreKey) {
+        if (matchStoreKey) {
           params[matchStoreKey] = query[q];
         }
       }
@@ -74,10 +74,13 @@ const initReq = (token?: string) => {
  */
 export async function render() {
   // 合并环境配置
-  const envConfig = Object.assign(await getAppEnvConfig(), getEnvConfigFromLocation());
+  const envConfig = Object.assign(
+    await getAppEnvConfig(),
+    getEnvConfigFromLocation()
+  );
 
   // 判断环境配置的合法性
-  const isPass = checkEnvConfig(envConfig);
+  const isPass = await checkEnvConfig(envConfig);
 
   if (isPass) {
     Object.keys(envConfig).forEach((field) => {
@@ -91,10 +94,7 @@ export async function render() {
 
   initReq();
 
-  ReactDOM.render(
-    <App />,
-    document.querySelector("#Main")
-  );
+  ReactDOM.render(<App />, document.querySelector("#Main"));
 }
 
 render();

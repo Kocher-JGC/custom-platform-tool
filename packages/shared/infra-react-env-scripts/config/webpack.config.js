@@ -230,14 +230,14 @@ module.exports = (webpackEnv) => {
             {
               test: [/\.tsx?$/],
               use: [
-                {
-                  loader: 'thread-loader',
-                  options: {
-                    // there should be 1 cpu for the fork-ts-checker-webpack-plugin
-                    workers: require('os').cpus().length - 1,
-                    poolTimeout: Infinity // set this to Infinity in watch mode - see https://github.com/webpack-contrib/thread-loader
-                  },
-                },
+                // {
+                //   loader: 'thread-loader',
+                //   options: {
+                //     // there should be 1 cpu for the fork-ts-checker-webpack-plugin
+                //     workers: require('os').cpus().length - 1,
+                //     poolTimeout: Infinity // set this to Infinity in watch mode - see https://github.com/webpack-contrib/thread-loader
+                //   },
+                // },
                 {
                   loader: require.resolve('ts-loader'),
                   options: {
