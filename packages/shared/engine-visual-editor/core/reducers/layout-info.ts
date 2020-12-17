@@ -1,6 +1,6 @@
-import update from 'immutability-helper';
+// import update from 'immutability-helper';
 import produce from 'immer';
-import { mergeDeep } from '@infra/utils/tools';
+// import { mergeDeep } from '@infra/utils/tools';
 import { LayoutInfoActionReducerState, FlatLayoutItems } from "../../data-structure";
 import {
   ADD_ENTITY, SET_LAYOUT_STATE, DEL_ENTITY,
@@ -18,7 +18,7 @@ import {
   AddTempEntityAction,
   ADD_TEMP_ENTITY
 } from '../actions';
-import { getItemFromNestingItemsByBody, setItem2NestingArr, TEMP_ENTITY_ID } from '../../utils';
+import { flatArrayToNode, getItemFromNestingItemsByBody, setItem2NestingArr, TEMP_ENTITY_ID } from '../../utils';
 
 /**
  * action types
@@ -208,19 +208,19 @@ export const layoutInfoReducer = (
         return draftState;
       });
       return nextStateInit;
-      // case UPDATE_ENTITY_STATE:
-      //   return produce(state, (draftState) => {
-      //     const { targetEntity, formState } = action;
-      //     const { nestingInfo } = targetEntity;
-      //     const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
+    case UPDATE_ENTITY_STATE:
+      return produce(state, (draftState) => {
+        const { targetEntity, formState } = action;
+        const { nestingInfo } = targetEntity;
+        const targetData = getItemFromNestingItemsByBody(draftState, nestingInfo);
 
-    //     if(!targetData) {
-    //       console.log(`没找到对象：`, `targetEntity:`, targetEntity, `nestingInfo:`, nestingInfo);
-    //       return draftState;
-    //     }
-    //     targetData.propState = formState;
-    //     return draftState;
-    //   });
+        if(!targetData) {
+          console.log(`没找到对象：`, `targetEntity:`, targetEntity, `nestingInfo:`, nestingInfo);
+          return draftState;
+        }
+        targetData.propState = formState;
+        return draftState;
+      });
     case CHANGE_ENTITY_TYPE:
       return produce(state, (draftState) => {
         const { targetEntity: updateSInfo, widgetType } = action;
@@ -234,80 +234,54 @@ export const layoutInfoReducer = (
   }
 };
 
-const flattenDeep = (targetArr: any[], nestIndex: string) => {
-  const res = [];
-  const r = (_a) => {
-    _a.forEach((item) => {
-      if(item[nestIndex]) {
-        r(item[nestIndex]);
-      }
-      res.push(item);
-    });
-  };
-  r(targetArr);
-  return res;
-};
+// export function flatLayoutItemsReducer(
+//   state: FlatLayoutItems = {},
+//   action: LayoutInfoActionReducerAction
+// ): FlatLayoutItems {
+//   switch (action.type) {
+//     case INIT_APP:
+//       const { pageContent } = action;
+//       if (pageContent?.content) {
+//         const flatContent = flatArrayToNode(pageContent.content);
+//         return flatContent;
+//       }
+//       return state;
+//     case ADD_ENTITY:
+//       return produce(state, (draft) => {
+//         const { entity } = action;
+//         return Object.assign(draft, {
+//           [entity.id]: entity
+//         });
+//       });
+//     case INIT_ENTITY_STATE:
+//       const nextStateInit = produce(state, (draftState) => {
+//         const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
+//         const { entity } = initSInfo;
+//         if (entity) draftState[entity.id].propState = defaultEntityState;
+//         return draftState;
+//       });
+//       return nextStateInit;
+//     case UPDATE_ENTITY_STATE:
+//       return produce(state, (draftState) => {
+//         const { targetEntity: { entity }, formState, options } = action;
+//         const { id } = entity;
 
-/**
- * 将嵌套的数组转为 nodeTree 结构
- */
-const flatArrayToNode = (items: any[], idKey = 'id') => {
-  const array = flattenDeep(items, 'body');
-  const resTree = {};
-  array.forEach((item) => {
-    resTree[item[idKey]] = item;
-  });
-  return resTree;
-};
+//         /** 如果是替换模式 */
+//         if (options?.replace) {
+//           draftState[id].propState = formState;
+//         } else {
+//           draftState[id].propState = mergeDeep({}, draftState[id].propState, formState);
+//         }
 
-export function flatLayoutItemsReducer(
-  state: FlatLayoutItems = {},
-  action: LayoutInfoActionReducerAction
-): FlatLayoutItems {
-  switch (action.type) {
-    case INIT_APP:
-      const { pageContent } = action;
-      if (pageContent?.content) {
-        const flatContent = flatArrayToNode(pageContent.content);
-        return flatContent;
-      }
-      return state;
-    case ADD_ENTITY:
-      return produce(state, (draft) => {
-        const { entity } = action;
-        return Object.assign(draft, {
-          [entity.id]: entity
-        });
-      });
-    case INIT_ENTITY_STATE:
-      const nextStateInit = produce(state, (draftState) => {
-        const { selectedEntityInfo: initSInfo, defaultEntityState } = action;
-        const { entity } = initSInfo;
-        if (entity) draftState[entity.id].propState = defaultEntityState;
-        return draftState;
-      });
-      return nextStateInit;
-    case UPDATE_ENTITY_STATE:
-      return produce(state, (draftState) => {
-        const { targetEntity: { entity }, formState, options } = action;
-        const { id } = entity;
-
-        /** 如果是替换模式 */
-        if (options?.replace) {
-          draftState[id].propState = formState;
-        } else {
-          draftState[id].propState = mergeDeep({}, draftState[id].propState, formState);
-        }
-
-        return draftState;
-      });
-    case DEL_ENTITY:
-      return produce(state, (draft) => {
-        const { entity } = action;
-        Reflect.deleteProperty(draft, entity.id);
-        return draft;
-      });
-    default:
-      return state;
-  }
-}
+//         return draftState;
+//       });
+//     case DEL_ENTITY:
+//       return produce(state, (draft) => {
+//         const { entity } = action;
+//         Reflect.deleteProperty(draft, entity.id);
+//         return draft;
+//       });
+//     default:
+//       return state;
+//   }
+// }

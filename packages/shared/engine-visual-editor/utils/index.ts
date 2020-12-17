@@ -6,3 +6,4 @@ export * from './sort-helper';
 export * from './make-widget-entity';
 export * from './getItemFromNestingItem';
 export * from './wrap-page-data';
+export * from './flat-nest-array';
