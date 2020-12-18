@@ -30,13 +30,15 @@ export const isReferenceField = (dataType) => {
  * 模拟生成 row 数据
  */
 export const genRenderColumn = (usingColumn) => {
-  const { id: fieldID, name: title, dsID, colDataType } = usingColumn;
+  const { id: fieldID, name: title, dsID, colDataType, fieldCode } = usingColumn;
   const id = `field.dsColumn.${nanoid(8)}`;
   return {
-    title, dsID, fieldID,
+    title, dsID, fieldID, fieldCode,
     id, dataIndex: id,
-    width: '60px',
+    width: 60,
     type: 'dsColumn',
+    align: 'left',
+    editable: false,
     fieldShowType: isReferenceField(colDataType) ? 'showVal' : 'realVal',
     show: true
   };
