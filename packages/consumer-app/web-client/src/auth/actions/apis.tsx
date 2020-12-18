@@ -5,6 +5,7 @@ export interface LoginRes {
   refresh_token: string;
   expires_in: number;
   scope: string;
+  use_info: {username:string};
 }
 export interface LoginParams {
   username: string;
@@ -28,7 +29,7 @@ export function login(data:LoginParams): Promise<LoginRes> {
       resolve(res);
     },(error)=>{
       console.log(error)
-      AntdMessage.error(error);
+      AntdMessage.error('账号或者密码错误！');
       reject(error)
     })
   });

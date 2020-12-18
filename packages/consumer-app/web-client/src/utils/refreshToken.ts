@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import _ from "lodash";
-import { getClientId, getClientSecret, getIsRefresh, getRefreshTokenInfo, setIsRefresh, setRefreshTokenInfo, setToken } from './store-state-manager';
+import { getClientId, getClientSecret, getIsRefresh, getPrevLoginData, getRefreshTokenInfo, removeLoginData, setIsRefresh, setPrevLoginData, setRefreshTokenInfo, setToken } from './store-state-manager';
 
 class RefreshToken {
   baseURL: string = '';
@@ -13,20 +13,24 @@ class RefreshToken {
     return this._instance;
   }
 
+  test: boolean = false;
   checkStatus(response: AxiosResponse, baseURL:string): Promise<any> {
       this.baseURL = baseURL;
       console.log(getIsRefresh());
       if (!getIsRefresh()) {
+
         setIsRefresh(true);
         this.refreshTokenRequst();
       }
       console.log(getIsRefresh());
       let config = _.cloneDeep(response.config);
-      return new Promise(resolve => {
+      return new Promise((resolve,reject) => {
         this.addSubscriber((token: string) => {
           if (token) {
             config.headers.Authorization = `Bearer ${token}`;
             resolve($A_R.request(config));
+          } else {
+            reject({code:401})
           }
         });
       });
@@ -40,24 +44,36 @@ class RefreshToken {
       } else {
         const refreshTokenParams = {
           grant_type: 'refresh_token',
-          refreshToken: refreshTokenInfo.refresh_token,
+          refresh_token: refreshTokenInfo.refresh_token,
           client_id: getClientId(),
           client_secret: getClientSecret()
         }
-        axios.post(this.baseURL + '/auth/oauth/token', refreshTokenParams).then((tokenInfo: any) => {
-          let { refresh_token, access_token, expires_in } = tokenInfo.result;
+        let param = new URLSearchParams();
+        Object.keys(refreshTokenParams).forEach(key => {
+          param.append(key,refreshTokenParams[key])
+        });
+        axios.post(this.baseURL + '/auth/oauth/token', param).then((tokenInfo: any) => {
+          let { refresh_token, access_token, expires_in } = tokenInfo.data;
           setToken(access_token);
           setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
+          let resData = getPrevLoginData();
+          setPrevLoginData(Object.assign(resData,{ refresh_token, access_token}));
           this.onAccessTokenFetched(access_token);
           setIsRefresh(false);
         },()=>{
           setIsRefresh(false);
+          this.onAccessTokenFetched('');
+          removeLoginData();
+          window.location.reload();
         });
       }
       
     } catch (e) {
       setIsRefresh(false);
+      this.onAccessTokenFetched('');
       // todo 跳到登录页
+      removeLoginData();
+      window.location.reload();
     }
   }
 

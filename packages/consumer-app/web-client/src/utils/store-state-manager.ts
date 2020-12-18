@@ -39,6 +39,20 @@ export const getClientId = () => {
 export const getClientSecret = () => {
   return storage.get('client_secret');
 };
+export const getPrevLoginData = () => {
+  return storage.get('prev/login/data');
+};
+interface LoginRes {
+  access_token: string;
+  token_type: string;
+  refresh_token: string;
+  expires_in: number;
+  scope: string;
+  use_info: {username:string};
+}
+export const setPrevLoginData = (data:LoginRes) => {
+  return storage.set('prev/login/data', data);
+};
 export const removeLoginData = () => {
   return storage.remove('prev/login/data');
 };
