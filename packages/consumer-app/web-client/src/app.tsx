@@ -40,8 +40,8 @@ const queryKeyMapStoreKey = {
  */
 const getEnvConfigFromLocation = () => {
   const { query } = history.location;
-  if(!query) return {};
-  if(!query.mode && store.get("app/mode") === "preview"){
+  if (!query) return {};
+  if (!query.mode && store.get("app/mode") === "preview") {
     store.remove("app/mode");
   }
   const queryKeys = Object.keys(query);
@@ -51,7 +51,7 @@ const getEnvConfigFromLocation = () => {
     queryKeys.forEach((q) => {
       if (q !== "redirect") {
         const matchStoreKey = queryKeyMapStoreKey[q];
-        if(matchStoreKey) {
+        if (matchStoreKey) {
           params[matchStoreKey] = query[q];
         }
       }
@@ -78,7 +78,7 @@ export async function render() {
   const envConfig = Object.assign(await getAppEnvConfig(), getEnvConfigFromLocation(), {"client_secret": "hy123456","client_id": "client_hy_web"});
 
   // 判断环境配置的合法性
-  const isPass = checkEnvConfig(envConfig);
+  const isPass = await checkEnvConfig(envConfig);
 
   if (isPass) {
     Object.keys(envConfig).forEach((field) => {
@@ -93,10 +93,7 @@ export async function render() {
 
   initReq();
 
-  ReactDOM.render(
-    <App />,
-    document.querySelector("#Main")
-  );
+  ReactDOM.render(<App />, document.querySelector("#Main"));
 }
 
 render();

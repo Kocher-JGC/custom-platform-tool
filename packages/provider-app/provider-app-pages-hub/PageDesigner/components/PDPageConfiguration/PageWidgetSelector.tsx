@@ -2,20 +2,12 @@ import React, { useRef, useContext, useEffect, useState } from "react";
 import { Checkbox, Form, Input, Table, Alert } from "antd";
 import { ColumnType } from "antd/lib/table";
 import { ThunderboltOutlined } from "@ant-design/icons";
+import { FlatLayoutItems } from "@platform-widget-access/spec";
 // import { PageConfigContainerProps } from "./PageConfigContainer";
-interface IFlatLayoutItem {
-  id: string;
-  widgetRef: string;
-  wGroupType: string;
-  propState: {
-    title: string;
-    widgetCode: string;
-  };
-}
 interface IProps {
   updateEntityState;
   flatLayoutItems: {
-    [key: string]: IFlatLayoutItem;
+    [key: string]: Record<string, FlatLayoutItems>;
   };
 }
 interface Item {
@@ -42,6 +34,8 @@ interface ITableItem {
   _group: string;
   _write: boolean;
   _read: boolean;
+  widgetItem: Record<string, FlatLayoutItems>;
+  nestingInfo: Record<string, FlatLayoutItems>["nestingInfo"];
 }
 interface EditableRowProps {
   index: number;
@@ -124,7 +118,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
   return <td {...restProps}>{childNode}</td>;
 };
 export const PageWidgetSelector: React.FC<IProps> = (props) => {
-  console.log("props", props);
   const [dataSource, setDataSource] = useState<ITableItem[]>([]);
   const columns: ColumnType<ITableItem>[] = [
     {
@@ -182,6 +175,7 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
     },
   ];
   const handleSave = (row, dataIndex) => {
+    const { id } = row;
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
@@ -191,20 +185,9 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
     });
     setDataSource(newData);
     // TODO: 编辑控件属性方法需要 nestingInfo
-    const curItem = Object.values(props.flatLayoutItems).find(
-      (flatLayoutItem) => flatLayoutItem.id === row.id
-    );
-    if (props.updateEntityState && curItem) {
-      props.updateEntityState(
-        {
-          entity: curItem,
-        },
-        {
-          ...curItem?.propState,
-          [dataIndex]: row[dataIndex],
-        }
-      );
-    }
+    props.updateEntityState?.(id, {
+      [dataIndex]: row[dataIndex],
+    });
   };
 
   const initWidget = () => {
@@ -214,6 +197,7 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
         .map((item) => {
           const {
             id,
+            nestingInfo,
             widgetRef,
             propState: { title, widgetCode },
           } = item;
@@ -222,7 +206,9 @@ export const PageWidgetSelector: React.FC<IProps> = (props) => {
             title,
             widgetCode,
             widgetRef,
+            nestingInfo,
             key: id,
+            widgetItem: item,
             // TODO: 以下参数属于 3.2
             _group: "",
             _show: false,

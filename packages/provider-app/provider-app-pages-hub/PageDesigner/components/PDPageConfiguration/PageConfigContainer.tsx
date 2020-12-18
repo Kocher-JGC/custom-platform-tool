@@ -5,6 +5,7 @@ import { PageActionSelector } from "./PageActionSelector";
 import { PageEventSelector } from "./PageEventSelector";
 import { PageButtonSelector } from "./PageButtonSelector";
 import { PageWidgetSelector } from "./PageWidgetSelector";
+import { PageAttachedTableSelector } from "./PageAttachedTableSelector";
 import "./style.scss";
 
 export interface PageConfigContainerProps {
@@ -37,6 +38,9 @@ export const PageConfigContainer: React.FC<PageConfigContainerProps> = (
         </Tab>
         <Tab label="页面控件">
           <PageWidgetSelector {...props} />
+        </Tab>
+        <Tab label="附属表">
+          <PageAttachedTableSelector {...props} />
         </Tab>
       </Tabs>
     </div>

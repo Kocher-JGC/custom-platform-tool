@@ -6,13 +6,14 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
+    "@deer-ui/core": "^4.0.8",
+    "formik-antd": "^2.0.1",
     "antd": "^4.7.1",
     "react-transition-group": "^4.4.1",
     "classnames": "^2.2.6",
-    "@deer-ui/core": "^4.0.8"
+    "tailwindcss": "^1.8.10"
   },
   "author": "SANGET",
   "license": "MIT"

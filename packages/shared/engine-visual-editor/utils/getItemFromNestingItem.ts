@@ -1,3 +1,4 @@
+import { ElemNestingInfo } from "@engine/layout-renderer";
 import at from "lodash/at";
 
 /**
@@ -39,7 +40,7 @@ export const getItemFromNestingItems = <T>(
 
 export const getItemFromNestingItemsByBody = <T>(
   nestingData: T[],
-  nestingInfo: number[],
+  nestingInfo: ElemNestingInfo,
 ): T => {
   return getItemFromNestingItems(nestingData, nestingInfo, 'body');
 };

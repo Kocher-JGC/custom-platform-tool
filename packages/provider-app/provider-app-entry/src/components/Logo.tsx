@@ -1,23 +1,16 @@
-import { GoogleOutlined, LeftOutlined } from '@ant-design/icons';
-import React from 'react';
+import React from "react";
+import { Icon } from "@deer-ui/core/icon";
 
-export const Logo = ({
-  app,
-  appName = '自定义工具 3.0',
-  isEntryApp,
-  ...props
-}) => {
+export const Logo = ({ appName = "自定义工具 3.0", isEntryApp, ...props }) => {
   return (
     <div {...props}>
-      <div
-        className="px-4 text-xl flex items-center cursor-pointer logo-container"
-      >
-        {
-          isEntryApp ? <LeftOutlined className="text-2xl" /> : <GoogleOutlined />
-        }
-        <span className="ml-2">
-          {appName}
-        </span>
+      <div className="px-4 text-xl flex items-center cursor-pointer logo-container">
+        {isEntryApp ? (
+          <Icon n="chevron-left" className="text-2xl" />
+        ) : (
+          <Icon n="gas-pump" className="text-2xl" />
+        )}
+        <span className="ml-2">{appName}</span>
       </div>
     </div>
   );

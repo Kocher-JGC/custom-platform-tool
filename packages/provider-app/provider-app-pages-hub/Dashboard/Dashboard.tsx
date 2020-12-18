@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { message } from 'antd';
+import { message } from "antd";
 import {
-  BankOutlined, PieChartOutlined, GithubOutlined, PlusOutlined, MoreOutlined
+  BankOutlined,
+  PieChartOutlined,
+  GithubOutlined,
+  PlusOutlined,
+  MoreOutlined,
 } from "@ant-design/icons";
 import { Link } from "multiple-page-routing";
 import { DropdownWrapper } from "@deer-ui/core/dropdown-wrapper";
@@ -13,9 +17,9 @@ import { CreateApp } from "./CreateApp";
 
 import { downloadBackEnd, downloadFrontEnd } from "./services/apis";
 
-import './dashboard.scss';
+import "./dashboard.scss";
 
-const defaultToRoute = '/page-manager';
+const defaultToRoute = "/page-manager";
 
 const iconGroupTemp = [
   <GithubOutlined />,
@@ -24,12 +28,12 @@ const iconGroupTemp = [
 ];
 
 interface AppTileProps {
-  icon
-  title
-  onClick?
-  params?
-  to?
-  moreOptions?
+  icon;
+  title;
+  onClick?;
+  params?;
+  to?;
+  moreOptions?;
 }
 
 const AppTile = ({
@@ -44,7 +48,7 @@ const AppTile = ({
     <div
       className="p-2 app-tile"
       style={{
-        flexBasis: '25%'
+        flexBasis: "25%",
       }}
     >
       <Link
@@ -61,30 +65,23 @@ const AppTile = ({
           {title}
         </div>
       </Link>
-      {
-        moreOptions && (
-          <DropdownWrapper
-            className="more-options"
-            overlay={(e) => {
-              return (
-                <Menus data={moreOptions} />
-              );
-            }}
-          >
-            <MoreOutlined className="action-btn" />
-          </DropdownWrapper>
-        )
-      }
+      {moreOptions && (
+        <DropdownWrapper
+          className="more-options"
+          overlay={(e) => {
+            return <Menus data={moreOptions} />;
+          }}
+        >
+          <MoreOutlined className="action-btn" />
+        </DropdownWrapper>
+      )}
     </div>
   );
 };
 
 export interface DashboardProps {
-  onSelectApp: (appInfo: {
-    app: string
-    appName: string
-  }) => void
-  didMount?: () => void
+  onSelectApp: (appInfo: { app: string; appName: string }) => void;
+  didMount?: () => void;
 }
 
 /**
@@ -105,7 +102,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
   };
 
   useEffect(() => {
-    didMount && didMount();
+    didMount?.();
     updateAppList();
   }, []);
 
@@ -113,61 +110,84 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
     <div className="container mx-auto my-8 dashboard">
       <div className="text-3xl px-2 py-10 font-bold">我的应用</div>
       <div className="flex flex-wrap">
-        {
-          appData && appData.map(((data, idx) => {
-            const {
-              appShortNameEn, id, accessName
-            } = data;
+        <AppTile
+          // to="/page-manager"
+          icon={<PlusOutlined />}
+          onClick={(e) => {
+            ShowModal({
+              title: "添加应用",
+              children: ({ close }) => {
+                return (
+                  <CreateApp
+                    onSuccess={() => {
+                      close();
+                      updateAppList();
+                    }}
+                  />
+                );
+              },
+            });
+          }}
+          title="添加应用"
+        />
+        {appData &&
+          appData.map((data, idx) => {
+            const { appShortNameEn, id, accessName } = data;
             return (
               <AppTile
                 key={id}
                 icon={iconGroupTemp[idx % iconGroupTemp.length]}
                 title={appShortNameEn}
                 onClick={(e) => {
-                  onSelectApp && onSelectApp({
+                  onSelectApp?.({
                     app: accessName,
-                    appName: appShortNameEn
+                    appName: appShortNameEn,
                   });
                 }}
                 to={defaultToRoute}
                 params={{
-                  app: accessName
+                  app: accessName,
                 }}
                 moreOptions={[
                   {
-                    text: '删除应用',
+                    text: "删除应用",
                     action: () => {
                       ShowModal({
-                        type: 'confirm',
+                        type: "confirm",
                         confirmText: `确定删除 ${appShortNameEn} 吗?`,
                         children: () => {
-                          return (
-                            <div>确定删除</div>
-                          );
+                          return <div>确定删除</div>;
                         },
                         onConfirm: (isSure) => {
                           if (!isSure) return;
                           DelApplication(id).then(() => {
                             updateAppList();
                           });
-                        }
+                        },
                       });
-                    }
+                    },
                   },
                   {
-                    text: '导出应用',
+                    text: "导出应用",
                     action: () => {
                       const cur = `${accessName}_${new Date().getTime()}`;
-                      downloadBackEnd(accessName, `${appShortNameEn}后端部署文件-${accessName}_${new Date().getTime()}`).catch((error) => {
+                      downloadBackEnd(
+                        accessName,
+                        `${appShortNameEn}后端部署文件-${accessName}_${new Date().getTime()}`
+                      ).catch((error) => {
                         console.log("后端部署文件下载失败", error);
                         message.error("后端部署文件下载失败");
                       });
-                      downloadFrontEnd(accessName, `${appShortNameEn}前端部署文件-${accessName}_${cur}`, cur).catch((error) => {
+                      downloadFrontEnd(
+                        accessName,
+                        `${appShortNameEn}前端部署文件-${accessName}_${cur}`,
+                        cur
+                      ).catch((error) => {
                         console.log("前端部署文件下载失败", error.message);
                         const errObj = JSON.parse(error.message);
                         message.error(errObj.msg || "前端部署文件下载失败");
                       });
-                    }
+                    },
                   },
                   // {
                   //   text: '进入应用',
@@ -190,28 +210,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                 ]}
               />
             );
-          }))
-        }
-        <AppTile
-          // to="/page-manager"
-          icon={<PlusOutlined />}
-          onClick={(e) => {
-            ShowModal({
-              title: '添加应用',
-              children: ({ close }) => {
-                return (
-                  <CreateApp
-                    onSuccess={() => {
-                      close();
-                      updateAppList();
-                    }}
-                  />
-                );
-              }
-            });
-          }}
-          title="添加应用"
-        />
+          })}
       </div>
     </div>
   );

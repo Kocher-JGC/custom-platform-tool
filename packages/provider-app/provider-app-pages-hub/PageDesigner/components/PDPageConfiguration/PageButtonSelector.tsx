@@ -2,21 +2,13 @@ import React, { useRef, useContext, useEffect, useState } from "react";
 import { Checkbox, Form, Input, Table, Alert, Select, Button } from "antd";
 import { ColumnType } from "antd/lib/table";
 import { ThunderboltOutlined } from "@ant-design/icons";
+import { FlatLayoutItems } from "@platform-widget-access/spec";
 // import { PageConfigContainerProps } from "./PageConfigContainer";
-interface IFlatLayoutItem {
-  id: string;
-  widgetRef: string;
-  wGroupType: string;
-  propState: {
-    title: string;
-    widgetCode: string;
-  };
-}
 interface IProps {
   delEntity;
   updateEntityState;
   flatLayoutItems: {
-    [key: string]: IFlatLayoutItem;
+    [key: string]: Record<string, FlatLayoutItems>;
   };
 }
 interface Item {
@@ -129,7 +121,7 @@ const EditableCell: React.FC<EditableCellProps> = ({
   return <td {...restProps}>{childNode}</td>;
 };
 export const PageButtonSelector: React.FC<IProps> = (props) => {
-  console.log("props", props);
+  const { delEntity } = props;
   const [dataSource, setDataSource] = useState<ITableItem[]>([]);
   const columns: ColumnType<ITableItem>[] = [
     {
@@ -137,8 +129,8 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
       dataIndex: "title",
       width: 214,
       onCell: (record) => ({
-        record,
         handleSave,
+        record,
         editable: true,
         dataIndex: "title",
         title: "控件标题",
@@ -184,12 +176,22 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
     {
       title: "操作",
       align: "center",
-      render: (text) => (
-        // TODO: 删除自定义按钮
-        <Button type="link" size="small">
-          删除
-        </Button>
-      ),
+      render: (text, record) => {
+        // console.log(record);
+        const { id } = record;
+        return (
+          // TODO: 删除自定义按钮
+          <Button
+            type="link"
+            size="small"
+            onClick={(e) => {
+              delEntity(id);
+            }}
+          >
+            删除
+          </Button>
+        );
+      },
     },
     {
       title: "事件",
@@ -202,6 +204,8 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
     },
   ];
   const handleSave = (row, dataIndex) => {
+    // console.log(row);
+    const { id } = row;
     const newData = [...dataSource];
     const index = newData.findIndex((item) => row.key === item.key);
     const item = newData[index];
@@ -211,20 +215,9 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
     });
     setDataSource(newData);
     // TODO: 编辑按钮属性方法需要 nestingInfo
-    const curItem = Object.values(props.flatLayoutItems).find(
-      (flatLayoutItem) => flatLayoutItem.id === row.id
-    );
-    if (props.updateEntityState && curItem) {
-      props.updateEntityState(
-        {
-          entity: curItem,
-        },
-        {
-          ...curItem?.propState,
-          [dataIndex]: row[dataIndex],
-        }
-      );
-    }
+    props.updateEntityState?.(id, {
+      [dataIndex]: row[dataIndex],
+    });
   };
 
   const initWidget = () => {
@@ -235,6 +228,7 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
           const {
             id,
             widgetRef,
+            nestingInfo,
             propState: { title, widgetCode },
           } = item;
           return {
@@ -242,7 +236,9 @@ export const PageButtonSelector: React.FC<IProps> = (props) => {
             title,
             widgetCode,
             widgetRef,
+            nestingInfo,
             key: id,
+            widgetItem: item,
             // TODO: 以下参数属于 3.2
             _icon: "",
             _type: "",

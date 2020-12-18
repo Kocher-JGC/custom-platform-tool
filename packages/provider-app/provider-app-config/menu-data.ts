@@ -8,16 +8,19 @@ export interface MenuDataType {
   /** 导航将要到达的 path */
   path?: string
   /** children，如果有，则认为点击没有跳转功能 */
-  children?: MenuDataType[]
+  child?: MenuDataType[]
 }
 
+/**
+ * icon 参考 https://fontawesome.com/icons?d=gallery&q=data&m=free
+ */
 export const ProviderAppMenuData: MenuDataType[] = [
   {
     title: '页面设计',
-    icon: '',
+    icon: 'crop-alt',
     id: '1',
     // path: '/menu-manager',
-    children: [
+    child: [
       {
         title: '页面管理',
         id: '12',
@@ -34,10 +37,10 @@ export const ProviderAppMenuData: MenuDataType[] = [
   },
   {
     // path: '/menu-manager',
-    icon: '',
+    icon: 'chart-bar',
     title: '数据设计',
     id: '2',
-    children: [
+    child: [
       {
         title: '表结构管理',
         id: '21',
@@ -53,8 +56,8 @@ export const ProviderAppMenuData: MenuDataType[] = [
       {
         title: '其他数据源',
         id: '23',
-        icon: '',
-        children: [
+        icon: 'database',
+        child: [
           {
             title: '其他数据源',
             id: '23',
@@ -67,10 +70,10 @@ export const ProviderAppMenuData: MenuDataType[] = [
   },
   {
     title: '系统管理',
-    icon: '',
+    icon: 'cog',
     id: '3213123',
     // path: '/menu-manager',
-    children: [
+    child: [
       {
         title: '菜单管理',
         id: '1415rwqtqr',
@@ -80,8 +83,8 @@ export const ProviderAppMenuData: MenuDataType[] = [
       {
         title: '权限管理',
         id: '123qwe',
-        icon: '',
-        children: [
+        icon: 'robot',
+        child: [
           {
             title: '权限树管理',
             id: '123qweasd',

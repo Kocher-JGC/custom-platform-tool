@@ -130,6 +130,18 @@ const resetHttpReqHelper = () => {
 /** 使用 $R 的中间件 */
 // $R.useAfter([afterRes]);
 
+const getUrlFormRes = (resDetail) => {
+  const reqUrlInfo = resDetail.__originRes.url;
+  return reqUrlInfo;
+};
+
+const getReqPrefix = (resDetail) => {
+  const reqUrl = getUrlFormRes(resDetail);
+  const prefix = reqUrl.replace(/https?:\/\//, '').split('/')[1];
+  // console.log(prefix);
+  return prefix;
+};
+
 /**
  * 统一处理 http 业务码的函数
  * 1. 如果有 showSuccessTip 配置，则解析完成后退出流程
@@ -150,7 +162,8 @@ function handleRes({ res, resDetail }) {
     const { whenCodeEq, type = 'info' } = businessTip as RequestOptions['businessTip'];
     if (code === whenCodeEq) {
       const antdMsgFunc = AntdMessage[type] || AntdMessage.info;
-      antdMsgFunc(msg);
+      const reqPrefix = getReqPrefix(resDetail);
+      antdMsgFunc(`${reqPrefix}: ${msg}`);
       return null;
     }
   }
@@ -162,7 +175,7 @@ function handleRes({ res, resDetail }) {
     case 'A0300':
       // console.log(resData);
       // 处理没找到应用的业务逻辑
-      AntdMessage.error(msg);
+      AntdMessage.error(`${getReqPrefix(resDetail)}服务: ${msg}`);
       redirectToRoot();
       authStore.setState({ isLogin: false });
       resetHttpReqHelper();
@@ -174,7 +187,7 @@ function handleRes({ res, resDetail }) {
       break;
     default:
       // TODO: 完善请求
-      AntdMessage.error(msg);
+      AntdMessage.error(`${getReqPrefix(resDetail)}服务: ${msg}`);
   }
   return null;
 }

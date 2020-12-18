@@ -19,8 +19,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
-    "unistore": "^3.5.2",
-    "tailwindcss": "^1.8.10"
+    "unistore": "^3.5.2"
   },
   "author": "SANGET",
   "license": "MIT",

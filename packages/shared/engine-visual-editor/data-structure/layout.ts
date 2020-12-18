@@ -1,4 +1,5 @@
 // import { ElemNestingInfo } from '@engine/layout-renderer/types/layout-node-info';
+import { ElemNestingInfo } from "@engine/layout-renderer";
 import { WidgetEntity } from "./widget";
 
 // export {
@@ -10,6 +11,10 @@ import { WidgetEntity } from "./widget";
  */
 export type LayoutInfoActionReducerState = WidgetEntity[]
 
+interface FlatLayoutItem extends WidgetEntity {
+  nestingInfo: ElemNestingInfo
+}
+
 export interface FlatLayoutItems {
-  [entityID: string]: WidgetEntity
+  [entityID: string]: FlatLayoutItem
 }
