@@ -104,7 +104,7 @@ function onLoginSuccess(store, { resData, refreshTime, originForm = {} }) {
   /** TODO: 提取页面需要的信息 */
 
 
-  let { refresh_token, access_token, expires_in, user_info } = resData || {};
+  const { refresh_token, access_token, expires_in, user_info } = resData || {};
 
   // storage.set(`app/${storage.get("app/code")}/token`, access_token);
   setToken(access_token);
@@ -116,9 +116,9 @@ function onLoginSuccess(store, { resData, refreshTime, originForm = {} }) {
     autoLoging: false,
     isLogin: true,
     token:access_token,
-    username: user_info.username,
+    username: user_info?.username,
     prevLoginRes,
-    userInfo:user_info
+    userInfo: user_info
   };
 
 
@@ -141,9 +141,9 @@ function clearPrevLoginData() {
 
 // 加密函数
 function encrypt(word: string, keyStr: string) {
-  var key = CryptoJS.enc.Utf8.parse(keyStr);
-  var srcs = CryptoJS.enc.Utf8.parse(word);
-  var encrypted = CryptoJS.AES.encrypt(srcs, key, {
+  const key = CryptoJS.enc.Utf8.parse(keyStr);
+  const srcs = CryptoJS.enc.Utf8.parse(word);
+  const encrypted = CryptoJS.AES.encrypt(srcs, key, {
     mode: CryptoJS.mode.ECB,
     padding: CryptoJS.pad.Pkcs7
   });
@@ -189,7 +189,7 @@ const authActions = (store) => ({
     }
   },
   async getUserLastLoginInfo(state){
-    const lastLoginInfo = await AUTH_APIS.getUserLastLoginInfo({lessee_code: getLessee(),app_code: getCode()});
+    const lastLoginInfo = await AUTH_APIS.getUserLastLoginInfo({ lessee_code: getLessee(),app_code: getCode() });
     const {
       ip,
       createTime,
@@ -201,7 +201,7 @@ const authActions = (store) => ({
         createTime:dayjs(createTime).format('YYYY-MM-DD HH:mm:ss'),
         lastLoginTime:dayjs(lastLoginTime).format('YYYY-MM-DD HH:mm:ss'),
       }
-    })
+    });
   },
   async autoLogin(state, onSuccess) {
     const prevLoginState = getPrevLoginData();
@@ -224,12 +224,12 @@ const authActions = (store) => ({
       // password: form.Password,
       password: encrypt(form.AdminName + form.Password, "hy_auth_business"),
       pwd_encryption_type: 2,
-      client_type: 4,//终端类型：1为WPF客户端，2为安卓手机客户端，3为苹果手机客户端，4为web浏览器，5其他终端
+      client_type: 4,// 终端类型：1为WPF客户端，2为安卓手机客户端，3为苹果手机客户端，4为web浏览器，5其他终端
       lessee_code: getLessee(),
       app_code: getCode(),
       client_id: getClientId(),
       client_secret: getClientSecret()
-    }
+    };
     try{
       removeToken();
       const loginRes = await AUTH_APIS.login(loginParams);

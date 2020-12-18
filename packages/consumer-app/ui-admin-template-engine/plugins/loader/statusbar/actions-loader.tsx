@@ -3,12 +3,11 @@ import { DropdownWrapper, Icon, PureIcon } from '@engine/ui-admin-template/ui-re
 import React from 'react';
 
 
-
 export interface StatusbarConfigItem {
   title: string;
   icon?: string;
   pureIcon?: string;
-  overlay: DropdownWrapperProps['overlay'];
+  overlay: DropdownWrapperProps["overlay"];
   action: () => void;
   photo?: string;
   className?: string;
@@ -47,12 +46,13 @@ const DisplayDOM = ({
 
 };
 
-
 export interface StatusbarActionsLoaderProps {
   statusbarActions: StatusbarConfigItem[];
 }
 
-export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (props) => {
+export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (
+  props
+) => {
   const { statusbarActions, ...otherProps } = props;
   return (
     <div className="status-container">
@@ -93,16 +93,11 @@ export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (pr
                   photo={photo}
                   className={className}
                 />
-              );
-              break;
-          }
-          return (
-            <React.Fragment key={`${icon}_${title}`}>
-              {con}
-            </React.Fragment>
-          );
-        })
-      }
+            );
+            break;
+        }
+        return <React.Fragment key={`${icon}_${title}`}>{con}</React.Fragment>;
+      })}
     </div>
   );
 };

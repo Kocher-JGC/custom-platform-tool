@@ -9,7 +9,7 @@ export const TabNav = ({
   onClose,
 }) => {
   return (
-    <div className="tabs-for-multiple-router bg-gray-100">
+    <div className="tabs-for-multiple-router">
       {routers.map((route, idx) => {
         const { params: routeInfoParams } = routerSnapshot[route];
         const { title, key, closable } = routeInfoParams;
