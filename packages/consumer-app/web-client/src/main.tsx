@@ -201,6 +201,13 @@ class LoginFilter extends React.Component<LoginFilterProps> {
             statusbarActions={[
               {
                 action: () => {},
+                title: '',
+                photo: "./images/photo.png",
+                className: "hy-photo",
+                overlay: () => {return null}
+              },
+              {
+                action: () => {},
                 title: username,
                 overlay: () => {
                   if (store.get("app/mode") !== "preview") {

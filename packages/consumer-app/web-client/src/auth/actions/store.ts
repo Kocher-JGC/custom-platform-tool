@@ -4,13 +4,10 @@
 import { Call, EventEmitter } from "@mini-code/base-func";
 import CryptoJS from "crypto-js";
 import dayjs from 'dayjs';
-import storage from "store";
 import createStore from "unistore";
-import { getAppName, getClientId, getClientSecret, getCode, getLessee, getToken, removeAppName, removeCode, removeLessee, removeLoginData, removePaasToken, removeToken, setCode, setIsRefresh, setLessee, setRefreshTokenInfo, setToken } from "./../../utils/store-state-manager";
+import { getAppName, getClientId, getClientSecret, getCode, getLessee, getPrevLoginData, getRefreshTokenInfo, getToken, removeAppName, removeCode, removeLessee, removeLoginData, removePaasToken, removeToken, setCode, setIsRefresh, setLessee, setPrevLoginData, setRefreshTokenInfo, setToken } from "./../../utils/store-state-manager";
 import * as AUTH_APIS from "./apis";
 
-
-const PREV_LOGIN_DATA = 'prev/login/data';
 
 export interface SaaSAuthActionsTypes {
   autoLogin: (onSuccess?: () => void) => void;
@@ -100,7 +97,7 @@ const defaultAuthStore: AuthStore = {
 
 const authStore = createStore(defaultAuthStore);
 
-function onLoginSuccess(store, { resData, originForm = {} }) {
+function onLoginSuccess(store, { resData, refreshTime, originForm = {} }) {
   const prevLoginRes = resData;
   const { app } = store.getState();
 
@@ -111,7 +108,7 @@ function onLoginSuccess(store, { resData, originForm = {} }) {
 
   // storage.set(`app/${storage.get("app/code")}/token`, access_token);
   setToken(access_token);
-  setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime: new Date().getTime()});
+  setRefreshTokenInfo({ refresh_token, access_token, expires_in, refreshTime});
   setIsRefresh(false);
 
   const resultStore = {
@@ -126,7 +123,7 @@ function onLoginSuccess(store, { resData, originForm = {} }) {
 
 
   EventEmitter.emit("LOGIN_SUCCESS", { userInfo:user_info, loginRes: resData });
-  storage.set(PREV_LOGIN_DATA, resData);
+  setPrevLoginData(resData);
   // initRequest(saasServerUrl, token);
 
 
@@ -140,10 +137,6 @@ function clearPrevLoginData() {
   removeLessee();
   removeAppName();
   removePaasToken();
-}
-
-function getPrevLoginData(): AuthStore | undefined {
-  return storage.get(PREV_LOGIN_DATA);
 }
 
 // 加密函数
@@ -216,8 +209,9 @@ const authActions = (store) => ({
     store.setState({
       autoLoging: true,
     });
+    const refreshTokenInfo = getRefreshTokenInfo();
     /** 判断是否登录成功的逻辑 */
-    const nextStore = onLoginSuccess(store, { resData: prevLoginState });
+    const nextStore = onLoginSuccess(store, { resData: prevLoginState, refreshTime: refreshTokenInfo.refreshTime});
     store.setState(nextStore);
     Call(onSuccess);
   },
@@ -225,7 +219,7 @@ const authActions = (store) => ({
     store.setState({
       logging: true
     });
-    const loginParams:AUTH_APIS.loginParams = {
+    const loginParams:AUTH_APIS.LoginParams = {
       username: form.AdminName,
       // password: form.Password,
       password: encrypt(form.AdminName + form.Password, "hy_auth_business"),
@@ -242,7 +236,7 @@ const authActions = (store) => ({
       /** 判断是否登录成功的逻辑 */
       const isLogin = handleLoginSuccess(loginRes);
       if (isLogin) {
-        const nextStore = onLoginSuccess(store, { resData: loginRes, originForm: form });
+        const nextStore = onLoginSuccess(store, { resData: loginRes, originForm: form, refreshTime:new Date().getTime() });
         store.setState(nextStore);
         Call(onSuccess, form);
       } else {
