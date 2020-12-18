@@ -1,13 +1,14 @@
+import { history } from 'multiple-page-routing';
 import React from "react";
 import ReactDOM from "react-dom";
-
 import store from "store";
-import { history } from "multiple-page-routing";
-
-import { initRequest } from "./utils/request";
-import { getAppEnvConfig, UrlConfKey } from "./utils/env";
+import App from './main';
 import { checkEnvConfig } from "./utils/check-env-config";
-import App from "./main";
+import { getAppEnvConfig, UrlConfKey } from "./utils/env";
+import { initRequest } from "./utils/request";
+
+
+
 
 /**
  * 从 config 获取环境配置
@@ -74,10 +75,7 @@ const initReq = (token?: string) => {
  */
 export async function render() {
   // 合并环境配置
-  const envConfig = Object.assign(
-    await getAppEnvConfig(),
-    getEnvConfigFromLocation()
-  );
+  const envConfig = Object.assign(await getAppEnvConfig(), getEnvConfigFromLocation(), {"client_secret": "hy123456","client_id": "client_hy_web"});
 
   // 判断环境配置的合法性
   const isPass = await checkEnvConfig(envConfig);
@@ -86,6 +84,7 @@ export async function render() {
     Object.keys(envConfig).forEach((field) => {
       store.set(field, envConfig[field]);
     });
+
   }
 
   // if(envConfig["app/code"] && envConfig[`app/${envConfig["app/code"]}/token`]){

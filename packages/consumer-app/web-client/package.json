@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
-    "store": "^2.0.12"
+    "store": "^2.0.12",
+    "crypto-js": "^4.0.0"
   },
   "author": "SANGET",
   "license": "MIT",
