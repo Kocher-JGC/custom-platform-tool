@@ -13,7 +13,7 @@ import {
   onNavigate,
   resolvePagePath,
   resolvePagePathWithSeperator,
-  getPathname
+  getPathname,
 } from "../utils";
 
 export interface RouterHelperProps {
@@ -30,21 +30,19 @@ export interface RouteParams {
 }
 
 export interface RouterSnapshot {
-  [propName: string]: {
-    /** 记录该路由的 queryString */
-    params: RouteParams
-    /** 当前路径的快照 */
-    pathSnapshot: string
-    /** pathname */
-    pathname: string
-  };
+  /** 记录该路由的 queryString */
+  params: RouteParams;
+  /** 当前路径的快照 */
+  pathSnapshot: string;
+  /** pathname */
+  pathname: string;
 }
 
 export interface RouterState {
   /** 用于存储路由列表 */
   routers: string[];
   /** 用于存储当前路由的相关信息的快照 */
-  routerSnapshot: RouterSnapshot;
+  routerSnapshot: Record<string, RouterSnapshot>;
   /** 当前激活的路由 index */
   activeRouteIdx: number;
   /** 当前激活的路由名 */
@@ -53,9 +51,9 @@ export interface RouterState {
 
 export interface DefaultLocationState {
   /** 通过 hash 存储的页面路径 */
-  pagePath?: string
+  pagePath?: string;
   /** 通过 hash 存储的页面路径，包含分隔符 */
-  pagePathWithDetail?: string
+  pagePathWithDetail?: string;
 }
 
 export const defaultState: RouterState = {
@@ -69,7 +67,7 @@ let cachedState = Object.assign({}, defaultState);
 
 const getAllUrlParams = (fromBase64) => {
   const res = getUrlSearchParams({
-    fromBase64: fromBase64
+    fromBase64,
   });
   return res;
 };
@@ -77,25 +75,25 @@ const getAllUrlParams = (fromBase64) => {
 class MultipleRouterManager<
   P extends RouterHelperProps,
   S extends RouterState,
-  L = unknown,
+  L = unknown
 > extends Component<P, S> {
-  history = history
+  history = history;
 
-  onNavigate = onNavigate
+  onNavigate = onNavigate;
 
-  unlisten!: UnregisterCallback
+  unlisten!: UnregisterCallback;
 
-  defaultPath: string | null = null
+  defaultPath: string | null = null;
 
   /** 响应浏览器 pop 的回调 */
-  onPop!: () => void
+  onPop!: () => void;
 
   /** 响应浏览器 push 的回调 */
-  onPush!: () => void
+  onPush!: () => void;
 
-  handleHistoryChange!: (activeRoute: string, action: 'POP' | 'PUSH') => void
+  handleHistoryChange!: (activeRoute: string, action: "POP" | "PUSH") => void;
 
-  appLocation: Location<L> & DefaultLocationState = history.location
+  appLocation: Location<L> & DefaultLocationState = history.location;
 
   constructor(props) {
     super(props);
@@ -117,15 +115,13 @@ class MultipleRouterManager<
     this.initRoute();
   }
 
-  redirect = () => {
-
-  }
+  redirect = () => {};
 
   changeRoute = (path: string, params) => {
     onNavigate({
-      type: 'PUSH',
+      type: "PUSH",
       path,
-      params
+      params,
     });
   };
 
@@ -144,10 +140,10 @@ class MultipleRouterManager<
         ...draft,
         ...params,
         pagePath,
-        pagePathWithDetail
+        pagePathWithDetail,
       };
     });
-  }
+  };
 
   locationListener = (location, action) => {
     /** 触发时机在 location 更改完成后 */
@@ -194,7 +190,8 @@ class MultipleRouterManager<
     // delete nextRouterInfo[targetRoute];
     Reflect.deleteProperty(nextRouterInfo, targetRoute);
     const nextRoutersLen = nextRouters.length - 1;
-    const nextActiveIdx = activeRouteIdx > nextRoutersLen ? nextRoutersLen : activeRouteIdx;
+    const nextActiveIdx =
+      activeRouteIdx > nextRoutersLen ? nextRoutersLen : activeRouteIdx;
     const nextActiveRoute = nextRouters[nextActiveIdx];
 
     if (!nextActiveRoute) return this.closeAll();
@@ -223,7 +220,7 @@ class MultipleRouterManager<
       // 给关闭当前 tab 候使用的 route state
       state: {
         nextRoutersFromState: nextState,
-      }
+      },
     });
 
     return nextState;
@@ -251,12 +248,21 @@ class MultipleRouterManager<
       const currParams = getAllUrlParams(this.props.fromBase64);
       const pathSnapshot = window.location.hash;
       const pathname = resolvePagePathWithSeperator(pathSnapshot);
-      nextRouterInfo[activeRoute] = {
-        ...(nextRouterInfo[activeRoute] || {}),
-        pathSnapshot,
-        pathname,
-        params: currParams,
-      };
+      nextRouterInfo[activeRoute] = Object.assign(
+        {},
+        nextRouterInfo[activeRoute],
+        {
+          pathSnapshot,
+          pathname,
+          params: currParams,
+        }
+      );
+      // nextRouterInfo[activeRoute] = {
+      //   ...(nextRouterInfo[activeRoute] || {}),
+      //   pathSnapshot,
+      //   pathname,
+      //   params: currParams,
+      // };
       let activeIdx = currComIdx;
       if (currComIdx === -1) {
         nextRouters = [...routers, activeRoute];
@@ -273,7 +279,7 @@ class MultipleRouterManager<
         activeRouteIdx: activeIdx,
         routers: nextRouters,
         routerSnapshot: nextRouterInfo,
-        ...mergeState
+        ...mergeState,
       };
       cachedState = nextState;
       return nextState;
@@ -289,21 +295,23 @@ class MultipleRouterManager<
     // console.log(this.location);
     const pagePath = resolvePagePath(this.appLocation.hash);
     const initQueryInfo = getUrlSearchParams({
-      fromBase64: true
+      fromBase64: true,
     });
     const initRoute = pagePath;
 
-    defaultPath
-      && onNavigate({
+    if (defaultPath) {
+      onNavigate({
         type: "PUSH",
         path: defaultPath,
       });
-    initRoute
-      && onNavigate({
+    }
+    if (initRoute) {
+      onNavigate({
         type: "PUSH",
         path: initRoute,
-        params: initQueryInfo
+        params: initQueryInfo,
       });
+    }
     // if (!initRoute && defaultPath) {
     //   onNavigate({
     //     type: 'PUSH',

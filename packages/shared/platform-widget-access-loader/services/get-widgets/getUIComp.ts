@@ -1,4 +1,4 @@
-import { UnexpectedWidgetMeta } from "@platform-widget-access/spec";
+// import { UnexpectedWidgetMeta } from "@platform-widget-access/spec";
 
 /**
  * 获取 UI 组件的 HOC
@@ -12,14 +12,12 @@ export const getUICompHOC = <R>(UICompData, sufix = '') => {
     widgetType
   ) => UICompData[getWidgetSpecName(widgetType)];
 
-  return (widgetType: string): R | UnexpectedWidgetMeta => {
+  return (widgetType: string): R | null => {
     const WidgetConfig = getWidgetSpec(widgetType);
     // if (typeof WidgetConfig === 'function') {
     //   return new WidgetConfig();
     // }
     if (WidgetConfig) return WidgetConfig;
-    return {
-      unexpected: true
-    };
+    return null;
   };
 };

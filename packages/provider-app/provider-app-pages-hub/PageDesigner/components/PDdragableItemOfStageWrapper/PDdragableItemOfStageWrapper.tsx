@@ -20,16 +20,6 @@ import { PDDragableItemTypes } from "../../const";
 
 import "./index.less";
 
-const devEnv = process.env.NODE_ENV === "development";
-
-const DevEnvInfo = ({ id, nestingInfo }) => {
-  return devEnv ? (
-    <div className="__dev_env_info">
-      调试信息：id: {id}, nestingInfo: {JSON.stringify(nestingInfo)}
-    </div>
-  ) : null;
-};
-
 /**
  * 可拖动的组件实例的包装器
  */
@@ -80,7 +70,6 @@ export const PDdragableItemOfStageWrapper: DragableItemWrapperFac = ({
     : PDDragableItemTypes.stageRealWidget;
   return (
     <div className={classes} key={id}>
-      <DevEnvInfo id={id} nestingInfo={nestingInfo} />
       <DragItemComp
         nestingInfo={nestingInfo}
         sortable={true}
