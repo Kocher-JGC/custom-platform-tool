@@ -20,7 +20,6 @@ import { Dashboard } from "@provider-app/dashboard/main";
 import Router, { getRouteName } from "@provider-app/config/router";
 import { LoadingTip } from "@provider-ui/loading-tip";
 import classnames from "classnames";
-import { Version } from "./components/Version";
 
 import {
   // Hall,
@@ -89,7 +88,6 @@ export default class App extends MultipleRouterManager<
     this.state = {
       ...this.state,
       ready: false,
-      showSideMenu: true,
       navMenu: [],
     };
   }
@@ -256,8 +254,14 @@ export default class App extends MultipleRouterManager<
     // return isShowMainNav ? <Nav navConfig={navMenu} /> : null;
   };
 
+  logout = () => {
+    redirectToRoot();
+    $R_P.urlManager.reset();
+    this.props.logout();
+  };
+
   render() {
-    const { logout } = this.props;
+    const { username } = this.props;
     const { routers, routerSnapshot, activeRoute, navMenu, ready } = this.state;
     const { appName: currAppName } = this.appLocation;
 
@@ -266,7 +270,7 @@ export default class App extends MultipleRouterManager<
     const isEntryApp = this.isEntryApp();
 
     const appContainerClasses = classnames([
-      "bg-gray-100",
+      // "bg-gray-100",
       // !showSideMenu && "hide-side-menu",
     ]);
 
@@ -292,10 +296,7 @@ export default class App extends MultipleRouterManager<
                 // 需要选择应用后才进入应用
                 isEntryApp && <ToApp appLocation={this.appLocation} />
               }
-              <UserStatusbar logout={logout} />
-              <div className="pr-2 text-gray-600">
-                <Version />
-              </div>
+              <UserStatusbar username={username} logout={this.logout} />
             </header>
             <div id="__provider_app_content">
               {!isEntryApp ? (

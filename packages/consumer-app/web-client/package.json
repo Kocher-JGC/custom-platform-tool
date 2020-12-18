@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
+    "@infra/ui": "0.0.1",
     "store": "^2.0.12"
   },
   "author": "SANGET",

@@ -40,6 +40,10 @@ export interface PlatformWidgetComp {
   render: PlatformWidgetRender
 }
 
+export interface PlatformWidgetDesc extends PlatformWidgetMeta, PlatformWidgetComp {
+  
+}
+
 /**
  * 不符合预期的组件
  */
