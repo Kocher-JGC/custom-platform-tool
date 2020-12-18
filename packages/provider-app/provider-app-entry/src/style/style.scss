@@ -44,6 +44,7 @@
 }
 
 #__provider_app_container {
+  background-color: $base-bg-color;
   .pages-container {
     position: relative;
     min-height: 90%;
@@ -55,14 +56,14 @@
 }
 
 #__provider_app_header {
-  background-color: $themeColor;
-  color: #fff;
-  .top-nav-item {
-    color: #fff;
-  }
-  .logo-container {
-    color: #fff;
-  }
+  // background-color: $themeColor;
+  // color: #fff;
+  // .top-nav-item {
+  //   color: #fff;
+  // }
+  // .logo-container {
+  //   color: #fff;
+  // }
 }
 
 .__top-nav-container {
@@ -80,7 +81,7 @@
     align-items: center;
     display: flex;
     &:hover {
-      background-color: darken($themeColor, 5%);
+      background-color: #f7f7f7;
     }
   }
 }

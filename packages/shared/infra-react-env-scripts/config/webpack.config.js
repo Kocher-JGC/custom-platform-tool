@@ -75,7 +75,6 @@ module.exports = (webpackEnv) => {
             ident: 'postcss',
             plugins: (loader) => [
               require('postcss-flexbugs-fixes'),
-              require('tailwindcss'),
               require('postcss-preset-env')({
                 autoprefixer: {
                   flexbox: 'no-2009',
@@ -242,8 +241,8 @@ module.exports = (webpackEnv) => {
                   loader: require.resolve('ts-loader'),
                   options: {
                     transpileOnly: true,
-                    happyPackMode: true,
-                    silent: false,
+                    // happyPackMode: true,
+                    // silent: false,
                   }
                 },
               ],
