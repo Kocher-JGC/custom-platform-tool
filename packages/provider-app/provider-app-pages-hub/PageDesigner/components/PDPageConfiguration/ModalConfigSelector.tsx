@@ -252,7 +252,7 @@ export const ModalConfigSelector = ({ selectedModal, onSuccess, onCancel }) => {
         1: getTablePopDetail,
         2: getTreePopDetail,
         3: getTreeTablePopDetail,
-      }[showType](res.result);
+      }[showType]?.(res.result);
       onSuccess(
         { ...rest, id, title, showType, selectType, selectCount },
         `弹窗：${title}`
