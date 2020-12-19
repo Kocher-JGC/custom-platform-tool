@@ -29,11 +29,14 @@ export const isReferenceField = (dataType) => {
 /**
  * 模拟生成 row 数据
  */
-export const genRenderColumn = (usingColumn) => {
-  const { id: fieldID, name: title, dsID, colDataType, fieldCode } = usingColumn;
+type Align = 'left'|'right'|'center'
+type ShowType = 'showVal' | 'realVal'
+type Result = {fieldShowType: ShowType, show: boolean, title: string, dsID: string, fieldID: string, id: string, dataIndex: string, width: number, type: 'dsColumn', align: Align, editable: boolean,}
+export const genRenderColumn = (usingColumn): Result => {
+  const { id: fieldID, name: title, dsID, colDataType } = usingColumn;
   const id = `field.dsColumn.${nanoid(8)}`;
   return {
-    title, dsID, fieldID, fieldCode,
+    title, dsID, fieldID,
     id, dataIndex: id,
     width: 60,
     type: 'dsColumn',

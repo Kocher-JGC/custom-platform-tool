@@ -1,5 +1,6 @@
 import { message as AntdMessage } from 'antd';
 import pick from 'lodash/pick';
+import { PD } from "@provider-app/page-designer/types";
 
 type RemoteDSData = {id: string, name: string, type: string, auxTable: {containAuxTable?:boolean}}
 /**
@@ -132,7 +133,7 @@ const makeTypeForList = (list, type) => {
   })) : [];
 };
 
-export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
+export const wrapInterDatasource = async (remoteDSData) => {
   // const nextState: PD.Datasources = [];
   const tableList: RemoteDSData[] = []; const nextDictList: PD.Datasource[] = []; const remoteDictList: RemoteDSData[] = [];
   if(remoteDSData.length > 0){
