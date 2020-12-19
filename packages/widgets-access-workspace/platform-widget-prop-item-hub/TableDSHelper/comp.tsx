@@ -269,9 +269,10 @@ export class TableDSHelperComp extends React.Component<
         >
           <span>编辑列</span>
         </Menu.Item>
-        <Menu.Item key="1">
+        {/** TODO：编辑组件，改为在 3.2 实现 */}
+        {/* <Menu.Item key="1">
           <span>编辑组件</span>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
     );
   };
