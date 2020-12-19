@@ -4,6 +4,7 @@ import { PropItemRenderContext, PTColumn } from "@platform-widget-access/spec";
 import { CloseModal, DropdownWrapper, ShowModal } from "@infra/ui";
 import { PlusOutlined, CloseOutlined, DownOutlined } from "@ant-design/icons";
 import Sortable from "sortablejs";
+import { PD } from "@provider-app/page-designer/types";
 import { genRenderColumn, isReferenceField } from "./utils";
 import { ColumnEditableItems } from "./ColumnEditableItems";
 import "./style.scss";
@@ -21,7 +22,7 @@ interface TableDSHelperCompProps extends PropItemRenderContext {
 }
 
 interface TableEditorState {
-  datasourceMeta: PD.Datasource[];
+  datasourceMeta: PD.TableDatasouce[];
   usingColumns: PTColumn[];
 }
 

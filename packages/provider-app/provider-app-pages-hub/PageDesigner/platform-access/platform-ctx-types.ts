@@ -1,5 +1,6 @@
 import { ChangeMetadataOptions } from "@engine/visual-editor/core/actions/change-meta";
-import { ChangeEntityState, GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
+import { GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
+import { PD } from "@provider-app/page-designer/types";
 
 export interface OnDatasourceSelectorSubmitOptions {
   /** 关闭当前弹窗 */

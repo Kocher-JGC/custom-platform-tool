@@ -36,6 +36,7 @@ import {
 } from "./utils";
 
 import "./style";
+import { PD } from "./types";
 
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
@@ -135,7 +136,9 @@ class PageDesignerApp extends React.Component<
     const nextDSState = {};
     /** 过滤出来源于组件属性配置的数据源 */
     const getDsFromNotPage = () => {
-      const { dataSource } = this.props.pageMetadata;
+      const {
+        dataSource,
+      }: { [key: string]: PD.DatasourcesInMeta } = this.props.pageMetadata;
       const result = {};
       Object.keys(dataSource).forEach((dsID) => {
         const ds = dataSource[dsID];
