@@ -29,3 +29,4 @@ export * from '@platform-widget-prop-item/show-order-column-helper';
 export * from '@platform-widget-prop-item/word-wrap-helper';
 export * from '@platform-widget-prop-item/check-row-helper';
 export * from '@platform-widget-prop-item/query-type-helper';
+export * from '@platform-widget-prop-item/table-speedy-config-helper';
