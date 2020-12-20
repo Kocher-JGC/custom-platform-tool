@@ -5,6 +5,7 @@ import { CloseModal, DropdownWrapper, ShowModal } from "@infra/ui";
 import { PlusOutlined, CloseOutlined, DownOutlined } from "@ant-design/icons";
 import Sortable from "sortablejs";
 import { PD } from "@provider-app/page-designer/types";
+import dataSource from "@hy/pro-table/demos/dataSource";
 import { genRenderColumn, isReferenceField } from "./utils";
 import { ColumnEditableItems } from "./ColumnEditableItems";
 import "./style.scss";
@@ -20,10 +21,11 @@ export type DSColumn = {
 interface TableDSHelperCompProps extends PropItemRenderContext {
   whichAttr: string;
 }
-
+type SortField = { fieldID: string; dsID: string; sort: "ASC" | "DESC" };
 interface TableEditorState {
   datasourceMeta: PD.TableDatasouce[];
   usingColumns: PTColumn[];
+  sortInfo: SortField[];
 }
 
 const takeTableInfo = (_tableInfo) => {
@@ -42,6 +44,7 @@ export class TableDSHelperComp extends React.Component<
     this.state = {
       datasourceMeta,
       usingColumns: this.setUsingColumns(),
+      sortInfo: this.setSortInfo(),
     };
   }
 
@@ -131,6 +134,12 @@ export class TableDSHelperComp extends React.Component<
     const { editingWidgetState } = this.props;
     const { columns } = editingWidgetState || {};
     return columns || [];
+  };
+
+  setSortInfo = () => {
+    const { editingWidgetState } = this.props;
+    const { sortInfo } = editingWidgetState || {};
+    return sortInfo || [];
   };
 
   renderColumnSelector = () => {
@@ -331,6 +340,74 @@ export class TableDSHelperComp extends React.Component<
     );
   };
 
+  takeSortInfo = (dsInMeta: PD.TableDatasouce[], sortInfo) => {
+    const constructDs = () => {
+      const result = {};
+      dsInMeta?.forEach((ds) => {
+        const { name: dsTitle, columns } = ds;
+        Object.values(columns || {}).forEach((column) => {
+          const { name: columnTitle, id: fieldID, dsID } = column;
+          result[`${dsID}.${fieldID}`] = `${dsTitle}.${columnTitle}`;
+        });
+      });
+      return result;
+    };
+    const titleMap = constructDs();
+    return sortInfo
+      ?.map((item) => {
+        const { dsID, fieldID, sort } = item;
+        const title = titleMap[`${dsID}.${fieldID}`];
+        const titleSort = { DESC: "降序", ASC: "升序" }[sort];
+        return `${title}: ${titleSort}; `;
+      })
+      .join("");
+  };
+
+  /**
+   * 排序字段的渲染器
+   */
+  renderSortList = () => {
+    const { datasourceMeta, sortInfo } = this.state;
+    const { platformCtx, changeEntityState } = this.props;
+    if (!datasourceMeta) return null;
+    console.log(sortInfo);
+    return (
+      <div className="mb10">
+        <div className="label mb5">排序字段</div>
+        <div className="content">
+          <span
+            className="__label bg_default t_white cursor-pointer w-full"
+            onClick={() => {
+              platformCtx.selector.openFieldSortHelper({
+                defaultValue: sortInfo,
+                datasource: datasourceMeta,
+                onSubmit: (sortInfoTmpl) => {
+                  if (!Array.isArray(sortInfoTmpl) || sortInfoTmpl.length === 0)
+                    return;
+                  this.setState(
+                    {
+                      sortInfo: sortInfoTmpl,
+                    },
+                    () => {
+                      changeEntityState({
+                        attr: "sortInfo",
+                        value: sortInfoTmpl,
+                      });
+                    }
+                  );
+                },
+              });
+            }}
+          >
+            {sortInfo?.length > 0
+              ? this.takeSortInfo(datasourceMeta, sortInfo)
+              : "点击配置排序字段"}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   setDatasourceMetaForSelf = (datasourceMeta) => {
     this.setState({
       datasourceMeta,
@@ -411,6 +488,7 @@ export class TableDSHelperComp extends React.Component<
       <div>
         {dsBinder}
         {this.renderSetColumn()}
+        {this.renderSortList()}
       </div>
     );
   }

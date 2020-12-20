@@ -39,8 +39,20 @@ export interface OpenExpressionImporterOptions {
   defaultValue: OnExpressionImporterSubmitOptions;
   onSubmit: (submitOptions: OnExpressionImporterSubmitOptions) => void;
 }
+export interface OnOpenFieldSortHelperSubmitOption {
+  fieldID: string;
+  dsID: string;
+  sort: 'ASC'|'DESC'
+}
+
+export interface OpenFieldSortHelperOptions {
+  defaultValue: OnOpenFieldSortHelperSubmitOption[]
+  datasource: PD.TableDatasouce[]
+  onSubmit: (submitOptions: OnOpenFieldSortHelperSubmitOption[])=>void
+}
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) => () => void
+export type OpenFieldSortHelper = (options: OpenFieldSortHelperOptions) => () => void
 
 export type ChangeWidgetType = (widgetType: string) => void
 
@@ -76,6 +88,7 @@ export interface PlatformCtx {
   selector: {
     openDatasourceSelector: OpenDatasourceSelector
     openExpressionImporter: OpenExpressionImporter
+    openFieldSortHelper: OpenFieldSortHelper
   }
   /** 对于页面元数据的操作 */
   meta: {
