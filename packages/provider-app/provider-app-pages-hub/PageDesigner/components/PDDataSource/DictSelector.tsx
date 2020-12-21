@@ -174,11 +174,14 @@ export const DictList: React.FC<DictSelectorProps> = ({
   const [{ params, list }, getTableList] = useDictList();
   const getSubmitData: GetSubmitData = (
     allRows = [],
-    selctedRows = [],
+    selectedRows = [],
     selectedRowKeys = []
   ) => {
+    if (single) {
+      return selectedRows;
+    }
     const defaultSelectedKeys = defaultSelectedInfo.map((item) => item.id);
-    const plusRows = selctedRows.filter(
+    const plusRows = selectedRows.filter(
       (item) => !defaultSelectedKeys.includes(item.id)
     );
     const minusRowKeys = allRows
