@@ -10,7 +10,13 @@ import { OptionsSelector } from "./comp";
   id: "prop_datasource_selector",
   label: "数据源选择",
   // optDS => option datasource
-  whichAttr: ["optDS", "sortInfo"],
+  whichAttr: [
+    "optDS",
+    "sortInfo",
+    "showValField",
+    "realValField",
+    "realValDefault",
+  ],
   useMeta: ["dataSource"],
 })
 export class DatasourceSelectotHelper implements PropItemRender {
