@@ -62,6 +62,17 @@ export interface OpenFieldSortHelperOptions {
   datasource: PD.TableDatasouce[]
   onSubmit: (submitOptions: OnOpenFieldSortHelperSubmitOption[])=>void
 }
+export interface OnOpenFieldSortHelperSubmitOption {
+  fieldID: string;
+  dsID: string;
+  sort: 'ASC'|'DESC'
+}
+
+export interface OpenFieldSortHelperOptions {
+  defaultValue: OnOpenFieldSortHelperSubmitOption[]
+  datasource: PD.TableDatasouce[]
+  onSubmit: (submitOptions: OnOpenFieldSortHelperSubmitOption[])=>void
+}
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) => () => void
 export type OpenFieldSortHelper = (options: OpenFieldSortHelperOptions) => () => void
