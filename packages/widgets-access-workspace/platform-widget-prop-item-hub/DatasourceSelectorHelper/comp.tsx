@@ -1,27 +1,19 @@
-import React, { useState } from "react";
-import { Radio } from "antd";
+import React, { useState, useEffect } from "react";
+import { message as AntMessage } from "antd";
 import { PropItemRenderContext } from "@platform-widget-access/spec";
 import { PD } from "@provider-app/page-designer/types";
 import { DropdownWrapper, Input } from "@infra/ui";
-
-interface OptionsType {
-  type: "TABLE" | "DICT";
-  tableInfo: {
-    id: string;
-    name: string;
-    condition;
-    defaultVal;
-    sort;
-  };
-}
+import pick from "lodash/pick";
 
 const takeTableInfo = (_tableInfo) => {
   return _tableInfo.name;
 };
+const realValDefault = "realValDefault";
 
 interface OptionsSelectorProps extends PropItemRenderContext {
   whichAttr: string;
 }
+type DictChild = { name: string; code: string };
 
 export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   const {
@@ -31,7 +23,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
     platformCtx,
   } = props;
 
-  const { changePageMeta, takeMeta, genMetaRefID } = platformCtx.meta;
+  const { changePageMeta, takeMeta } = platformCtx.meta;
   // 选项数据源的引用
   const DSOptionsRef = editingWidgetState[whichAttr] as string | undefined;
   const datasourceMeta =
@@ -79,7 +71,8 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
                   attr: "realValField",
                   value: "",
                 },
-                { attr: "showValField", value: "" }
+                { attr: "showValField", value: "" },
+                { attr: realValDefault, value: "" }
               );
             }
             changeEntityState(changeList);
@@ -182,29 +175,27 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
               overlay={(helper) => {
                 return (
                   <div className="column-selector-container">
-                    {Object.values(datasourceMeta.columns || {}).map(
-                      (col, idx) => {
-                        const { name, id } = col;
-                        const isSelected = editingWidgetState[fieldCode] === id;
-                        return (
-                          <div
-                            onClick={() => {
-                              changeEntityState({
-                                attr: fieldCode,
-                                value: id,
-                              });
-                              helper.hide();
-                            }}
-                            className={`p1-1 list-item ${
-                              isSelected ? "disabled" : ""
-                            }`}
-                            key={id}
-                          >
-                            {`${name}`}
-                          </div>
-                        );
-                      }
-                    ) || null}
+                    {Object.values(datasourceMeta.columns || {}).map((col) => {
+                      const { name, id } = col;
+                      const isSelected = editingWidgetState[fieldCode] === id;
+                      return (
+                        <div
+                          onClick={() => {
+                            changeEntityState({
+                              attr: fieldCode,
+                              value: id,
+                            });
+                            helper.hide();
+                          }}
+                          className={`p1-1 list-item ${
+                            isSelected ? "disabled" : ""
+                          }`}
+                          key={id}
+                        >
+                          {`${name}`}
+                        </div>
+                      );
+                    }) || null}
                   </div>
                 );
               }}
@@ -218,10 +209,116 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
       </div>
     );
   };
+  const useChildList = (ds): [DictChild[]] => {
+    const [childList, setChildList] = useState<{
+      list: DictChild[];
+      dictId: string;
+      childId: string;
+    }>({
+      list: [],
+      dictId: "",
+      childId: "",
+    });
+    const constructList = (list) => {
+      return list.map((item) => pick(item, ["name", "code"]));
+    };
+    const getListFailed = () => {
+      AntMessage.error("获取字典详情信息失败，请联系技术人员");
+      setChildList({
+        list: [],
+        dictId: childList.dictId,
+        childId: childList.childId,
+      });
+    };
+    const getChildList = (dictionaryId?: string, pid?: string) => {
+      if (
+        (dictionaryId === childList.dictId &&
+          pid === childList.childId &&
+          childList.list.length > 0) ||
+        !dictionaryId
+      )
+        return;
+
+      if (!pid) {
+        $R_P.get({ url: `/data/v1/dictionary/${dictionaryId}` }).then((res) => {
+          if (res?.code !== "00000") {
+            getListFailed();
+            return;
+          }
+          setChildList({
+            list: constructList(res.result.items),
+            dictId: dictionaryId,
+            childId: "",
+          });
+        });
+      } else {
+        $R_P
+          .get({ url: `/data/v1/dictionary_value/${dictionaryId}/${pid}` })
+          .then((res) => {
+            if (res?.code !== "00000") {
+              getListFailed();
+              return;
+            }
+            setChildList({
+              list: constructList(res.result),
+              dictId: dictionaryId,
+              childId: pid,
+            });
+          });
+      }
+    };
+    useEffect(() => {
+      const [dictionaryId, pid] = (ds || "").split(".");
+      getChildList(dictionaryId, pid);
+    }, [ds]);
+    return [childList.list];
+  };
+  const DictChildSelector = ({ ds }) => {
+    const [childList] = useChildList(ds);
+    return (
+      <DropdownWrapper
+        className=" w-full"
+        outside
+        overlay={(helper) => {
+          return (
+            <div className="column-selector-container">
+              {childList?.map(({ name, code }) => {
+                const isSelected = editingWidgetState[realValDefault] === code;
+                return (
+                  <div
+                    onClick={() => {
+                      if (isSelected) return;
+                      changeEntityState({
+                        attr: realValDefault,
+                        value: code,
+                      });
+                      helper.hide();
+                    }}
+                    className={`p1-1 list-item ${isSelected ? "disabled" : ""}`}
+                    key={code}
+                  >
+                    {`${name}`}
+                  </div>
+                );
+              }) || null}
+            </div>
+          );
+        }}
+      >
+        <span className="__label bg_default t_white cursor-pointer w-full">
+          {(editingWidgetState[realValDefault] &&
+            childList?.find(
+              (item) => item.code === editingWidgetState[realValDefault]
+            )?.name) ||
+            ""}
+        </span>
+      </DropdownWrapper>
+    );
+  };
   /**
    * 默认值 的渲染器
    */
-  const renderDefaultValue = () => {
+  const DefaultValueRenderer = () => {
     if (!datasourceMeta) return null;
     return (
       <div className="mb10">
@@ -229,7 +326,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
         <div className="content">
           {datasourceMeta.type === "DICT" ? (
             <span className="__label bg_default t_white w-full">
-              {defaultFieldInDict}
+              <DictChildSelector ds={datasourceMeta.id} />
             </span>
           ) : (
             <Input
@@ -261,6 +358,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
         fieldTitle: "值字段",
         defaultFieldInDict: "字典项编码",
       })}
+      <DefaultValueRenderer />
     </>
   );
 };
