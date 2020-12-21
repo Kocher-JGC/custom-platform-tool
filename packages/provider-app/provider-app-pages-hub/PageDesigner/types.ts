@@ -1,8 +1,8 @@
 /**
  * 定义属性项可以改动的属性
  */
-
-export interface ColumnItem {
+export type Species = 'SYS' | 'BIS' | 'SYS_TMPL' | 'BIS_TMPL'
+export interface TableColumnItem {
   id: string
   name: string
   /** 数据类型 */
@@ -13,23 +13,34 @@ export interface ColumnItem {
   fieldType: string
   /** 字段的名字 */
   fieldCode: string
+  /** 字段的种类：系统元数据，业务元数据 */
+  species: Species
+  /** 对应的数据源唯一标识 */
+  dsID: string
 }
-
-export interface DatasourceItem {
+export type BasicDatasourceItem = {
   /** 该条记录的 id */
   id: string
   /** code */
   code: string
-  /** 该条记录关联的表的 id */
-  moduleId: string
   /** 名字 */
   name: string
-  /** 类型 */
-  type: string
-  /** columns */
-  columns: ColumnItem[]
-  createdBy: 'page'
 }
+
+export type TableDatasourceItem = BasicDatasourceItem & {
+  /** 该条记录关联的表的 id */
+  moduleId: string
+  type: 'TABLE'
+  tableType: 'TABLE'|'AUX_TABLE'
+  columns: {[key:string]:TableColumnItem}
+}
+export type DictColumnItem = {dsID: string, id: string, name: string, code: string}
+export type DictDatasourceItem = BasicDatasourceItem & {
+  type: 'DICT'
+  columns: {[key:string]: DictColumnItem}
+}
+export type DatasourceItem = (TableDatasourceItem | DictDatasourceItem )
+export type DatasourceItemInMeta = DatasourceItem & {createdBy: 'page'|'prop'}
 
 export interface PDPropItemRendererBusinessPayload {
   /** 内部的已绑定的数据源 */
@@ -52,16 +63,18 @@ export interface PDPropItemRendererBusinessPayload {
 }
 
 export type DatasourceGroup = DatasourceItem[]
+export type DatasourceInMetaGroup = {[key:string]:DatasourceItemInMeta}
 
-declare global {
-  /** PageDesigner */
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  export namespace PD {
-    type Column = ColumnItem
-    type Datasource = DatasourceItem
-    type Datasources = DatasourceGroup
-    /** 属性项的业务承载 */
-    type PropItemRendererBusinessPayload = PDPropItemRendererBusinessPayload
-  }
-  /** 页面设计器的类型定义 */
+/** PageDesigner */
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace PD {
+  export type TableColumn = TableColumnItem
+  export type TableDatasouce = TableDatasourceItem
+  export type Datasource = DatasourceItem
+  export type DatasourceInMeta = DatasourceItemInMeta
+  export type Datasources = DatasourceGroup
+  export type DatasourcesInMeta = DatasourceInMetaGroup
+  /** 属性项的业务承载 */
+  export type PropItemRendererBusinessPayload = PDPropItemRendererBusinessPayload
 }
+/** 页面设计器的类型定义 */

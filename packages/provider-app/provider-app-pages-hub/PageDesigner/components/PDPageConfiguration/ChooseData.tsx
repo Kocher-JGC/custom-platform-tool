@@ -330,7 +330,7 @@ export class ChooseData extends React.Component<Props> {
   getReturn = (modalConfig) => {
     const { showType, returnValue, tableReturnValue, ds, tableDs } =
       modalConfig || {};
-    if ([EShowType.TABLE | EShowType.TREE].includes(showType)) {
+    if ([EShowType.TABLE, EShowType.TREE].includes(showType)) {
       return { ds, fieldList: returnValue };
     }
     if (showType === EShowType.TREETABLE) {
@@ -415,6 +415,7 @@ export class ChooseData extends React.Component<Props> {
 
   render() {
     const { modalConfig, matchReturnValue, createdBy } = this.state;
+    const { ds, fieldList } = this.getReturn(modalConfig);
     return (
       <>
         <div className="row mb-2">
@@ -444,7 +445,8 @@ export class ChooseData extends React.Component<Props> {
         </div>
         <div>返回值匹配：</div>
         <VariableMatch
-          {...this.getReturn(modalConfig)}
+          ds={ds}
+          fieldList={fieldList}
           platformCtx={this.props.platformCtx}
           matchPair={matchReturnValue || {}}
           onChange={(changeArea) => {

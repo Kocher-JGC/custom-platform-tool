@@ -43,22 +43,10 @@ export type ConditionStrategy = ConditionStrategyNone | ConditionStrategyInput |
 export interface PTColumn {
   /** id */
   id: string
-  /** 实际的对应数据库字段的显示名 */
-  name: string
   /** 显示给用户看的 title */
   title: string
   /** 数据显示的 index */
   dataIndex: string
-  /** 数据显示的别名 */
-  alias: string
-  /** 数据类型 */
-  colDataType: string
-  /** 字段 size */
-  fieldSize: string
-  /** 字段类型 */
-  fieldType: string
-  /** 字段的名字 */
-  fieldCode: string
   /** 字段唯一标识 */
   fieldID: string
   /** 数据源唯一标识 */
@@ -69,11 +57,11 @@ export interface PTColumn {
    * 行数据渲染策略，方案未定
    * TODO: 确定渲染策略
    */
-  rowRenderStrategy: {
+  rowRenderStrategy?: {
 
   }
   /**
    * 列作为查询条件的渲染策略
    */
-  conditionStrategy: ConditionStrategy
+  conditionStrategy?: ConditionStrategy
 }

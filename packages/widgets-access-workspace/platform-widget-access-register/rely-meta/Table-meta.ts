@@ -91,6 +91,11 @@ export const TableMeta = CreateWidgetPropItemRely({
           }
         }
       },
+      {
+        propID: 'prop_table_speedy_config_helper', 
+        defaultValues: {
+        }
+      }
       // { propID: 'prop_flex_config' },
     ]
   }

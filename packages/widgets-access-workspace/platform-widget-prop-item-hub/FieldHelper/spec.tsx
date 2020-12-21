@@ -9,7 +9,6 @@ const takeBindColumnInfo = (selectedField: SelectedField) => {
 };
 
 /** 属性项编辑的组件属性 */
-const whichAttr = "field";
 
 const metaAttr = "schema";
 
@@ -18,7 +17,6 @@ const metaAttr = "schema";
  */
 @PropItem({
   id: "prop_field",
-  name: "PropField",
   label: "列",
   whichAttr: "field",
   useMeta: metaAttr,
@@ -27,15 +25,18 @@ export class FieldHelperSpec {
   /**
    * 检查该 column 是否已经被其他控件绑定
    */
-  checkColumnIsBeUsed = (_selectedField: SelectedField, schema) => {
+  checkColumnIsBeUsed = (
+    _selectedField: SelectedField,
+    schema
+  ): Promise<void> => {
     return new Promise((resolve, reject) => {
-      for (const sID in schema) {
+      const isBeUsed = Object.keys(schema).some((sID) => {
         const fieldCode = _selectedField.column?.fieldCode;
-        // console.log(_selectedField.column, schema);
-        if (!fieldCode || sID.indexOf(fieldCode) !== -1) {
-          reject();
-          break;
-        }
+        return !fieldCode || sID.indexOf(fieldCode) !== -1;
+      });
+      if (isBeUsed) {
+        reject();
+        return;
       }
       resolve();
     });
@@ -46,7 +47,7 @@ export class FieldHelperSpec {
     changeEntityState,
     platformCtx,
   }: PropItemRenderContext) {
-    const { changePageMeta, takeMeta, genMetaRefID } = platformCtx.meta;
+    const { changePageMeta, takeMeta } = platformCtx.meta;
     const currMetaRefID = editingWidgetState.field;
     const selectedField = takeMeta({
       metaAttr: "schema",

@@ -5,7 +5,7 @@ import { isReferenceField } from "./utils";
 
 type BasicColumn = {
   title: string;
-  width: string;
+  width: number;
   show: boolean;
   editable?: boolean;
   align?: "left" | "center" | "right";
@@ -193,15 +193,24 @@ export const ColumnEditableItems: React.FC<ColumnEditableItemsProps> = ({
               title="列宽"
               children={() => {
                 return (
-                  <ColumnWidthEditor
-                    value={data.width}
-                    onChange={(value) => {
+                  <InputNumber
+                    onChange={(changeValue) => {
                       setData({
                         ...data,
-                        width: value,
+                        width: parseFloat(`${changeValue}`),
                       });
                     }}
+                    value={data.width}
                   />
+                  // <ColumnWidthEditor
+                  //   value={data.width}
+                  //   onChange={(value) => {
+                  //     setData({
+                  //       ...data,
+                  //       width: value,
+                  //     });
+                  //   }}
+                  // />
                 );
               }}
             />

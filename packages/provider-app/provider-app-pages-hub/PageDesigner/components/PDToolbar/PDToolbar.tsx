@@ -67,7 +67,7 @@ const CheckAllExistPropItems = () => {
       onClick={(e) => {
         const modalID = ShowModal({
           title: "页面设置",
-          width: 900,
+          width: "85%",
           children: ({ close }) => {
             return (
               <div>

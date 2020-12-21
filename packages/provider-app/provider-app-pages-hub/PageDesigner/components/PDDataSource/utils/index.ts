@@ -1,11 +1,14 @@
 import { message as AntdMessage } from 'antd';
 import pick from 'lodash/pick';
+import { PD } from "@provider-app/page-designer/types";
 
 type RemoteDSData = {id: string, name: string, type: string, auxTable: {containAuxTable?:boolean}}
 /**
  * 提取由后端返回的，前端需要的 columns
  */
-export const takeColumnsData = (columns: any[], dsID: string): {[key:string]: PD.Column} => {
+export type Species = 'SYS' | 'BIS' | 'SYS_TMPL' | 'BIS_TMPL'
+type RemoteTableColumn = {id: string, name: string, dataType: string, fieldSize: string, fieldType: string,  code: string, species:Species }
+export const takeColumnsData = (columns: RemoteTableColumn[], dsID: string): {[key:string]: PD.TableColumn} => {
   const result = {};
   columns.forEach((column) => {
     // console.log('column', column);
@@ -15,8 +18,8 @@ export const takeColumnsData = (columns: any[], dsID: string): {[key:string]: PD
       colDataType: column.dataType,
       fieldSize: column.fieldSize,
       fieldType: column.fieldType,
-      dataType: column.dataType,
       fieldCode: column.code,
+      species: column.species,
       dsID
     };
   });
@@ -26,7 +29,7 @@ export const takeColumnsData = (columns: any[], dsID: string): {[key:string]: PD
 /**
  * 从后端返回的数据提取前端需要用到的数据
  */
-export const takeTableField = (datasourceData): PD.Datasource => {
+export const takeTableField = (datasourceData) => {
   const resData = Object.assign({}, pick(
     datasourceData, [
       'name',
@@ -61,12 +64,12 @@ export const takeTable = async (tableList: RemoteDSData[]) => {
   };
   /** 获取剩余的表配置 */
   const getTableConfig = () => {
-    const result = {};
+    const res = {};
     tableList.forEach(item=>{
       const { id, auxTable } = item;
-      result[id] = { auxTable };
+      res[id] = { auxTable };
     });
-    return result;
+    return res;
   };
   /** 拼接表格索引 */
   // const getTablesOrder = () =>{
@@ -77,7 +80,7 @@ export const takeTable = async (tableList: RemoteDSData[]) => {
   //   });
   //   return map;
   // };
-  const { code, result, msg } = await $R_P.post({
+  const { code, result } = await $R_P.post({
     url: '/data/v1/tables/tableWithAux',
     data: { tables: getTablesParam() }
   });
@@ -115,39 +118,40 @@ export const takeDictItems = (dsID) => {
 /**
  * 从后端返回的字典数据提取前端需要用到的数据
  */
-export const takeDictField = (datasourceData:RemoteDSData) => {
-  return Object.assign({}, pick(
-    datasourceData, [
-      'name',
-      'id',
-      'code',
-    ]
-  ), {
-    dictType: datasourceData.type, 
+type RemoteDictData = {name: string, code: string, id: string}
+export const takeDictField = (datasourceData:RemoteDictData): PD.Datasource => {
+  const { name, id, code } = datasourceData;
+  return { name, id, code, type: 'DICT',
     columns: takeDictItems(datasourceData.id)
-  });
+  };
 };
 const makeTypeForList = (list, type) => {
   return Array.isArray(list) ? list.map(item=>({
     ...item,
-    type
-  })) : []
-}
-export const wrapInterDatasource = async (remoteDSData: RemoteDSData[]) => {
+    type,
+    createdBy: 'prop'
+  })) : [];
+};
+
+export const wrapInterDatasource = async (remoteDSData) => {
   // const nextState: PD.Datasources = [];
-  const tableList: RemoteDSData[] = []; const nextDictList = []; const remoteDictList: RemoteDSData[] = [];
-  remoteDSData.length > 0 && remoteDSData.forEach((data, order) => {
-    if (!data) return;
-    switch (data.type) {
-      case 'TABLE':
-        tableList.push(data);
-        break;
-      case 'DICT':
-        remoteDictList.push(data);
-        nextDictList.push(takeDictField(data));
-        break;
-    }
-  });
+  const tableList: RemoteDSData[] = []; const nextDictList: PD.Datasource[] = []; const remoteDictList: RemoteDSData[] = [];
+  if(remoteDSData.length > 0){
+    remoteDSData.forEach((data) => {
+      if (!data) return;
+      switch (data.type) {
+        case 'TABLE':
+          tableList.push(data);
+          break;
+        case 'DICT':
+          remoteDictList.push(data);
+          nextDictList.push(takeDictField(data));
+          break;
+        default:
+          break;
+      }
+    });
+  }
   const {
     decorativeData: nextTableList,
     remoteData: remoteTableList
