@@ -318,7 +318,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
   /**
    * 默认值 的渲染器
    */
-  const DefaultValueRenderer = () => {
+  const renderDefaultValue = () => {
     if (!datasourceMeta) return null;
     return (
       <div className="mb10">
@@ -358,7 +358,7 @@ export const OptionsSelector: React.FC<OptionsSelectorProps> = (props) => {
         fieldTitle: "值字段",
         defaultFieldInDict: "字典项编码",
       })}
-      <DefaultValueRenderer />
+      {renderDefaultValue()}
     </>
   );
 };
