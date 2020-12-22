@@ -20,10 +20,11 @@ const genUpdateOfAPBDSL = ({
 const deepGen = ({ readDef, readList }: ReadRefObjDef) => {
   const { readRef, joins } = readDef;
   const read: any = readList[readRef];
-  if (joins) {
+  if (joins && joins.length) {
     read.joins = joins.map((item) => {
-      const { joinsCond, joinsType, readDef } = item;
-      const subRead = deepGen({ readDef, readList });
+      const { joinsCond, joinsType, readDef: subReadDef } = item;
+      const subRead = deepGen({ readDef: subReadDef, readList });
+      subRead.joinCondition = joinsCond;
       return {
         [joinsType]: subRead
       };

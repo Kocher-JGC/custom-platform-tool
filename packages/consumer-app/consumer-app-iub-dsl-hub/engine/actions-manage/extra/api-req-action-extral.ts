@@ -105,13 +105,12 @@ export const genApiReqPlugins = (parseRes) => {
   
     const resTransfFn = (IUBCtx: RunTimeCtxToBusiness, reqRes) => {
       /** 
-       * 转换
+       * 转换「由页面服务生成既决定」
        * 1. 将重命名的字段转换「确保准确性」
        * 2. 将数据结构转换「可以加入数据更新插件」
        */
+      /** 先写死, 应该由resolve决定如何处理 */
       const res = Array.isArray(reqRes) ? reqRes[0] : reqRes;
-      /** 先写死 */
-      // debugger
       if (res && res.data) {
         if (!IUBCtx.action) IUBCtx.action = {};
         IUBCtx.action.payload = res.data;

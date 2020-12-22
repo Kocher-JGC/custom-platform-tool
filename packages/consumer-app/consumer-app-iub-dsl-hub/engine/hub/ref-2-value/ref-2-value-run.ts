@@ -1,11 +1,14 @@
-import { isRunCtx } from './../../IUBDSL-mark';
+/* eslint-disable no-shadow */
+/* eslint-disable no-unused-expressions */
+
+import { Ref2ValDef, ref2ValStructMap, ComplexType } from '@iub-dsl/definition';
+import { isRunCtx , isSchema } from "../../IUBDSL-mark";
 import { 
   Ref2ValParseCtx,
   PathInfo, Ref2ValRunCtx, LayerParseRes
 } from "./types";
 import { arrayAsyncHandle } from '../../utils';
-import { Ref2ValDef, ref2ValStructMap, ComplexType } from '@iub-dsl/definition';
-import { isSchema } from "../../IUBDSL-mark";
+
 import { DispatchModuleName, DispatchMethodNameOfIUBStore } from '../../runtime/types';
 
 // const run = bindRef2Value(conf.set, {
@@ -39,13 +42,13 @@ export const itemHandler = (IUBctx, runCtx: Ref2ValRunCtx, {
     return {
       [structItem.key]: val
     };
-  } else {
-    if (layerRunRes) {
-      return {
-        [structItem.key]: layerRunRes
-      };
-    }
+  } 
+  if (layerRunRes) {
+    return {
+      [structItem.key]: layerRunRes
+    };
   }
+  
 };
 
 /**
@@ -124,7 +127,7 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
                 itemRes !== undefined &&  groupRunRes.push(itemRes);
               } else { 
                 /** 未解析的重新解析, 目前暂不考虑 */
-                groupRunRes.push({ [structItem.key]: structItem.val })
+                groupRunRes.push({ [structItem.key]: structItem.val });
               }
             }
           };
@@ -170,7 +173,7 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
       return {};
     };
     const res = await layerRunFn(originConf);
-    // console.log(res);
+    console.log(res);
     return res;
   };
 };
@@ -183,7 +186,7 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
  */
 export const getRootData = async (IUBctx, runCtx: Ref2ValRunCtx, rootPathInfo: PathInfo) => {
   const { action, asyncDispatchOfIUBEngine } = IUBctx;
-  const { payload } = action || {}
+  const { payload } = action || {};
   const { rootPath } = rootPathInfo;
   if (isSchema(rootPath)) {
     const IUBRunState = await asyncDispatchOfIUBEngine({
@@ -195,7 +198,7 @@ export const getRootData = async (IUBctx, runCtx: Ref2ValRunCtx, rootPathInfo: P
     });
     
     return IUBRunState;
-  } else if (isRunCtx(rootPath)){
+  } if (isRunCtx(rootPath)){
     /** isRunCtx */
     return { payload };
   }
@@ -212,10 +215,9 @@ export const getScopeData = async (IUBctx, runCtx: Ref2ValRunCtx, pathInfo: Path
   const { prevPath, match, rootPath } = pathInfo;
   if (typeof match === 'string') {
     return scope[rootPath + prevPath]?.[match];
-  } else {
-    /** TODO: 未完善 */
-    return scope[rootPath + prevPath]?.[levelArr[match.level]];
-  }
+  } 
+  /** TODO: 未完善 */
+  return scope[rootPath + prevPath]?.[levelArr[match.level]];
 };
 
 /**

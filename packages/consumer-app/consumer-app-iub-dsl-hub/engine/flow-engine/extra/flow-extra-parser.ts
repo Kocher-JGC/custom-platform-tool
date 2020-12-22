@@ -17,26 +17,26 @@ export const flowExtraParser = (parseRes) => {
     const actionRunFn = bindAction(actionId);
     const flowOutFns = flowOut.map(bindFlows);
     const condRunFn = condition ? (IUBCtx) => {
-      const { pageStatus } = IUBCtx
-      return condition === 'update_get' ? pageStatus === 'update' : true
-    } : noopTrueFn
+      const { pageStatus } = IUBCtx;
+      return condition === 'update_get' ? pageStatus === 'update' : true;
+    } : noopTrueFn;
     
     const flowOutCondFns = flowOutCondition.map((str, idx) => {
       if (str !== undefined) {
         return (IUBCtx: RunTimeCtxToBusiness) => {
-          const { pageStatus } = IUBCtx
+          const { pageStatus } = IUBCtx;
           if (str === 'update_get') {
             // console.log(pageStatus);
             // return pageStatus === 'update'
           }
           if (pageStatus === 'update') {
-            return str === 'update'
-          } else {
-            return idx !== 1
-          }
-        }
+            return str === 'update';
+          } 
+          return idx !== 1;
+          
+        };
       }
-      return noopTrueFn
+      return noopTrueFn;
     });
 
     return  { 

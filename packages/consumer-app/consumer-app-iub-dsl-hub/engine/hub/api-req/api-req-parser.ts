@@ -1,9 +1,9 @@
-import { pickapiReqMark } from './../../IUBDSL-mark';
-import { noopBind, reSetFuncWrap } from '../../utils';
 import { 
   APIReqType, APBDSLReq, 
   APIReqCollection
 } from '@iub-dsl/definition';
+import { pickapiReqMark } from "../../IUBDSL-mark";
+import { noopBind, reSetFuncWrap } from '../../utils';
 import { RunTimeCtxToBusiness } from '../../runtime/types';
 
 /**
@@ -82,14 +82,13 @@ const APBReqParser = (conf: APBDSLReq) => {
           listRunRes[key] = await listPRes[key](IUBCtx); 
         }));
 
-        /** 最终的运行: APBDSL + 一些必要的记录信息「请求的: 表+字段」*/
+        /** 最终的运行: APBDSL + 一些必要的记录信息「请求的: 表+字段」 */
         const transfRes = await reqTransfFn(IUBCtx, listRunRes);
         // console.log(transfRes);
         
         /** 请求 */
         const reqRes = await requestHandler(transfRes);
         // console.log(reqRes);
-        
       
         /** 根据上述描述数据 --> 对数据进行转换 */
         /** 根据配置数据 --> 对数据转换并写入变量 */
@@ -133,7 +132,8 @@ export const APIReqParser = (conf: APIReqCollection) => {
     /** 绑定时, 额外解析并生成运行函数 */
     id = pickapiReqMark(id);
     let reqHandler = APIReqList[id] || noopBind;
-    reqHandler = APIReqList[id] = reqHandler(plugins);
+    APIReqList[id] = reqHandler(plugins);
+    reqHandler = APIReqList[id];
     return async (IUBCtx: RunTimeCtxToBusiness) => {
       const { requestHandler } = IUBCtx;
       /** 在上下文获取的 实际运行时的 请求函数 */

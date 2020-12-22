@@ -22,6 +22,7 @@ export const actionExtralParser = (parseRes) => {
         break;
       case 'openPage':
         actionOpts.paramMatch = bindRef2Value(actionOpts.paramMatch);
+        break;
       default:
         break;
     }
