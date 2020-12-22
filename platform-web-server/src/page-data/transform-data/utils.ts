@@ -8,6 +8,9 @@ export const genEquCond = (exp1: string, exp2: string) =>{
   };
 };
 
+export const canDeep = (confLevel: number) => (matchLevel: number) => confLevel === -1 ? true : matchLevel < confLevel;
+
+
 /**
  * 排除对象中包含keys的工具方法
  * @param obj 对象Object
