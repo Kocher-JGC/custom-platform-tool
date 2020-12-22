@@ -7,12 +7,26 @@
     "react-dom": "^16.14.0"
   },
   "devDependencies": {
+    "@types/react": "17.0.0",
+    "@types/react-dom": "17.0.0",
+    "@types/react-redux": "7.1.9",
+    "@types/redux": "3.6.0"
   },
   "dependencies": {
+    "@deer-ui/core": "^4.0.8",
+    "formik-antd": "^2.0.1",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "react-redux": "^7.2.1",
+    "immer": "^7.0.7",
+    "yup": "0.32.8",
+    "formik": "2.2.6",
     "antd": "^4.7.1",
     "react-transition-group": "^4.4.1",
     "classnames": "^2.2.6",
-    "@deer-ui/core": "^4.0.8"
+    "tailwindcss": "^1.8.10"
   },
   "author": "SANGET",
   "license": "MIT"

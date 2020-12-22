@@ -17,6 +17,8 @@ const config = require("./config.json");
 const setStaticResource = require("./utils/setStaticResource");
 const ConsulConfig = require("./consul");
 
+const { logger } = require('./utils/logger');
+
 const app = express();
 const consul = new ConsulConfig();
 const { uploadFolder, projectFolder } = config;
@@ -96,13 +98,18 @@ app.get("/app-list", (req, res) => {
 // 安装后端应用转发
 app.post("/appManager/installApp", (req, res) => {
   readJson(path.join(__dirname, projectFolder, `config.json`), (err, json) => {
+    console.log(json);
     if (err || !json || !json.saasServerUrl) {
       res.json({
         err: "获取 SaaS 地址失败",
         code: "10000"
       });
     } else {
-      req.pipe(request(`${json.saasServerUrl}${req.url}`)).pipe(res);
+      try {
+        req.pipe(request(`${json.saasServerUrl}${req.url}`)).pipe(res);
+      } catch(e) {
+        
+      }
     }
   });
 });

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Tabs, Button, ConfigProvider } from "antd";
 // import { wrapInterDatasource } from '../../services/datasource';
 import zhCN from "antd/es/locale/zh_CN";
+import { PD } from "@provider-app/page-designer/types";
 import { TableSelector } from "./TableSelector";
 import { DictSelector } from "./DictSelector";
 import { wrapInterDatasource } from "./utils";
@@ -54,7 +55,8 @@ export const DataSourceSelector: React.FC<DataSourceBinderProps> = (props) => {
       return selectedInfo.filter((item) => item.type !== type);
     };
     if (!typeSingle) {
-      return setSelectedInfo([...filterByType(), ...data]);
+      setSelectedInfo([...filterByType(), ...data]);
+      return;
     }
     setSelectedInfo(data);
   };

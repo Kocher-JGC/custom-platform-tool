@@ -83,7 +83,7 @@ const getTableVariable: GetTableVariable = ({ propState, id, dataSource }) => {
     }, []);
   };
   // TODO DS
-  const columns = getColumnsOfDS([ds]);
+  const columns = getColumnsOfDS(ds);
   const result: WidgetVarItem[] = [];
   [
     { label: '选中行', value: 'selectedRow', type: 'Array' },

@@ -1,6 +1,8 @@
 /**
  * 变量 item 的类型
  */
+import { PD } from "@provider-app/page-designer/types";
+
 export interface VarAttrType {
   /** 该属性变量的别名 */
   alias: string

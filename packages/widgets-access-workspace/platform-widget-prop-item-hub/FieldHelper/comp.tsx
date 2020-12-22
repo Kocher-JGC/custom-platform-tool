@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import classnames from "classnames";
 import { Button } from "@infra/ui";
+import { PD } from "@provider-app/page-designer/types";
 
 /**
  * 已选中的字段
  */
 export interface SelectedField {
-  column?: PD.Column;
+  column?: PD.TableColumn;
   tableInfo?: {
     id: string;
     name: string;
@@ -19,7 +20,7 @@ export interface SelectedField {
  */
 interface FieldSelectorProps {
   defaultSelected?: SelectedField;
-  interDatasources: PD.Datasources;
+  interDatasources: PD.DatasourceInMeta[];
   onSubmit: (col: SelectedField) => void;
 }
 
@@ -88,7 +89,8 @@ export const FieldSelector: React.FC<FieldSelectorProps> = ({
       <Button
         disabled={!selectColInfo.column}
         onClick={(e) => {
-          selectColInfo.column && onSubmit?.(selectColInfo);
+          if (!selectColInfo.column) return;
+          onSubmit?.(selectColInfo);
         }}
       >
         确定选择

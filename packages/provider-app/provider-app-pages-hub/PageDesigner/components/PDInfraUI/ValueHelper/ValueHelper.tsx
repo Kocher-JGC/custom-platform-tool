@@ -51,7 +51,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
     };
     const constructVarItem = (item: VariableItem) => {
       const { id, title } = item;
-      return { value: id, title };
+      return { ...item, value: id, title };
     };
     return [
       {
@@ -116,6 +116,7 @@ export const ValueHelper: React.FC<ValueHelperProps> = ({
           onClick={() => {
             const closeModal = platformCtx.selector.openExpressionImporter({
               defaultValue: exp,
+              defaultVariableList: initVariableList(),
               onSubmit: (newExp) => {
                 onChange({
                   exp: newExp.code ? newExp : null,

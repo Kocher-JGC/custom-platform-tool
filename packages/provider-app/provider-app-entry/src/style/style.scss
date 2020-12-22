@@ -1,5 +1,8 @@
-@import './deer-ui/index.scss';
-@import './layout.scss';
+@import "./deer-ui/index.scss";
+@import "./layout.scss";
+@import "./tabs-for-router.scss";
+@import "./login.scss";
+@import "./nav-menu.scss";
 
 .app-nav {
   .ant-menu {
@@ -13,15 +16,22 @@
   }
 }
 
-#menu-manager,
-#dictionary-manager {
-  margin: 0 auto;
-  width: 100%;
-  min-width: 990px;
-  max-width: 1290px;
-  // background-color: #FFF;
-  padding: 20px;
-}
+// .tabs-for-multiple-router {
+//   min-width: 990px;
+//   max-width: 1290px;
+//   margin: 0 auto;
+//   width: 100%;
+// }
+
+// #menu-manager,
+// #dictionary-manager {
+//   margin: 0 auto;
+//   width: 100%;
+//   min-width: 990px;
+//   max-width: 1290px;
+//   // background-color: #FFF;
+//   padding: 20px;
+// }
 
 #page-manager {
   height: 100%;
@@ -30,5 +40,48 @@
 .logo-container {
   &:hover {
     color: $themeColor;
+  }
+}
+
+#__provider_app_container {
+  background-color: $base-bg-color;
+  .pages-container {
+    position: relative;
+    min-height: 90%;
+    .page {
+      padding: 20px;
+      background-color: #fff;
+    }
+  }
+}
+
+#__provider_app_header {
+  // background-color: $themeColor;
+  // color: #fff;
+  // .top-nav-item {
+  //   color: #fff;
+  // }
+  // .logo-container {
+  //   color: #fff;
+  // }
+}
+
+.__top-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+
+  .top-nav-item {
+    padding: 0 20px;
+    display: block;
+    height: 100%;
+    cursor: pointer;
+    align-items: center;
+    display: flex;
+    &:hover {
+      background-color: #f7f7f7;
+    }
   }
 }

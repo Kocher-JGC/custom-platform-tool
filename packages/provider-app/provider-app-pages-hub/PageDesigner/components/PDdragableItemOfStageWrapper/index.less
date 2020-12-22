@@ -1,3 +1,17 @@
 .__dev_env_info {
-  background-color: #EEE;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 11;
+  // display: none;
+}
+
+.dragable-item {
+  &:hover {
+    .__dev_env_info {
+      display: block;
+    }
+  }
 }

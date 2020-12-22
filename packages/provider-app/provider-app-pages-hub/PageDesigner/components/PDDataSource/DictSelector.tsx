@@ -1,56 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Form, Input, Button } from 'antd';
-import { getDictionaryListServices, getListOfDictionaryServices, getListOfDictionaryChildServices } from '@provider-app/services';
-import { SelectedTags } from './TableSelector';
+import React, { useState, useEffect } from "react";
+import { Table, Form, Input, Button } from "antd";
+import {
+  getDictionaryListServices,
+  getListOfDictionaryServices,
+  getListOfDictionaryChildServices,
+} from "@provider-app/services";
+import { SelectedTags } from "./TableSelector";
+
 interface SelectedRowInfo {
-  id: string
-  name: string
-  type: string
+  id: string;
+  name: string;
 }
 interface DictSelectorProps {
   /** 提交已选中的项 */
-  onSubmit: (allRowInfo: SelectedRowInfo[] ) => void
-  defaultSelectedInfo?: SelectedRowInfo[]
-  single?: boolean
+  onSubmit: (allRowInfo: SelectedRowInfo[]) => void;
+  defaultSelectedInfo?: SelectedRowInfo[];
+  single?: boolean;
 }
 
 interface ChildDictListProps {
-  defaultSelectedInfo?: SelectedRowInfo[]
-  single?: boolean
-  dictId: string
-  onSubmit: (allRowInfo: SelectedRowInfo[], selectedRowInfo: SelectedRowInfo[], rowKeys: React.ReactText[] ) => void
+  defaultSelectedInfo?: SelectedRowInfo[];
+  single?: boolean;
+  dictId: string;
+  onSubmit: (
+    allRowInfo: SelectedRowInfo[],
+    selectedRowInfo: SelectedRowInfo[],
+    rowKeys: React.ReactText[]
+  ) => void;
 }
 
 const dictColumns = [
-  { title: '字典名称', dataIndex: 'name', key: 'name' },
-  { title: '字典描述', dataIndex: 'description', key: 'description' }
+  { title: "字典名称", dataIndex: "name", key: "name" },
+  { title: "字典描述", dataIndex: "description", key: "description" },
 ];
 const childDictColumns = [
-  { title: '编码', dataIndex: 'code', key: 'code' },
-  { title: '名称', dataIndex: 'name', key: 'name' }
+  { title: "编码", dataIndex: "code", key: "code" },
+  { title: "名称", dataIndex: "name", key: "name" },
 ];
-type Dict = SelectedRowInfo & {code: string, children: Dict[]}
+type Dict = SelectedRowInfo & { code: string; children: Dict[] };
 interface TableConfig {
   params: {
-    offset: number
-    size: number
-    total?: number
-    name?: string
-    description?: string
-  }
-  list: any[]
+    offset: number;
+    size: number;
+    total?: number;
+    name?: string;
+    description?: string;
+  };
+  list: { code: string; name: string; id: string }[];
 }
-type GetSubmitData = (allRowInfo: SelectedRowInfo[], selectedRowInfo: SelectedRowInfo[], rowKeys: React.ReactText[] ) => SelectedRowInfo[]
-const useDictList = (defaultParams = {
-  offset: 0,
-  size: 10
-}): [TableConfig, (params?: TableConfig['params']) => void] => {
-  
+type GetSubmitData = (
+  allRowInfo: SelectedRowInfo[],
+  selectedRowInfo: SelectedRowInfo[],
+  rowKeys: React.ReactText[]
+) => SelectedRowInfo[];
+const useDictList = (
+  defaultParams = {
+    offset: 0,
+    size: 10,
+  }
+): [TableConfig, (params?: TableConfig["params"]) => void] => {
   const [dataList, setList] = useState<TableConfig>({
     params: defaultParams,
-    list: []
+    list: [],
   });
-  const getListByPaging = (params: TableConfig['params']  = defaultParams) => {    
+  const getListByPaging = (params: TableConfig["params"] = defaultParams) => {
     const { offset = 0, size = dataList.params.size } = params;
 
     getDictionaryListServices(params).then((resData) => {
@@ -59,9 +72,9 @@ const useDictList = (defaultParams = {
         params: {
           offset,
           size,
-          total
+          total,
         },
-        list: data
+        list: data,
       });
     });
   };
@@ -70,51 +83,34 @@ const useDictList = (defaultParams = {
   }, []);
   return [dataList, getListByPaging];
 };
-const SearchArea = ({
-  onSearch
-}) => {
+const SearchArea = ({ onSearch }) => {
   const [form] = Form.useForm();
   return (
     <Form
       layout="inline"
       form={form}
-      onFinish={(fields)=>{
+      onFinish={(fields) => {
         onSearch(fields);
       }}
     >
-      <Form.Item
-        className="w-1/3"
-        name='name'
-        label="字典名称"
-      >
-        <Input
-          placeholder="请输入字典名称"
-        />
+      <Form.Item className="w-1/3" name="name" label="字典名称">
+        <Input placeholder="请输入字典名称" />
       </Form.Item>
-      <Form.Item
-        className="w-1/3"
-        name='description'
-        label="字典描述"
-      >
-        <Input
-          placeholder="请输入字典描述"
-        />
+      <Form.Item className="w-1/3" name="description" label="字典描述">
+        <Input placeholder="请输入字典描述" />
       </Form.Item>
       <span className="flex"></span>
-      <Button
-        htmlType="submit"
-        type='primary'
-      >
-              搜索
+      <Button htmlType="submit" type="primary">
+        搜索
       </Button>
       <Button
         className="ml-2"
-        onClick={()=>{
+        onClick={() => {
           onSearch();
           form.resetFields();
         }}
       >
-              清空
+        清空
       </Button>
     </Form>
   );
@@ -124,44 +120,48 @@ export const ChildDictList: React.FC<ChildDictListProps> = ({
   dictId,
   defaultSelectedInfo = [],
   single = false,
-  onSubmit
+  onSubmit,
 }) => {
   const [list, setList] = useState<Dict[]>([]);
-  const constructList = (list)=>{
-    return list.map(item=>{
+  const constructList = (listTmpl) => {
+    return listTmpl.map((item) => {
       return {
+        ...item,
         children: item.hasChild ? [] : null,
-        ...item
+        id: `${dictId}.${item.id}`,
       };
     });
   };
-  useEffect(()=>{
-    getListOfDictionaryServices({ id: dictId }).then(res=>{
+  useEffect(() => {
+    getListOfDictionaryServices({ id: dictId }).then((res) => {
       setList(constructList(res?.result?.items || []));
     });
   }, []);
   return (
-    <Table 
+    <Table
       columns={childDictColumns}
-      dataSource = {list}
+      dataSource={list}
       pagination={false}
       rowKey="id"
       rowSelection={{
-        selectedRowKeys: defaultSelectedInfo.map(item=>item.id),
-        type: single ? 'radio' : 'checkbox',
+        selectedRowKeys: defaultSelectedInfo.map((item) => item.id),
+        type: single ? "radio" : "checkbox",
         onChange: (rowKeys, rows) => {
           onSubmit(list, rows, rowKeys);
         },
       }}
-      expandable = {{
-        onExpand: (expand, record)=>{
-          if(!expand) return;
-          getListOfDictionaryChildServices({ dictionaryId: dictId, pid: record.id }).then(res=>{
-            const dictList = constructList(res?.result || []);
-            record.children = dictList;
-            setList(list.slice());
-          });
-        }
+      expandable={{
+        onExpand: (expand, record) => {
+          if (!expand) return;
+          const [dictionaryId, pid] = record.id.split(".");
+          getListOfDictionaryChildServices({ dictionaryId, pid }).then(
+            (res) => {
+              const dictList = constructList(res?.result || []);
+              record.children = dictList;
+              setList(list.slice());
+            }
+          );
+        },
       }}
     />
   );
@@ -169,34 +169,48 @@ export const ChildDictList: React.FC<ChildDictListProps> = ({
 export const DictList: React.FC<DictSelectorProps> = ({
   defaultSelectedInfo = [],
   single = false,
-  onSubmit
+  onSubmit,
 }) => {
   const [{ params, list }, getTableList] = useDictList();
-  const getSubmitData: GetSubmitData = (allRows = [], selctedRows = [], selectedRowKeys = []) => {
-    const defaultSelectedKeys = defaultSelectedInfo.map(item=>item.id);
-    const plusRows = selctedRows.filter(item=>!defaultSelectedKeys.includes(item.id));
-    const minusRowKeys = allRows.map(item=>item.id).filter(item=>!selectedRowKeys.includes(item));
+  const getSubmitData: GetSubmitData = (
+    allRows = [],
+    selectedRows = [],
+    selectedRowKeys = []
+  ) => {
+    if (single) {
+      return selectedRows;
+    }
+    const defaultSelectedKeys = defaultSelectedInfo.map((item) => item.id);
+    const plusRows = selectedRows.filter(
+      (item) => !defaultSelectedKeys.includes(item.id)
+    );
+    const minusRowKeys = allRows
+      .map((item) => item.id)
+      .filter((item) => !selectedRowKeys.includes(item));
     return [
-      ...defaultSelectedInfo.filter(item=>!minusRowKeys.includes(item.id)), 
-      ...plusRows
+      ...defaultSelectedInfo.filter((item) => !minusRowKeys.includes(item.id)),
+      ...plusRows,
     ];
   };
   return (
     <div className="p-4">
-      <SearchArea onSearch={(fields)=>{
-        getTableList(fields);
-      }}
+      <SearchArea
+        onSearch={(fields) => {
+          getTableList(fields);
+        }}
       />
-      <Table 
-        onChange = {(pagination)=>{
+      <Table
+        onChange={(pagination) => {
+          const current = pagination.current || 1;
+          const size = pagination.pageSize || 10;
           getTableList({
-            offset: (pagination.current - 1)*pagination.pageSize,
-            size: pagination.pageSize,
+            offset: (current - 1) * size,
+            size,
           });
         }}
         rowSelection={{
-          selectedRowKeys: defaultSelectedInfo.map(item=>item.id),
-          type: single ? 'radio' : 'checkbox',
+          selectedRowKeys: defaultSelectedInfo.map((item) => item.id),
+          type: single ? "radio" : "checkbox",
           onChange: (rowKeys, rows) => {
             const submitData = getSubmitData(list, rows, rowKeys);
             onSubmit(submitData);
@@ -205,11 +219,11 @@ export const DictList: React.FC<DictSelectorProps> = ({
         dataSource={list}
         columns={dictColumns}
         pagination={{
-          pageSizeOptions: ['10', '20', '30', '40', '50', '100'],
-          size: 'small',
+          pageSizeOptions: ["10", "20", "30", "40", "50", "100"],
+          size: "small",
           showSizeChanger: true,
           showQuickJumper: true,
-          total: params.total
+          total: params.total,
         }}
         rowKey="id"
         size="small"
@@ -217,17 +231,21 @@ export const DictList: React.FC<DictSelectorProps> = ({
         expandable={{
           expandedRowRender: (record) => {
             return (
-              <ChildDictList 
-                dictId = {record.id}
-                single = {single}
-                defaultSelectedInfo = {defaultSelectedInfo}
-                onSubmit = {(allRows, selectedRows, selectedRowKeys)=>{
-                  const submitData = getSubmitData(allRows, selectedRows, selectedRowKeys);
+              <ChildDictList
+                dictId={record.id}
+                single={single}
+                defaultSelectedInfo={defaultSelectedInfo}
+                onSubmit={(allRows, selectedRows, selectedRowKeys) => {
+                  const submitData = getSubmitData(
+                    allRows,
+                    selectedRows,
+                    selectedRowKeys
+                  );
                   onSubmit(submitData);
                 }}
               />
             );
-          }
+          },
         }}
       />
     </div>
@@ -235,22 +253,23 @@ export const DictList: React.FC<DictSelectorProps> = ({
 };
 
 export const DictSelector: React.FC<DictSelectorProps> = ({
-  single, defaultSelectedInfo = [], onSubmit
-})=>{
+  single,
+  defaultSelectedInfo = [],
+  onSubmit,
+}) => {
   return (
     <>
-      <DictList 
-        single = {single}
-        defaultSelectedInfo = {defaultSelectedInfo}
-        onSubmit = {onSubmit}
+      <DictList
+        single={single}
+        defaultSelectedInfo={defaultSelectedInfo}
+        onSubmit={onSubmit}
       />
-      { !single ? (
-        <SelectedTags 
-          defaultSelectedInfo = {defaultSelectedInfo}
-          onSubmit = {onSubmit}
+      {!single ? (
+        <SelectedTags
+          defaultSelectedInfo={defaultSelectedInfo}
+          onSubmit={onSubmit}
         />
-      ) : null }
-
+      ) : null}
     </>
   );
 };

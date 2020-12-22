@@ -3,6 +3,7 @@ import { message } from "antd";
 import { CloseModal, ShowModal } from "@infra/ui";
 import { PlatformCtx } from "@platform-widget-access/spec";
 import { DataSourceSelector } from "../components/PDDataSource";
+import { FieldSortHelper } from "../components/PDInfraUI/FieldSortHelper";
 import { Expression } from "../components/Expression";
 
 /**
@@ -34,7 +35,7 @@ export const createPlatformCtx = (
           title: "数据源选择",
           type: modalType,
           position,
-          width: 900,
+          width: "85%",
           children: ({ close }) => {
             return (
               <DataSourceSelector
@@ -54,7 +55,7 @@ export const createPlatformCtx = (
         };
       },
       openExpressionImporter: (options) => {
-        const { defaultValue, onSubmit } = options;
+        const { defaultValue, defaultVariableList, onSubmit } = options;
         const modalID = ShowModal({
           title: "表达式编辑",
           width: "85%",
@@ -62,6 +63,7 @@ export const createPlatformCtx = (
             return (
               <Expression
                 defaultValue={defaultValue}
+                defaultVariableList={defaultVariableList}
                 metaCtx={metaCtx}
                 onSubmit={onSubmit}
               />
@@ -70,6 +72,33 @@ export const createPlatformCtx = (
         });
         return () => {
           CloseModal(modalID);
+        };
+      },
+      openFieldSortHelper: (options) => {
+        const { defaultValue, datasource, onSubmit } = options;
+        const ModalID = ShowModal({
+          title: "排序字段选择",
+          width: "85%",
+          children: ({ close }) => {
+            return (
+              <div className="p-4">
+                <FieldSortHelper
+                  bindedFields={defaultValue}
+                  bindedDs={datasource}
+                  onSubmit={(bindedFields) => {
+                    onSubmit(bindedFields);
+                    CloseModal(ModalID);
+                  }}
+                  onCancel={() => {
+                    CloseModal(ModalID);
+                  }}
+                />
+              </div>
+            );
+          },
+        });
+        return () => {
+          CloseModal(ModalID);
         };
       },
     },

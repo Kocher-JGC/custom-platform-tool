@@ -1,31 +1,35 @@
-import React from 'react';
-import { Button, Input, DropdownWrapper } from '@infra/ui';
-import { RegisterEditor } from '@engine/visual-editor/spec';
-import { GeneralTableComp } from '@platform-widget/general-table';
-import { PlusOutlined, CloseOutlined, DownOutlined } from '@ant-design/icons';
-import { CustomEditor, PTColumn } from '@platform-widget-access/spec';
+import React from "react";
+import { Button, DropdownWrapper } from "@infra/ui";
+import { RegisterEditor } from "@engine/visual-editor/spec";
+import { GeneralTableComp } from "@platform-widget/general-table";
+import { PlusOutlined, CloseOutlined, DownOutlined } from "@ant-design/icons";
+import { PTColumn } from "@platform-widget-access/spec";
+import { PD } from "@provider-app/page-designer/types";
 import Sortable from "sortablejs";
-import { genRenderColumn, genRowData } from './utils';
-import { TextChanger } from './TextChanger';
+import { genRenderColumn, genRowData } from "./utils";
+import { TextChanger } from "./TextChanger";
 
-import './index.less';
-import { ColumnEditableItems } from './ColumnEditableItems';
+import "./index.less";
+import { ColumnEditableItems } from "./ColumnEditableItems";
 
 interface TableEditorState {
-  datasourceMeta: PD.Datasource
-  usingColumns: PTColumn[]
+  datasourceMeta: PD.Datasource;
+  usingColumns: PTColumn[];
 }
 
 // @CustomEditor({
 //   name: 'TableEditor'
 // })
-export class TableEditor extends React.Component<RegisterEditor, TableEditorState> {
+export class TableEditor extends React.Component<
+  RegisterEditor,
+  TableEditorState
+> {
   constructor(props) {
     super(props);
 
     this.state = {
       datasourceMeta: this.takeDS(),
-      usingColumns: this.setUsingColumns()
+      usingColumns: this.setUsingColumns(),
     };
   }
 
@@ -34,32 +38,39 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
   }
 
   setupSortableColumnItems = () => {
-    const sortable_list_container = document.querySelector('#sortable_list_container') as HTMLElement;
-    if(sortable_list_container) {
-      Sortable.create(sortable_list_container, {
+    const sortableListContainer = document.querySelector(
+      "#sortable_list_container"
+    ) as HTMLElement;
+    if (sortableListContainer) {
+      Sortable.create(sortableListContainer, {
         animation: 150,
-        ghostClass: 'blue-background-class',
+        ghostClass: "blue-background-class",
         onSort: (evt) => {
           // console.log(evt);
           const { oldIndex, newIndex } = evt;
+          if (
+            typeof oldIndex === "undefined" ||
+            typeof newIndex === "undefined"
+          )
+            return;
           this.setState(({ usingColumns }) => {
             const nextState = [...usingColumns];
             const sortItem = nextState.splice(oldIndex, 1);
             nextState.splice(newIndex, 0, sortItem[0]);
             return {
-              usingColumns: nextState
+              usingColumns: nextState,
             };
           });
         },
       });
     }
-  }
+  };
 
   setUsingColumns = () => {
     const { entityState } = this.props;
     const { columns = [] } = entityState || {};
     return columns;
-  }
+  };
 
   setCol = (item, id) => {
     const { usingColumns } = this.state;
@@ -72,125 +83,120 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     }
     nextState = genRenderColumn([...nextState]);
     this.setState({
-      usingColumns: nextState
+      usingColumns: nextState,
     });
-  }
+  };
 
   renderColumnSelector = () => {
     const { usingColumns, datasourceMeta } = this.state;
-    if(!datasourceMeta) return null;
+    if (!datasourceMeta) return null;
     const { columns } = datasourceMeta;
     return (
-      <DropdownWrapper 
+      <DropdownWrapper
         outside
         overlay={(helper) => {
           return (
-            <div
-              className="column-selector-container"
-            >
-              {
-                columns.map((col, idx) => {
-                  const { name, id } = col;
-                  const isSelected = usingColumns.find(uCol => uCol.id === id);
-                  return (
-                    <div 
-                      onClick={(e) => {
-                        !isSelected && this.setCol(col, id);
-                      }}
-                      className={`list-item ${isSelected ? 'disabled' : ''}`}
-                      key={id}
-                    >
-                      {name}
-                    </div>
-                  );
-                })
-              }
+            <div className="column-selector-container">
+              {columns.map((col, idx) => {
+                const { name, id } = col;
+                const isSelected = usingColumns.find((uCol) => uCol.id === id);
+                return (
+                  <div
+                    onClick={(e) => {
+                      if (isSelected) return;
+                      this.setCol(col, id);
+                    }}
+                    className={`list-item ${isSelected ? "disabled" : ""}`}
+                    key={id}
+                  >
+                    {name}
+                  </div>
+                );
+              })}
             </div>
           );
         }}
       >
         <PlusOutlined
           style={{
-            display: 'inline-block',
-            fontSize: 16
+            display: "inline-block",
+            fontSize: 16,
           }}
         />
       </DropdownWrapper>
     );
-  }
+  };
 
   setUsingColumn = (colIdx, state, replace = false) => {
     this.setState(({ usingColumns }) => {
       const nextUsingColumns = [...usingColumns];
-      const mergeState = replace ? state : Object.assign({}, nextUsingColumns[colIdx], state);
+      const mergeState = replace
+        ? state
+        : Object.assign({}, nextUsingColumns[colIdx], state);
       nextUsingColumns.splice(colIdx, 1, mergeState);
       return {
-        usingColumns: nextUsingColumns
+        usingColumns: nextUsingColumns,
       };
     });
-  }
+  };
 
   renderSelectedColumnEditor = () => {
     const { usingColumns, datasourceMeta } = this.state;
-    if(!datasourceMeta) return null;
+    if (!datasourceMeta) return null;
     return (
       <span id="sortable_list_container" className="flex">
-        {
-          usingColumns.map((col, idx) => {
-            if(!col) return null;
-            // console.log(col);
-            const { name, id, title, alias, conditionStrategy, rowRenderStrategy } = col;
-            const displayName = title || name || alias;
-            const isActive = usingColumns.find((item) => item && item.id === id);
-            return (
-              <DropdownWrapper
-                key={id}
-                className={`column-item idx-${idx} ${isActive ? 'active' : ''}`}
-                overlay={(helper) => {
-                  return (
-                    <div className="column-setting-helper-container">
-                      <TextChanger
-                        defaultValue={displayName}
-                        onChange={val => {
-                          // console.log(val);
-                          helper.hide();
-                          this.setUsingColumn(idx, {
-                            title: val
-                          });
-                        }}
-                      />
-                      <ColumnEditableItems 
-                        defaultValue={conditionStrategy}
-                        onChange={val => {
-                          helper.hide();
-                          this.setUsingColumn(idx, {
-                            conditionStrategy: val
-                          });
-                        }}
-                      />
-                    </div>
-                  );
-                }}
-              >
-                <span style={{ color: 'inherit' }}>
-                  <DownOutlined 
-                    className="selection __action"
-                  />
-                  {displayName}
-                  <CloseOutlined
-                    className="close __action"
-                    onClick={e => {
-                      this.setCol(col, id);
-                    }}
-                  />
-                </span>
-              </DropdownWrapper>
-            );
-          })
-        }
+        {usingColumns.map((col, idx) => {
+          if (!col) return null;
+          // console.log(col);
+          const { name, id, title, alias, conditionStrategy } = col;
+          const displayName = title || name || alias;
+          const isActive = usingColumns.find((item) => item && item.id === id);
+          return (
+            <DropdownWrapper
+              key={id}
+              className={`column-item idx-${idx} ${isActive ? "active" : ""}`}
+              overlay={(helper) => {
+                return (
+                  <div className="column-setting-helper-container">
+                    <TextChanger
+                      defaultValue={displayName}
+                      onChange={(val) => {
+                        // console.log(val);
+                        helper.hide();
+                        this.setUsingColumn(idx, {
+                          title: val,
+                        });
+                      }}
+                    />
+                    <ColumnEditableItems
+                      defaultValue={conditionStrategy}
+                      onChange={(val) => {
+                        helper.hide();
+                        this.setUsingColumn(idx, {
+                          conditionStrategy: val,
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              }}
+            >
+              <span style={{ color: "inherit" }}>
+                <DownOutlined className="selection __action" />
+                {displayName}
+                <CloseOutlined
+                  className="close __action"
+                  onClick={(e) => {
+                    this.setCol(col, id);
+                  }}
+                />
+              </span>
+            </DropdownWrapper>
+          );
+        })}
       </span>
     );
-  }
+  };
 
   /**
    * column 的渲染器
@@ -198,7 +204,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
    */
   renderSetColumn = () => {
     const { datasourceMeta } = this.state;
-    if(!datasourceMeta) return null;
+    if (!datasourceMeta) return null;
     return (
       <div className="column-selector p-4 flex flex-wrap">
         <div className="mr20">
@@ -208,7 +214,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
         {this.renderSelectedColumnEditor()}
       </div>
     );
-  }
+  };
 
   getChangeValue = () => {
     const { entityState } = this.props;
@@ -216,54 +222,48 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
     const targetData = {
       ...entityState,
       search: true,
-      columns: usingColumns
+      columns: usingColumns,
     };
-    const resData = [];
-    for (const attr in targetData) {
-      if (Object.prototype.hasOwnProperty.call(targetData, attr)) {
-        const value = targetData[attr];
-        resData.push({
-          attr,
-          value
-        });
-      }
-    }
+    const resData: { attr: string; value: string }[] = [];
+    Object.keys(targetData).forEach((attr) => {
+      const value = targetData[attr];
+      resData.push({
+        attr,
+        value,
+      });
+    });
     // console.log(resData);
     return resData;
-  }
-
-
+  };
 
   takeDS = () => {
     const { platformCtx, entityState } = this.props;
     const { optDS } = entityState;
-    if(!optDS) return null;
+    if (!optDS) return null;
     const { takeMeta } = platformCtx.meta;
     const ds = takeMeta({
-      metaAttr: 'dataSource',
-      metaRefID: optDS
+      metaAttr: "dataSource",
+      metaRefID: optDS,
     });
     return ds;
-  }
+  };
 
   render() {
-    const {
-      onSubmit, changeEntityState
-    } = this.props;
+    const { onSubmit, changeEntityState } = this.props;
     const { usingColumns } = this.state;
     // console.log(usingColumns);
 
     const rowData = genRowData(usingColumns);
     // const colRender = genRenderColumn();
-    
+
     return (
       <div className="table-editor-container">
         <div>
           {this.renderSetColumn()}
-          <GeneralTableComp 
+          <GeneralTableComp
             rowKey="id"
             // search={false}
-            columns={usingColumns} 
+            columns={usingColumns}
             dataSource={rowData}
           />
         </div>
@@ -276,7 +276,7 @@ export class TableEditor extends React.Component<RegisterEditor, TableEditorStat
               onSubmit?.();
             }}
           >
-          保存
+            保存
           </Button>
         </div>
       </div>

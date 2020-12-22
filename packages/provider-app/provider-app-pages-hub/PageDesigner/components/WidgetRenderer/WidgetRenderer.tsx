@@ -9,12 +9,37 @@ export interface PDWidgetRendererProps extends WidgetRendererProps {
   className?;
 }
 
+const widgetActions = {
+  onChange: () => {},
+  onClick: () => {},
+};
+
+const devEnv = process.env.NODE_ENV === "development";
+
+const DevEnvInfo = ({ id, nestingInfo }) => {
+  const tipID = `__tip_${id}`;
+  React.useEffect(() => {
+    if (!devEnv || !window.tippy) return;
+    window.tippy(`#${tipID}`, {
+      content: `调试信息：id: ${id}, nestingInfo: ${JSON.stringify(
+        nestingInfo
+      )}`,
+    });
+  }, []);
+  return devEnv ? (
+    <div className="__dev_env_info" id={tipID}>
+      {/* 调试信息：id: {id}, nestingInfo: {JSON.stringify(nestingInfo)} */}
+    </div>
+  ) : null;
+};
+
 /**
  * 根据 widget entity 解析的组件渲染器
  */
 export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
   const {
     onClick,
+    id,
     entity,
     children,
     entityState = {},
@@ -32,17 +57,21 @@ export const WidgetRenderer: React.FC<PDWidgetRendererProps> = (props) => {
 
   let Com;
 
-  if (WidgetFormRemote.unexpected) {
+  if (!WidgetFormRemote) {
     // 处理异常组件
     Com = <Unexpect />;
   } else {
-    Com = WidgetFormRemote.render(Object.assign({}, entityState, { children }));
+    Com = WidgetFormRemote.render(
+      Object.assign({}, entityState, { children }),
+      widgetActions
+    );
   }
   const classes = classnames("comp-renderer", className);
   return (
-    <div {...otherProps} onClick={onClick} className={classes}>
+    <div {...otherProps} id={id} onClick={onClick} className={classes}>
       {Com}
       {/* <div className="__mark"></div> */}
+      <DevEnvInfo id={id} nestingInfo={nestingInfo} />
     </div>
   );
 };

@@ -36,6 +36,7 @@ import {
 } from "./utils";
 
 import "./style";
+import { PD } from "./types";
 
 /** 是否离线模式，用于在家办公调试 */
 const offlineMode = false;
@@ -135,7 +136,9 @@ class PageDesignerApp extends React.Component<
     const nextDSState = {};
     /** 过滤出来源于组件属性配置的数据源 */
     const getDsFromNotPage = () => {
-      const { dataSource } = this.props.pageMetadata;
+      const {
+        dataSource,
+      }: { [key: string]: PD.DatasourcesInMeta } = this.props.pageMetadata;
       const result = {};
       Object.keys(dataSource).forEach((dsID) => {
         const ds = dataSource[dsID];
@@ -338,13 +341,25 @@ class PageDesignerApp extends React.Component<
     return retData;
   };
 
-  updateEntityState = (nextState) => {
+  updateEntityStateForSelected = (nextState) => {
     const {
       dispatcher: { UpdateEntityState },
       selectedInfo,
     } = this.props;
     const { entity, nestingInfo } = selectedInfo;
     UpdateEntityState({ entity, nestingInfo }, nextState);
+  };
+
+  updateEntityState = (id, nextState) => {
+    const { flatLayoutItems } = this.props;
+    const entity = flatLayoutItems[id];
+    this.props.dispatcher.UpdateEntityState(
+      {
+        entity,
+        nestingInfo: entity.nestingInfo,
+      },
+      nextState
+    );
   };
 
   getVariableData = (filter, options) => {
@@ -355,8 +370,20 @@ class PageDesignerApp extends React.Component<
     );
   };
 
+  initEntityStateForSelected = (entityState) => {
+    const { selectedInfo, dispatcher } = this.props;
+    // TODO: 属性项更改属性追踪器
+    dispatcher.InitEntityState(selectedInfo, entityState);
+  };
+
   getPageMeta = (attr) => {
     return attr ? this.props.pageMetadata[attr] : this.props.pageMetadata;
+  };
+
+  delEntity = (id) => {
+    const { dispatcher, flatLayoutItems } = this.props;
+    const entity = flatLayoutItems[id];
+    dispatcher.DelEntity(entity.nestingInfo, entity);
   };
 
   /**
@@ -383,8 +410,6 @@ class PageDesignerApp extends React.Component<
       appLocation,
     } = this.props;
 
-    // 调整整体的数据结构，通过 redux 描述一份完整的{页面数据}
-    const { InitEntityState } = dispatcher;
     const { id: activeEntityID, entity: activeEntity } = selectedInfo;
 
     if (!appContext.ready) {
@@ -401,6 +426,8 @@ class PageDesignerApp extends React.Component<
               changePageState={this.changePageState}
               appLocation={appLocation}
               pageState={appContext.pageState}
+              updateEntityState={this.updateEntityState}
+              delEntity={this.delEntity}
             />
           </header>
           <div
@@ -433,11 +460,8 @@ class PageDesignerApp extends React.Component<
                   interDatasources={this.getDatasources()}
                   selectedEntity={activeEntity}
                   entityState={activeEntity?.propState}
-                  initEntityState={(entityState) => {
-                    // TODO: 属性项更改属性追踪器
-                    InitEntityState(selectedInfo, entityState);
-                  }}
-                  updateEntityState={this.updateEntityState}
+                  initEntityState={this.initEntityStateForSelected}
+                  updateEntityState={this.updateEntityStateForSelected}
                 />
               )}
             </div>

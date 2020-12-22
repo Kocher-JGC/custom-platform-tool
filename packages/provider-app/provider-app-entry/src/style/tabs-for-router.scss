@@ -1,11 +1,10 @@
 .tabs-for-multiple-router {
   z-index: 1;
-  margin-bottom: 5px;
+  margin-top: 10px;
   position: sticky;
   top: 0;
-  // background-color: $base-bg-color;
+  background-color: $base-bg-color;
   display: flex;
-  background-color: #f7f7f7;
 
   .tab-item {
     position: relative;
@@ -23,7 +22,7 @@
     padding: 8px 24px;
 
     &.active {
-      background-color: #FFF;
+      background-color: #fff;
     }
   }
 

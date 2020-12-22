@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input } from "formik-antd";
+import { Button, Form as AntdForm } from "antd";
 import { CreateApplication } from "@provider-app/services";
+import { Formik, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { ErrorTip } from "@infra/ui/basic";
 
 const layout = {
   labelCol: { span: 6 },
@@ -10,93 +14,131 @@ const tailLayout = {
   wrapperCol: { offset: 6, span: 16 },
 };
 
-export const CreateApp = ({ onSuccess }) => {
-  const [submitting, setSubmitting] = useState(false);
-  const onFinish = (values) => {
-    console.log("Success:", values);
-    if (submitting) return;
-    setSubmitting(true);
-    CreateApplication(values).then((res) => {
-      setSubmitting(false);
-      onSuccess();
-    });
-  };
+const CreateFormSchema = Yup.object().shape({
+  appName: Yup.string().required("必填"),
+  appCode: Yup.string()
+    .required("必填")
+    .matches(/^[a-z0-9]+$/, "只能为小写字母、数字"),
+  accessName: Yup.string()
+    .required("必填")
+    .max(9, "最多只能输入 9 位字符")
+    .matches(/^[a-z0-9]+$/, "只能为小写字母、数字"),
+  appShortNameCn: Yup.string().required("必填"),
+  appShortNameEn: Yup.string()
+    .required("必填")
+    .matches(/^[a-z]+$/, "系统英文简称为小写字母"),
+});
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
+const FormItemTemplate = ({
+  errors,
+  touched,
+  name,
+  label,
+  required = false,
+  ...other
+}) => {
+  const error = errors[name] && touched[name];
   return (
-    <Form
-      {...layout}
-      name="createApp"
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      style={{ paddingTop: 24 }}
+    <AntdForm.Item
+      {...other}
+      label={label}
+      validateStatus={error ? "error" : ""}
+      required={required}
     >
-      <Form.Item
-        label="系统名称"
-        name="appName"
-        rules={[{ required: true, message: "系统名称必填" }]}
-      >
-        <Input />
-      </Form.Item>
+      <Input name={name} placeholder={label} />
+      <ErrorMessage name={name} component={ErrorTip} />
+    </AntdForm.Item>
+  );
+};
 
-      <Form.Item
-        label="系统编码"
-        name="appCode"
-        rules={[
-          {
-            required: true,
-            pattern: /^[a-z0-9]+$/,
-            message: "系统编码必填，并且只能为小写字母、数字",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
+export const CreateApp = ({ onSuccess }) => {
+  return (
+    <Formik
+      initialValues={{
+        appName: "",
+        appCode: "",
+        accessName: "",
+        appShortNameCn: "",
+        appShortNameEn: "",
+      }}
+      onSubmit={(values, { setSubmitting }) => {
+        CreateApplication(values)
+          .then(() => {
+            onSuccess?.();
+          })
+          .finally(() => {
+            setSubmitting(false);
+          });
+      }}
+      validationSchema={CreateFormSchema}
+    >
+      {({
+        values,
+        errors,
+        touched,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        isSubmitting,
+      }) => {
+        const hasError = Object.keys(errors).length > 0;
+        return (
+          <Form
+            {...layout}
+            name="createApp"
+            className="ant-form ant-form-horizontal ant-form-default"
+            style={{ padding: `30px 0` }}
+          >
+            <FormItemTemplate
+              name="appName"
+              label="系统名称"
+              errors={errors}
+              touched={touched}
+              // required 是给 UI 显示必填的
+              required
+            />
+            <FormItemTemplate
+              name="appCode"
+              label="系统编码"
+              errors={errors}
+              touched={touched}
+              required
+            />
+            <FormItemTemplate
+              name="accessName"
+              label="系统访问编号"
+              errors={errors}
+              touched={touched}
+              required
+            />
+            <FormItemTemplate
+              name="appShortNameCn"
+              label="系统简称"
+              errors={errors}
+              touched={touched}
+              required
+            />
+            <FormItemTemplate
+              name="appShortNameEn"
+              label="系统英文简称"
+              errors={errors}
+              touched={touched}
+              required
+            />
 
-      <Form.Item
-        label="系统访问编号"
-        name="accessName"
-        rules={[
-          {
-            required: true,
-            pattern: /^[a-z0-9]+$/,
-            message: "系统访问编号必填，并且只能为小写字母、数字",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="系统简称"
-        name="appShortNameCn"
-        rules={[{ required: true, message: "系统简称必填" }]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="系统英文简称"
-        name="appShortNameEn"
-        rules={[
-          {
-            required: true,
-            pattern: /^[a-z]+$/,
-            message: "系统英文简称必填，小写字母",
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-
-      <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit" loading={submitting}>
-          提交
-        </Button>
-      </Form.Item>
-    </Form>
+            <AntdForm.Item {...tailLayout}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmitting}
+                disabled={hasError}
+              >
+                创建
+              </Button>
+            </AntdForm.Item>
+          </Form>
+        );
+      }}
+    </Formik>
   );
 };

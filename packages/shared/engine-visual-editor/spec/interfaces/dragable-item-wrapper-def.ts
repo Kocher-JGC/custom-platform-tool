@@ -22,11 +22,20 @@ export type DragItemConfig = any;
 export type OnItemDrop = (dragItem, dndContext: DnDContext) => void
 export type OnItemDrag = (dragItem) => void
 
+type Direction = "top" | "button" | 'left' | 'right'
+
 interface DragItemMoveInfo {
-  isContainer: boolean
-  from: "top" | "button" | 'left' | 'right'
+  /** 
+   * 移动的类型
+   * 1. enter 移入容器
+   * 2. exit 移出容器
+   * 3. sort 普通排序
+   */
+  type: 'enter' | 'exit' | 'sort'
+  /** 移动的方向 */
+  direction: Direction
 }
-export type DragItemMove = (dragIndex: ElemNestingInfo, hoverIndex: ElemNestingInfo, options?: DragItemMoveInfo) => void
+export type DragItemMove = (dragIndex: ElemNestingInfo, hoverIndex: ElemNestingInfo, moveInfo: DragItemMoveInfo) => void
 export type CancelDrag = (originalIndex: number) => void
 
 export interface GetStateContext {

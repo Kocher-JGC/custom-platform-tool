@@ -125,7 +125,6 @@
         }, 2 * 1000)
       }
 
-      // console.log("应用发布后端服务", `http://${getQueryValue("api")}/appManager/installApp`)
       document.querySelector('#upload1').addEventListener("change", function (e) {
         const [file] = document.querySelector('#upload1').files;
         if (file) {
@@ -166,7 +165,7 @@
           formData.set("file", file);
           formData.set("clean_app_business_tables", 1);
           axios.request({
-            url: `/appManager/installApp`,
+            url: `${localStorage.getItem("saasServerUrl").replace(/\"/g, "")}/appManager/installApp`,
             method: "POST",
             headers: {
               'Content-Type': 'multipart/form-data'

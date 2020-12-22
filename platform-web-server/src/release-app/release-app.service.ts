@@ -162,7 +162,7 @@ export class ReleaseAppService {
     const envConfig = await getEnvConfig();
     this.logger.info(`envConfig: ${JSON.stringify(envConfig)}`);
     const resData = await axios.get(
-      `${envConfig.paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/pages/publishing`,
+      `${envConfig.paasServerUrl}/${lesseeCode}/${applicationCode}/page/v1/publishing/pages`,
       { headers: { Authorization: authorization } }
     );
     if (resData?.data?.code !== "00000") {

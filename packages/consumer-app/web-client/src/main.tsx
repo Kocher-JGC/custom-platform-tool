@@ -1,21 +1,28 @@
-import React from "react";
-
-import { Provider, connect } from "unistore/react";
-
 import { AdminTemplateEngine, PageRenderCtx } from "@engine/ui-admin-template";
 import { AuthSelector } from "@engine/ui-admin-template/components/auth-selector";
 import { LoginPanel } from "@engine/ui-admin-template/plugins/default-renderer/login-panel";
-import SelectApp from "./components/SelectApp";
+import { Button } from "antd";
+import React from "react";
 import store from "store";
+import { connect, Provider } from "unistore/react";
+import {
+  authActions, authStore,
 
-import { authStore, authActions, AuthStore, SaaSAuthActionsTypes, AuthStoreState } from "./auth/actions";
+  AuthStore,
+
+  AuthStoreState, SaaSAuthActionsTypes
+} from "./auth/actions";
+import { DashboardRender, PageContainer, Version } from "./components";
+import SelectApp from "./components/SelectApp";
 import { queryMenuList } from "./services";
-import { PageContainer, Version } from "./components";
-
-import 'antd/dist/antd.css';
 import "./style";
-import { DashboardRender } from "./components";
 import { remoteMenu2AppMenu } from "./utils";
+
+
+
+
+
+
 
 function selector(state) {
   return state;
@@ -30,31 +37,30 @@ const removeLoadingBG = () => {
   // }, 100);
 };
 
-type LoginFilterProps = AuthStoreState
+type LoginFilterProps = AuthStoreState;
 
 class LoginFilter extends React.Component<LoginFilterProps> {
-
   envConfig = {
-    app: '',
-    lessee: '',
-    t: '',
-    appName: '',
-  }
+    app: "",
+    lessee: "",
+    t: "",
+    appName: "",
+  };
 
   constructor(props) {
     super(props);
     this.state = {
       ready: false,
-      menuData: []
+      menuData: [],
     };
     this.setEnvConfig();
   }
 
   setEnvConfig = () => {
-    const app = store.get('app/code');
-    const lessee = store.get('app/lessee');
+    const app = store.get("app/code");
+    const lessee = store.get("app/lessee");
     const t = store.get(`paas/token`);
-    const appName = store.get('app/name');
+    const appName = store.get("app/name");
 
     this.envConfig = {
       app,
@@ -62,7 +68,7 @@ class LoginFilter extends React.Component<LoginFilterProps> {
       t,
       appName,
     };
-  }
+  };
 
   componentDidMount() {
     removeLoadingBG();
@@ -72,11 +78,11 @@ class LoginFilter extends React.Component<LoginFilterProps> {
     return (
       <>
         <Version />
-        <hr/>
-        <span className="copy-right">@{(new Date()).getFullYear()}</span>
+        <hr />
+        <span className="copy-right">@{new Date().getFullYear()}</span>
       </>
     );
-  }
+  };
 
   dashboardRender = () => {
     return (
@@ -84,70 +90,70 @@ class LoginFilter extends React.Component<LoginFilterProps> {
         <DashboardRender />
       </div>
     );
-  }
+  };
 
   pageRender = (renderCtx: PageRenderCtx) => {
     const { history } = renderCtx;
     const { query } = history.location;
-    const pageID = query.pageID;
+    const { pageID } = query;
     return (
       <PageContainer
         {...this.envConfig}
         {...renderCtx}
         pageID={pageID}
-      >
-      </PageContainer>
+      ></PageContainer>
     );
-  }
+  };
 
   checkAppInfo = () => {
     // const { app } = this.props;
     if (!store.get("app/code")) {
       return this.selectAppPanelRender();
-    } else {
-      return this.loginPanelRender();
     }
-  }
+    return this.loginPanelRender();
+  };
 
   selectAppPanelRender = () => {
     const { selectAppInfo } = this.props;
-    return <SelectApp selectAppInfo={selectAppInfo}/>;
-  }
+    return <SelectApp selectAppInfo={selectAppInfo} />;
+  };
 
   onLoginSuccess = () => {
+    const {getUserLastLoginInfo} = this.props;
+    getUserLastLoginInfo();
     queryMenuList().then((menuDataRes) => {
       // TODO: 过滤成内部菜单数据
       const menuData = remoteMenu2AppMenu(menuDataRes.result);
       this.setState({
-        menuData: menuData,
-        ready: true
+        menuData,
+        ready: true,
       });
     });
-  }
+  };
 
   loginPanelRender = () => {
     const { login, logging, autoLoging } = this.props;
-    const appName = this.envConfig.appName;
+    const { appName } = this.envConfig;
     const formOptions = [
       {
         ref: "AdminName",
         type: "input",
         title: "账号",
         iconName: "account",
-        required: true
+        required: true,
       },
       {
         ref: "Password",
         type: "password",
         title: "密码",
         iconName: "lock",
-        required: true
+        required: true,
       },
     ];
     return (
       <LoginPanel
         backgroundImage="url(./images/bg_1.jpg)"
-        login={(value )=> {
+        login={(value) => {
           login(value, this.onLoginSuccess);
         }}
         btnGColor="red"
@@ -157,17 +163,28 @@ class LoginFilter extends React.Component<LoginFilterProps> {
         formOptions={formOptions}
       />
     );
-  }
+  };
 
   render() {
-    const { isLogin, autoLoging, username, switchUser, switchApp, autoLogin } = this.props;
+    const {
+      isLogin,
+      autoLoging,
+      username,
+      switchUser,
+      switchApp,
+      autoLogin,
+      lastLoginInfo,
+      logout
+    } = this.props;
     const { menuData } = this.state;
 
     return (
       <AuthSelector
         isLogin={isLogin}
         autoLoging={autoLoging}
-        didMount={() => {autoLogin(this.onLoginSuccess);}}
+        didMount={() => {
+          autoLogin(this.onLoginSuccess);
+        }}
         loginPanelRender={this.checkAppInfo}
       >
         {isLogin ? (
@@ -184,26 +201,43 @@ class LoginFilter extends React.Component<LoginFilterProps> {
             statusbarActions={[
               {
                 action: () => {},
+                title: '',
+                photo: "./images/photo.png",
+                className: "hy-photo",
+                overlay: () => {return null}
+              },
+              {
+                action: () => {},
                 title: username,
                 overlay: () => {
-                  if(store.get("app/mode") !== "preview"){
+                  if (store.get("app/mode") !== "preview") {
                     return (
-                      <div style={{ width: 120 }}>
-                        <div className="p10" onClick={switchUser}>切换账号</div>
+                      <div style={{ width: 300 }}>
+                        <div className="p10" style={{color: '#1890ff'}}>
+                          账户信息
+                        </div>
                         <hr style={{ margin: 0 }} />
-                        <div className="p10" onClick={switchApp}>切换应用</div>
+                        <div className="p10">本次登录：{lastLoginInfo.lastLoginTime}</div>
+                        <div className="p10">上次登录：{lastLoginInfo.createTime}</div>
+                        <div className="p10">登录ip：{lastLoginInfo.ip}</div>
+                        <hr style={{ margin: 0 }} />
+                        <div className="p10">
+                          <Button type="link" onClick={logout}>退出登录</Button>
+                          <Button type="link" onClick={switchUser}>切换账号</Button>
+                          <Button type="link" onClick={switchApp}>切换应用</Button>
+                        </div>
                         {/* <div className="p20">修改密码</div> */}
                       </div>
                     );
                   }
                   return null;
-                }
-              }
+                },
+              },
             ]}
             appTitle={this.envConfig.appName}
             pluginRenderer={{
               Footer: this.footerRender,
-              Dashboard: this.dashboardRender
+              Dashboard: this.dashboardRender,
             }}
             pageRender={this.pageRender}
           >

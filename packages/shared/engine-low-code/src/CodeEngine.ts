@@ -37,11 +37,17 @@ export default class CodeCompiler {
    * @param code 代码字符串
    */
   public codeIsExpression(code: string): boolean {
-    const statement = parse(code).program.body[0];
-    if(statement.type === "ExpressionStatement"){
-      return true;
-    }
-    return false;
+    // const statement = parse(code).program.body[0];
+    // if(statement.type === "ExpressionStatement"){
+    //   return true;
+    // }
+    // return false;
+    const { expression } = parse(code).program.body[0];
+    return (
+      expression &&
+      expression.body.body.length === 1 &&
+      expression.body.body[0].type === "ExpressionStatement"
+    );
   }
 
   /**

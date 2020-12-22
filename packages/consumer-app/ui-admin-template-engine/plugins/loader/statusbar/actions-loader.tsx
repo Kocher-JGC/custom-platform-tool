@@ -1,15 +1,16 @@
-import React from 'react';
-
-import { Icon, PureIcon, DropdownWrapper } from '@engine/ui-admin-template/ui-refs';
 import { DropdownWrapperProps } from '@deer-ui/core/dropdown-wrapper/dropdown-wrapper';
+import { DropdownWrapper, Icon, PureIcon } from '@engine/ui-admin-template/ui-refs';
+import React from 'react';
 
 
 export interface StatusbarConfigItem {
   title: string;
   icon?: string;
   pureIcon?: string;
-  overlay: DropdownWrapperProps['overlay'];
+  overlay: DropdownWrapperProps["overlay"];
   action: () => void;
+  photo?: string;
+  className?: string;
 }
 
 interface DisplayDOMProps {
@@ -19,6 +20,7 @@ interface DisplayDOMProps {
   title?;
   className?;
   children?;
+  photo?:string;
 }
 
 const DisplayDOM = ({
@@ -27,33 +29,37 @@ const DisplayDOM = ({
   icon,
   title,
   className = 'item',
-  children
+  children,
+  photo
 }: DisplayDOMProps) => {
   const I = pureIcon ? <PureIcon n={pureIcon} /> : <Icon n={icon} />;
-  return (
-    <span onClick={onClick} className={className}>
-      {I}
-      {
-        title && <span className="ml5">{title}</span>
-      }
-      {children}
-    </span>
-  );
-};
+  return (<span onClick={onClick} className={className}>
+    {I}
+    {
+      title && <span className="ml5">{title}</span>
+    }
+    {
+      photo && <img src={photo} style={{width:"100%",height:"100%"}}/>
+    }
+    {children}
+  </span>)
 
+};
 
 export interface StatusbarActionsLoaderProps {
   statusbarActions: StatusbarConfigItem[];
 }
 
-export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (props) => {
+export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (
+  props
+) => {
   const { statusbarActions, ...otherProps } = props;
   return (
     <div className="status-container">
       {
         statusbarActions.map((item) => {
           const {
-            title, icon, pureIcon, overlay, action
+            title, icon, pureIcon, overlay, action,photo,className
           } = item;
           let con;
           switch (true) {
@@ -71,6 +77,8 @@ export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (pr
                     title={title}
                     icon={icon}
                     pureIcon={pureIcon}
+                    photo={photo}
+                    className={className}
                   />
                 </DropdownWrapper>
               );
@@ -82,17 +90,14 @@ export const StatusbarActionsLoader: React.FC<StatusbarActionsLoaderProps> = (pr
                   title={title}
                   icon={icon}
                   pureIcon={pureIcon}
+                  photo={photo}
+                  className={className}
                 />
-              );
-              break;
-          }
-          return (
-            <React.Fragment key={`${icon}_${title}`}>
-              {con}
-            </React.Fragment>
-          );
-        })
-      }
+            );
+            break;
+        }
+        return <React.Fragment key={`${icon}_${title}`}>{con}</React.Fragment>;
+      })}
     </div>
   );
 };

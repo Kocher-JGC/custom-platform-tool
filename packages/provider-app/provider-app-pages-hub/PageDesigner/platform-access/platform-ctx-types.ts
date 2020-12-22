@@ -1,5 +1,6 @@
 import { ChangeMetadataOptions } from "@engine/visual-editor/core/actions/change-meta";
-import { ChangeEntityState, GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
+import { GenMetaRefID, TakeMeta } from "@engine/visual-editor/data-structure";
+import { PD } from "@provider-app/page-designer/types";
 
 export interface OnDatasourceSelectorSubmitOptions {
   /** 关闭当前弹窗 */
@@ -34,12 +35,47 @@ export interface OnExpressionImporterSubmitOptions {
   variable: { field: string, value: string }[];
 }
 
+interface IDefaultVariableListChildren extends VariableItem {
+  value: string;
+}
+export interface IDefaultVariableList {
+  title: string;
+  value: string;
+  disabled: boolean;
+
+  children: IDefaultVariableListChildren[];
+}
+
 export interface OpenExpressionImporterOptions {
   defaultValue: OnExpressionImporterSubmitOptions;
   onSubmit: (submitOptions: OnExpressionImporterSubmitOptions) => void;
+  defaultVariableList?: IDefaultVariableList[];
+}
+export interface OnOpenFieldSortHelperSubmitOption {
+  fieldID: string;
+  dsID: string;
+  sort: 'ASC'|'DESC'
+}
+
+export interface OpenFieldSortHelperOptions {
+  defaultValue: OnOpenFieldSortHelperSubmitOption[]
+  datasource: PD.TableDatasouce[]
+  onSubmit: (submitOptions: OnOpenFieldSortHelperSubmitOption[])=>void
+}
+export interface OnOpenFieldSortHelperSubmitOption {
+  fieldID: string;
+  dsID: string;
+  sort: 'ASC'|'DESC'
+}
+
+export interface OpenFieldSortHelperOptions {
+  defaultValue: OnOpenFieldSortHelperSubmitOption[]
+  datasource: PD.TableDatasouce[]
+  onSubmit: (submitOptions: OnOpenFieldSortHelperSubmitOption[])=>void
 }
 export type OpenDatasourceSelector = (options: OpenDatasourceSelectorOptions) => () => void
 export type OpenExpressionImporter = (options: OpenExpressionImporterOptions) => () => void
+export type OpenFieldSortHelper = (options: OpenFieldSortHelperOptions) => () => void
 
 export type ChangeWidgetType = (widgetType: string) => void
 
@@ -75,6 +111,7 @@ export interface PlatformCtx {
   selector: {
     openDatasourceSelector: OpenDatasourceSelector
     openExpressionImporter: OpenExpressionImporter
+    openFieldSortHelper: OpenFieldSortHelper
   }
   /** 对于页面元数据的操作 */
   meta: {

@@ -95,9 +95,9 @@ interface SortingActionSwap {
 interface SortingActionPut {
   /** 将元素推入到 */
   type: 'put'
-  /** 推入的 item 的 idx */
+  /** 推入的容器 item 的 idx */
   putItemNestIdx: ElemNestingInfo
-  /** 将要推入的 */
+  /** 源 item 的 idx */
   sourceItemNestIdx: ElemNestingInfo
   /** 将要推入到 putItemNestIdx 的第几个 */
   putIdx: number

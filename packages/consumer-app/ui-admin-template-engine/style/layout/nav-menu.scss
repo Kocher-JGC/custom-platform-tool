@@ -1,7 +1,7 @@
 /** 设置颜色 */
 .__admin_nav_menu_container {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
-  background-color: rgba(#FFF, 0.9);
+  background-color: rgba(#fff, 0.9);
   height: 100%;
   padding-top: 20px;
 }
@@ -15,8 +15,8 @@
     &.active {
       color: $menu-active-text-color;
 
-      >.children {
-        border-left-color: rgba(#BBB, 0.5);
+      > .children {
+        border-left-color: rgba(#bbb, 0.5);
       }
     }
 
@@ -25,7 +25,7 @@
     // }
   }
 
-  >.menu,
+  > .menu,
   .fold {
     // border-bottom: 1px solid rgba(#000, 0.05);
     white-space: nowrap;
@@ -39,7 +39,7 @@
     }
 
     &.active {
-      color: $themeColor;
+      color: $themeColor !important;
 
       &::after {
         background: $themeColor;
@@ -129,7 +129,7 @@
     // color: #888;
   }
 
-  >.menu {
+  > .menu {
     padding: $menu-item-padding-vertical $menu-item-padding-horizontal;
   }
 
@@ -158,9 +158,9 @@
     }
 
     &.active {
-      >.children {
+      > .children {
         display: block;
-        border-left-color: rgba(#BBB, 0.5);
+        border-left-color: rgba(#bbb, 0.5);
       }
 
       .direct {
@@ -173,7 +173,7 @@
         transform: rotate(-90deg);
       }
 
-      >.fold,
+      > .fold,
       .menu {
         display: none;
       }
@@ -258,13 +258,12 @@
 
       &.hover,
       &:hover {
-
-        >.caret,
+        > .caret,
         .fold-title .caret {
           transform: rotate(-90deg);
         }
 
-        >.children {
+        > .children {
           display: block;
         }
       }
@@ -280,7 +279,7 @@
       transition: all 0.2s ease;
 
       &.active {
-        >.fold-title {
+        > .fold-title {
           margin-bottom: $fold-active-margin;
         }
 
