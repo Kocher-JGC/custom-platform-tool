@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { RemoteTable } from '@src/page-data/types';
+import { metaData } from "../mock/1";
 import { genUrl } from '../utils';
 
 /**
@@ -43,6 +44,7 @@ export const getRemoteTableMeta = async ({ token, lessee, app, tableId }): Promi
 export const getRTablesMeta = async (tableIds: string[], { token, lessee, app }) => {
   const url = await genUrl({ lessee, app });
   const reqUrl = `${url}/data/v1/tables/tableWithAux`;
+  // return metaData;
   console.log(tableIds);
 
   const resData = await axios

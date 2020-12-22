@@ -7,7 +7,7 @@ import { ComplexType } from "../../schema";
  * 1. username 转成 @(schema).did1 「映射一个个转?」
  */
 
-/**TODO: 还需要考虑: 过滤函数/映射函数 */
+/** TODO: 还需要考虑: 过滤函数/映射函数 */
 
 export interface Ref2ValCollection {
   [mark: string]: Ref2ValDef & BaseConf

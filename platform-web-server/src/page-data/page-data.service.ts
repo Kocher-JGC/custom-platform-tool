@@ -4,6 +4,7 @@ import { Logger } from 'winston';
 import axios from 'axios';
 import { omit } from 'lodash';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
+import { pageData } from './mock/1';
 import config from '../../config';
 import { genUrl } from './utils';
 import { pageData2IUBDSL } from './transform-data';
@@ -44,6 +45,7 @@ export class PageDataService {
         }
       });
     const data = resData?.data?.result;
+    // const data = pageData;
     if(!data) {
       this.logger.error(`没有页面数据: ${data}`);
       throw Error('没有页面数据');

@@ -43,7 +43,7 @@ export class GeneralTableComp extends React.Component<GeneralTableCompProps> {
       /** 配置人员可以配置不显示字段 */
       .filter((item) => item?.show)
       .map((item) => ({
-        dataIndex: `${item.id}`,
+        // dataIndex: `${item.id}`,
         ...item,
       }));
     /** 单元格内是否支持换行 */
