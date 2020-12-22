@@ -4,7 +4,6 @@ import { Logger } from 'winston';
 import axios from 'axios';
 import { omit } from 'lodash';
 import { PreviewAppService } from 'src/preview-app/preview-app.service';
-import { pageData } from './mock/1';
 import config from '../../config';
 import { genUrl } from './utils';
 import { pageData2IUBDSL } from './transform-data';

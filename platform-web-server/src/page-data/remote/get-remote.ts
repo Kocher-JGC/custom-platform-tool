@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { RemoteTable } from '@src/page-data/types';
-import { metaData } from "../mock/1";
 import { genUrl } from '../utils';
 
 /**
