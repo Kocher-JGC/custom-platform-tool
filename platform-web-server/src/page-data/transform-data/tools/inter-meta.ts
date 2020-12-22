@@ -78,6 +78,17 @@ export const interMetaToolInit = ({ interMetas, interRefRelations }: GenInterMet
 
     return fieldsRes;
   };
+
+  const getFieldAndInterInfo = ({ field, inter }: { field: string, inter: string }) => {
+    const interInfo = getInters([inter])[0];
+    if (interInfo) {
+      const fieldInfo = interInfo.fields.find(({ fieldCode, fieldId }) => fieldId === field || fieldCode === field);
+      if (fieldInfo) {
+        return { fieldInfo, interInfo };
+      }
+    }
+    return null;
+  };
   
   
 
@@ -86,6 +97,7 @@ export const interMetaToolInit = ({ interMetas, interRefRelations }: GenInterMet
     getInters,
     getIntersPK,
     getField,
-    getFields
+    getFields,
+    getFieldAndInterInfo
   };
 };
