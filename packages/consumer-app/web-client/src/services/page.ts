@@ -7,10 +7,11 @@ import { UrlConfKey } from '../utils/env';
  */
 
 const filterRes = (res) => {
-  if (res.data.code === "00000") {
-    return res.data?.result;
-  } else if (res.status === 200) {
-    return res.data;
+  if (res.code === "00000") {
+    return res?.result;
+  } 
+  if (res.status === 200) {
+    return res;
   }
   return {};
 };

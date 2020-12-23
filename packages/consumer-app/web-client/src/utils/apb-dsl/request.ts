@@ -65,15 +65,16 @@ export const APBDSLrequest = <R = any>(url, reqParam) => {
   return $A_R(url, {
     method: 'POST',
     data: reqParam,
-  }).then((response: AxiosResponse<APBDSLRespone<R | boolean>>) => {
-    const { data, status } = response;
-    if (status === 200) {
-      if (data.code === APBDSLResponeCode.SA0000) {
-        return Promise.resolve(data.result);
+  }).then((response: any) => {
+    // as APBDSLRespone<R>;
+    if (response) {
+      const { code, result, } = response;
+      if (code === APBDSLResponeCode.SA0000) {
+        return Promise.resolve(result);
       }
       notification.error({
         message: '请求失败!',
-        description: APBDSLResponseMsg[data.code] || `失败了!${JSON.stringify(data)}`
+        description: APBDSLResponseMsg[code] || `失败了!${JSON.stringify(response)}`
       });
     }
     return Promise.resolve(false);

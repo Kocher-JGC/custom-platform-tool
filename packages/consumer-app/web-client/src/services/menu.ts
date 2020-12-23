@@ -31,7 +31,6 @@ export async function queryMenuList() {
       },
     }
   );
-  
-  return res.data;
+  return res;
   
 }
