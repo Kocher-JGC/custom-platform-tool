@@ -1,17 +1,21 @@
-import { FieldDataType, SchemaType } from "@src/page-data/types";
-import { 
+/* eslint-disable import/no-cycle */
+import { FieldDataType, SchemaType, InterMeta, InterMetaType, RefType, InterRefRelation, FieldMeta } from "@src/page-data/types";
+import { groupBy } from "lodash";
+import { REQ_MARK , 
   interMetaMark, splitMark , schemaMark, ref2ValMark,
   apiReqMark, runCtxPayloadMark, FLOW_MARK, flowMark,
   REF2VAL_MARK
 } from "../IUBDSL-mark";
-import { genOpenPageAction } from './genAction-open-model';
+
 import { TransfromCtx } from "../../types/types";
-import { genAPBDSLAction } from "./genAction-APB";
 import { genDefalutFlow } from './flow';
 import { FuncCodeOfAPB } from './action-types-of-IUB';
 import { changeStateAction } from "./genAction-update-state";
-
-export const REQ_MARK = 'req_';
+// eslint-disable-next-line import/no-cycle
+import { genReadInfoFromFieldMeta, initFieldRefRelIterator, initGenReadOfFieldRefRel, IteratorFieldDef, genDefaultReadAndSetCtx, levelSplitMark, genChangePropsAndSetCtx } from "../tools";
+import { initGenReadSchemaSetOfRefRel } from "../tools/APBDef-of-IUB/gen-read-schema-set";
+import { genPageDataSource, genSelectPage } from "../gen-select-page";
+import { genInterMeta } from "../interface-meta";
 
 const markTransf = {
   variable: schemaMark,
@@ -42,6 +46,11 @@ const genParamMatch = (fieldMaps, genItemFn) => {
   }
 };
 
+/**
+ * 1. 读取/回写操作 schema
+ * 2. 读取 schema / set apb
+ * 3. 读取 apb / set schema
+ */
 const genSubmitData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   const { extralDsl: { tempRef2Val, tempAPIReq, tempFlow, tempSchema } } = transfromCtx;
   const { submitData, name: actionName } = actionConf;
@@ -90,7 +99,7 @@ const genSubmitData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
         steps.push(stepsId);
         /** 添加ID TODO: 现在默认添加 */
         tempSchema.forEach((schema) => {
-          console.log(schema);
+          // console.log(schema);
           
           const { schemaId, schemaType, interId, fieldId } = schema;
           if ((schemaId as string).indexOf(id) === 0 || schemaType === SchemaType.interPK) {
@@ -120,111 +129,122 @@ const genSubmitData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   return actionOfIUB;
 };
 
-const readOnce = ({ readList, stepsId }) => ({
-  funcCode: FuncCodeOfAPB.R,
-  stepsId,
-  readList,
-  readDef: { readRef: 'staticId' }
+const genReadField = (interInfo: InterMeta, fieldInfo: FieldMeta, extInfo = {}) => ({
+  info: {
+    infoType: 'show',
+    ...genReadInfoFromFieldMeta(interInfo, fieldInfo), 
+    ...extInfo // info
+  },
+  forwardRefRels: [],
+  backwardRefRels: []
 });
-const genReadFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
-  const { extralDsl: { tempAPIReq, tempAction, tempRef2Val , tempFlow, pageFieldsToUse, pageLifecycle }, interMeta: { interMetas } } = transfromCtx;
-  const { actionType, name } = actionConf;
-  /**
-   * 1. 读取/回写操作 schema
-   * 2. 读取 schema / set apb
-   * 3. 读取 apb / set schema
-   */
-  const tempInfo: any = {};
-  /** 获取完值, 进行设置值的struct */
-  const struct: { key: string, val: string }[] = [];
-  pageFieldsToUse.forEach(({ tableId, fieldId, schemaRef }) => {
-    let fieldInfo ;
-    if (tempInfo[tableId]) {
-      fieldInfo = tempInfo[tableId].fieldsInfo.find(({ fieldId: id }) => id === fieldId);
-    } else {
-      const interInfo = interMetas.find(({ id }) => id === tableId);
-      if (interInfo) {
-        const PKInfo = interInfo.fields.find(({ fieldDataType }) =>  fieldDataType === FieldDataType.PK);
-        const PKSchemaRef = `${schemaMark + tableId}_${PKInfo.fieldId}`;
-        fieldInfo = interInfo.fields.find(({ fieldId: id }) => id === fieldId);
-        tempInfo[tableId] = {
-          interInfo,
-          fieldsInfo: interInfo.fields,
-          alias: interInfo.id,
-          stepsId: interInfo.id,
-          table: interInfo.code,
-          fields: [{ table: tableId,  field: PKInfo.fieldCode, alias: PKInfo.fieldId }],
-          condition: PKSchemaRef
-          // condition: {
-          //   and: [{
-          //     equ: {
-          //       [PKInfo.fieldCode]: PKSchemaRef
-          //     }
-          //   }]
-          // }
-        };
-        struct.push({ key: PKSchemaRef, val: `${runCtxPayloadMark}[#(0|0)]${splitMark}${PKInfo.fieldId}` });
-      }
-    }
-    if (fieldInfo) {
-      tempInfo[tableId].fields.push({ table: tableId,  field: fieldInfo.fieldCode, alias: fieldInfo.fieldId });
-      struct.push({ key: schemaRef, val: `${runCtxPayloadMark}[#(0|0)]${splitMark}${fieldInfo.fieldId}` });
-    }
-  });
-  /** 读取完写入动作 */
-  const ref2ValId = `ref2_${actionId}`;
-  const ref2ValTemp = ref2ValObj(ref2ValId, struct);
-  const changeStateAct = changeStateAction(ref2ValId, ref2ValMark + ref2ValId);
-  tempRef2Val.push(ref2ValTemp);
-  tempAction.push(changeStateAct);
-  /** 读取完写入动作 */
-  /** APB读取动作 */
-  const steps: string[] = [];
-  
-  const APBReq = {
-    reqId: REQ_MARK + actionId,
-    reqType: 'APBDSL',
-    list: Object.values(tempInfo).reduce((res, item: any)=> {
-      const { stepsId, table, fields, alias, condition } = item;
-      steps.push(stepsId);
-      res[stepsId] = readOnce({ stepsId, readList: {
-        staticId: {
-          table, stepsId,
-          funcCode: FuncCodeOfAPB.R,
-          fields, alias,
-          condition,
-        }
-      } });
-      return res;
-    }, {}),
-    steps
-  };
-  tempAPIReq.push(APBReq);
-  const action = {
-    actionId,
-    actionName: `页面表单读取_${name}`,
-    actionType: 'APIReq',
-    actionOptions: {
-      apiReqRef: apiReqMark + APBReq.reqId,
-    }
-  };
-  tempAction.push(action);
-  /** APB读取动作 - end */
 
-  /** 拼接动作 */
-  const reqFlow =  action.actionId;
-  const setFlow =  changeStateAct.actionId;
-  const flowItem1: any = genDefalutFlow(reqFlow, [ flowMark + FLOW_MARK + setFlow ]);
-  flowItem1.condition = 'update_get';
-  const flowItem2 = genDefalutFlow(setFlow);
-  tempFlow.push(flowItem1, flowItem2);
-  /** 页面加载时候的生命周期 */
-  pageLifecycle.mounted = [flowMark + FLOW_MARK + reqFlow];
-  return action;
+const genReadFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
+  const { interMetaT, addPageLifecycle, extralDsl: { pageFieldsToUse, tempSchema } } = transfromCtx;
+  const { getFieldAndInterInfo, getIntersRefRels, getInters } = interMetaT;
+  const { actionType, name } = actionConf;
+  /** 分组 */
+  const pageFieldsByTableId = groupBy(pageFieldsToUse, 'tableId');
+  const interIds = Object.keys(pageFieldsByTableId);
+  const interInfos = getInters(interIds).reduce((res, v) => ({ ...res, [v.id]: v }), {} as { [str: string]: InterMeta });
+  /** 使用到的关系 */
+  const [forwardRefRels, backwardRefRels] = getIntersRefRels({ inters: interIds });
+  /** 分组, 确定生成X个read, 确定主表 「TODO: 页面设计器也没有提供」 */
+  const readGroup = {};
+
+  interIds.forEach(id => {
+    const mainInterInfo = interInfos[id];
+    /** TODO: 非附属表, 就当作主表「如果页面添加附属表就有问题」 */
+    if (mainInterInfo?.type !== InterMetaType.AUX_TABLE) {
+      const { id: mainInterId, PKField: { fieldId: mainPKFieldId } } = mainInterInfo;
+      const readAllFields: any[] = [ genReadField(mainInterInfo, mainInterInfo.PKField) ];
+      const needReadPageFields = pageFieldsByTableId[id];
+      const mainPkSchema = tempSchema.find(({ interId, fieldId }) => interId === mainInterId && mainPKFieldId === fieldId);
+      const mainReadPKSchemaRef = mainPkSchema ? mainPkSchema.schemaRef : `${schemaMark + mainInterId}_${mainPKFieldId}`;
+      if (mainPkSchema) {
+        needReadPageFields.push({ tableId: mainInterId, fieldId: mainPKFieldId, schemaRef: mainPkSchema.schemaRef, schema: mainPkSchema });
+      }
+
+      /** 新的一组 */
+      readGroup[id] = { readFields: readAllFields, mainReadPKSchemaRef, needReadPageFields };
+
+      /** 添加附属表字段, 反向引用 */
+      backwardRefRels.forEach((refRel) => {
+        const { refInterId, interId } = refRel;
+        if (refInterId === id && pageFieldsByTableId[interId]) {
+          const FKInterInfo = interInfos[interId];
+          const FkSchema = tempSchema.find(({ interId: tId, fieldId }) => interId === tId && FKInterInfo.PKField.fieldId === fieldId);
+          if (FKInterInfo && FkSchema) {
+            readAllFields[0].backwardRefRels.push(refRel);
+            /** 辅助表字段 */
+            needReadPageFields.push(...pageFieldsByTableId[interId]);
+            /** 附属表主键 */
+            needReadPageFields.push({ tableId: interId, fieldId: FKInterInfo.PKField.fieldId, schemaRef: FkSchema.schemaRef, schema: FkSchema });
+            // readAllFields.push(genReadField(FKInterInfo, FKInterInfo.PKField));
+          }
+        }
+      });
+
+      needReadPageFields.forEach((pageFields) => {
+        const { schema, schemaRef, tableId, fieldId } = pageFields;
+        const { interInfo, fieldsInfo } = getFieldAndInterInfo({ fields: [fieldId], inter: tableId }) || {};
+        if (fieldsInfo?.[0]) {
+          const fieldInfo = fieldsInfo[0];
+          if (fieldInfo && mainPKFieldId !== fieldInfo.fieldId) {
+            const idx = readAllFields.push(genReadField(interInfo, fieldInfo)) - 1; 
+            /** 有正向引用的「显示值实际值」 */
+            const forwardRefRel = forwardRefRels.find(({ interId, fieldId: field }) => interId === tableId && field === fieldId);
+            if (forwardRefRel) {
+              readAllFields[idx].forwardRefRels.push(forwardRefRel);
+              const { refFieldCode, refShowFieldCode, refInterCode, interCode, fieldCode } = forwardRefRel;
+              /** TODO: 没得办法, 信息不全 */
+              const codeMap = { realVal: refFieldCode, showVal: refShowFieldCode };
+              const genSchemaSetItem = (prevPath) => ({
+                key: schema.schemaRef,
+                val: {
+                  type: 'structObject',
+                  struct: Object.keys(schema.struct).map((key) => ({ 
+                    key, 
+                    val: `${runCtxPayloadMark}[#(0|0)]${splitMark}${prevPath}${levelSplitMark}${interCode}_${fieldCode}${levelSplitMark}${refInterCode}_${codeMap[key]}` 
+                  }))
+                }
+              });
+              Object.assign(readAllFields[idx].info, { schemaSet: schema, genSchemaSetItem  });
+            } else { /** 直接使用realVal */
+              Object.assign(readAllFields[idx].info, { schemaSet: schemaRef });
+            }
+            /** ----- */
+          }
+          // err
+        }
+        // err
+      });
+      const { iterator, initIteratorParam, addIterationFn } = initFieldRefRelIterator({ allFields: readAllFields });
+      const { iterationFn, readList } = initGenReadOfFieldRefRel();
+      addIterationFn(iterationFn);
+      const { iterationFn: fns, schemaSetStruct } = initGenReadSchemaSetOfRefRel();
+      addIterationFn(fns);
+    
+      const [readDef] = iterator(
+        initIteratorParam({ readFields: readAllFields, interMetaInfo: mainInterInfo }),
+        [ { readAlais: `${mainInterInfo.code}A` }, { readAlais: `${mainInterInfo.code}A` } ]
+      );
+
+      /** 添加查询条件 */
+      const mainReadDef = readList[readDef.readRef];
+      mainReadDef.condition = mainReadPKSchemaRef;
+      /** 添加schemaSet */
+      const ref2Val = ref2ValObj('', schemaSetStruct);
+      const { flow: setSchemaFlow } = genChangePropsAndSetCtx(transfromCtx, `set_${actionId}_${id}`, ref2Val);
+      /** 生成查询 */
+      const { flow } = genDefaultReadAndSetCtx(transfromCtx, { onlyMark: `${actionId}_${id}`, readList, readDef }, [flowMark + setSchemaFlow.id]);
+      addPageLifecycle('mounted', flowMark + flow.id);
+    };
+  });
 };
 
 const genWriteFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
-  const { extralDsl: { tempAPIReq, tempAction, tempRef2Val , tempFlow, pageFieldsToUse, pageLifecycle, tempSchema }, interMeta: { interMetas } } = transfromCtx;
+  const { extralDsl: { tempAPIReq, tempAction, tempRef2Val , tempFlow, pageFieldsToUse, tempSchema } } = transfromCtx;
   const { actionType, name } = actionConf;
   /**
    * 读取 schema / set/upd apb
@@ -255,7 +275,6 @@ const genWriteFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   const ref2ValIds = structArr.map((struct, idx) => {
     const ref2ValTemp = ref2ValArr(`${ref2ValId}_${tableIds[idx]}`, struct);
     tempRef2Val.push(ref2ValTemp);
-    console.log(ref2ValTemp);
     return ref2ValTemp.ref2ValId;
   });
   
@@ -321,6 +340,69 @@ const genWriteFormData = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   tempFlow.push(flow);
 
 };
+
+const genSelectData = async (transfromCtx: TransfromCtx, actionConf, actionId) => {
+  const { interMetaT, getRemoteTableMeta, extralDsl: { tempSubPage } } = transfromCtx;
+  const { getInters, addInterMeta } = interMetaT;
+  const { chooseData, name } = actionConf;
+  const { dataChooseRange, matchReturnValue, modalConfig } = chooseData;
+  const { ds, title, dsTitle, returnValue, showColumn ,tagField , selectCount, selectType, showType } = modalConfig;
+  /**
+   * 1. 生成表格read、表格widget
+   * 2. 组装返回的ref2Val 
+   */
+  const dataSourceMeta = genPageDataSource([ds]);
+  const newInterMeta = await genInterMeta(dataSourceMeta, getRemoteTableMeta);
+  addInterMeta(newInterMeta);
+  const interMeta = getInters([ds])[0];
+  
+  if (interMeta) {
+    /** 1. 生成弹窗选择的页面 */
+    const columns = [];
+    interMeta.fields.forEach((fieldInfo) => {
+      const { fieldId, fieldCode, name: fieldName } = fieldInfo;
+      if (showColumn.includes(`${interMeta.id}.${fieldId}`)) {
+        columns.push({
+          title: fieldName,
+          dsID: interMeta.id,
+          fieldID: fieldId,
+          id: `${fieldId}_${fieldCode}`,
+          dataIndex: `${interMeta.code}_${fieldCode}`,
+          width: 60,
+          type: "dsColumn",
+          align: "left",
+          editable: false,
+          fieldShowType: "realVal",
+          show: true
+        });
+      }
+    });
+    const selectPage = await genSelectPage(transfromCtx, { dsIds: [ds], id: actionId, title, columns });
+    tempSubPage.push({ id: selectPage.pageID, pageContent: selectPage });
+
+    /** 2. 生成选择回填的 ref2val */
+    // matchReturnValue
+    /** action */
+    const actionOfSelectData = {
+      actionId,
+      /** 动作名字 */
+      actionName: name,
+      /** 动作的类型 */
+      actionType: 'openSelectModel',
+      /** 不同动作的配置 */
+      actionOptions: {
+        openType: 'openModal',
+        pageType: 'IUBDSL',
+        pageArea: '1342287925089546240',
+        pageUrl: selectPage.pageID,
+        paramMatch: ''
+      }
+    };
+  } else {
+    // err
+  }
+};
+
 
 const genChangeVariables = (params) => {
 //   actionType: "changeVariables"
@@ -400,7 +482,7 @@ const genOpenPage = (transfromCtx: TransfromCtx, actionConf, actionId) => {
   return actionOfOpenPage;
 };
 
-export const genAction = (transfromCtx: TransfromCtx, actions) => {
+export const genAction = async (transfromCtx: TransfromCtx, actions) => {
   // const actionIds = Object.keys(actions);
   const res = {};
   for (const actionId in actions) {
@@ -417,6 +499,10 @@ export const genAction = (transfromCtx: TransfromCtx, actions) => {
         break;
       case 'writeFormData':
         genWriteFormData(transfromCtx, actionConf, actionId);
+        break;
+      case 'chooseData':
+        // eslint-disable-next-line no-await-in-loop
+        res[actionId] = await genSelectData(transfromCtx, actionConf, actionId);
         break;
       default:
         break;

@@ -8,3 +8,11 @@ export const changeStateAction = (actionId: string, idOfref2Val) => ({
   actionOptions: { changeMapping: idOfref2Val },
   actionOutput: 'undefined'
 });
+
+export const changeWidgetProps = (actionId: string) => ({
+  actionId,
+  actionName: 'changeState',
+  actionType: 'changeState',
+  actionOptions: { propsChangeMapping: actionId },
+  actionOutput: 'undefined'
+});
