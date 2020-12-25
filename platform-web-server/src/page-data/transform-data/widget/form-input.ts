@@ -12,7 +12,7 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
   const { id, propState, } = widgetConf;
   let { eventRef = {} } = propState;
   const {
-    logger ,schema, metaSchema, extralDsl: {  pageFieldsToUse } 
+    logger ,schema, setPageFields, extralDsl: {  pageFieldsToUse } 
   } = transfromCtx;
   const printErrLog = genWidgetErrLogFn(logger, id);
 
@@ -29,6 +29,7 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
       /** 添加 @(schema). 引用 */
       const setTarget = widgetSchema.struct.realVal.schemaRef;
       propState.realVal = setTarget;
+      propState.showVal = widgetSchema.struct.showVal.schemaRef;
       
       /** 生成改变props的相关内容 */
       const { flow } = genChangePropsAndSetCtx(transfromCtx, id, setTarget);
@@ -49,13 +50,7 @@ const genInputEvents = (transfromCtx: TransfromCtx, widgetConf) => {
        *   作用: 整表回写/读取的依赖收集
        */
       if (propState.field) {
-        const metaSchemaInfo = metaSchema[propState.field];
-        if (metaSchemaInfo) {
-          const tableId = metaSchemaInfo.tableInfo.id;
-          const fieldId = metaSchemaInfo.column.id;
-          propState.field = interMetaMark + tableId + splitMark + fieldId;       
-          pageFieldsToUse.push({ tableId , fieldId, schemaRef: setTarget });
-        }
+        setPageFields(propState.field, widgetSchema, setTarget);
       }
     }
 

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { genTableRead } from "./table-read";
 import { interMetaMark } from '../IUBDSL-mark';
 import { TransfromCtx } from "../../types";

@@ -1,64 +1,13 @@
 import { TransfromCtx, RefType, InterRefRelation, FieldMeta, FoundationType, SchemaType, InterMetaType, RelationType, ComplexType, SchemaItemDef } from "@src/page-data/types";
-import { FuncCodeOfAPB } from "../task/action-types-of-IUB";
-import { canDeep } from "../utils";
 import { initFieldRefRelIterator } from "../tools/APBDef-of-IUB/field-ref-rel-iterator";
 import { initGenReadOfFieldRefRel } from "../tools/APBDef-of-IUB/gen-read-of-field-ref-rel";
 import { initGenSchemaOfFieldRefRel } from "../tools/APBDef-of-IUB/gen-schema-of-field-ref-rel";
-import { REQ_MARK, genDefalutFlow } from "../task";
-import { ACT_MARK, apiReqMark, schemaMark, splitMark, runCtxPayloadMark, flowMark } from "../IUBDSL-mark";
-import { genChangePropsAndSetCtx } from "../tools/tools";
+import { schemaMark, splitMark, runCtxPayloadMark, flowMark } from "../IUBDSL-mark";
+import { genChangePropsAndSetCtx, genDefaultReadAndSetCtx } from "../tools";
 import { flowEventHandlerTemplate } from "./default-gen";
-// import { flowEventHandlerTemplate } from "../../widget";
 /** 如何写一个洋葱片迭代器 */
 
 const connectMark = '_';
-
-const getRefRels = ({ findRefRelation, inters }) => {
-  /** 所有可以使用的引用关系 */
-  const refRels = findRefRelation({ inters });
-  /** 并将关系分类 「正向引用关系Forward(字典、引用、树形)、 反向引用关系backward(附属)」 */
-  // const [forwardRefRels, backwardRefRels] = 
-  return refRels.reduce((res, refRel) => {
-    res[refRel.refType === RefType.FK_Q ? 1 : 0].push(refRel);
-    return res;
-  }, [[] as InterRefRelation[], [] as InterRefRelation[]]);
-};
-
-const genReadFlowAndAction = ({ widgetId, readList, readDef }) => {
-  const apbItem = {
-    funcCode: FuncCodeOfAPB.R,
-    stepsId: widgetId,
-    readList,
-    readDef
-  };
-  const APBDefOfIUB = {
-    reqId: REQ_MARK + widgetId,
-    reqType: 'APBDSL',
-    list: {
-      [widgetId]: apbItem
-    },
-    steps: [widgetId]
-  };
-  const action = {
-    actionId: ACT_MARK + widgetId,
-    /** 动作名字 */
-    actionName: '表格请求',
-    /** 动作的类型 */
-    actionType: 'APIReq',
-    /** 不同动作的配置 */
-    actionOptions: {
-      apiReqRef: apiReqMark + APBDefOfIUB.reqId,
-    }
-  };
-  const flow = genDefalutFlow(ACT_MARK + widgetId); // [flowMark + updStateFlow.id]
-
-  return {
-    APBDefOfIUB,
-    action,
-    flow
-  };
-};
-
 
 const genTableSchema = ({ widgetId, genSchemaRes }) => {
   const getSchemaStruct = (schema) => schema?.struct || {};
@@ -108,7 +57,7 @@ const genTableSchema = ({ widgetId, genSchemaRes }) => {
 
 export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
   const { interMetaT, logger, extralDsl: { tempSchema, tempFlow, tempAPIReq, tempAction } } = transfromCtx;
-  const { getInters, findRefRelation, getFieldAndInterInfo } = interMetaT;
+  const { getInters, getIntersRefRels, getFieldAndInterInfo } = interMetaT;
   const { id: widgetId, widgetRef, propState } = widgetProps;
   const { ds: dsIds, columns } = propState;
   const intersMeta = getInters(dsIds);
@@ -134,23 +83,23 @@ export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
     if (mainInterMeta) {
       const PKFieldInfo = mainInterMeta.PKField;
       /** 获取所有正向关系和反向关系 */
-      const [forwardRefRels, backwardRefRels] = getRefRels({ findRefRelation, inters: dsIds });
+      const [forwardRefRels, backwardRefRels] = getIntersRefRels({ inters: dsIds });
   
       const allFields: any[] = [];
       const idMapDataIdx = {};
       /** 每一项 */
       columns.forEach((colInfo) => {
         const { title, id, type, dataIndex, fieldShowType, fieldID, dsID } = colInfo;
-        const metaInfo = getFieldAndInterInfo({ field: fieldID, inter: dsID });
+        const metaInfo = getFieldAndInterInfo({ fields: [fieldID], inter: dsID });
         
         if (metaInfo) {
-          const { fieldInfo, interInfo } = metaInfo;
+          const { fieldsInfo, interInfo } = metaInfo;
           const forwardRefRelsToUse = forwardRefRels.filter(({ fieldId }) => fieldId === fieldID);
           const backwardRefRelsToUse = backwardRefRels.filter(({ refFieldId }) => refFieldId === fieldID);
           const fieldRes = {
             info: { 
               fieldId: fieldID, interId: dsID,
-              interCode: interInfo.code, fieldCode: fieldInfo.fieldCode,
+              interCode: interInfo.code, fieldCode: fieldsInfo[0].fieldCode,
               widgetId, desc: title, colId: id,
             },
             forwardRefRels: forwardRefRelsToUse,
@@ -166,7 +115,7 @@ export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
       /** 初始化迭代器, 添加迭代处理函数 */
       const { readList, iterationFn } = initGenReadOfFieldRefRel();
       const { schemaFnHandler } = initGenSchemaOfFieldRefRel(idMapDataIdx);
-      const { iterator, addIterationFn } = initFieldRefRelIterator({ allFields });
+      const { iterator, initIteratorParam, addIterationFn } = initFieldRefRelIterator({ allFields });
       addIterationFn(iterationFn);
       addIterationFn(schemaFnHandler);
 
@@ -178,13 +127,9 @@ export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
           genSctrctItemFns: [], genSctrctSetFns: []
         }
       ];
-      const iterationRes = iterator({ 
-        level: 0, readFields: allFields,
-        prevFieldId: '', prevReadId: '',
-        prevReadCode: '', prevFieldCode: '',
-        readId: mainInterMeta.id, fieldId: '',
-        readCode: mainInterMeta.code, fieldCode: '', 
-      }, initialCtx);
+      const iterationRes = iterator(
+        initIteratorParam({ readFields: allFields, interMetaInfo: mainInterMeta }), initialCtx
+      );
 
       /**
        * 1. 表的schema、readFields 「生成实际的showColumns」
@@ -195,13 +140,13 @@ export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
       const { genSchemaRes, genSchemaSet } = iterationRes[1];
       const tableSchema = genTableSchema({ widgetId, genSchemaRes });
       tempSchema.push(tableSchema);
-      
+
       /** 表格选中 */
       const { ref2Val, flow: selStateFlow } = genChangePropsAndSetCtx(transfromCtx, `${widgetId}_selectedRows`, tableSchema.struct.selectedRows.schemaRef);
       /** 临时的 */
       ref2Val.struct.push(
         {
-          val: `${runCtxPayloadMark+splitMark}selectedRows[#(0|*)]${splitMark}${PKFieldInfo.fieldId}`,
+          val: `${runCtxPayloadMark+splitMark}selectedRowKeys[#(0|0)]`,
           key: `${schemaMark+mainInterMeta.id}_${PKFieldInfo.fieldId}`
         }
       );
@@ -209,7 +154,7 @@ export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
       const dataSourceSchemaRef = tableSchema.struct.dataSource.schemaRef;
       const { flow: setSchemaFlow, ref2Val: ref2ValSchemaSet } = genChangePropsAndSetCtx(transfromCtx, `${widgetId}_setDataSource`, dataSourceSchemaRef);
       /** request的后映射 */
-      const ref2ValSchemaSetStruct = genSchemaSet(`${runCtxPayloadMark}[#(0|*)]/`);
+      const ref2ValSchemaSetStruct = genSchemaSet(`${runCtxPayloadMark}[#(1|*)]/`);
       ref2ValSchemaSetStruct.key = dataSourceSchemaRef;
       Object.assign(ref2ValSchemaSet, {
         struct: [ref2ValSchemaSetStruct]
@@ -219,11 +164,7 @@ export const genTableRead = (transfromCtx: TransfromCtx, widgetProps) => {
        * 1. 生成连表
        * 2. 写入数据
        */
-      const { APBDefOfIUB, action, flow } = genReadFlowAndAction({ widgetId, readList, readDef: mainReadDef });
-      flow.flowOut = [[flowMark + setSchemaFlow.id]];
-      tempAPIReq.push(APBDefOfIUB);
-      tempAction.push(action);
-      tempFlow.push(flow); 
+      const { flow } = genDefaultReadAndSetCtx(transfromCtx, { onlyMark: widgetId, readList, readDef: mainReadDef }, [flowMark + setSchemaFlow.id]);
       
       eventHandlers.onTableRequest = flowEventHandlerTemplate([flow.id]);
       eventHandlers.onTableSelect = flowEventHandlerTemplate([selStateFlow.id]);
