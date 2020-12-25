@@ -11,6 +11,7 @@ export interface FormInputCompProps {
   title: string;
   /** 默认值 */
   realVal: string;
+  showVal?: string;
   labelColor: string;
   onChange: any;
 }
@@ -59,18 +60,16 @@ const useInputOnChange = (val, onChange) => {
 };
 
 export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
-  const { title, labelColor, realVal, onChange } = props;
-
-  const [state, setState] = useState(realVal);
+  const { title, labelColor, showVal, realVal, onChange } = props;
+  const [state, setState] = useState(showVal || realVal);
   useEffect(() => {
-    setState(realVal);
-  }, [realVal]);
+    setState(showVal || realVal);
+  }, [realVal, showVal]);
 
   const actualOnChange = useCallback((e) => {
     setState(e.target.value);
     onChange?.(e);
   }, []);
-
   return (
     <div>
       <div
@@ -81,6 +80,7 @@ export const FormInputComp: React.FC<FormInputCompProps> = (props) => {
         {title}
       </div>
       <Input
+        disabled={!!showVal}
         /** TODO: useInputOnChange 未完成, 临时使用d先用着 */
         style={{ width: 300 }}
         onChange={actualOnChange}
