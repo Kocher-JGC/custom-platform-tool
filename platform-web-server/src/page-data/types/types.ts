@@ -8,15 +8,23 @@ export interface ProcessCtx {
   app: string
 }
 
+export interface PageFieldsDef {
+  tableId: string, fieldId: string, schemaRef: string; schema: any; 
+}
+
 export interface TransfCtx {
   getRemoteTableMeta: (tableIds: string[]) => Promise<RemoteTable>
   logger: Logger
 }
 
+
 export interface TransfromCtx {
   /** tools */
-  logger: Logger
+  logger: Logger;
+  getRemoteTableMeta: any;
   interMetaT: InterMetaTools;
+  setPageFields: any;
+  addPageLifecycle: any;
   /** ----tools---- */
 
   extralDsl: { 
@@ -28,14 +36,15 @@ export interface TransfromCtx {
     tempOpenPageUrl: string;
     tempRef2Val: any[];
     tempAPIReq: any[];
-    pageFieldsToUse: { tableId: string, fieldId: string, schemaRef: string; }[];
+    pageFieldsToUse: PageFieldsDef[];
     pageLifecycle: any;
-    isSearch: boolean
+    isSearch: boolean;
+    tempSubPage: {id: string, pageContent: any}[]
   }
   pkSchemaRef: string[];
   interMeta: GenInterMetaRes;
   schema: any;
-  metaSchema: {
+  originPageDataSchema: {
     [str: string]: {
       column: {
         fieldCode: string;

@@ -14,6 +14,7 @@ export const enum SchemaType {
   interPK = 'interPK',
   interFK = 'interFK',
   widgetTable = 'widgetTable',
+  widgetSubSchema = 'widgetSubSchema',
 }
 
 interface BaseScheamDef {
