@@ -36,24 +36,30 @@ export const initGenReadOfFieldRefRel = () => {
   const allReadAlias = [];
 
   const readRunInit = (iterationParam, prevRunCtx) => {
-    const { prevFieldCode, readCode, prevReadCode, fieldCode, type } = iterationParam;
-    const { readAlais: prevReadAlias, readDef: prevReadDef } = prevRunCtx;
+    const { prevFieldCode, readCode, prevReadCode, fieldCode, type, readFields: handleFields } = iterationParam;
+    const { readAlais: prevReadAlias, readDef: prevReadDef, readFields: prevReadFields = [] } = prevRunCtx;
     const { joins: prevJoins } = prevReadDef || {};
+    
+    const readFields = [];
     /** 生成本级读的别名 */
     let readAlais = prevReadAlias;
     if (prevFieldCode) {
       if (type === 'forwardRefRel') {
         // readAlais = `${prevReadAlias}${'|'}${prevFieldCode}_${readCode}`;
         readAlais = `${prevReadAlias}${levelSplitMark}${prevReadCode}_${prevFieldCode}`;
+        prevReadFields.pop();
       } else { // prevReadAlias, 应该切去上级才对
         readAlais = `${prevReadAlias}${levelSplitMark}${readCode}`;
+        readFields.push(genReadField({ field: 'fid', readAlais, table: readCode }));
         // readAlais = `${prevReadAlias}_${readCode}`;
       }
+      prevReadFields.push({ table: readAlais });
     }
     allReadAlias.push(readAlais);
 
     /** 本级读的定义 */
-    const read = prevFieldCode ? genRead(readCode, readAlais) : genRead(readCode, readAlais, { fields: allReadFields }) ;
+    // const read = prevFieldCode ? genRead(readCode, readAlais) : genRead(readCode, readAlais, { fields: allReadFields }) ;
+    const read = genRead(readCode, readAlais, { fields: readFields }) ;
     const readDef = initReadDef(read.alias);
     allReadList[readDef.readRef] = read;
 
@@ -67,7 +73,8 @@ export const initGenReadOfFieldRefRel = () => {
         },
         right: {
           table: readAlais,
-          field: fieldCode
+          field: `${readAlais}${levelSplitMark}${readCode}_${fieldCode}` 
+          // field: fieldCode
         }
       });
       prevJoins.push(jonsDef);
@@ -75,11 +82,11 @@ export const initGenReadOfFieldRefRel = () => {
 
     /** read运行的上下文 */
     return {
-      readDef, read, readAlais
+      readDef, read, readAlais, readFields
     };
   };
   const readItemHandler = (info, runCtx) => {
-    const { readAlais } = runCtx;
+    const { readAlais, readFields } = runCtx;
     const { 
       interId, fieldId,
       interCode, fieldCode,
@@ -87,6 +94,7 @@ export const initGenReadOfFieldRefRel = () => {
     } = info;
     /** 当前表的字段alias */
     const readField = genReadField({ readAlais, table: interCode, field: fieldCode }); 
+    readFields.push(readField);
     allReadFields.push(readField);
   };
   const readRunEnd = (iterationParam, pervRunCtx, runCtx) => {

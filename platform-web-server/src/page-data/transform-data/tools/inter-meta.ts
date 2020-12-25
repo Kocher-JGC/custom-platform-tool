@@ -1,6 +1,6 @@
 import { 
   GenInterMetaRes, InterRefRelation, FieldMeta,
-  GetFieldsParam, FindRefRelationParam, InterMetaTools,
+  GetFieldsParam, FindRefRelationParam, InterMetaTools, RefType,
 } from "@src/page-data/types";
 
 const noopTrue = (...args: any[]) => true;
@@ -79,25 +79,43 @@ export const interMetaToolInit = ({ interMetas, interRefRelations }: GenInterMet
     return fieldsRes;
   };
 
-  const getFieldAndInterInfo = ({ field, inter }: { field: string, inter: string }) => {
+  const getFieldAndInterInfo = ({ fields, inter }: { fields: string[], inter: string }) => {
     const interInfo = getInters([inter])[0];
     if (interInfo) {
-      const fieldInfo = interInfo.fields.find(({ fieldCode, fieldId }) => fieldId === field || fieldCode === field);
-      if (fieldInfo) {
-        return { fieldInfo, interInfo };
-      }
+      /** 确保顺序 */
+      const fieldsInfo = fields.map(field => interInfo.fields.find(({ fieldCode, fieldId }) => fieldId === field || fieldCode === field)) ;
+      return { fieldsInfo, interInfo };
     }
     return null;
   };
+
+  const getIntersRefRels = ({ inters }: { inters: string[] }): [InterRefRelation[], InterRefRelation[]] => {
+    /** 所有可以使用的引用关系 */
+    const refRels = findRefRelation({ inters });
+    /** 并将关系分类 「正向引用关系Forward(字典、引用、树形)、 反向引用关系backward(附属)」 */
+    // const [forwardRefRels, backwardRefRels] = 
+    return refRels.reduce((res, refRel) => {
+      res[refRel.refType === RefType.FK_Q ? 1 : 0].push(refRel);
+      return res;
+    }, [[] as InterRefRelation[], [] as InterRefRelation[]]);
+  };
   
+  const addInterMeta = ({ interMetas: newInterMetas, interRefRelations: newInterRefRels }: GenInterMetaRes) => {
+    if (Array.isArray(newInterMetas) && Array.isArray(newInterRefRels)) {
+      interMetas.push(...newInterMetas);
+      interRefRelations.push(...newInterRefRels);
+    }
+  };
   
 
   return {
     findRefRelation,
+    getIntersRefRels,
     getInters,
     getIntersPK,
     getField,
     getFields,
-    getFieldAndInterInfo
+    getFieldAndInterInfo,
+    addInterMeta
   };
 };

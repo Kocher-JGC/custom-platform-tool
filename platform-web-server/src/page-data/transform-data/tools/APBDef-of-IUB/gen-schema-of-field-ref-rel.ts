@@ -6,10 +6,10 @@ const genSchemaItem = ({ widgetId, colId, desc, fieldId, fieldCode, interCode, i
   const fieldAlias = `${interCode}_${fieldCode}`;
   return {
     type: FoundationType.string,
-    schemaId: `${colId}`,
+    schemaId: `${widgetId}:${fieldAlias}`, // 预留
     schemaKey: fieldAlias,
     schemaRef: `${prevPath}${splitMark}${fieldAlias}`,
-    schemaType: SchemaType.widgetTable, widgetRef: widgetId,
+    schemaType: SchemaType.widgetSubSchema, widgetRef: widgetId,
     interId, fieldId, desc
   };
 };

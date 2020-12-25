@@ -1,4 +1,4 @@
-import { InterRefRelation, RelationType } from "@src/page-data/types";
+import { InterRefRelation, RelationType, InterMeta, FieldMeta } from "@src/page-data/types";
 import { canDeep } from "../../utils";
 /**
  * 注意: 拼接使用什么规则都可以, 但是要保证结构统一
@@ -77,6 +77,10 @@ const enum RealFieldType {
   show = 'show',
 }
 
+export const genReadInfoFromFieldMeta = ({ id: interId, code: interCode }: InterMeta, { fieldId, fieldCode }: FieldMeta) => ({
+  interId, interCode, fieldId, fieldCode
+});
+
 const genRefRelField = (refRel: InterRefRelation, info): IteratorFieldDef[] => {
   const { widgetId, colId } = info;
   const { refInterCode, refFieldCode, refInterId, refFieldId, refShowFieldId , refShowFieldCode } = refRel;
@@ -85,7 +89,7 @@ const genRefRelField = (refRel: InterRefRelation, info): IteratorFieldDef[] => {
       info: { 
         fieldCode: refFieldCode, interCode: refInterCode,
         fieldId: refFieldId, interId: refInterId,
-        widgetId, colId: `${colId}_${refFieldId}`, 
+        widgetId, colId: `${colId || refInterId}_${refFieldId}`, 
         desc: '引用实际值', infoType: 'ref'
       },
     },
@@ -93,7 +97,7 @@ const genRefRelField = (refRel: InterRefRelation, info): IteratorFieldDef[] => {
       info: { 
         interCode: refInterCode, fieldCode: refShowFieldCode,
         fieldId: refShowFieldId, interId: refInterId, 
-        widgetId, colId: `${colId}_${refShowFieldId}`, 
+        widgetId, colId: `${colId || refInterId}_${refShowFieldId}`, 
         desc: '引用显示值', infoType: 'show'
       },
     }
@@ -116,7 +120,7 @@ const genRefRelField = (refRel: InterRefRelation, info): IteratorFieldDef[] => {
  */
 export const initFieldRefRelIterator = <T = Record<string, unknown>>(initOpts: InitFieldRefRelIteratorOpts<T>) => {
   const {
-    maxForwardLevel = 1, maxBackwardLevel = 1,
+    maxForwardLevel = 2, maxBackwardLevel = 1,
     allFields, genRefRelFields = genRefRelField
   } = initOpts;
   const canForwardDeep = canDeep(maxForwardLevel);
@@ -194,5 +198,13 @@ export const initFieldRefRelIterator = <T = Record<string, unknown>>(initOpts: I
     /** 迭代器运行结束 */
     return endRun(iterationParam, pervRunCtxs, runCtxs);
   };
-  return { iterator, addIterationFn };
+
+  const initIteratorParam = ({ readFields, interMetaInfo }) => ({ 
+    level: 0, readFields,
+    prevFieldId: '', prevReadId: '',
+    prevReadCode: '', prevFieldCode: '',
+    readId: interMetaInfo.id, fieldId: '',
+    readCode: interMetaInfo.code, fieldCode: '', 
+  });
+  return { initIteratorParam, iterator, addIterationFn };
 };
