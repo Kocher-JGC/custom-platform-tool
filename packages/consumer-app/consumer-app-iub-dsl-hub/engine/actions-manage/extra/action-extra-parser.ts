@@ -15,7 +15,9 @@ export const actionExtralParser = (parseRes) => {
     const { actionBaseConf, actionOpts } = conf;
     switch (actionBaseConf.actionType) {
       case 'changeState':
-        actionOpts.changeMapping = bindRef2Value(actionOpts.changeMapping);
+        if (actionOpts.changeMapping) {
+          actionOpts.changeMapping = bindRef2Value(actionOpts.changeMapping);
+        }
         break;
       case 'APIReq':
         actionOpts.apiReqRef = bindAPIReq(actionOpts.apiReqRef, apiReqPlugins);

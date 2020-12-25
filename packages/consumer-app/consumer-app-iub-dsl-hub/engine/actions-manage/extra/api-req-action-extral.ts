@@ -213,18 +213,25 @@ export const genApiReqPlugins = (parseRes) => {
       case FuncCodeOfAPB.R:
         /** 单独的read处理 */
         runFn = async (IUBCtx: RunTimeCtxToBusiness) => {
+          const { pageStatus } = IUBCtx;
           /** 临时写死逻辑 */
           const newConf = cloneDeep(conf);
-          let temp: any;
-          // eslint-disable-next-line no-cond-assign
-          if ((temp = newConf.readList.staticId) && temp.condition) {
-            /** 配置传入/ 或写死传入 */
-            temp.condition = {
-              and: [{
-                equ: { id: await getSchemaVal(IUBCtx, temp.condition) }
-              }]
-            };
-          }
+          await Object.values(newConf.readList).map(async (readConf: any) => {
+            if (pageStatus === 'update' && readConf?.condition) {
+              // equ: { id: await getSchemaVal(IUBCtx, readConf.condition) }, // old
+              /** 配置传入/或写死传入 */
+              readConf.condition = {
+                and: [{
+                  equ: { 
+                    left: {
+                      field: "id", table: readConf.alias
+                    },
+                    right: await getSchemaVal(IUBCtx, readConf.condition)
+                  }
+                }]
+              };
+            }
+          });
           return newConf;
         };
         break;

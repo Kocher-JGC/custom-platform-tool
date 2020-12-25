@@ -21,6 +21,10 @@ import { DispatchModuleName, DispatchMethodNameOfIUBStore } from '../../runtime/
 // }
 // }
 // })
+function isNumber(value) {
+  // eslint-disable-next-line no-restricted-globals
+  return typeof value === 'number' && !isNaN(value);
+}
 
 /**
  * 
@@ -36,9 +40,17 @@ export const itemHandler = (IUBctx, runCtx: Ref2ValRunCtx, {
   if (typeof structItem.val === 'string') {
     const refPathInfo = refPathInfoList[structItem.val];
     const pathInfo = refPathInfo[refPathInfo.length - 1];
-    const { prevPath, path, rootPath } = pathInfo;
+    const { prevPath, path, rootPath, match } = pathInfo;
     let val = scope[rootPath + prevPath];
-    val && (val = typeof path === 'string' ? val[path] : val);
+    if (val !== undefined) {
+      if (typeof match === 'object') {
+        const idx = parseInt(match.idx, 10);
+        val = isNumber(idx) ? val[idx] : val;
+      } else if (typeof match === 'string') {
+        // val && (val = typeof path === 'string' ? val[path] : val);
+        val = val[path];
+      }
+    }
     return {
       [structItem.key]: val
     };
@@ -48,7 +60,6 @@ export const itemHandler = (IUBctx, runCtx: Ref2ValRunCtx, {
       [structItem.key]: layerRunRes
     };
   }
-  
 };
 
 /**
@@ -114,7 +125,6 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
             /** 一项里面有很多path, { val: path1, key: path2, xxx: path3, ....  } */
             const { key, val, extral } = structItem;
             structItem.key = await itemKeyHandler(key);
-           
             /** 新的一层: 后续再思考优化 */
             if (typeof val === 'object') {
               const onceLayerRes = await layerRunFn(val);
@@ -173,7 +183,7 @@ export const ref2ValRunWrap = (originConf: Ref2ValDef, parseCtx: Ref2ValParseCtx
       return {};
     };
     const res = await layerRunFn(originConf);
-    console.log(res);
+    // console.log(res);
     return res;
   };
 };

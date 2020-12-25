@@ -1,4 +1,5 @@
 import { isPlainObject } from 'lodash';
+import { Ref2ValDef, ref2ValStructMap, Ref2ValCollection } from '@iub-dsl/definition';
 import { 
   Ref2ValParseCtx, Ref2ValParserPlugins, PathInfo,
   Ref2ValRunCtx, RefPathInfoList, LayerParseRes, Ref2ValRunPlugins, Ref2ValPlugins
@@ -10,7 +11,6 @@ import {
   getScope, getRootData, getScopeData,
   itemHandler, groupHandler, layerHandler 
 } from './ref-2-value-run';
-import { Ref2ValDef, ref2ValStructMap, Ref2ValCollection } from '@iub-dsl/definition';
 import { RunTimeCtxToBusiness } from '../../runtime/types';
 import { noopError, noopRun } from '../../utils';
 
@@ -224,7 +224,7 @@ const refPathParser = (parseCtx: Ref2ValParseCtx, refPath: string) => {
  */
 const childPathParser = (path: string, rootPath: string) => {
   const pathInfoArr: PathInfo[] = [];
-  let prevPath = '', getDepth = 1;
+  let prevPath = ''; let getDepth = 1;
   path.replace(splitPathRegExp, (path, lKey, match: string, rKey) => {
     const baseInfo = { rootPath, prevPath, getDepth, fullPath: rootPath + prevPath + path };
     const pathInfo = genPathInfo({ path, match });
