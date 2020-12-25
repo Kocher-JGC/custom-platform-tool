@@ -1,13 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { useMemo } from 'react';
-import { get as LGet } from 'lodash';
+import { get as LGet , set as LSet } from 'lodash';
 import { CommonObjStruct, ChangeMapping } from '@iub-dsl/definition';
 import { useCacheState } from '../utils';
 import { RunTimeCtxToBusiness, DispatchModuleName, DispatchMethodNameOfMetadata } from '../runtime/types';
 import { SchemasAnalysisRes, IUBStoreEntity, GetStruct } from './types';
 import { setOfSchemaPath } from './utils';
 import { isSchema, pickSchemaMark } from '../IUBDSL-mark';
-import { set as LSet } from 'lodash';
+
 
 const reg = /(?<=[\\/\\[]?)([^\\/\\[\]]+)(?=[\\/\]\\[]?)/g;
 
@@ -95,17 +95,23 @@ export const createIUBStore = (analysisData: SchemasAnalysisRes) => {
     /** 复杂数据的更新, 现在先都更新 */
     const mappingUpdateState = (ctx: RunTimeCtxToBusiness, changeMaps: any) => {
       const newState = IUBPageStore;
-      if (typeof changeMaps === 'object') {
-        for (const mark in changeMaps) {
-          if (isSchema(mark)) {
-            const key = pickSchemaMark(mark).split('/');
-            const val = changeMaps[mark];
-            if (val !== undefined) {
-              LSet(newState, key, val);
+      const updState = (changeStruct) => {
+        if (Array.isArray(changeStruct)) {
+          changeStruct.forEach(_ => updState(_));
+        } else if (typeof changeStruct === 'object') {
+          // eslint-disable-next-line no-restricted-syntax
+          for (const mark in changeStruct) {
+            if (isSchema(mark)) {
+              const key = pickSchemaMark(mark).split('/');
+              const val = changeStruct[mark];
+              if (val !== undefined) {
+                LSet(newState, key, val);
+              }
             }
           }
         }
-      }
+      };
+      updState(changeMaps);
       setIUBPageStore(newState);
     };
     

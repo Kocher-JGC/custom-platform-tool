@@ -1,5 +1,5 @@
 import { AllWidgetType, TriggerEventTypes } from "@iub-dsl/definition";
-import { defaultNormal, defaultOnClick, defaultOnChange, genEventBaseConf } from "./default-normal-of-event";
+import { defaultNormal, defaultOnClick, defaultOnChange, genEventBaseConf, defaultPropsChange } from "./default-normal-of-event";
 import { NormalEventParamFn } from "../types";
 
 type EventType = TriggerEventTypes & 'onTableSelect'
@@ -12,16 +12,17 @@ const defaultNormalEventFn: { [k in EventType] } = {
   onMount: defaultNormal,
   onTap: defaultNormal,
   onUnmount: defaultNormal,
+  onPropsChange: defaultPropsChange,
   onTableSelect: (
     /** widget配置 */
     widgetConf
   ) => (e) => {
-    const {selectedRowKeys, selectedRows} = e
+    const { selectedRowKeys, selectedRows } = e;
     return {
       ...genEventBaseConf(widgetConf),
-      payload: {selectedRows, selectedRowKeys},
+      payload: { selectedRows, selectedRowKeys },
       type: 'onTableSelectNormal'
-    }
+    };
   }
 };
 

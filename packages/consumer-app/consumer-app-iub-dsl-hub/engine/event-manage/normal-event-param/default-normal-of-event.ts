@@ -1,4 +1,4 @@
-import { WidgetDef } from '@iub-dsl/definition';
+import { WidgetDef, ref2ValStructMap } from '@iub-dsl/definition';
 
 /**
  * 生成默认的事件参数配置
@@ -55,3 +55,31 @@ export const defaultNormal = (
   action: e,
   type: 'defaultNormal'
 });
+
+interface ChangePropsItem {
+  propsKey: string;
+  val: any;
+}
+
+export const defaultPropsChange = (widgetConf: WidgetDef) => {
+  const { propState } = widgetConf;
+  const propKeys = Object.keys(propState);
+  return (change: ChangePropsItem[]) => {
+    const changeStruct: ref2ValStructMap[] = [];
+    change.forEach((changeItem) => {
+      const { propsKey, val } = changeItem;
+      if (propKeys.includes(propsKey)) {
+        const schemaRef = propState[propsKey];
+        if (typeof schemaRef === 'string') {
+          changeStruct.push({ val, key: schemaRef });
+        }
+      }
+
+    });
+    return {
+      payload: { changeStruct },
+      type: 'onWidgetPropsChange'
+    };
+  };
+};
+  
