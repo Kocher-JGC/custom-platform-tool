@@ -15,6 +15,7 @@ const genExtralSchemaOfField = (interId: string, field: FieldMeta): SchemaItemDe
     schemaRef: '',
     schemaType: SchemaType.interPK,
     defaultVal: '$ID()',
+    // defaultVal: '1341288097836572672',
   };
 };
 

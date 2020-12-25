@@ -1,4 +1,4 @@
-import { genNormanTable, genFromButton, genFormInput, defaultGen } from "./widget";
+import { genNormanTable, genFromButton, genFormInput, defaultGen, genSelect } from "./widget";
 import { TransfromCtx } from "../types/types";
 
 const genOnceWidgetConf = (transfromCtx: TransfromCtx, { id, widgetRef, propState }) => {
@@ -12,6 +12,9 @@ const genOnceWidgetConf = (transfromCtx: TransfromCtx, { id, widgetRef, propStat
       break;
     case 'NormalTable':
       widgetConf = genNormanTable(transfromCtx, { id, widgetRef, propState });
+      break;
+    case 'DropdownSelector':
+      widgetConf = genSelect(transfromCtx, { id, widgetRef, propState });
       break;
     default:
       return defaultGen(transfromCtx, { id, widgetRef, propState });
