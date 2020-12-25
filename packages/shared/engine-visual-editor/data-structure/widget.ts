@@ -59,6 +59,7 @@ export interface WidgetEntity extends EditableWidgetMeta {
  */
 export interface WidgetEntityState {
   value?: any
+  [str: string]: any;
 }
 
 /// //////////////// temp widget entity 临时组件实例 ///////////////////

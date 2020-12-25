@@ -1,39 +1,60 @@
 /**
  * 在 form 表单中有标题的 Input 组件
  */
-import React from 'react';
-import {
-  Dropdown, Menu, Button, message
-} from 'antd';
+import React, { useCallback } from "react";
+import { Select, message } from "antd";
 
 function handleButtonClick(e) {
-  message.info('Click on left button.');
-  console.log('click left button', e);
+  message.info("Click on left button.");
+  console.log("click left button", e);
 }
 
-const menu = (
-  <Menu onClick={(e) => {}}>
-    <Menu.Item key="1">
-      1st menu item
-    </Menu.Item>
-    <Menu.Item key="2">
-      2nd menu item
-    </Menu.Item>
-    <Menu.Item key="3">
-      3rd menu item
-    </Menu.Item>
-  </Menu>
-);
-
 export const DropdownSelectorComp = ({
+  widgetCode,
   title,
-  value,
+  realVal,
+  showVal,
+  dataSource = [],
+  showKey = "showVal",
+  valueKey = "realVal",
+  labelColor,
+  onPropsChange,
 }) => {
+  const actualOnChange = useCallback(
+    (changeVal) => {
+      const data = dataSource.find((d) => d[valueKey] === changeVal);
+      if (data) {
+        onPropsChange?.([
+          {
+            propsKey: "showVal",
+            val: data[showKey],
+          },
+          {
+            propsKey: "realVal",
+            val: data[valueKey],
+          },
+        ]);
+      }
+    },
+    [dataSource]
+  );
+
   return (
-    <Dropdown overlay={menu}>
-      <Button>
+    <div key={widgetCode}>
+      <div
+        style={{
+          color: labelColor,
+        }}
+      >
         {title}
-      </Button>
-    </Dropdown>
+      </div>
+      <Select onChange={actualOnChange} value={realVal} style={{ width: 120 }}>
+        {dataSource.map((d, idx) => (
+          <Select.Option key={d[valueKey] + idx} value={d[valueKey]}>
+            {d[showKey]}
+          </Select.Option>
+        ))}
+      </Select>
+    </div>
   );
 };
